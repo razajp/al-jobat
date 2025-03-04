@@ -27,9 +27,10 @@ Route::group(['middleware' => 'auth'], function () {
         return view('home');
     })->name('home');
 
-    // Route::post('/update-theme', [AuthController::class, 'updateTheme']);
+    Route::post('/update-theme', [AuthController::class, 'updateTheme']);
 
-    // Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    Route::resource('users', UserController::class)->middleware('role:admin');
+    Route::resource('users', UserController::class);
+    Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');
 });

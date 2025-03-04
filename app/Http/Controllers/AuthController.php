@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            return redirect()->back()->with('warning', 'Oops! You’re already loged in. Please logut first!');
+            return redirect()->back()->with('error', 'Oops! You’re already loged in. Please logut first!');
         }
         return view('auth.login');
     }
@@ -61,20 +61,18 @@ class AuthController extends Controller
         return redirect('/login')->with('success', 'Logout successful! You’ve been logged out. See you soon!'); // Redirect to login page
     }
 
-    // public function updateTheme(Request $request)
-    // {
-    //     $request->validate([
-    //         'theme' => 'required|in:light,dark', // Validate theme input
-    //     ]);
+    public function updateTheme(Request $request)
+    {
+        $request->validate([
+            'theme' => 'required|in:light,dark', // Validate theme input
+        ]);
+        
+        $user = Auth::user();
+        User::where('id', $user->id)->update(['theme' => $request->theme]);
 
-    //     // Update the authenticated user's theme
-    //     $user = Auth::user();
-    //     $user->theme = $request->theme;
-    //     $user->save();
-
-    //     return response()->json([
-    //         'success' => true, 
-    //         'message' => 'Theme updated successfully! Your preferences have been saved.'
-    //     ]);
-    // }
+        return response()->json([
+            'success' => true, 
+            'message' => 'Theme updated successfully! Your preferences have been saved.'
+        ]);
+    }
 }
