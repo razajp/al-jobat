@@ -82,6 +82,10 @@
             </div>
         </main>
     </div>
+
+    {{-- footer --}}
+    @component('layouts.components.footer')
+    @endcomponent
 </body>
 
 </html>
