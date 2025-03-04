@@ -56,6 +56,10 @@
         [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
             filter: invert(1);
         }
+
+        .bg-\[--primary-color\] {
+            color: #e2e8f0 !important;
+        }
         
         .my-scroller-2::-webkit-scrollbar {
             display: none;
@@ -65,11 +69,14 @@
 
 <body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex items-center justify-center" cz-shortcut-listen="true">
     {{-- side bar --}}
-    @component('layouts.components.sidebar')
-    @endcomponent
+    @if (Auth::check())
+        @component('layouts.components.sidebar')
+        @endcomponent
+    @endif
+
     <div class="wrapper flex-1 flex flex-col h-screen relative">
         {{-- main content --}}
-        <main class="flex-1 p-8 overflow-y-auto my-scroller-2">
+        <main class="flex-1 p-8 overflow-y-auto my-scroller-2 flex items-center justify-center">
             <div class="main-child grow">
                 @yield('content')
             </div>
