@@ -81,11 +81,11 @@
                 @yield('content')
             </div>
         </main>
+        {{-- footer --}}
+        @component('layouts.components.footer')
+        @endcomponent
     </div>
 
-    {{-- footer --}}
-    @component('layouts.components.footer')
-    @endcomponent
 </body>
 
 </html>
