@@ -28,7 +28,7 @@
     </div>
 @else
     <a href="{{ $href }}"
-    class="nav-link {{ strtolower($label) 3}} text-[--text-color] p-3 rounded-full hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out w-10 h-10 flex items-center justify-center group relative">
+    class="nav-link {{ strtolower($label) }} text-[--text-color] p-3 rounded-full hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out w-10 h-10 flex items-center justify-center group relative">
         <i class="{{ $icon }} group-hover:text-[--primary-color] transition-all 0.3s ease-in-out"></i>
         <span class="absolute shadow-xl left-16 top-1/2 transform -translate-y-1/2 bg-[--h-secondary-bg-color] border border-gray-600 text-[--text-color] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s pointer-events-none">
             {{ $label }}
@@ -40,5 +40,4 @@
     if (url.includes("{{ strtolower($label) }}")) {
         document.querySelector(".nav-link.{{ strtolower($label) }}").classList.add("active");
     }
-    
 </script>

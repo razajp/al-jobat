@@ -24,9 +24,8 @@
 
     <!-- Navigation Links -->
     <nav class="space-y-4">
-        
         <div class="relative group">
-            <x-dropdown-menu 
+            <x-nav-link-item 
                 label="Home" 
                 icon="fas fa-home"
                 href="/"
@@ -35,7 +34,7 @@
         </div>
         
         <div class="relative group">
-            <x-dropdown-menu 
+            <x-nav-link-item 
                 label="Users" 
                 icon="fas fa-user"
                 includesDropdown="true"
