@@ -1,16 +1,44 @@
 <!-- Logout Modal -->
-<x-modal
-    id="logoutModal"
-    title="Logout Account"
-    image="images/error_icon.png"
-    content="Are you sure you want to logout? All of your data will be permanently removed. This action cannot be undone."
-    :buttons="[
-        ['label' => 'Cancel', 'onclick' => 'closeLogoutModal()', 'class' => 'bg-[--secondary-bg-color] border text-[--secondary-text] rounded-md hover:bg-[--bg-color]'],
-        ['label' => 'Logout', 'type' => 'submit', 'class' => 'bg-[--danger-color] text-white rounded-md hover:bg-[--h-danger-color]']
-    ]"
-    action="{{ route('logout') }}"
-    method="POST"
-/>
+<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-sm fade-in">
+    <!-- Modal Content -->
+    <div class="bg-[--secondary-bg-color] rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+        <!-- Close Button -->
+        <button onclick="closeLogoutModal()"
+            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+
+        <!-- Modal Body -->
+        <div class="modal_body flex items-start">
+            <div class="w-1/5 h-1/5">
+                <img src="{{ asset('images/error_icon.png') }}" alt=""
+                    class="w-full h-full object-cover">
+            </div>
+            <div class="content ml-5">
+                <h2 class="text-xl font-semibold text-[--text-color]">Logout Account</h2>
+                <p class="text-sm text-[--secondary-text] mt-2 mb-6">Are you sure you want to logout? All of your data
+                    will be permanently removed. This action cannot be undone.</p>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="flex justify-end space-x-3">
+            <!-- Cancel Button -->
+            <button onclick="closeLogoutModal()"
+                class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded-md hover:bg-[--bg-color] transition-all 0.3s ease-in-out">Cancel</button>
+
+            <!-- Logout Form -->
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                    class="px-4 py-2 bg-[--danger-color] text-white rounded-md hover:bg-[--h-danger-color] transition-all 0.3s ease-in-out">Logout</button>
+            </form>
+        </div>
+    </div>
+</div>
 <aside class="bg-[--secondary-bg-color] w-16 flex flex-col items-center py-5 h-screen shadow-lg z-40 transition-all 0.3s ease-in-out fade-in">
     <!-- Logo -->
     <a href="/"
@@ -95,6 +123,7 @@
     const html = document.documentElement;
     const themeIcon = document.querySelector('#themeToggle i');
     const themeToggle = document.getElementById('themeToggle');
+    let isLogoutModalOpened = false;
     
     themeToggle?.addEventListener('click', () => {
         changeTheme();

@@ -82,8 +82,8 @@
                 @if (count($users) > 0)
                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach ($users as $user)
-                            <div data-user="{{ $user }}"
-                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[7.8rem] flex gap-3 p-4 cursor-pointer overflow-hidden fade-in">
+                            {{-- <div data-user="{{ $user }}"
+                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[7.8rem] flex gap-3 p-4 cursor-pointer overflow-hidden fade-in">
                                 <div class="img aspect-square h-full rounded-full overflow-hidden">
                                     @if ($user->profile_picture == 'default_avatar.png')
                                         <img src="{{ asset('images/default_avatar.png') }}" alt=""
@@ -107,7 +107,7 @@
                                 </div>
                                 <button
                                     class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center bg-[--h-bg-color] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out hover:scale-110">
-                                    <i class='fas fa-arrow-right text-3xl -rotate-45'></i>
+                                    <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
                                 </button>
                             
                                 @if ($user->status === 'active')
@@ -125,6 +125,18 @@
                                         class="active_inactive absolute text-[--border-error] top-1 right-2 h-[1rem]">
                                         In Active</div>
                                 @endif
+                            </div> --}}
+                            <div data-user='{{ $user }}'
+                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                <x-card :data="[
+                                    'image' => $user->profile_picture == 'default_avatar.png' ? asset('images/default_avatar.png') : asset('storage/uploads/images/' . $user->profile_picture),
+                                    'name' => $user->name,
+                                    'status' => $user->status,
+                                    'details' => [
+                                        'Username' => $user->username,
+                                        'Role' => $user->role
+                                    ]
+                                ]"/>
                             </div>
                         @endforeach
                     </div>

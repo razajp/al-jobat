@@ -151,7 +151,7 @@
     </style>
 </head>
 
-<body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex items-center justify-center" cz-shortcut-listen="true">
+<body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex items-center justify-center fade-in" cz-shortcut-listen="true">
     {{-- side bar --}}
     @if (Auth::check())
         <script>
