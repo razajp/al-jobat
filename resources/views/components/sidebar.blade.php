@@ -1,7 +1,7 @@
 <!-- Logout Modal -->
-<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-sm fade-in">
+<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-xs md:text-sm fade-in">
     <!-- Modal Content -->
-    <div class="bg-[--secondary-bg-color] rounded-xl shadow-lg w-full max-w-lg p-6 relative">
+    <div class="bg-[--secondary-bg-color] rounded-xl shadow-lg w-80 md:w-full md:max-w-lg p-6 relative">
         <!-- Close Button -->
         <button onclick="closeLogoutModal()"
             class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out">
@@ -13,13 +13,13 @@
 
         <!-- Modal Body -->
         <div class="modal_body flex items-start">
-            <div class="w-1/5 h-1/5">
+            <div class="w-1/3 h-1/3 md:w-1/5 md:h-1/5">
                 <img src="{{ asset('images/error_icon.png') }}" alt=""
                     class="w-full h-full object-cover">
             </div>
             <div class="content ml-5">
-                <h2 class="text-xl font-semibold text-[--text-color]">Logout Account</h2>
-                <p class="text-sm text-[--secondary-text] mt-2 mb-6">Are you sure you want to logout? All of your data
+                <h2 class="text-lg md:text-xl font-semibold text-[--text-color]">Logout Account</h2>
+                <p class="text-[--secondary-text] mt-1 mb-4 md:mt-2 md:mb-6">Are you sure you want to logout? All of your data
                     will be permanently removed. This action cannot be undone.</p>
             </div>
         </div>
@@ -39,105 +39,193 @@
         </div>
     </div>
 </div>
-<aside class="bg-[--secondary-bg-color] w-16 flex flex-col items-center py-5 h-screen shadow-lg z-40 transition-all 0.3s ease-in-out fade-in">
-    <!-- Logo -->
-    <a href="/"
-        class="mb-6 text-[--text-color] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
-        <h1 class="font-bold text-2xl text-[--primary-color] m-0">AJ</h1>
-        <span
-            class="absolute text-nowrap shadow-xl left-20 top-1/2 transform -translate-y-1/2 bg-[--secondary-bg-color] text-[--text-color] text-xs md:text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s ease-in-out pointer-events-none">
-            Al Jobat
-        </span>
-    </a>
-
-    <!-- Navigation Links -->
-    <nav class="space-y-4">
-        <div class="relative group">
-            <x-nav-link-item 
-                label="Home" 
-                icon="fas fa-home"
-                href="/"
-                includesDropdown="false"
-            />
-        </div>
-        
-        <div class="relative group">
-            <x-nav-link-item 
-                label="Users" 
-                icon="fas fa-user"
-                includesDropdown="true"
-                :items="[
-                    ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
-                    ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User']
-                ]"
-            />
-        </div>
-        
-        <div class="relative group">
-            <x-nav-link-item 
-                label="Suppliers" 
-                icon="fas fa-truck"
-                includesDropdown="true"
-                :items="[
-                    ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
-                    ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
-                ]"
-            />
-        </div>
-    </nav>
-
-    <div class="relative group pt-3 mt-auto dropdown-trigger">
-        <!-- User Avatar -->
-        <button class="w-10 h-10 flex items-center justify-center rounded-full cursor-pointer border-transparent hover:border-[--primary-color] transition-all 0.3s ease-in-out bg-[--primary-color] text-white font-semibold text-lg overflow-hidden">
-            @if (Auth::user()->profile_picture == 'default_avatar.png')
-                <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover" alt="Avatar">
-            @else
-                <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" class="w-full h-full object-cover" alt="Avatar">
-            @endif
+<div class="relative w-full md:w-auto md:z-40">
+    <aside class="bg-[--secondary-bg-color] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg z-40 transition-all 0.3s ease-in-out fade-in">
+        <!-- Logo -->
+        <a href="/"
+            class="md:mb-6 text-[--text-color] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
+            <h1 class="font-bold text-2xl text-[--primary-color] m-0">AJ</h1>
             <span
-                class="absolute shadow-xl capitalize left-16 bottom-1 bg-[--h-secondary-bg-color] text-[--text-color] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
-                {{ Auth::user()->name }}
+                class="absolute text-nowrap shadow-xl left-20 top-1/2 transform -translate-y-1/2 bg-[--secondary-bg-color] text-[--text-color] hidden md:block md:text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s ease-in-out pointer-events-none">
+                Al Jobat
             </span>
+        </a>
+    
+        <!-- Mobile Menu Toggle Button -->
+        <button id="menuToggle" type="button" class="md:hidden flex items-center p-2 text-[--text-color]">
+            <i class="fas fa-bars text-xl transition-all 0.5s ease-in-out"></i>
         </button>
 
-        <!-- Dropdown Menu -->
-        <div class="dropdownMenu text-sm absolute bottom-0 left-16 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
-            <ul class="p-2">
-                <!-- Add Setups -->
-                <li>
-                    <a href="{{route('addSetup')}}"
-                        class="block px-4 py-2 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                        <i class="fas fa-cog text-[--secondary-color] mr-3"></i>
-                        Setups
-                    </a>
-                </li>
-                <!-- Theme Toggle -->
-                <li>
-                    <button id="themeToggle"
-                        class="flex items-center w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                        <i class="fas fa-moon text-[--secondary-color] mr-3"></i>
-                        Theme
-                    </button>
-                </li>
-                <!-- Logout Button -->
-                <li>
-                    <button onclick="openLogoutModal()"
-                        class="block w-full text-left px-4 py-2 text-[--border-error] hover:bg-[--bg-error] hover:text-[--text-error] rounded-md transition-all duration-200 ease-in-out">
-                        <i class="fas fa-sign-out-alt mr-3"></i>
-                        Logout
-                    </button>
-                </li>
-            </ul>
+        <!-- Navigation Menu -->
+        <nav class="space-y-4 hidden md:flex flex-col">
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Home" 
+                    icon="fas fa-home"
+                    href="/"
+                    includesDropdown="false"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Users" 
+                    icon="fas fa-user"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
+                        ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User']
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Suppliers" 
+                    icon="fas fa-truck"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                        ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                    ]"
+                />
+            </div>
+        </nav>
+    
+        <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
+            <!-- User Avatar -->
+            <button type="button" class="w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all 0.3s ease-in-out text-[--text-color] font-semibold text-lg overflow-hidden">
+                @if (Auth::user()->profile_picture == 'default_avatar.png')
+                    <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover" alt="Avatar">
+                @else
+                    <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" class="w-full h-full object-cover" alt="Avatar">
+                @endif
+                <span
+                    class="absolute shadow-xl capitalize left-16 bottom-1 bg-[--h-secondary-bg-color] text-[--text-color] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
+                    {{ Auth::user()->name }}
+                </span>
+            </button>
+    
+            <!-- Dropdown Menu -->
+            <div class="dropdownMenu text-sm absolute bottom-0 left-16 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
+                <ul class="p-2">
+                    <!-- Add Setups -->
+                    <li>
+                        <a href="{{route('addSetup')}}"
+                            class="block px-4 py-2 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                            <i class="fas fa-cog text-[--secondary-color] mr-3"></i>
+                            Setups
+                        </a>
+                    </li>
+                    <!-- Theme Toggle -->
+                    <li>
+                        <button id="themeToggle"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                            <i class="fas fa-moon text-[--secondary-color] mr-3"></i>
+                            Theme
+                        </button>
+                    </li>
+                    <!-- Logout Button -->
+                    <li>
+                        <button onclick="openLogoutModal()"
+                            class="block w-full text-left px-4 py-2 text-[--border-error] hover:bg-[--bg-error] hover:text-[--text-error] rounded-md transition-all duration-200 ease-in-out">
+                            <i class="fas fa-sign-out-alt mr-3"></i>
+                            Logout
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    {{-- mobile menu --}}
+    <div id="mobileMenu" class="fixed md:hidden w-full bg-[--secondary-bg-color] z-30 flex flex-col items-start justify-start p-4 space-y-4 transform -translate-y-[120%] transition-all 0.5s ease-in-out">
+        <!-- Main Menu Items -->
+        <div class="flex flex-col space-y-2 w-full">
+            <x-mobile-menu-item href="/" title="Home" active="{{ request()->is('home') }}" />
+
+            <x-mobile-menu-item 
+                title="Users" 
+                includesDropdown
+                :dropdown="[
+                    ['href' => route('users.index'), 'title' => 'Show Users'],
+                    ['href' => route('users.create'), 'title' => 'Add User']
+                ]" 
+            />
+        </div>
+    
+        <!-- Divider -->
+        <div class="border-t border-gray-600 w-full my-4"></div>
+    
+        <!-- Profile Section -->
+        <div class="flex items-center space-x-4 px-4">
+            @if (Auth::user()->profile_picture == 'default_avatar.png')
+                    <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                @else
+                    <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                @endif
+            <div>
+                <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
+                <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
+            </div>
+        </div>
+    
+        <!-- Additional Links -->
+        <div class="flex flex-col space-y-2 w-full mt-2">
+            <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups" active="{{ request()->is('add-setup') }}" />
+            
+            <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
+
+            <x-mobile-menu-item title="Logout" asButton="true" onclick="openLogoutModal()" />
         </div>
     </div>
-</aside>
+</div>
 <script>
+    document.querySelectorAll('.dropdown-toggle').forEach(button => {
+        button.addEventListener('click', () => {
+            // Close other open dropdowns
+            document.querySelectorAll('.dropdown-menu').forEach(menu => {
+                if (menu !== button.nextElementSibling) {
+                    menu.classList.add('hidden');
+                    menu.previousElementSibling.querySelector('i').classList.remove('rotate-180');
+                }
+            });
+
+            // Toggle clicked dropdown
+            const dropdownMenu = button.nextElementSibling;
+            dropdownMenu.classList.toggle('hidden');
+            button.querySelector('i').classList.toggle('rotate-180');
+        });
+    });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const menuToggleIcon = document.querySelector('#menuToggle i');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    menuToggle.addEventListener('click', () => {
+        // Toggle between bars and xmark icons
+        menuToggleIcon.classList.toggle('fa-bars');
+        menuToggleIcon.classList.toggle('fa-xmark');
+
+        // Toggle menu visibility
+        mobileMenu.classList.toggle('-translate-y-[120%]');  // Moves out of view
+        mobileMenu.classList.toggle('translate-y-0');      // Brings into view
+    });
+
     const html = document.documentElement;
     const themeIcon = document.querySelector('#themeToggle i');
     const themeToggle = document.getElementById('themeToggle');
+    const themeToggleMobile = document.getElementById('themeToggleMobile');
     let isLogoutModalOpened = false;
     
     themeToggle?.addEventListener('click', () => {
+        themefunction();
+    });
+
+    themeToggleMobile?.addEventListener('click', () => {
+        themefunction();
+    });
+
+    function themefunction() {
         changeTheme();
 
         // Get the current theme from the HTML element
@@ -183,7 +271,7 @@
                 }
             }
         });
-    });
+    }
 
     function changeTheme() {
         const currentTheme = html.getAttribute('data-theme');

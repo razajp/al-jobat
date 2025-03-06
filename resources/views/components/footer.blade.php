@@ -1,5 +1,5 @@
 <!-- Footer Component Start -->
-<footer class="w-full bg-[--secondary-bg-color] px-3 py-1 shadow-lg z-30 pl-20 text-sm fade-in">
+<footer class="w-full bg-[--secondary-bg-color] px-3 py-1 shadow-lg z-30 text-sm fade-in">
     <div class="container mx-auto flex justify-between items-center">
         @if (request()->is('users/create') || request()->is('suppliers/create'))
             <button id="prevBtn" class="bg-[--h-bg-color] text-[--text-color] px-5 py-1 rounded-md hover:scale-95 transition-all 0.3s ease-in-out flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
@@ -7,11 +7,13 @@
             </button>
         @endif
         <div class="flex justify-between items-center mx-auto px-8 py-3">
-            <p class="text-center text-sm text-[--secondary-text] mx-3">&copy; Spark Pair 2024. All rights reserved.</p>
-            <div class="flex justify-center mx-3 ">
-                <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[--primary-color] hover:underline">+923165825495</a>
-                <span class="mx-2">|</span>
-                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[--primary-color] hover:underline">sparkpair15@gmail.com</a>
+            <div class="md:flex hidden justify-between items-center mx-auto">
+                <p class="text-center text-sm text-[--secondary-text] mx-3">&copy; Spark Pair 2024. All rights reserved.</p>
+                <div class="flex justify-center mx-3 ">
+                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[--primary-color] hover:underline">+923165825495</a>
+                    <span class="mx-2">|</span>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[--primary-color] hover:underline">sparkpair15@gmail.com</a>
+                </div>
             </div>
             @if (request()->is('login'))
                 <div class="flex justify-center mx-5 fixed right-0">
@@ -60,24 +62,19 @@
                 }
 
                 document.getElementById(`step${step + 1}-indicator`).classList.remove('bg-[--h-bg-color]');
+                document.getElementById(`step${step + 1}-indicator`).classList.remove('hover:bg-[--secondary-bg-color]');
                 document.getElementById(`step${step + 1}-indicator`).classList.add('bg-[--primary-color]');
+                document.getElementById(`step${step + 1}-indicator`).classList.add('hover:bg-[--h-primary-color]');
                 if (currentStep <= step) {
                     document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[--primary-color]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[--h-primary-color]');
                     document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[--h-bg-color]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[--secondary-bg-color]');
                 };
                 document.getElementById('progress-bar').style.width = `${(step + 1) * (100/noOfSteps)}%`;
 
                 currentStep = step + 1;
                 updateButtons();
-
-                @if (request()->is('invoice/create'))
-                    generateInvoice()
-                    let btnInForm = document.getElementById('btn-in-form');
-                    btnInForm.classList.remove('hidden');
-                    let form = document.getElementById('form');
-                    form.classList.remove('bg-[--secondary-bg-color]');
-                    form.classList.add('bg-white');
-                @endif
             }
 
             function prevStep(step) {
@@ -96,20 +93,16 @@
                 }
 
                 document.getElementById(`step${step - 1}-indicator`).classList.add('bg-[--primary-color]');
+                document.getElementById(`step${step - 1}-indicator`).classList.add('hover:bg-[--h-primary-color]');
                 document.getElementById(`step${step - 1}-indicator`).classList.remove('bg-[--h-bg-color]');
+                document.getElementById(`step${step - 1}-indicator`).classList.remove('hover:bg-[--secondary-bg-color]');
                 document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[--primary-color]');
+                document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[--h-primary-color]');
                 document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[--h-bg-color]');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[--secondary-bg-color]');
                 document.getElementById('progress-bar').style.width = `${(step - 1) * (100/noOfSteps)}%`;
                 currentStep = step - 1;
                 updateButtons();
-
-                @if (request()->is('invoice/create'))
-                    let btnInForm = document.getElementById('btn-in-form');
-                    btnInForm.classList.add('hidden');
-                    let form = document.getElementById('form');
-                    form.classList.add('bg-[--secondary-bg-color]');
-                    form.classList.remove('bg-white');
-                @endif
             }
 
             function gotoStep(step) {

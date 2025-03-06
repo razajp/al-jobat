@@ -55,6 +55,9 @@
             --bg-warning: hsl(45, 100%, 87%);
             --bg-success: hsl(130, 100%, 87%);
             --bg-error: hsl(360, 100%, 87%);
+            --h-bg-warning: hsl(45, 100%, 80%);
+            --h-bg-success: hsl(130, 100%, 80%);
+            --h-bg-error: hsl(360, 100%, 80%);
             --border-warning: hsl(45, 100%, 45%);
             --border-success: hsl(130, 100%, 45%);
             --border-error: hsl(360, 100%, 45%);
@@ -171,7 +174,7 @@
     </style>
 </head>
 
-<body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex items-center justify-center fade-in" cz-shortcut-listen="true">
+<body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
     {{-- side bar --}}
     @if (Auth::check())
         <script>
@@ -182,7 +185,7 @@
         @endcomponent
     @endif
 
-    <div class="wrapper flex-1 flex flex-col h-screen relative">
+    <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full">
         {{-- alert --}}
         <div id="messageBox" class="absolute top-5 mx-auto flex items-center flex-col space-y-3 z-50 text-sm w-full select-none pointer-events-none">
             @if (session('success'))
@@ -199,17 +202,11 @@
         </div>
 
         {{-- main content --}}
-        <main class="flex-1 p-8 overflow-y-auto my-scroller-2 flex items-center justify-center">
+        <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center">
             <div class="main-child grow">
                 @yield('content')
             </div>
         </main>
-
-        {{-- @if (Auth::user() && Auth::user()->theme === 'dark')
-            <script>
-                changeTheme();
-            </script>
-        @endif --}}
 
         {{-- footer --}}
         @component('components.footer')
@@ -278,6 +275,22 @@
                 event.target.showPicker(); // Trigger the date picker
             }
         }, true); // Use capturing phase
+
+        const previewImage = (event) => {
+            const file = event.target.files[0];
+            const placeholderIcon = document.querySelector(".placeholder_icon");
+            const uploadText = document.querySelector(".upload_text");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    placeholderIcon.src = e.target.result;
+                    placeholderIcon.classList.add("rounded-md", "w-full", "h-auto");
+                    uploadText.textContent = "Preview";
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
         document.addEventListener("contextmenu", e => e.preventDefault());
     </script>

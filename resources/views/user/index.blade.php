@@ -245,7 +245,7 @@
                             <input type="hidden" id="user_id" name="user_id" value="${user.id}">
                             <input type="hidden" id="user_status" name="status" value="${user.status}">
                             <button id="ac_in_btn" type="submit"
-                                class="px-4 py-2 bg-[--bg-error] border border-[--bg-error] text-white rounded-lg hover:bg-[--h-bg-error] transition-all duration-300 ease-in-out">
+                                class="px-4 py-2 bg-[--bg-error] border border-[--bg-error] text-[--text-error] font-semibold rounded-lg hover:bg-[--h-bg-error] transition-all duration-300 ease-in-out">
                                 In Active
                             </button>
                         </div>
@@ -282,6 +282,8 @@
                 ac_in_btn.classList.add('hover:border-[--h-bg-error]')
                 ac_in_btn.classList.remove('hover:bg-[--h-bg-success]')
                 ac_in_btn.classList.remove('hover:border-[--h-bg-success]')
+                ac_in_btn.classList.add('text-[--text-error]')
+                ac_in_btn.classList.remove('text-[--text-success]')
                 ac_in_btn.textContent = 'In Active'
                 active_inactive_dot_modal.classList.remove('bg-[--border-error]')
                 active_inactive_dot_modal.classList.add('bg-[--border-success]')
@@ -294,6 +296,8 @@
                 ac_in_btn.classList.remove('hover:border-[--h-bg-error]')
                 ac_in_btn.classList.add('hover:bg-[--h-bg-success]')
                 ac_in_btn.classList.add('hover:border-[--h-bg-success]')
+                ac_in_btn.classList.remove('text-[--text-error]')
+                ac_in_btn.classList.add('text-[--text-success]')
                 ac_in_btn.textContent = 'Active'
                 active_inactive_dot_modal.classList.add('bg-[--border-error]')
                 active_inactive_dot_modal.classList.remove('bg-[--border-success]')
