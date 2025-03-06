@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SetupController;
+use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,21 +17,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/login', [AuthController::class, 'login'])->name('login');
-Route::post('/login', [AuthController::class, 'loginPost'])->name('loginPost');
+Route::get('login', [AuthController::class, 'login'])->name('login');
+Route::post('login', [AuthController::class, 'loginPost'])->name('loginPost');
 
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/', function () {
+    Route::get('', function () {
         return redirect(route('home'));
     });
 
-    Route::get('/home', function () {
+    Route::get('home', function () {
         return view('home');
     })->name('home');
 
-    Route::post('/update-theme', [AuthController::class, 'updateTheme']);
+    Route::post('update-theme', [AuthController::class, 'updateTheme']);
+    
+    Route::get('add-setup', [SetupController::class, 'addSetup'])->name('addSetup');
+    Route::post('add-setup', [SetupController::class, 'addSetupPost'])->name('addSetupPost');
 
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::resource('suppliers', SupplierController::class);
+
+    Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
     Route::resource('users', UserController::class);
     Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');

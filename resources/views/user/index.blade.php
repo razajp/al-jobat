@@ -3,56 +3,7 @@
 @section('content')
     <!-- Modal -->
     <div id="userModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 ">
-        <!-- Modal Content -->
-        <div class="bg-[--secondary-bg-color] rounded-lg shadow-lg w-full max-w-lg p-6 relative">
-            <!-- Close Button -->
-            <button onclick="closeUserModal()"
-                class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all duration-300 ease-in-out">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                    class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-
-            <!-- Modal Body -->
-            <div id="modal_body" class="modal_body flex items-start">
-                <div class="flex text-[--border-error] rounded-full w-[30%] aspect-square overflow-hidden">
-                    <img id="userImage" src="{{ asset('/images/default_avatar.png') }}" alt=""
-                        class="w-full h-full object-cover">
-                </div>
-                <div class="content ml-5">
-                    <h5 id="name" class="text-3xl my-1 text-[--text-color] capitalize font-semibold">Hasan Raza
-                    </h5>
-                    <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span
-                            id="username" class="username">Salaried-staff</span></p>
-                    <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span
-                            id="role" class="role">Office Staff</span></p>
-                </div>
-                <div id="active_inactive_dot_modal"
-                    class="active_inactive_dot absolute top-3 left-3 w-[0.6rem] h-[0.6rem] bg-[--border-error] rounded-full">
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="flex justify-end space-x-3">
-                <!-- Cancel Button -->
-                <button onclick="closeUserModal()"
-                    class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded hover:bg-[--bg-color] transition-all duration-300 ease-in-out">
-                    Cancel
-                </button>
-
-                <form id="ac_in_modal" method="POST" action="{{ route('update-user-status') }}">
-                    @csrf
-                    <input type="hidden" id="user_id" name="user_id" value="">
-                    <input type="hidden" id="user_status" name="status" value="">
-                    <button id="ac_in_btn" type="submit"
-                        class="px-4 py-2 bg-[--danger-color] text-white rounded hover:bg-[--h-danger-color] transition-all duration-300 ease-in-out">
-                        In Active
-                    </button>
-                </form>
-            </div>
-        </div>
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     <!-- Main Content -->
     <div>
@@ -62,9 +13,9 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold">
+                    class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
                     <h4>Show Users</h4>
                 </div>
 
@@ -82,50 +33,6 @@
                 @if (count($users) > 0)
                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach ($users as $user)
-                            {{-- <div data-user="{{ $user }}"
-                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[7.8rem] flex gap-3 p-4 cursor-pointer overflow-hidden fade-in">
-                                <div class="img aspect-square h-full rounded-full overflow-hidden">
-                                    @if ($user->profile_picture == 'default_avatar.png')
-                                        <img src="{{ asset('images/default_avatar.png') }}" alt=""
-                                            class="w-full h-full object-cover">
-                                    @else
-                                        <img src="{{ asset('storage/uploads/images/' . $user->profile_picture) }}" alt=""
-                                            class="w-full h-full object-cover">
-                                    @endif
-                                </div>
-                                <div class="details text-start">
-                                    <h5 class="text-xl my-1 text-[--text-color] capitalize font-semibold">
-                                        {{ $user->name }}
-                                    </h5>
-                                    <p class="text-[--secondary-text] tracking-wide">
-                                        <strong>Username:</strong>
-                                        <span class="username">{{ $user->username }}</span>
-                                    </p>
-                                    <p class="text-[--secondary-text] tracking-wide capitalize">
-                                        <strong>Role:</strong> <span class="role">{{ $user->role }}</span>
-                                    </p>
-                                </div>
-                                <button
-                                    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center bg-[--h-bg-color] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out hover:scale-110">
-                                    <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
-                                </button>
-                            
-                                @if ($user->status === 'active')
-                                    <div
-                                        class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] bg-[--border-success] rounded-full">
-                                    </div>
-                                    <div
-                                        class="active_inactive absolute text-[--border-success] top-1 right-2 h-[1rem]">
-                                        Active</div>
-                                @else
-                                    <div
-                                        class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] bg-[--border-error] rounded-full">
-                                    </div>
-                                    <div
-                                        class="active_inactive absolute text-[--border-error] top-1 right-2 h-[1rem]">
-                                        In Active</div>
-                                @endif
-                            </div> --}}
                             <div data-user='{{ $user }}'
                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                 <x-card :data="[
@@ -214,6 +121,7 @@
             ac_in_context.classList.add('hidden');
 
             if (ac_in_btn_context) {
+                ac_in_btn_context.classList.add('text-[--border-error]');
                 if (user.role == currentUserRole) {
                 } else if (currentUserRole == "owner" && (user.role == "developer" || user.role == "owner")) {
                 } else if (currentUserRole == "admin" && (user.role == "developer" || user.role == "owner" || user.role == "admin")) {
@@ -305,16 +213,50 @@
         })
 
         function generateModal(item) {
+            let userModalDom = document.getElementById('userModal')
             let user = JSON.parse(item.dataset.user);
-            let userImage = document.getElementById('userImage');
-            let name = document.getElementById('name');
-            let username = document.getElementById('username');
-            let role = document.getElementById('role');
-            let ac_in_btn = document.getElementById('ac_in_btn');
-            let user_id = document.getElementById('user_id');
-            let user_status = document.getElementById('user_status');
-            let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
+
+            userModalDom.innerHTML = `
+                <x-modal id="userModalForm" closeAction="closeUserModal" action="{{ route('update-user-status') }}">
+                    <!-- Modal Content Slot -->
+                    <div id="active_inactive_dot_modal"
+                        class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[--border-success] rounded-full">
+                    </div>
+                    <div class="flex items-start relative">
+                        <div class="rounded-full h-[15rem] aspect-square overflow-hidden">
+                            <img id="userImage" src="{{ asset('images/default_avatar.png') }}" alt=""
+                                class="w-full h-full object-cover">
+                        </div>
+                
+                        <div class="grow ml-5">
+                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${user.name}</h5>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span id="username" class="username">${user.username}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span id="role" class="role">${user.role}</span></p>
+                        </div>
+                    </div>
+                
+                    <!-- Modal Action Slot -->
+                    <x-slot name="actions">
+                        <button onclick="closeUserModal()" type="button"
+                            class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded-lg hover:bg-[--bg-color] transition-all duration-300 ease-in-out">
+                            Cancel
+                        </button>
+                        <div id="ac_in_modal">
+                            <input type="hidden" id="user_id" name="user_id" value="${user.id}">
+                            <input type="hidden" id="user_status" name="status" value="${user.status}">
+                            <button id="ac_in_btn" type="submit"
+                                class="px-4 py-2 bg-[--bg-error] border border-[--bg-error] text-white rounded-lg hover:bg-[--h-bg-error] transition-all duration-300 ease-in-out">
+                                In Active
+                            </button>
+                        </div>
+                    </x-slot>
+                </x-modal>
+            `;
+            
             let ac_in_modal = document.getElementById('ac_in_modal');
+            let userImage = document.getElementById('userImage');
+            let ac_in_btn = document.getElementById('ac_in_btn');
+            let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
 
             ac_in_modal.classList.add("hidden");
             
@@ -332,34 +274,36 @@
             }
 
             if (user.status === 'active') {
-                ac_in_btn.classList.add('bg-[--danger-color]')
-                ac_in_btn.classList.remove('bg-[--success-color]')
-                ac_in_btn.classList.add('hover:bg-[--h-danger-color]')
-                ac_in_btn.classList.remove('hover:bg-[--h-success-color]')
+                ac_in_btn.classList.add('bg-[--bg-error]')
+                ac_in_btn.classList.add('border-[--bg-error]')
+                ac_in_btn.classList.remove('bg-[--bg-success]')
+                ac_in_btn.classList.remove('border-[--bg-success]')
+                ac_in_btn.classList.add('hover:bg-[--h-bg-error]')
+                ac_in_btn.classList.add('hover:border-[--h-bg-error]')
+                ac_in_btn.classList.remove('hover:bg-[--h-bg-success]')
+                ac_in_btn.classList.remove('hover:border-[--h-bg-success]')
                 ac_in_btn.textContent = 'In Active'
                 active_inactive_dot_modal.classList.remove('bg-[--border-error]')
                 active_inactive_dot_modal.classList.add('bg-[--border-success]')
             } else {
-                ac_in_btn.classList.remove('bg-[--danger-color]')
-                ac_in_btn.classList.remove('hover:bg-[--h-danger-color]')
-                ac_in_btn.classList.add('hover:bg-[--h-success-color]')
-                ac_in_btn.classList.add('bg-[--success-color]')
+                ac_in_btn.classList.remove('bg-[--bg-error]')
+                ac_in_btn.classList.remove('border-[--bg-error]')
+                ac_in_btn.classList.add('bg-[--bg-success]')
+                ac_in_btn.classList.add('border-[--bg-success]')
+                ac_in_btn.classList.remove('hover:bg-[--h-bg-error]')
+                ac_in_btn.classList.remove('hover:border-[--h-bg-error]')
+                ac_in_btn.classList.add('hover:bg-[--h-bg-success]')
+                ac_in_btn.classList.add('hover:border-[--h-bg-success]')
                 ac_in_btn.textContent = 'Active'
                 active_inactive_dot_modal.classList.add('bg-[--border-error]')
                 active_inactive_dot_modal.classList.remove('bg-[--border-success]')
             }
 
-            user_id.value = user.id
-            user_status.value = user.status
-            name.textContent = user.name
-            username.textContent = user.username
-            role.textContent = user.role
-
             openUserModal()
         }
 
-        document.getElementById('userModal').addEventListener('click', (e) => {
-            if (e.target.id === 'userModal') {
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'userModalForm') {
                 closeUserModal()
             }
         })
@@ -379,7 +323,12 @@
         }
 
         function closeUserModal() {
-            document.getElementById('userModal').classList.add('hidden');
+            userModal.classList.add('fade-out');
+
+            userModal.addEventListener('animationend', () => {
+                userModal.classList.add('hidden');
+                userModal.classList.remove('fade-out');
+            }, { once: true });
         }
     </script>
 @endsection

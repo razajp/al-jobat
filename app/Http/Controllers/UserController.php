@@ -39,7 +39,7 @@ class UserController extends Controller
             'username' => 'required|string|max:255|unique:users,username',
             'password' => 'required|string|min:3',
             'role' => 'required|string|in:admin,accountant,guest,owner',
-            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         // If validation fails, return with errors
@@ -51,8 +51,8 @@ class UserController extends Controller
         $data['password'] = Hash::make($data['password']); // Hash the password
 
         // Handle the image upload if present
-        if ($request->hasFile('image_upload')) {
-            $file = $request->file('image_upload');
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
 

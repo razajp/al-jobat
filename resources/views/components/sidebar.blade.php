@@ -72,6 +72,18 @@
                 ]"
             />
         </div>
+        
+        <div class="relative group">
+            <x-nav-link-item 
+                label="Suppliers" 
+                icon="fas fa-truck"
+                includesDropdown="true"
+                :items="[
+                    ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                    ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                ]"
+            />
+        </div>
     </nav>
 
     <div class="relative group pt-3 mt-auto dropdown-trigger">
@@ -93,7 +105,7 @@
             <ul class="p-2">
                 <!-- Add Setups -->
                 <li>
-                    <a href="#"
+                    <a href="{{route('addSetup')}}"
                         class="block px-4 py-2 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
                         <i class="fas fa-cog text-[--secondary-color] mr-3"></i>
                         Setups
@@ -189,9 +201,8 @@
     });
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && isLogoutModalOpened) {
+        if (e.key === 'Escape') {
             closeLogoutModal();
-            closeContextMenu();
         };
     });
 
@@ -207,9 +218,18 @@
         isLogoutModalOpened = true;
         document.getElementById('logoutModal').classList.remove('hidden');
         closeAllDropdowns();
+        closeContextMenu();
     }
 
     function closeLogoutModal() {
-        document.getElementById('logoutModal').classList.add('hidden');
+        let logoutModal = document.getElementById('logoutModal')
+        logoutModal.classList.add('fade-out');
+
+        // Wait for the animation to complete
+        logoutModal.addEventListener('animationend', () => {
+            logoutModal.classList.add('hidden');  // Add hidden class after animation ends
+            logoutModal.classList.remove('fade-out'); // Optional: Remove fade-out class to reset
+        }, { once: true });
+        closeContextMenu();
     }
 </script>

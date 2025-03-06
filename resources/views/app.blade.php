@@ -35,6 +35,10 @@
             --text-success: hsl(130, 30%, 95%);
             --text-error: hsl(360, 30%, 95%);
 
+            --h-bg-warning: hsl(45, 50%, 20%);
+            --h-bg-success: hsl(130, 50%, 20%);
+            --h-bg-error: hsl(360, 50%, 20%);
+
             --danger-color: hsl(0, 65%, 51%);
             --h-danger-color: hsl(0, 65%, 41%);
             --success-color: hsl(142, 65%, 36%);
@@ -148,6 +152,22 @@
         .nav-link.active:hover i {
             color: var(--h-primary-color) !important;
         }
+
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+            /* For Firefox */
+        }
+
+        input::-webkit-calendar-picker-indicator {
+            display: none !important;
+            -webkit-appearance: none;
+        }
     </style>
 </head>
 
@@ -250,6 +270,14 @@
                 }
             });
         });
+
+        document.addEventListener('focus', function(event) {
+            if (event.target.matches('input[type="date"]')) {
+                event.target.showPicker(); // Trigger the date picker
+            } else if (event.target.matches('input[type="month"]')) {
+                event.target.showPicker(); // Trigger the date picker
+            }
+        }, true); // Use capturing phase
 
         document.addEventListener("contextmenu", e => e.preventDefault());
     </script>
