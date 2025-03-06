@@ -43,6 +43,8 @@
             --h-danger-color: hsl(0, 65%, 41%);
             --success-color: hsl(142, 65%, 36%);
             --h-success-color: hsl(142, 65%, 26%);
+
+            --overlay-color: rgba(0, 0, 0, 0.3);
         }
 
         [data-theme='light'] {
@@ -105,6 +107,14 @@
 
         .fade-out {
             animation: fadeOut 0.35s forwards !important;
+        }
+
+        .opacity-zero {
+            opacity: 0;
+        }
+
+        .opacity-transition {
+            transition: opacity .2s linear;
         }
 
         .card {

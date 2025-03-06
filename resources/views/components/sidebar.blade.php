@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="relative w-full md:w-auto md:z-40">
-    <aside class="bg-[--secondary-bg-color] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg z-40 transition-all 0.3s ease-in-out fade-in">
+    <aside class="bg-[--secondary-bg-color] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg transition-all 0.3s ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
             class="md:mb-6 text-[--text-color] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
@@ -138,44 +138,55 @@
         </div>
     </aside>
     {{-- mobile menu --}}
-    <div id="mobileMenu" class="fixed md:hidden w-full bg-[--secondary-bg-color] z-30 flex flex-col items-start justify-start p-4 space-y-4 transform -translate-y-[120%] transition-all 0.5s ease-in-out">
-        <!-- Main Menu Items -->
-        <div class="flex flex-col space-y-2 w-full">
-            <x-mobile-menu-item href="/" title="Home" active="{{ request()->is('home') }}" />
+    <div id="mobileMenuOverlay" class="mobileMenuOverlay w-screen h-screen bg-[--overlay-color] opacity-zero opacity-transition pointer-events-none fixed z-30">
+        <div id="mobileMenu" class="fixed md:hidden w-full bg-[--secondary-bg-color] z-30 flex flex-col items-start justify-start p-4 space-y-4 transform -translate-y-full transition-all 0.5s ease-in-out">
+            <!-- Main Menu Items -->
+            <div class="flex flex-col space-y-2 w-full">
+                <x-mobile-menu-item href="/" title="Home" active="{{ request()->is('home') }}" />
 
-            <x-mobile-menu-item 
-                title="Users" 
-                includesDropdown
-                :dropdown="[
-                    ['href' => route('users.index'), 'title' => 'Show Users'],
-                    ['href' => route('users.create'), 'title' => 'Add User']
-                ]" 
-            />
-        </div>
-    
-        <!-- Divider -->
-        <div class="border-t border-gray-600 w-full my-4"></div>
-    
-        <!-- Profile Section -->
-        <div class="flex items-center space-x-4 px-4">
-            @if (Auth::user()->profile_picture == 'default_avatar.png')
-                    <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                @else
-                    <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                @endif
-            <div>
-                <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
-                <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
+                <x-mobile-menu-item 
+                    title="Users" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('users.index'), 'title' => 'Show Users'],
+                        ['href' => route('users.create'), 'title' => 'Add User']
+                    ]" 
+                />
+
+                <x-mobile-menu-item 
+                    title="Suppliers" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('suppliers.index'), 'title' => 'Show Suppliers'],
+                        ['href' => route('suppliers.create'), 'title' => 'Add Supplier']
+                    ]" 
+                />
             </div>
-        </div>
-    
-        <!-- Additional Links -->
-        <div class="flex flex-col space-y-2 w-full mt-2">
-            <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups" active="{{ request()->is('add-setup') }}" />
-            
-            <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
+        
+            <!-- Divider -->
+            <div class="border-t border-gray-600 w-full my-4"></div>
+        
+            <!-- Profile Section -->
+            <div class="flex items-center space-x-4 px-4">
+                @if (Auth::user()->profile_picture == 'default_avatar.png')
+                        <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                    @else
+                        <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                    @endif
+                <div>
+                    <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
+                    <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
+                </div>
+            </div>
+        
+            <!-- Additional Links -->
+            <div class="flex flex-col space-y-2 w-full mt-2">
+                <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups" active="{{ request()->is('add-setup') }}" />
+                
+                <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
 
-            <x-mobile-menu-item title="Logout" asButton="true" onclick="openLogoutModal()" />
+                <x-mobile-menu-item title="Logout" asButton="true" onclick="openLogoutModal()" />
+            </div>
         </div>
     </div>
 </div>
@@ -197,19 +208,42 @@
         });
     });
 
+    function closeAllMobileMenuDropdowns() {
+        document.querySelectorAll('.dropdown-menu').forEach(menu => {
+            menu.classList.add('hidden');
+            menu.previousElementSibling.querySelector('i').classList.remove('rotate-180');
+        });
+    }
+
     const menuToggle = document.getElementById('menuToggle');
     const menuToggleIcon = document.querySelector('#menuToggle i');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
     const mobileMenu = document.getElementById('mobileMenu');
 
     menuToggle.addEventListener('click', () => {
+        toggleMobileMenu();
+    });
+
+    function toggleMobileMenu(){
+        closeAllMobileMenuDropdowns();
+        
         // Toggle between bars and xmark icons
         menuToggleIcon.classList.toggle('fa-bars');
         menuToggleIcon.classList.toggle('fa-xmark');
 
         // Toggle menu visibility
-        mobileMenu.classList.toggle('-translate-y-[120%]');  // Moves out of view
+        mobileMenu.classList.toggle('-translate-y-full');  // Moves out of view
         mobileMenu.classList.toggle('translate-y-0');      // Brings into view
-    });
+
+        mobileMenuOverlay.classList.toggle('opacity-zero');
+        mobileMenuOverlay.classList.toggle('pointer-events-none');
+    }
+
+    mobileMenuOverlay.addEventListener('mousedown', (e)=>{
+        if (e.target.classList.contains("mobileMenuOverlay")) {
+            toggleMobileMenu();
+        }
+    })
 
     const html = document.documentElement;
     const themeIcon = document.querySelector('#themeToggle i');

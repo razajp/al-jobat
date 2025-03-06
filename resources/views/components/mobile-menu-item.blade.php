@@ -29,7 +29,7 @@
             <button class="dropdown-toggle w-full text-left px-4 py-2 
                 {{ $isDropdownActive ? 'text-[--text-color] bg-[--h-secondary-bg-color] font-semibold' : 'text-[--secondary-text] hover:text-[--text-color]' }} 
                 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-between">
-                {{ $activeItem ?? $title }}
+                {{ $title }}
                 <i class="fas fa-chevron-down transition-transform duration-300"></i>
             </button>
             <div class="dropdown-menu hidden flex-col space-y-2 pl-6 mt-2">
