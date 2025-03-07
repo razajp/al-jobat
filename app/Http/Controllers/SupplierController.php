@@ -16,7 +16,24 @@ class SupplierController extends Controller
      */
     public function index()
     {
-        return view("suppliers.index");
+        $Suppliers = Supplier::with('user')->get();
+    
+        foreach ($Suppliers as $supplier) {
+            // Decode JSON array of category IDs
+            $categoriesIdArray = json_decode($supplier->categories_array, true);
+    
+            // Fetch categories from Setups model
+            $categories = Setup::whereIn('id', $categoriesIdArray)
+                ->where('type', 'supplier_category')
+                ->pluck('title')  // Assuming you want the 'name' field of categories
+                ->toArray();
+    
+            // Attach the categories to the supplier
+            $supplier["categories"] = $categories;
+        }
+    
+        // return $suppliers;
+        return view("suppliers.index", compact('Suppliers'));
     }
 
     /**
@@ -42,24 +59,25 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
+            'person_name' => 'required|string|max:255',
             'username' => 'required|string|max:255',
             'password' => 'required|string|min:3',
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'date' => 'required|string',
-            'category_id' => 'required|exists:setups,id',
+            'categories_array' => 'required|json',
         ]);
-
+        
         // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+            
         $data = $request->all();
         $data['password'] = Hash::make($data['password']); // Hash the password
 
-        $user = User::where('phone_number', $request->phone_number)->orWhere('username', $request->username)->first();
+        $user = User::where('username', $request->username)->first();
 
         if (!$user) {
             // Upload the image if provided
@@ -73,30 +91,24 @@ class SupplierController extends Controller
             }
 
             $user = User::create([
-                'name' => $data['name'],
+                'name' => $data['supplier_name'],
                 'username' => $data['username'],
                 'password' => $data['password'],
                 'role' =>'supplier',
                 'profile_picture' => $data['image'],
             ]);
         } else {
-            $existingSupplier = Supplier::where('category_id', $data['category_id'])->andWhere('phone_number', $data['phone_number'])->first();
-            
-            // $existingSupplier = Supplier::where('category_id', $data['category_id'])->whereHas('user', function ($query) use ($request) {
-            //     $query->where('username', $request->username);
-            // })->first();
-            
-            if ($existingSupplier) {
-                return redirect()->back()->with('error', 'A supplier with this category and (username or phone number) already exists.')->withInput();
-            }
+            return redirect()->back()->with('error', 'The user is already exists.')->withInput();
         }
 
         // Create a new supplier
         $supplier = Supplier::create([
             'user_id' => $user->id,
-            'category_id' => $data['category_id'],
+            'supplier_name' => $user->name,
+            'person_name' => $data['person_name'],
             'phone_number' => $data['phone_number'],
             'date' => $data['date'],
+            'categories_array' => $data['categories_array'],
         ]);
         
         return redirect()->route('suppliers.create')->with('success', 'Supplier created successfully.');

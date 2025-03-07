@@ -24,9 +24,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- supplier_name -->
                 <x-input 
-                    label="Name"
-                    name="name" 
-                    placeholder="Enter name" 
+                    label="Supplier Name"
+                    name="supplier_name" 
+                    placeholder="Enter supplire name" 
+                    required 
+                />
+                {{-- person name --}}
+                <x-input 
+                    label="Person Name"
+                    name="person_name" 
+                    placeholder="Enter person name" 
                     required 
                 />
 
@@ -65,13 +72,40 @@
                 />
 
                 {{-- supplier_category --}}
-                <x-select 
-                    label="Category" 
-                    name="category_id" 
-                    :options="$categories_options"
-                    required
-                    showDefault
-                />
+                <div class="col-span-2">
+                    <x-select 
+                        label="Category"
+                        id="category_id"
+                        :options="$categories_options"
+                        required
+                        showDefault
+                        class="grow"
+                        withButton
+                        btnId="addCategoryBtn"
+                    />
+                </div>
+
+                <input type="hidden" name="categories_array" id="categories_array" value="">
+
+                <hr class="col-span-2 border-gray-600">
+                
+                <div class="chipsContainer col-span-2">
+                    <div id="chips" class="w-full flex gap-2">
+                        {{-- <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                            <div class="text tracking-wide">Fabric</div>
+                            <button class="delete" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                class="size-3 stroke-gray-300">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div> --}}
+                        
+                        <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto fade-in">
+                            <div class="text tracking-wide text-gray-400">Please add category</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -100,7 +134,113 @@
         document.getElementById('phone_number').addEventListener('input', function() {
             formatPhoneNo(this);
         });
-        
+
+        const categorySelectDom = document.getElementById("category_id");
+        const addCategoryBtnDom = document.getElementById("addCategoryBtn");
+        const chipsDom = document.getElementById("chips");
+        const categoriesArrayInput = document.getElementById("categories_array");
+        let categoriesArray = [];
+        addCategoryBtnDom.disabled = true;
+
+        categorySelectDom.addEventListener("change", (e) => {
+            trackStateOfCategoryBtn(e.target.value);
+        })
+
+        function trackStateOfCategoryBtn(value){
+            if (value != "") {
+                addCategoryBtnDom.disabled = false;
+            } else {
+                addCategoryBtnDom.disabled = true;
+            }
+        }
+
+        addCategoryBtnDom.addEventListener('click', () => {
+            addCategory();
+        })
+
+        function addCategory() {
+            if (categoriesArray.length <= 0) {
+                chipsDom.innerHTML = '';
+            }
+
+            let selectedCategoryId = categorySelectDom.value;  // Get category ID
+            let selectedCategoryName = categorySelectDom.options[categorySelectDom.selectedIndex].text;  // Get category name
+
+            // Check for duplicates based on ID
+            if (categoriesArray.includes(selectedCategoryId)) {
+                console.warn('Category already exists!');
+                
+                // Highlight the existing chip
+                let existingChip = Array.from(chipsDom.children).find(chip => 
+                    chip.getAttribute('data-id') === selectedCategoryId
+                );
+
+                if (existingChip) {
+                    messageBox.innerHTML = `
+                        <x-alert type="error" :messages="'This category already exists.'" />
+                    `;
+                    messageBoxAnimation();
+                    existingChip.classList.add('bg-[--bg-error]', 'transition', 'duration-300');
+                    setTimeout(() => {
+                        existingChip.classList.remove('bg-[--bg-error]');
+                    }, 5000);  // Remove highlight after 5 seconds
+                    categorySelectDom.value = '';  // Clear selection
+                    addCategoryBtnDom.disabled = true;  // Disable button
+                    categorySelectDom.focus();
+                }
+
+                return;  // Stop the function if duplicate is found
+            }
+
+            if (selectedCategoryId) {
+                // Create the chip element
+                let chip = document.createElement('div');
+                chip.className = 'chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
+                chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
+                chip.innerHTML = `
+                    <div class="text tracking-wide">${selectedCategoryName}</div>
+                    <button class="delete" type="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                            class="size-3 stroke-gray-300">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                `;
+
+                // Handle chip deletion
+                chip.querySelector('.delete').onclick = () => {
+                    chip.classList.add('fade-out');
+                    
+                    setTimeout(() => {
+                        chip.remove();
+                        categoriesArray = categoriesArray.filter(cat => cat !== selectedCategoryId);
+                        
+                        if (categoriesArray.length <= 0) {
+                            chipsDom.innerHTML = `
+                                <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto">
+                                    <div class="text tracking-wide text-gray-400">Please add category</div>
+                                </div>
+                            `;
+                        }
+
+                        categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
+                    }, 300);
+                };
+
+                if (chipsDom) {
+                    chipsDom.appendChild(chip);
+                    categoriesArray.push(selectedCategoryId);  // Store category ID in array
+                    categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
+                    categorySelectDom.value = '';  // Clear selection
+                    addCategoryBtnDom.disabled = true;  // Disable button
+                    categorySelectDom.focus();
+                } else {
+                    console.error('Chip container not found!');
+                }
+            } else {
+                console.warn('No category selected!');
+            }
+        }
         // Get DOM elements
         // const customer = document.getElementById('customer');
         // const customers = {{-- @json($customers) --}};

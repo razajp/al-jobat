@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('suppliers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('category_id');
+            $table->string('supplier_name')->unique();  // Fixed the typo here
+            $table->string('person_name');  // Fixed the typo here
             $table->string('phone_number');
             $table->date('date');
+            $table->json('categories_array');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('setups')->onDelete('cascade');
         });
     }
 

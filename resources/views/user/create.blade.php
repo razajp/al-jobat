@@ -17,7 +17,7 @@
 @endphp
 
 @extends('app')
-@section('title', 'Add User | Al Jobat')
+@section('title', 'Add User | ' . app('company')->name)
 @section('content')
     <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
         Add User

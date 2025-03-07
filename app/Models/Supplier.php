@@ -11,16 +11,14 @@ class Supplier extends Model
 
     protected $fillable = [
         'user_id',
-        'category_id',
+        'supplier_name',
+        'person_name',
         'phone_number',
         'date',
+        'categories_array',
     ];
 
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function category() {
-        return $this->belongsTo(Setup::class, 'category_id')->where('type', 'supplier_category');
     }
 }

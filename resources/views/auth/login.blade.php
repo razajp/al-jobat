@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Login | Al Jobat')
+@section('title', 'Login | ' . app('company')->name)
 @section('content')
     <div class="bg-[--secondary-bg-color] p-10 rounded-xl shadow-md max-w-md w-full fade-in mx-auto">
         <h4 class="text-xl font-semibold text-center text-[--primary-color]">Al Jobat</h4>

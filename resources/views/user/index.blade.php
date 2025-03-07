@@ -1,8 +1,8 @@
 @extends('app')
-@section('title', 'Show Users | Al Jobat')
+@section('title', 'Show Users | ' . app('company')->name)
 @section('content')
     <!-- Modal -->
-    <div id="userModal"
+    <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     <!-- Main Content -->
@@ -33,7 +33,7 @@
                 @if (count($users) > 0)
                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach ($users as $user)
-                            <div data-user='{{ $user }}'
+                            <div data-json='{{ $user }}'
                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                 <x-card :data="[
                                     'image' => $user->profile_picture == 'default_avatar.png' ? asset('images/default_avatar.png') : asset('storage/uploads/images/' . $user->profile_picture),
@@ -111,12 +111,11 @@
 
         function generateContextMenu(e) {
             contextMenu.classList.remove('fade-in');
-            console.log(e);
 
             let ac_in_btn_context = document.getElementById('ac_in_btn_context');
             let ac_in_context = document.getElementById('ac_in_context');
             let item = e.target.closest('.modalToggle');
-            let user = JSON.parse(item.dataset.user);
+            let user = JSON.parse(item.dataset.json);
 
             ac_in_context.classList.add('hidden');
 
@@ -213,11 +212,11 @@
         })
 
         function generateModal(item) {
-            let userModalDom = document.getElementById('userModal')
-            let user = JSON.parse(item.dataset.user);
+            let modalDom = document.getElementById('modal')
+            let user = JSON.parse(item.dataset.json);
 
-            userModalDom.innerHTML = `
-                <x-modal id="userModalForm" closeAction="closeUserModal" action="{{ route('update-user-status') }}">
+            modalDom.innerHTML = `
+                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <!-- Modal Content Slot -->
                     <div id="active_inactive_dot_modal"
                         class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[--border-success] rounded-full">
@@ -228,7 +227,7 @@
                                 class="w-full h-full object-cover">
                         </div>
                 
-                        <div class="grow ml-5">
+                        <div class="flex-1 ml-8">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${user.name}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span id="username" class="username">${user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span id="role" class="role">${user.role}</span></p>
@@ -237,7 +236,7 @@
                 
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button onclick="closeUserModal()" type="button"
+                        <button onclick="closeModal()" type="button"
                             class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded-lg hover:bg-[--bg-color] transition-all duration-300 ease-in-out">
                             Cancel
                         </button>
@@ -303,35 +302,35 @@
                 active_inactive_dot_modal.classList.remove('bg-[--border-success]')
             }
 
-            openUserModal()
+            openModal()
         }
 
         document.addEventListener('click', (e) => {
-            if (e.target.id === 'userModalForm') {
-                closeUserModal()
+            if (e.target.id === 'modalForm') {
+                closeModal()
             }
         })
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isModalOpened) {
-                closeUserModal()
+                closeModal()
                 closeContextMenu()
             }
         })
 
-        function openUserModal() {
+        function openModal() {
             isModalOpened = true;
-            document.getElementById('userModal').classList.remove('hidden');
+            document.getElementById('modal').classList.remove('hidden');
             closeAllDropdowns();
             closeContextMenu()
         }
 
-        function closeUserModal() {
-            userModal.classList.add('fade-out');
+        function closeModal() {
+            modal.classList.add('fade-out');
 
-            userModal.addEventListener('animationend', () => {
-                userModal.classList.add('hidden');
-                userModal.classList.remove('fade-out');
+            modal.addEventListener('animationend', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('fade-out');
             }, { once: true });
         }
     </script>

@@ -15,7 +15,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::whereNotIn('role', ['supplier', 'customer'])->get();
         return view("user.index", compact('users'));
     }
 
