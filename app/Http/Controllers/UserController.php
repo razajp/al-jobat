@@ -37,7 +37,7 @@ class UserController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username',
-            'password' => 'required|string|min:3',
+            'password' => 'required|string|min:4',
             'role' => 'required|string|in:admin,accountant,guest,owner',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);

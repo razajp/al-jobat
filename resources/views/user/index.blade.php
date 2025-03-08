@@ -1,6 +1,7 @@
 @extends('app')
 @section('title', 'Show Users | ' . app('company')->name)
 @section('content')
+@php $authLayout = Auth::user()->layout; @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
@@ -13,7 +14,7 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
                     <h4>Show Users</h4>
@@ -31,7 +32,7 @@
                 </div>
 
                 @if (count($users) > 0)
-                    <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                    <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach ($users as $user)
                             <div data-json='{{ $user }}'
                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
@@ -229,22 +230,22 @@
                 
                         <div class="flex-1 ml-8">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${user.name}</h5>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span id="username" class="username">${user.username}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span id="role" class="role">${user.role}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${user.username}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span>${user.role}</span></p>
                         </div>
                     </div>
                 
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded-lg hover:bg-[--bg-color] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
                             Cancel
                         </button>
                         <div id="ac_in_modal">
                             <input type="hidden" id="user_id" name="user_id" value="${user.id}">
                             <input type="hidden" id="user_status" name="status" value="${user.status}">
                             <button id="ac_in_btn" type="submit"
-                                class="px-4 py-2 bg-[--bg-error] border border-[--bg-error] text-[--text-error] font-semibold rounded-lg hover:bg-[--h-bg-error] transition-all duration-300 ease-in-out">
+                                class="px-4 py-2 bg-[--bg-error] border border-[--bg-error] font-semibold rounded-lg hover:bg-[--h-bg-error] transition-all duration-300 ease-in-out">
                                 In Active
                             </button>
                         </div>
@@ -278,9 +279,7 @@
                 ac_in_btn.classList.remove('bg-[--bg-success]')
                 ac_in_btn.classList.remove('border-[--bg-success]')
                 ac_in_btn.classList.add('hover:bg-[--h-bg-error]')
-                ac_in_btn.classList.add('hover:border-[--h-bg-error]')
                 ac_in_btn.classList.remove('hover:bg-[--h-bg-success]')
-                ac_in_btn.classList.remove('hover:border-[--h-bg-success]')
                 ac_in_btn.classList.add('text-[--text-error]')
                 ac_in_btn.classList.remove('text-[--text-success]')
                 ac_in_btn.textContent = 'In Active'
@@ -292,9 +291,7 @@
                 ac_in_btn.classList.add('bg-[--bg-success]')
                 ac_in_btn.classList.add('border-[--bg-success]')
                 ac_in_btn.classList.remove('hover:bg-[--h-bg-error]')
-                ac_in_btn.classList.remove('hover:border-[--h-bg-error]')
                 ac_in_btn.classList.add('hover:bg-[--h-bg-success]')
-                ac_in_btn.classList.add('hover:border-[--h-bg-success]')
                 ac_in_btn.classList.remove('text-[--text-error]')
                 ac_in_btn.classList.add('text-[--text-success]')
                 ac_in_btn.textContent = 'Active'

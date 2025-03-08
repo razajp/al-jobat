@@ -25,9 +25,9 @@
             --primary-color: #2563eb;
             --h-primary-color: #1f56cd;
             /* Default dark theme primary color */
-            --bg-warning: hsl(45, 50%, 25%);
-            --bg-success: hsl(130, 50%, 25%);
-            --bg-error: hsl(360, 50%, 25%);
+            --bg-warning: hsl(45, 50%, 30%);
+            --bg-success: hsl(130, 50%, 30%);
+            --bg-error: hsl(360, 50%, 30%);
             --border-warning: hsl(45, 100%, 45%);
             --border-success: hsl(130, 100%, 45%);
             --border-error: hsl(360, 100%, 45%);
@@ -72,7 +72,7 @@
             filter: invert(1);
         }
 
-        .bg-\[--primary-color\] {
+        .bg-\[--primary-color\] .bg-\[--success-color\] .bg-\[--bg-success\] .bg-\[--border-success\] .bg-\[--danger-color\] .bg-\[--bg-error\] .bg-\[--border-error\] .bg-\[--bg-warning\] .bg-\[--border-warning\] {
             color: #e2e8f0 !important;
         }
         
@@ -287,6 +287,8 @@
         }, true); // Use capturing phase
 
         const previewImage = (event) => {
+            console.log(event.target.files[0]);
+            
             const file = event.target.files[0];
             const placeholderIcon = document.querySelector(".placeholder_icon");
             const uploadText = document.querySelector(".upload_text");

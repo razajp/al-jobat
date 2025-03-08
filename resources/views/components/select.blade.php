@@ -7,7 +7,7 @@
     'class' => '',
     'withButton' => false,
     'btnId' => '', 
-    'id' => '$name', 
+    'id' => '', 
 ])
 
 @php

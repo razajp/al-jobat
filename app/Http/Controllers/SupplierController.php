@@ -17,7 +17,13 @@ class SupplierController extends Controller
     public function index()
     {
         $Suppliers = Supplier::with('user')->get();
-    
+        $supplier_categories = Setup::where('type','supplier_category')->get();
+
+        $categories_options = [];
+        foreach ($supplier_categories as $supplier_category) {
+            $categories_options[(int)$supplier_category->id] = $supplier_category->title;
+        }
+
         foreach ($Suppliers as $supplier) {
             // Decode JSON array of category IDs
             $categoriesIdArray = json_decode($supplier->categories_array, true);
@@ -25,15 +31,14 @@ class SupplierController extends Controller
             // Fetch categories from Setups model
             $categories = Setup::whereIn('id', $categoriesIdArray)
                 ->where('type', 'supplier_category')
-                ->pluck('title')  // Assuming you want the 'name' field of categories
-                ->toArray();
+                ->get();
     
             // Attach the categories to the supplier
             $supplier["categories"] = $categories;
         }
     
         // return $suppliers;
-        return view("suppliers.index", compact('Suppliers'));
+        return view("suppliers.index", compact('Suppliers', 'categories_options'));
     }
 
     /**
@@ -41,6 +46,7 @@ class SupplierController extends Controller
      */
     public function create()
     {
+        $suppliers = Supplier::with('user')->get();
         $supplier_categories = Setup::where('type','supplier_category')->get();
 
         $categories_options = [];
@@ -50,7 +56,7 @@ class SupplierController extends Controller
 
         // return $categories_options;
 
-        return view('suppliers.create', compact('categories_options'));
+        return view('suppliers.create', compact('categories_options', 'suppliers'));
     }
 
     /**
@@ -144,5 +150,23 @@ class SupplierController extends Controller
     public function destroy(Supplier $supplier)
     {
         //
+    }
+    public function updateSupplierCategory(Request $request)
+    {
+        // Validate input first
+        $validator = Validator::make($request->all(), [
+            'supplier_id' => 'integer|required|exists:suppliers,id',
+            'categories_array' => 'required|json',
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+    
+        Supplier::where('id', $request->supplier_id)->update(['categories_array' => $data['categories_array']]);
+
+        return redirect()->route('suppliers.index')->with('success', 'Categoies updated successfully');
     }
 }

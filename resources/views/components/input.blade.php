@@ -5,7 +5,13 @@
     'placeholder' => '',    // Placeholder text
     'value' => '',          // Default value
     'required' => false,     // If the input is required
-    'uppercased' => false     // If the input is uppercased
+    'disabled' => false,     // If the input is disabled
+    'uppercased' => false,     // If the input is uppercased
+    'class' => '',     // If the input is uppercased
+    'id' => '',
+    'list' => '',
+    'autocomplete' => 'on',
+    'listOptions' => [],
 ])
 
 @if ($uppercased)
@@ -26,16 +32,27 @@
     @endif
 
     <input 
-        id="{{ $name }}"
+        id="{{ $id }}"
         type="{{ $type }}" 
         name="{{ $name }}" 
         value="{{ old($name, $value) }}" 
         placeholder="{{ $placeholder }}"
+        autocomplete="{{ $autocomplete }}"
+        list="{{ $list }}"
         {{ $required ? 'required' : '' }}
+        {{ $disabled ? 'disabled' : '' }}
         {{ $attributes->merge([
-            'class' => 'w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out'
+            'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
         ]) }}
     />
+    
+    @if($list != '')
+        <datalist id="{{ $list }}">
+            @foreach ($listOptions as $option)
+                <option value="{{ $option }}"></option>
+            @endforeach
+        </datalist>
+    @endif
 
     @error($name)
         <div class="text-[--border-error] text-xs mt-1 transition-all 0.3s ease-in-out">{{ $message }}</div>

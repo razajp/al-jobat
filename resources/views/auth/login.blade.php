@@ -11,6 +11,7 @@
             <x-input 
                 label="User Name" 
                 name="username" 
+                id="username" 
                 placeholder="Confirm your user name" 
                 required 
             />
@@ -18,6 +19,7 @@
             <x-input 
                 label="Password" 
                 name="password" 
+                id="password" 
                 type="password" 
                 placeholder="Enter your password" 
                 required 

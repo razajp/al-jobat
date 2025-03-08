@@ -1,7 +1,7 @@
 <!-- Footer Component Start -->
 <footer class="w-full bg-[--secondary-bg-color] px-3 py-1 shadow-lg z-30 text-sm fade-in">
     <div class="container mx-auto flex justify-between items-center">
-        @if (request()->is('users/create') || request()->is('suppliers/create'))
+        @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create'))
             <button id="prevBtn" class="bg-[--h-bg-color] text-[--text-color] px-5 py-1 rounded-md hover:scale-95 transition-all 0.3s ease-in-out flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                 <i class='fas fa-angles-left mr-1'></i> Previous
             </button>
@@ -24,19 +24,19 @@
             @endif
         </div>
         <div>
-            @if (request()->is('users/create') || request()->is('suppliers/create'))
+            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create'))
                 <button id="saveBtn" class="bg-[--success-color] text-[--text-color] px-5 py-1 rounded-md hover:bg-[--h-success-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center gap-1 hidden">
                     <i class='fas fa-save mr-1'></i> Save
                 </button>
             @endif
-            @if (request()->is('users/create') || request()->is('suppliers/create'))
+            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create'))
                 <button id="nextBtn" class="bg-[--primary-color] text-[--text-color] px-5 py-1 rounded-md hover:bg-[--h-primary-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center">
                     Next <i class='fas fa-angles-right ml-1'></i>
                 </button>
             @endif
         </div>
     </div>
-    @if (request()->is('users/create') || request()->is('suppliers/create'))
+    @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create'))
         <script>
             let currentStep = 1;
             let noOfSteps = document.querySelector(".progress-indicators").children.length;

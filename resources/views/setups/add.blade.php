@@ -21,6 +21,7 @@
                 <x-input 
                     label="Title" 
                     name="title" 
+                    id="title" 
                     type="text" 
                     placeholder="Enter Title" 
                     required 
@@ -30,6 +31,7 @@
                 <x-input 
                     label="Short Title" 
                     name="short_title"  
+                    id="short_title"  
                     type="text" 
                     placeholder="Enter Short Title"
                     uppercased
@@ -39,6 +41,7 @@
                 <x-select 
                     label="Type" 
                     name="type" 
+                    id="type" 
                     :options="[
                         'supplier_category' => 'Supplier Category',
                         'customer_category' => 'Customer Category'

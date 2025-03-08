@@ -90,6 +90,18 @@
                     ]"
                 />
             </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Articles" 
+                    icon="fas fa-tshirt"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
+                        ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+                    ]"
+                />
+            </div>
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
@@ -161,6 +173,16 @@
                         ['href' => route('suppliers.create'), 'title' => 'Add Supplier']
                     ]" 
                 />
+
+                <x-mobile-menu-item 
+                    title="Articles" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('articles.index'), 'title' => 'Show Articles'],
+                        ['href' => route('articles.create'), 'title' => 'Add Article']
+                    ]" 
+                />
+                </div>
             </div>
         
             <!-- Divider -->
@@ -340,7 +362,6 @@
         isLogoutModalOpened = true;
         document.getElementById('logoutModal').classList.remove('hidden');
         closeAllDropdowns();
-        closeContextMenu();
     }
 
     function closeLogoutModal() {
@@ -352,6 +373,5 @@
             logoutModal.classList.add('hidden');  // Add hidden class after animation ends
             logoutModal.classList.remove('fade-out'); // Optional: Remove fade-out class to reset
         }, { once: true });
-        closeContextMenu();
     }
 </script>

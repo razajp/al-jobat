@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
@@ -35,6 +36,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('add-setup', [SetupController::class, 'addSetupPost'])->name('addSetupPost');
 
     Route::resource('suppliers', SupplierController::class);
+    Route::post('update-supplier-category', [SupplierController::class, 'updateSupplierCategory'])->name('update-supplier-category');
+    
+    Route::resource('articles', ArticleController::class);
+    Route::post('add-image', [ArticleController::class, 'addImage'])->name('add-image');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

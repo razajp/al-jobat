@@ -46,6 +46,7 @@
                 <x-input 
                 label="Name" 
                 name="name" 
+                id="name" 
                 placeholder="Enter name" 
                 required 
                 />
@@ -54,6 +55,7 @@
                 <x-input 
                 label="Username" 
                 name="username" 
+                id="username" 
                 placeholder="Enter username" 
                 required 
                 />
@@ -62,6 +64,7 @@
                 <x-input 
                 label="Password" 
                 name="password" 
+                id="password" 
                 type="password" 
                 placeholder="Enter password" 
                 required 
@@ -71,6 +74,7 @@
                 <x-select 
                 label="Role" 
                 name="role" 
+                id="role" 
                 :options="$roleOptions"
                 />
             </div>
@@ -135,10 +139,10 @@
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password field is required.";
                 return false;
-            } else if (passwordDom.value.length < 3) {
+            } else if (passwordDom.value.length < 4) {
                 passwordDom.classList.add("border-[--border-error]");
                 passwordError.classList.remove("hidden");
-                passwordError.textContent = "Password must be at least 3 characters.";
+                passwordError.textContent = "Password must be at least 4 characters.";
                 return false;
             } else {
                 passwordDom.classList.remove("border-[--border-error]");

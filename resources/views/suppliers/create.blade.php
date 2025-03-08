@@ -26,6 +26,7 @@
                 <x-input 
                     label="Supplier Name"
                     name="supplier_name" 
+                    id="supplier_name" 
                     placeholder="Enter supplire name" 
                     required 
                 />
@@ -33,6 +34,7 @@
                 <x-input 
                     label="Person Name"
                     name="person_name" 
+                    id="person_name" 
                     placeholder="Enter person name" 
                     required 
                 />
@@ -41,14 +43,17 @@
                 <x-input 
                     label="Username" 
                     name="username" 
+                    id="username" 
                     placeholder="Enter username" 
-                    required 
+                    class="lowercase placeholder:capitalize"
+                    required
                 />
 
                 {{-- supplier_password --}}
                 <x-input 
                     label="Password" 
                     name="password" 
+                    id="password" 
                     type="password" 
                     placeholder="Enter password" 
                     required 
@@ -58,6 +63,7 @@
                 <x-input 
                     label="Phone Number" 
                     name="phone_number" 
+                    id="phone_number" 
                     type="text"
                     placeholder="Enter phone number" 
                     required
@@ -67,6 +73,7 @@
                 <x-input 
                     label="Date" 
                     name="date" 
+                    id="date" 
                     type="date"
                     required
                 />
@@ -75,7 +82,7 @@
                 <div class="col-span-2">
                     <x-select 
                         label="Category"
-                        id="category_id"
+                        id="category_select"
                         :options="$categories_options"
                         required
                         showDefault
@@ -105,6 +112,7 @@
                             <div class="text tracking-wide text-gray-400">Please add category</div>
                         </div>
                     </div>
+                    <div id="category-error" class="text-[--border-error] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
                 </div>
             </div>
         </div>
@@ -135,7 +143,7 @@
             formatPhoneNo(this);
         });
 
-        const categorySelectDom = document.getElementById("category_id");
+        const categorySelectDom = document.getElementById("category_select");
         const addCategoryBtnDom = document.getElementById("addCategoryBtn");
         const chipsDom = document.getElementById("chips");
         const categoriesArrayInput = document.getElementById("categories_array");
@@ -215,6 +223,8 @@
                         chip.remove();
                         categoriesArray = categoriesArray.filter(cat => cat !== selectedCategoryId);
                         
+                        validateCategory()
+                        
                         if (categoriesArray.length <= 0) {
                             chipsDom.innerHTML = `
                                 <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto">
@@ -234,6 +244,7 @@
                     categorySelectDom.value = '';  // Clear selection
                     addCategoryBtnDom.disabled = true;  // Disable button
                     categorySelectDom.focus();
+                    validateCategory()
                 } else {
                     console.error('Chip container not found!');
                 }
@@ -242,109 +253,190 @@
             }
         }
         // Get DOM elements
-        // const customer = document.getElementById('customer');
-        // const customers = {{-- @json($customers) --}};
-        // const customerError = document.getElementById('customer-error');
-        // const person_name = document.getElementById('person_name');
-        // const person_nameError = document.getElementById('person_name-error');
-        // const phone = document.getElementById('phone');
-        // const phoneError = document.getElementById('phone-error');
-        // const city = document.getElementById('city');
-        // const cityError = document.getElementById('city-error');
-        // const address = document.getElementById('address');
-        // const addressError = document.getElementById('address-error');
-        // // const messageBox = document.getElementById("messageBox");
+        const suppliers = @json($suppliers);
+        const supplierNameDom = document.getElementById('supplier_name');
+        const supplierNameError = document.getElementById('supplier_name-error');
+        const personNameDom = document.getElementById('person_name');
+        const personNameError = document.getElementById('person_name-error');
+        const usernameDom = document.getElementById('username');
+        const usernameError = document.getElementById('username-error');
+        const passwordDom = document.getElementById('password');
+        const passwordError = document.getElementById('password-error');
+        const phoneNumberDom = document.getElementById('phone_number');
+        const phoneNumberError = document.getElementById('phone_number-error');
+        const dateDom = document.getElementById('date');
+        const dateError = document.getElementById('date-error');
+        const categorySelectorDom = document.getElementById('category_select');
+        const categoryError = document.getElementById('category-error');
+        // const messageBox = document.getElementById("messageBox");
 
-        // function showError(input, errorElement, message) {
-        //     input.classList.add("border-[--border-error]");
-        //     errorElement.classList.remove("hidden");
-        //     errorElement.textContent = message;
-        //     return false; // Return false on error
-        // }
+        function validateSupplierName() {
+            let supplierNameValue = supplierNameDom.value
+            let isDuplicate = suppliers.some(s => s.supplier_name === supplierNameValue);
 
-        // function hideError(input, errorElement) {
-        //     input.classList.remove("border-[--border-error]");
-        //     errorElement.classList.add("hidden");
-        //     return true; // Return true if no error
-        // }
+            if (!supplierNameValue) {
+                supplierNameDom.classList.add("border-[--border-error]");
+                supplierNameError.classList.remove("hidden");
+                supplierNameError.textContent = "Supplier field is required.";
+                return false;
+            } else if (isDuplicate) {
+                supplierNameDom.classList.add("border-[--border-error]");
+                supplierNameError.classList.remove("hidden");
+                supplierNameError.textContent = "This supplier already exists.";
+                return false;
+            } else {
+                supplierNameDom.classList.remove("border-[--border-error]");
+                supplierNameError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validatePersonName() {
+            let personNameValue = personNameDom.value
+            if (personNameValue == "") {
+                personNameDom.classList.add("border-[--border-error]");
+                personNameError.classList.remove("hidden");
+                personNameError.textContent = "Person name field is required.";
+                return false;
+            } else {
+                personNameDom.classList.remove("border-[--border-error]");
+                personNameError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validateUsername() {
+            let usernameValue = usernameDom.value.trim(); // Remove leading and trailing spaces
+            let isDuplicate = suppliers.some(s => s.user.username === usernameValue);
+            let hasSpaces = /\s/.test(usernameValue); // Check for spaces using regex
+            
+            if (hasSpaces) {
+                usernameDom.classList.add("border-[--border-error]");
+                usernameError.classList.remove("hidden");
+                usernameError.textContent = "Username should not contain spaces.";
+                return false;
+            } else if (!usernameValue) {
+                usernameDom.classList.add("border-[--border-error]");
+                usernameError.classList.remove("hidden");
+                usernameError.textContent = "Username field is required.";
+                return false;
+            } else if (isDuplicate) {
+                usernameDom.classList.add("border-[--border-error]");
+                usernameError.classList.remove("hidden");
+                usernameError.textContent = "This username already exists.";
+                return false;
+            } else {
+                usernameDom.classList.remove("border-[--border-error]");
+                usernameError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validatePassword() {
+            let PasswordValue = passwordDom.value
+            if (PasswordValue == "") {
+                passwordDom.classList.add("border-[--border-error]");
+                passwordError.classList.remove("hidden");
+                passwordError.textContent = "Password field is required.";
+                return false;
+            } else if (PasswordValue.length < 4) {
+                passwordDom.classList.add("border-[--border-error]");
+                passwordError.classList.remove("hidden");
+                passwordError.textContent = "Password must be at least 4 characters.";
+                return false;
+            } else {
+                passwordDom.classList.remove("border-[--border-error]");
+                passwordError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validatePhoneNumber() {
+            let phoneNo = phoneNumberDom.value.replace(/\D/g, '').trim();
+            let isDuplicate = suppliers.some(s => s.phone_number.replace(/\D/g, '') === phoneNo);
+            
+            if (!phoneNo) {
+                phoneNumberDom.classList.add("border-[--border-error]");
+                phoneNumberError.classList.remove("hidden");
+                phoneNumberError.textContent = "Phone number field is required.";
+                return false;
+            } else if (isDuplicate) {
+                phoneNumberDom.classList.add("border-[--border-error]");
+                phoneNumberError.classList.remove("hidden");
+                phoneNumberError.textContent = "This phone number already exists.";
+                return false;
+            } else {
+                phoneNumberDom.classList.remove("border-[--border-error]");
+                phoneNumberError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validateDate() {
+            let dateValue = dateDom.value;
+            
+            if (!dateValue) {
+                dateDom.classList.add("border-[--border-error]");
+                dateError.classList.remove("hidden");
+                dateError.textContent = "Date field is required.";
+                return false;
+            } else {
+                dateDom.classList.remove("border-[--border-error]");
+                dateError.classList.add("hidden");
+                return true;
+            }
+        }
+        
+        function validateCategory() {
+            const categoriesLength = categoriesArray.length;
+            
+            if (categorySelectorDom.value == '' && categoriesLength <= 0) {
+                categorySelectorDom.classList.add("border-[--border-error]");
+                categoryError.classList.remove("hidden");
+                categoryError.textContent = "Please select or add a category.";
+                return false;
+            } else if (categoriesLength <= 0) {
+                categorySelectorDom.classList.add("border-[--border-error]");
+                categoryError.classList.remove("hidden");
+                categoryError.textContent = "Please add a category.";
+                return false;
+            } else {
+                categorySelectorDom.classList.remove("border-[--border-error]");
+                categoryError.classList.add("hidden");
+                return true;
+            }
+        }
 
-        // function validateCustomerName() {
-        //     let customerName = customer.value.trim().toLowerCase();
-        //     let cityName = city.value.trim().toLowerCase();
-        //     let existingCustomer = customers.find(c => 
-        //         c.customer.toLowerCase() === customerName && c.city.toLowerCase() === cityName
-        //     );
-
-        //     if (!customerName || customerName === "m/s") {
-        //         return showError(customer, customerError, "Customer name is required.");
-        //     } else if (existingCustomer) {
-        //         return showError(customer, customerError, `This customer already exists in ${existingCustomer.city}.`);
-        //     } else {
-        //         return hideError(customer, customerError);
-        //     }
-        // }
-
-        // function validatePersonName() {
-        //     let personName = person_name.value.trim().toLowerCase();
-        //     return personName && personName !== "mr."
-        //         ? hideError(person_name, person_nameError)
-        //         : showError(person_name, person_nameError, "Person name is required.");
-        // }
-
-        // function validatePhoneNumber() {
-        //     let phoneNo = phone.value.replace(/\D/g, '').trim();
-        //     let isDuplicate = customers.some(c => c.phone.replace(/\D/g, '') === phoneNo);
-
-        //     if (!phoneNo) {
-        //         return showError(phone, phoneError, "Phone number is required.");
-        //     } else if (isDuplicate) {
-        //         return showError(phone, phoneError, "This phone number is already registered.");
-        //     } else {
-        //         return hideError(phone, phoneError);
-        //     }
-        // }
-
-        // function validateCity() {
-        //     let cityName = city.value.trim();
-        //     return cityName ? hideError(city, cityError) : showError(city, cityError, "City is required.");
-        // }
-
-        // function validateAddress() {
-        //     let addressText = address.value.trim();
-        //     return addressText ? hideError(address, addressError) : showError(address, addressError, "Address is required.");
-        // }
-
-        // // 🔹 **Live Validation Events**
-        // customer.addEventListener("input", validateCustomerName);
-        // city.addEventListener("input", validateCustomerName);
-        // person_name.addEventListener("input", validatePersonName);
-        // phone.addEventListener("input", validatePhoneNumber);
-        // city.addEventListener("input", validateCity);
-        // address.addEventListener("input", validateAddress);
-
-        // function validateForNextStep(){
-        //     let isValid = validateCustomerName() 
-        //         || validatePersonName() 
-        //         || validatePhoneNumber() 
-        //         || validateCity() 
-        //         || validateAddress();
-
-        //     if (!isValid) {
-        //         messageBox.innerHTML = `
-        //             <div id="warning-message"
-        //                 class="bg-[--bg-warning] text-[--text-warning] border border-[--border-warning] px-5 py-2 rounded-2xl flex items-center gap-2 fade-in">
-        //                 <i class='bx bxs-error-alt'></i>
-        //                 <p>Invalid details, please correct them.</p>
-        //             </div>
-        //         `;
-        //         messageBoxAnimation();
-        //     }
-
-        //     return isValid;
-        // }
+        // 🔹 **Live Validation Events**
+        supplierNameDom.addEventListener("input", validateSupplierName);
+        personNameDom.addEventListener("input", validatePersonName);
+        usernameDom.addEventListener("input", validateUsername);
+        passwordDom.addEventListener("input", validatePassword);
+        phoneNumberDom.addEventListener("input", validatePhoneNumber);
+        dateDom.addEventListener("change", validateDate);
+        categorySelectorDom.addEventListener("change", validateCategory);
 
         function validateForNextStep() {
-            return true;
+            let isValidSupplierName = validateSupplierName();
+            let isValidPersonName = validatePersonName();
+            let isValidUsername = validateUsername();
+            let isValidPassword = validatePassword();
+            let isValidPhoneNumber = validatePhoneNumber();
+            let isValidDate = validateDate();
+            let isValidCategory = validateCategory();
+
+            let isValid = isValidSupplierName && isValidPersonName && isValidUsername && isValidPassword && isValidPhoneNumber && isValidDate && isValidCategory;
+
+            if (!isValid) {
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'Invalid details, please correct them.'" />
+                `;
+                messageBoxAnimation();
+            } else {
+                isValid = true
+            }
+
+            return isValid;
         }
     </script>
 @endsection
