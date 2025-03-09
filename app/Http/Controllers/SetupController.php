@@ -17,7 +17,7 @@ class SetupController extends Controller
         // Validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255|unique:setups,title',
-            'short_title' => 'string|max:255|unique:setups,short_title',
+            'short_title' => 'nullable|string|max:255|unique:setups,short_title',
             'type' => 'required|string|max:255',
         ]);
 

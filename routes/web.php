@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -38,8 +40,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('suppliers', SupplierController::class);
     Route::post('update-supplier-category', [SupplierController::class, 'updateSupplierCategory'])->name('update-supplier-category');
     
+    Route::resource('customers', CustomerController::class);
+    
     Route::resource('articles', ArticleController::class);
     Route::post('add-image', [ArticleController::class, 'addImage'])->name('add-image');
+    
+    Route::resource('orders', OrderController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

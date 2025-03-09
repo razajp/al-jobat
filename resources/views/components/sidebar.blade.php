@@ -93,12 +93,36 @@
             
             <div class="relative group">
                 <x-nav-link-item 
+                    label="Customers" 
+                    icon="fas fa-user-tag"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
+                        ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
                     label="Articles" 
                     icon="fas fa-tshirt"
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
                         ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Order" 
+                    icon="fas fa-cart-shopping"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
+                        ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
                     ]"
                 />
             </div>
@@ -171,6 +195,15 @@
                     :dropdown="[
                         ['href' => route('suppliers.index'), 'title' => 'Show Suppliers'],
                         ['href' => route('suppliers.create'), 'title' => 'Add Supplier']
+                    ]" 
+                />
+
+                <x-mobile-menu-item 
+                    title="Customer" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('customers.index'), 'title' => 'Show Customers'],
+                        ['href' => route('customers.create'), 'title' => 'Add Customer']
                     ]" 
                 />
 

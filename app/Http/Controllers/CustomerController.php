@@ -2,43 +2,24 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Customer;
 use App\Models\Setup;
-use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class SupplierController extends Controller
+class CustomerController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $Suppliers = Supplier::with('user')->get();
-        $supplier_categories = Setup::where('type','supplier_category')->get();
-
-        $categories_options = [];
-        foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = $supplier_category->title;
-        }
-
-        foreach ($Suppliers as $supplier) {
-            // Decode JSON array of category IDs
-            $categoriesIdArray = json_decode($supplier->categories_array, true);
+        $customers = Customer::with('user', 'category')->get();
     
-            // Fetch categories from Setups model
-            $categories = Setup::whereIn('id', $categoriesIdArray)
-                ->where('type', 'supplier_category')
-                ->get();
-    
-            // Attach the categories to the supplier
-            $supplier["categories"] = $categories;
-        }
-    
-        // return $suppliers;
-        return view("suppliers.index", compact('Suppliers', 'categories_options'));
+        // return $customers;
+        return view("customers.index", compact('customers'));
     }
 
     /**
@@ -46,8 +27,8 @@ class SupplierController extends Controller
      */
     public function create()
     {
-        $suppliers = Supplier::with('user')->get();
-        $supplier_categories = Setup::where('type','supplier_category')->get();
+        // $suppliers = Supplier::with('user')->get();
+        $supplier_categories = Setup::where('type','customer_category')->get();
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
@@ -56,7 +37,7 @@ class SupplierController extends Controller
 
         // return $categories_options;
 
-        return view('suppliers.create', compact('categories_options', 'suppliers'));
+        return view('customers.create', compact('categories_options'));
     }
 
     /**
@@ -65,14 +46,16 @@ class SupplierController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
+            'customer_name' => 'required|string|max:255|unique:customers,customer_name',
             'person_name' => 'required|string|max:255',
             'username' => 'required|string|max:255',
             'password' => 'required|string|min:3',
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'date' => 'required|string',
-            'categories_array' => 'required|json',
+            'category_id' => 'required|string|max:255|exists:setups,id',
+            'city' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
         ]);
         
         // Check for validation errors
@@ -97,10 +80,10 @@ class SupplierController extends Controller
             }
 
             $user = User::create([
-                'name' => $data['supplier_name'],
+                'name' => $data['customer_name'],
                 'username' => $data['username'],
                 'password' => $data['password'],
-                'role' =>'supplier',
+                'role' =>'customer',
                 'profile_picture' => $data['image'],
             ]);
         } else {
@@ -108,22 +91,24 @@ class SupplierController extends Controller
         }
 
         // Create a new supplier
-        $supplier = Supplier::create([
+        $supplier = Customer::create([
             'user_id' => $user->id,
-            'supplier_name' => $user->name,
+            'customer_name' => $user->name,
             'person_name' => $data['person_name'],
             'phone_number' => $data['phone_number'],
             'date' => $data['date'],
-            'categories_array' => $data['categories_array'],
+            'category_id' => $data['category_id'],
+            'city' => $data['city'],
+            'address' => $data['address'],
         ]);
         
-        return redirect()->route('suppliers.create')->with('success', 'Supplier created successfully.');
+        return redirect()->route('customers.create')->with('success', 'Customer created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Supplier $supplier)
+    public function show(Customer $customer)
     {
         //
     }
@@ -131,7 +116,7 @@ class SupplierController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Supplier $supplier)
+    public function edit(Customer $customer)
     {
         //
     }
@@ -139,7 +124,7 @@ class SupplierController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Supplier $supplier)
+    public function update(Request $request, Customer $customer)
     {
         //
     }
@@ -147,26 +132,8 @@ class SupplierController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Supplier $supplier)
+    public function destroy(Customer $customer)
     {
         //
-    }
-    public function updateSupplierCategory(Request $request)
-    {
-        // Validate input first
-        $validator = Validator::make($request->all(), [
-            'supplier_id' => 'integer|required|exists:suppliers,id',
-            'categories_array' => 'required|json',
-        ]);
-    
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-
-        $data = $request->all();
-    
-        Supplier::where('id', $request->supplier_id)->update(['categories_array' => $data['categories_array']]);
-
-        return redirect()->route('suppliers.index')->with('success', 'Categoies updated successfully');
     }
 }

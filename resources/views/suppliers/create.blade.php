@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Customer | ' . app('company')->name)
+@section('title', 'Add Suppliers | ' . app('company')->name)
 @section('content')
     <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color] fade-in"> Add Supplier </h1>
 

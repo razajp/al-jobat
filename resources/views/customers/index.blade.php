@@ -1,17 +1,14 @@
 @extends('app')
-@section('title', 'Show Suppliers | ' . app('company')->name)
+@section('title', 'Show Customers | ' . app('company')->name)
 @section('content')
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
-    <div id="manageCategoryModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
-    </div>
     <!-- Main Content -->
     <div>
         <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
-            Show Suppliers
+            Show Customers
         </h1>
 
         <section class="text-center mx-auto ">
@@ -19,12 +16,12 @@
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
-                    <h4>Show Suppliers</h4>
+                    <h4>Show Customers</h4>
                 </div>
 
                 <div
                     class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('suppliers.create') }}"
+                    <a href="{{ route('customers.create') }}"
                         class="bg-[--primary-color] text-[--text-color] px-3 py-2 rounded-full hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -33,21 +30,21 @@
                     </span>
                 </div>
 
-                @if (count($Suppliers) > 0)
+                @if (count($customers) > 0)
                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($Suppliers as $supplier)
-                            <div data-json='{{ $supplier }}'
+                        @foreach ($customers as $customer)
+                            <div data-json='{{ $customer }}'
                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                 <x-card :data="[
                                     'image' =>
-                                        $supplier->user['profile_picture'] == 'default_avatar.png'
+                                        $customer->user['profile_picture'] == 'default_avatar.png'
                                             ? asset('images/default_avatar.png')
-                                            : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
-                                    'name' => $supplier->supplier_name,
-                                    'status' => $supplier->user->status,
+                                            : asset('storage/uploads/images/' . $customer->user['profile_picture']),
+                                    'name' => $customer->customer_name,
+                                    'status' => $customer->user->status,
                                     'details' => [
-                                        'Person Name' => $supplier->person_name,
-                                        'Phone' => $supplier->phone_number,
+                                        'Person Name' => $customer->person_name,
+                                        'Category' => $customer->category->title,
                                     ],
                                 ]" />
                             </div>
@@ -55,8 +52,8 @@
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                        <h1 class="text-md text-[--secondary-text] capitalize">No Suppliers yet</h1>
-                        <a href="{{ route('suppliers.create') }}"
+                        <h1 class="text-md text-[--secondary-text] capitalize">No Customer yet</h1>
+                        <a href="{{ route('cutomers.create') }}"
                             class="text-md bg-[--primary-color] text-[--text-color] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
                             New</a>
                     </div>
@@ -71,12 +68,6 @@
                         <button id="show-details" type="button"
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Show
                             Details</button>
-                    </li>
-
-                    <li>
-                        <button id="manage-category" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Manage
-                            Category</button>
                     </li>
 
                     <li id="ac_in_context" class="hidden">
@@ -194,10 +185,6 @@
                     user_status_context.value = data.user.status;
                     ac_in_btn_context.click();
                 };
-                
-                if (e.target.id === "manage-category") {
-                    generateManageCategoryModal(item);
-                };
             });
 
             // Function to remove context menu
@@ -241,27 +228,16 @@
                         </div>
                 
                         <div class="flex-1 ml-8 h-full overflow-y-auto my-scroller-2">
-                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.supplier_name}</h5>
+                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.customer_name}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            <div class="chipsContainer">
-                                <div id="chips" class="w-full flex flex-wrap gap-2">
-                                </div>
-                            </div>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category.title}</span></p>
                         </div>
                     </div>
                 
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button id="manageCategoryBtn" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
-                            Manage Category
-                        </button>
-
                         <button onclick="closeModal()" type="button"
                             class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
                             Cancel
@@ -296,25 +272,6 @@
                 imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
             }
 
-            
-            document.addEventListener('click', (e) => {
-                if (e.target.id === "manageCategoryBtn") {
-                    generateManageCategoryModal(item);
-                };
-            });
-
-            let chipsClutter = "";
-            data.categories.forEach((category) => {
-                chipsClutter += `
-                    <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                        <div class="text tracking-wide">${category.title}</div>
-                    </div>
-                `
-            });
-
-            let chipsContainerDom = document.getElementById("chips");
-            chipsContainerDom.innerHTML = chipsClutter;
-
             if (data.user.status === 'active') {
                 ac_in_btn.classList.add('bg-[--bg-error]')
                 ac_in_btn.classList.add('border-[--bg-error]')
@@ -348,8 +305,6 @@
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();
-            } else if (id === 'manageCategoryModalForm') {
-                closeManageCategoryModal();
             }
         });
 
@@ -357,7 +312,6 @@
             if (e.key === 'Escape' && isModalOpened) {
                 closeContextMenu();
                 closeModal();
-                closeManageCategoryModal()
             }
         })
 
@@ -374,225 +328,6 @@
             modal.addEventListener('animationend', () => {
                 modal.classList.add('hidden');
                 modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-        let categoriesArray;
-        const manageCategoryModalDom = document.getElementById('manageCategoryModal');
-        let isManageCategoryModalOpened = false;
-
-        function generateManageCategoryModal(item) {
-            let data = JSON.parse(item.dataset.json);
-
-            manageCategoryModalDom.innerHTML = `
-                <x-modal id="manageCategoryModalForm" classForBody="p-5 h-[20rem]" closeAction="closeManageCategoryModal" action="{{ route('update-supplier-category') }}">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative">
-                        <div class="flex-1 h-full">
-                            <h5 id="name" class="text-2xl mb-2 text-[--text-color] capitalize font-semibold">Manage Categories</h5>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <x-input 
-                                    label="Supplire Name"
-                                    value="${data.supplier_name}" 
-                                    disabled
-                                />
-
-                                <x-select 
-                                    label="Category"
-                                    id="category_select"
-                                    :options="$categories_options"
-                                    showDefault
-                                    class="grow"
-                                    withButton
-                                    btnId="addCategoryBtn"
-                                />
-                            </div>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            <div class="chipsContainer">
-                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scroller-2">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeManageCategoryModal()" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
-                            Cancel
-                        </button>
-                        <input type="hidden" id="supplier_id" name="supplier_id" value="${data.id}">
-                        <input type="hidden" id="categories_array" name="categories_array">
-                        <button type="submit"
-                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
-                            Update Categories
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
-
-            let chipsClutter = "";
-            data.categories.forEach((category) => {
-                chipsClutter += `
-                    <div data-id="${category.id}" class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                        <div class="text tracking-wide">${category.title}</div>
-                        ${data.categories.length > 1 ? `
-                            <button class="delete" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                class="size-3 stroke-gray-300">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        ` : "" }
-                    </div>
-                `
-            });
-
-            let chipsContainerDom = document.getElementById("chipsManagmeCategoryModal");
-            chipsContainerDom.innerHTML = chipsClutter;
-
-            const categorySelectDom = document.getElementById("category_select");
-            const addCategoryBtnDom = document.getElementById("addCategoryBtn");
-            addCategoryBtnDom.disabled = true;
-            
-            categorySelectDom.addEventListener("change", (e) => {
-                trackStateOfCategoryBtn(e.target.value);
-            })
-            
-            function trackStateOfCategoryBtn(value){
-                if (value != "") {
-                    addCategoryBtnDom.disabled = false;
-                } else {
-                    addCategoryBtnDom.disabled = true;
-                }
-            }
-
-            const categoriesArrayInput = document.getElementById("categories_array");
-            categoriesArray = data.categories
-            .filter(category => typeof category === 'object')  // Keep only objects
-            .map(category => category.id.toString());           // Extract IDs as strings
-
-
-            addCategoryBtnDom.addEventListener('click', () => {
-                let selectedCategoryId = categorySelectDom.value;  // Get category ID
-                let selectedCategoryName = categorySelectDom.options[categorySelectDom.selectedIndex].text;  // Get category name
-
-                console.log(categoriesArray);
-                
-                // Check for duplicates based on ID
-                if (categoriesArray.includes(selectedCategoryId)) {
-                    console.warn('Category already exists!');
-                    
-                    // Highlight the existing chip
-                    let existingChip = Array.from(chipsContainerDom.children).find(chip => 
-                        chip.getAttribute('data-id') === selectedCategoryId
-                    );
-
-                    if (existingChip) {
-                        messageBox.innerHTML = `
-                            <x-alert type="error" :messages="'This category already exists.'" />
-                        `;
-                        messageBoxAnimation();
-                        existingChip.classList.add('bg-[--bg-error]', 'transition', 'duration-300');
-                        setTimeout(() => {
-                            existingChip.classList.remove('bg-[--bg-error]');
-                        }, 5000);  // Remove highlight after 5 seconds
-                        categorySelectDom.value = '';  // Clear selection
-                        addCategoryBtnDom.disabled = true;  // Disable button
-                        categorySelectDom.focus();
-                    }
-
-                    return;  // Stop the function if duplicate is found
-                }
-
-                if (selectedCategoryId) {
-                    // Create the chip element
-                    let chip = document.createElement('div');
-                    chip.className = 'chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
-                    chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
-                    chip.innerHTML = `
-                        <div class="text tracking-wide">${selectedCategoryName}</div>
-                        <button class="delete" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                class="size-3 stroke-gray-300">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    `;
-
-                    if (chipsContainerDom) {
-                        chipsContainerDom.appendChild(chip);
-                        categoriesArray.push(selectedCategoryId);  // Store category ID in array
-                        categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
-                        categorySelectDom.value = '';  // Clear selection
-                        addCategoryBtnDom.disabled = true;  // Disable button
-                        categorySelectDom.focus();
-                        const allChips = chipsContainerDom.querySelectorAll('.chip');
-                        allChips.forEach((chip) => {
-                            let deleteBtn = chip.querySelector('.delete')
-                            if (deleteBtn.classList.contains('hidden')) {
-                                deleteBtn.classList.remove('hidden')
-                            }
-                        })
-                    } else {
-                        console.error('Chip container not found!');
-                    }
-                } else {
-                    console.warn('No category selected!');
-                }
-            })
-
-            chipsContainerDom.addEventListener('click', (e) => {
-                const deleteButton = e.target.closest('.delete');
-
-                if (deleteButton) {
-                    const allChips = chipsContainerDom.querySelectorAll('.chip');
-
-                    // Normal delete logic
-                    const clickedChip = deleteButton.parentElement;
-                    clickedChipId = clickedChip.dataset.id;
-
-                    clickedChip.classList.add('fade-out');
-
-                    setTimeout(() => {
-                        clickedChip.remove();
-                        categoriesArray = categoriesArray.filter(cat => cat !== clickedChipId);
-                        categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
-
-                        // Update allChips after deletion
-                        const updatedChips = chipsContainerDom.querySelectorAll('.chip');
-
-                        // Agar sirf 1 chip bachi hai toh uska delete button hide karo
-                        if (updatedChips.length === 1) {
-                            const lastChipDeleteBtn = updatedChips[0].querySelector('.delete');
-                            if (lastChipDeleteBtn) {
-                                lastChipDeleteBtn.classList.add('hidden');
-                            }
-                        }
-                    }, 300);
-                }
-            });
-
-            openManageCategoryModal();
-        }
-
-        function openManageCategoryModal() {
-            isManageCategoryModalOpened = true;
-            manageCategoryModalDom.classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu()
-        }
-
-        function closeManageCategoryModal() {
-            manageCategoryModalDom.classList.add('fade-out');
-
-            manageCategoryModalDom.addEventListener('animationend', () => {
-                manageCategoryModalDom.classList.add('hidden');
-                manageCategoryModalDom.classList.remove('fade-out');
             }, {
                 once: true
             });
