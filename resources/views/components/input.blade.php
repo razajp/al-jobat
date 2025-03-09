@@ -12,15 +12,17 @@
     'list' => '',
     'autocomplete' => 'on',
     'listOptions' => [],
+    'max' => "",
+    'validateMax' => false,
 ])
 
 @if ($uppercased)
     <style>
-        input#{{ $name }} {
+        input#{{ $id }} {
             text-transform: uppercase;
         }
 
-        input#{{ $name }}::placeholder {
+        input#{{ $id }}::placeholder {
             text-transform: none;
         }
     </style>
@@ -44,6 +46,9 @@
         {{ $attributes->merge([
             'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
         ]) }}
+        {{
+            $validateMax ? 'max='.$max : ''
+        }}
     />
     
     @if($list != '')

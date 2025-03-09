@@ -8,6 +8,7 @@
     'withButton' => false,
     'btnId' => '', 
     'id' => '', 
+    'btnText' => '+', 
 ])
 
 @php
@@ -50,7 +51,7 @@
             @endif
         </select>
         @if ($withButton)
-            <button id="{{$btnId}}" type="button" class="bg-[--primary-color] px-4 rounded-lg hover:bg-[--h-primary-color] transition-all 0.3s ease-in-out text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed">+</button>
+            <button id="{{$btnId}}" type="button" class="bg-[--primary-color] px-4 rounded-lg hover:bg-[--h-primary-color] transition-all 0.3s ease-in-out {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{{ $btnText }}</button>
         @endif
     </div>
 

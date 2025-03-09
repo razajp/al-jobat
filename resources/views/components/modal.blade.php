@@ -17,7 +17,7 @@
 
         <!-- Slot for Dynamic Content -->
         <div class="flex flex-col w-full">
-            <div class="w-full">
+            <div class="w-full h-full">
                 {{ $slot }}
             </div>
         </div>

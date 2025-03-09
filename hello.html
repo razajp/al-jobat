@@ -1,4 +1,75 @@
-<h1>hello</h1>
+<!DOCTYPE html>
+<html lang="en">
 
-<h2>hello</h2>
-<p>Lorem ipsum dolor sit amet.</p>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Input Validation</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+
+    .container {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
+
+    h2 {
+        margin-bottom: 15px;
+    }
+
+    input[type="number"] {
+        padding: 8px;
+        width: 250px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    /* Apply styles if input is valid */
+    input:valid {
+        border-color: #4CAF50; /* Green border for valid input */
+        box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+    }
+
+    /* Apply styles if input is invalid */
+    input:invalid {
+        border-color: #F44336; /* Red border for invalid input */
+        box-shadow: 0 0 5px rgba(244, 67, 54, 0.5);
+    }
+
+    /* Hide error message by default */
+    .error-message {
+        display: none;
+        color: #F44336;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    /* Show error message if input is invalid */
+    input:invalid + .error-message {
+        display: block;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Enter a Number (1 - 100)</h2>
+    <input type="number" id="quantity" min="1" max="100" placeholder="Enter a number" required>
+    <span class="error-message">Please enter a valid number between 1 and 100.</span>
+</div>
+
+</body>
+</html>

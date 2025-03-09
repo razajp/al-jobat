@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
@@ -20,7 +22,22 @@ class OrderController extends Controller
      */
     public function create()
     {
-        //
+        $customers = Customer::all();
+
+        $customers_options = [];
+        foreach ($customers as $customer) {
+            $customers_options[(int)$customer->id] = $customer->customer_name . ' | ' . $customer->city;
+        }
+
+        $articles = Article::all();
+
+        foreach ($articles as $article) {
+            $article["rates_array"] = json_decode($article->rates_array, true);
+            $article['date'] = date('d-M-Y, D', strtotime($article['date']));
+            $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
+        }
+
+        return view('orders.generate', compact('customers_options', 'articles'));
     }
 
     /**
