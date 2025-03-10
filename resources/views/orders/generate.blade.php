@@ -20,7 +20,7 @@
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data"
+    <form id="form" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
         class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
         <div
@@ -31,6 +31,17 @@
         <!-- Step 1: Generate order -->
         <div class="step1 space-y-4 ">
             <div class="flex justify-between gap-4">
+                {{-- order date --}}
+                <div class="w-1/3">
+                    <x-input 
+                        label="Date" 
+                        name="date" 
+                        id="date" 
+                        type="date"
+                        required
+                    />
+                </div>
+                
                 {{-- title --}}
                 <div class="grow">
                     <x-select 
@@ -57,8 +68,8 @@
                     <div class="w-1/5">Amount</div>
                     <div class="w-[10%] text-center">Action</div>
                 </div>
-                <div id="order-list" class="space-y-4 h-[250px] overflow-y-auto my-scroller-2">
-                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                <div id="order-list" class="h-[250px] overflow-y-auto my-scroller-2">
+                    <div class="text-center bg-[--h-bg-color] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
                             
@@ -74,6 +85,7 @@
                     <div id="finalOrderAmount">0.0</div>
                 </div>
             </div>
+            <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
         </div>
 
         <!-- Step 2: view order -->
@@ -105,6 +117,11 @@
         let isQuantityModalOpened = false;
 
         customerSelectDom.addEventListener("change", (e) => {
+            selectedArticles = [];
+            totalOrderedQuantity = 0;
+            totalOrderAmount = 0;
+            renderList();
+            renderFinals();
             trackStateOfCategoryBtn(e.target.value);
         })
 
@@ -122,7 +139,7 @@
 
         function generateArticlesModal() {
             articleModalDom.innerHTML = `
-                <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[40rem]" closeAction="closeArticlesModal">
+                <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
                         <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
@@ -318,15 +335,20 @@
         })
 
         function setQuantity(cardId) {
+            let targetCard = document.getElementById(cardId);
+            let cardData = JSON.parse(targetCard.dataset.json);
+            let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
             let quantityInputDOM = document.getElementById("quantity");
 
             let quantity = quantityInputDOM.value;
 
-            let targetCard = document.getElementById(cardId);
             let quantityLabel = targetCard.querySelector('.quantity-label');
-
             if (quantityLabel && quantity <= 0) {
                 quantityLabel.remove();
+                const index = selectedArticles.findIndex(c => c.id === cardData.id);
+                if (index !== -1) {
+                    selectedArticles.splice(index, 1);  // Us index se ek element hatao
+                }
             } else if (quantityLabel) {
                 quantityLabel.textContent = `${quantity} Pcs`;
             } else {
@@ -338,11 +360,7 @@
                 `;
             }
 
-            let cardData = JSON.parse(targetCard.dataset.json);
-
             cardData.orderedQuantity = parseInt(quantity);
-
-            let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
 
             if (alreadySelectedArticle.length > 0) {
                 alreadySelectedArticle[0].orderedQuantity = parseInt(quantity);
@@ -387,7 +405,7 @@
                 let clutter = "";
                 selectedArticles.forEach(selectedArticle => {
                     clutter += `
-                        <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                        <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[10%]">${selectedArticle.article_no}</div>
                             <div class="w-1/6">${selectedArticle.orderedQuantity} pcs</div>
                             <div class="grow">${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}</div>
@@ -401,6 +419,7 @@
             } else {
                 orderListDOM.innerHTML = `<div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Orders Yet</div>`;
             }
+            updateInputOrderedArticles();
         }
         renderList();
 
@@ -409,6 +428,21 @@
         function renderFinals() {
             finalOrderedQuantity.textContent = totalOrderedQuantity;
             finalOrderAmount.textContent = totalOrderAmount;
+        }
+
+        function updateInputOrderedArticles() {
+            let inputOrderedArticles = document.getElementById('ordered_articles');
+            let finalArticlesArray = selectedArticles.map(article => {
+                return {
+                    id: article.id,
+                    ordered_quantity: article.orderedQuantity
+                }
+            });
+            inputOrderedArticles.value = JSON.stringify(finalArticlesArray);
+        }
+
+        function validateForNextStep() {
+            return true;
         }
     </script>
 @endsection

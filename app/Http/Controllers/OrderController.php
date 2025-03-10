@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
@@ -45,7 +46,30 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'customer_id' => 'required|integer|exists:customers,id',
+            'ordered_articles' => 'required|json',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()->all()]);
+        }
+
+        $data = $request->all();
+
+        $order = Order::create($data);
+
+        $data['ordered_articles'] = json_decode($data['ordered_articles'], true);
+        foreach ($data['ordered_articles'] as $articleData) {
+            $article = Article::where('id', $articleData['id'])->first();
+            if ($article) {
+                $article->sold_quantity += $articleData['ordered_quantity'];
+                $article->save();
+            }
+        }
+        
+        return redirect()->route('orders.create')->with('success', 'Order generated successfully.');
     }
 
     /**

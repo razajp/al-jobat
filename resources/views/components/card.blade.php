@@ -29,7 +29,7 @@
 </div>
 
 {{-- Action Button --}}
-<button
-    class="absolute bottom-0 right-0 rounded-full w-[22%] aspect-square flex items-center justify-center bg-[--h-bg-color] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out hover:scale-110">
+<button type="button"
+    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center bg-[--h-bg-color] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out">
     <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
 </button>

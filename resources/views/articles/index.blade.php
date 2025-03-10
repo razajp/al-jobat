@@ -187,11 +187,6 @@
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Show
                             Details</button>
                     </li>
-                    {{-- <li>
-                        <a id="track-article" href="{{ route('article-track') }}"
-                            class="flex w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Track
-                            Article</a>
-                    </li> --}}
                     <li>
                         <button id="show-details" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Print
@@ -273,9 +268,6 @@
                     generateModal(item);
                 };
             });
-
-            // let trackArticle = document.getElementById('track-article');
-            // trackArticle.href = `/article-track?a_id=${data.id}`;
 
             document.addEventListener('click', (e) => {
                 if (e.target.id === "add-img-in-context-btn") {
@@ -536,18 +528,6 @@
                 addImageInModal.classList.add('hidden');
             }
 
-            // let chipsClutter = "";
-            // data.categories.forEach((category) => {
-            //     chipsClutter += `
-            //         <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-            //             <div class="text tracking-wide">${category}</div>
-            //         </div>
-            //     `
-            // });
-
-            // let chipsContainerDom = document.getElementById("chips");
-            // chipsContainerDom.innerHTML = chipsClutter;
-
             let articleRatesArray = data.rates_array;
             let modalRateList = document.getElementById('modal-rate-list');
             modalRateList.innerHTML = '';
@@ -562,10 +542,6 @@
                 `;
                 modalRateList.innerHTML += rateItem;
             });
-
-
-            // let trackArticleInModal = document.getElementById('track-article-in-modal');
-            // trackArticleInModal.href = `/article-track?a_id=${article.id}`;
 
             openModal();
             document.getElementById('modal').classList.remove('hidden');
