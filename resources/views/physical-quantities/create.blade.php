@@ -32,12 +32,6 @@
                 <div class="w-1/3">
                     <x-input label="Date" name="date" id="date" type="date" required />
                 </div>
-
-                {{-- title --}}
-                <div class="grow">
-                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" required showDefault
-                        class="grow" withButton btnId="generateOrderBtn" btnText="Generate Order" />
-                </div>
             </div>
             {{-- rate showing --}}
             <div id="order-table" class="w-full text-left text-sm">

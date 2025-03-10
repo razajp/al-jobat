@@ -3,7 +3,7 @@
 @if ($includesDropdown == "true")
     <button class="nav-link {{ strtolower($label) }} dropdown-trigger text-[--text-color] p-3 rounded-full group-hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer">
         <i class="{{ $icon }} group-hover:text-[--primary-color]"></i>
-        <span class="absolute shadow-xl left-16 top-1/2 transform -translate-y-1/2 bg-[--h-secondary-bg-color] border border-gray-600 text-[--text-color] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s pointer-events-none">
+        <span class="absolute shadow-xl left-16 top-1/2 transform -translate-y-1/2 bg-[--h-secondary-bg-color] border border-gray-600 text-[--text-color] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s pointer-events-none text-nowrap">
             {{ $label }}
         </span>
     </button>

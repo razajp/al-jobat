@@ -4,9 +4,11 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\PhysicalQuantity;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -46,6 +48,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('add-image', [ArticleController::class, 'addImage'])->name('add-image');
     
     Route::resource('orders', OrderController::class);
+    
+    Route::resource('physical-quantities', PhysicalQuantityController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

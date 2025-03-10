@@ -117,12 +117,24 @@
             
             <div class="relative group">
                 <x-nav-link-item 
-                    label="Order" 
+                    label="Orders" 
                     icon="fas fa-cart-shopping"
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
                         ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Physical Quantities" 
+                    icon="fas fa-boxes-stacked"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show Phys. Quantity'],
+                        ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add Phys. Quantity'],
                     ]"
                 />
             </div>
@@ -215,32 +227,50 @@
                         ['href' => route('articles.create'), 'title' => 'Add Article']
                     ]" 
                 />
-                </div>
-            </div>
-        
-            <!-- Divider -->
-            <div class="border-t border-gray-600 w-full my-4"></div>
-        
-            <!-- Profile Section -->
-            <div class="flex items-center space-x-4 px-4">
-                @if (Auth::user()->profile_picture == 'default_avatar.png')
-                        <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                    @else
-                        <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                    @endif
-                <div>
-                    <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
-                    <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
-                </div>
-            </div>
-        
-            <!-- Additional Links -->
-            <div class="flex flex-col space-y-2 w-full mt-2">
-                <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups" active="{{ request()->is('add-setup') }}" />
-                
-                <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
 
-                <x-mobile-menu-item title="Logout" asButton="true" onclick="openLogoutModal()" />
+                <x-mobile-menu-item
+                    title="Orders" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('orders.index'), 'title' => 'Show Order'],
+                        ['href' => route('orders.create'), 'title' => 'Generate Order'],
+                    ]"
+                />
+
+                <x-mobile-menu-item 
+                    title="Physical Quantities" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('physical-quantities.index'), 'title' => 'Show Phys. Quantity'],
+                        ['href' => route('physical-quantities.create'), 'title' => 'Add Phys. Quantity'],
+                    ]"
+                />
+                </div>
+
+                <!-- Divider -->
+                <div class="border-t border-gray-600 w-full my-4"></div>
+            
+                <!-- Profile Section -->
+                <div class="flex items-center space-x-4 px-4">
+                    @if (Auth::user()->profile_picture == 'default_avatar.png')
+                            <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                        @else
+                            <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                        @endif
+                    <div>
+                        <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
+                        <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
+                    </div>
+                </div>
+            
+                <!-- Additional Links -->
+                <div class="flex flex-col space-y-2 w-full mt-2">
+                    <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups" active="{{ request()->is('add-setup') }}" />
+                    
+                    <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
+
+                    <x-mobile-menu-item title="Logout" asButton="true" onclick="openLogoutModal()" />
+                </div>
             </div>
         </div>
     </div>
