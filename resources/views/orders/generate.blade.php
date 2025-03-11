@@ -9,20 +9,20 @@
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Article </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Generate Order </h1>
 
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-3xl mx-auto">
-        <x-progress-bar :steps="['Generate Order', 'View Order']" :currentStep="1" />
+    <div class="mb-5 max-w-4xl mx-auto">
+        <x-progress-bar :steps="['Generate Order', 'Preview']" :currentStep="1" />
     </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Add New Article</h4>
+            <h4>Generate New Order</h4>
         </div>
 
         <!-- Step 1: Generate order -->
@@ -68,9 +68,114 @@
         </div>
 
         <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4">
-            <x-image-upload id="image_upload" name="image_upload" placeholder="{{ asset('images/image_icon.png') }}"
-                uploadText="Upload article image" />
+        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scroller-2 bg-white rounded-md">
+            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
+                <div id="preview" class="preview flex flex-col h-full">
+                    <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
+                    {{-- <div id="order" class="order flex flex-col h-full">
+                        <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
+                            <div class="left w-50">
+                                <div class="order-logo">
+                                    <img src="{{ asset('images/company-logo.png') }}" alt="Track Point"
+                                        class="w-[150px]" />
+                                </div>
+                            </div>
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
+                                <div class="order-date">Date: 02-03-2025</div>
+                                <div class="order-number">Order No.: 2025-0000</div>
+                                <div class="order-copy">Order Copy: Customer</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 my-5 border-gray-600">
+                        <div id="order-header" class="order-header w-full flex justify-between px-5">
+                            <div class="left w-50">
+                                <div class="order-to text-sm text-gray-500">Order to:</div>
+                                <div class="order-customer text-lg">Karachi Garments</div>
+                                <div class="order-person text-md">Hassan</div>
+                                <div class="order-address text-md">Karachi</div>
+                                <div class="order-phone text-md">0316-5825495</div>
+                            </div>
+                            <div class="right w-50">
+                                <div class="order-from text-sm text-gray-500">Order from:</div>
+                                <div class="order-customer text-lg">M/s Track Point</div>
+                                <div class="order-person text-md">Mr. Hasan</div>
+                                <div class="order-address text-md">Meetha Dar, Karachi</div>
+                                <div class="order-phone text-md">0312-5214864</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 mt-5 mb-5 border-gray-600">
+                        <div id="order-body" class="order-body w-[95%] grow mx-auto">
+                            <div class="order-table w-full">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                    <div class="thead w-full">
+                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
+                                            <div class="th text-sm font-medium w-[5%]"></div>
+                                            <div class="th text-sm font-medium w-[10%]">#</div>
+                                            <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
+                                            <div class="th text-sm font-medium grow">Desc.</div>
+                                            <div class="th text-sm font-medium w-1/6">Rate</div>
+                                            <div class="th text-sm font-medium w-1/6">Amount</div>
+                                            <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
+                                        </div>
+                                    </div>
+                                    <div id="tbody" class="tbody w-full">
+                                        <div>
+                                            <hr class="w-full mb-3 border-gray-600">
+                                            <div class="tr flex justify-between w-full px-4">
+                                                <div class="td text-sm font-semibold w-[5%] flex items-center"><input type="checkbox" class="mr-2"></div>
+                                                <div class="td text-sm font-semibold w-[10%]">1</div>
+                                                <div class="td text-sm font-semibold w-1/6">300</div>
+                                                <div class="td text-sm font-semibold grow">Hello</div>
+                                                <div class="td text-sm font-semibold w-1/6">250.00</div>
+                                                <div class="td text-sm font-semibold w-1/6">1,200.0</div>
+                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="flex flex-col space-y-2">
+                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Quantity - Pcs</div>
+                                    <div class="w-1/4 text-right grow">1,200</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Amount</div>
+                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Discount - %</div>
+                                    <div class="w-1/4 text-right grow">0</div>
+                                </div>
+                            </div>
+                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Previous Balance</div>
+                                    <div class="w-1/4 text-right grow">150,000.0</div>
+                                </div>
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Net Amount</div>
+                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                </div>
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Current Balance</div>
+                                    <div class="w-1/4 text-right grow">14,000.0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                            <P>Company Name</P>
+                            <p>&copy; Track Point | sparkpair.com | Spark Pair 2025.</p>
+                        </div>
+                    </div> --}}
+                </div>
+            </div>
         </div>
     </form>
 
@@ -79,6 +184,7 @@
         let totalOrderedQuantity = 0;
         let totalOrderAmount = 0;
 
+        const lastOrder = @json($last_order);
         const articleModalDom = document.getElementById("articleModal");
         const quantityModalDom = document.getElementById("quantityModal");
         const customerSelectDom = document.getElementById("customer_id");
@@ -96,6 +202,7 @@
             totalOrderedQuantity = 0;
             totalOrderAmount = 0;
             renderList();
+            generateOrder();
             renderFinals();
             trackStateOfCategoryBtn(e.target.value);
         })
@@ -191,7 +298,9 @@
         };
 
         function closeArticlesModal() {
+            generateDecription();
             renderList();
+            generateOrder();
             renderFinals();
 
             isModalOpened = false;
@@ -359,6 +468,7 @@
             deselectArticleAtIndex(index);
 
             renderList();
+            generateOrder();
 
             calculateTotalOrderedQuantity();
             calculateTotalOrderAmount();
@@ -390,6 +500,12 @@
             }).format(totalOrderAmount);
         }
 
+        function generateDecription() {
+            selectedArticles.forEach((selectedArticle, index) => {
+                selectedArticle.description = `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
+            });
+        }
+
         function renderTotals() {
             totalQuantityDOM.textContent = totalOrderedQuantity;
             totalAmountDOM.textContent = totalOrderAmount;
@@ -405,7 +521,7 @@
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[10%]">${selectedArticle.article_no}</div>
                             <div class="w-1/6">${selectedArticle.orderedQuantity} pcs</div>
-                            <div class="grow">${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}</div>
+                            <div class="grow">${selectedArticle.description}</div>
                             <div class="w-1/6">${selectedArticle.sales_rate}</div>
                             <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.orderedQuantity}</div>
                             <div class="w-[10%] text-center">
@@ -439,10 +555,184 @@
             let finalArticlesArray = selectedArticles.map(article => {
                 return {
                     id: article.id,
+                    description: article.description,
                     ordered_quantity: article.orderedQuantity
                 }
             });
             inputOrderedArticles.value = JSON.stringify(finalArticlesArray);
+        }
+
+        let companyData = @json(app('company'));
+        let orderNo;
+        let orderDate;
+        const previewDom = document.getElementById('preview');
+
+        function generateOrderNo() {
+            let lastOrderNo = lastOrder.order_no.replace("2025-", "")
+            const todayYear = new Date().getFullYear();
+            const nextOrderNo = String(parseInt(lastOrderNo, 10) + 1).padStart(4, '0');
+            return todayYear + '-' + nextOrderNo;
+        }
+
+        function getOrderDate() {
+            const dateDom = document.getElementById('date').value;
+            const date = new Date(dateDom);
+
+            // Extract day, month, and year
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = date.getFullYear();
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+            // Array of weekday names
+            const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+            // Return the formatted date
+            return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
+        }
+
+        function generateOrder() {
+            orderNo = generateOrderNo();
+            orderDate = getOrderDate();
+
+            let customerDataDom = customerSelectDom.options[customerSelectDom.selectedIndex].getAttribute('data-option');
+            let customerData = JSON.parse(customerDataDom);
+            
+            if (selectedArticles.length > 0) {
+                previewDom.innerHTML = `
+                    <div id="order" class="order flex flex-col h-full">
+                        <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
+                            <div class="left w-50">
+                                <div class="order-logo">
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                        class="w-[150px]" />
+                                </div>
+                            </div>
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
+                                <div class="order-date">Date: ${orderDate}</div>
+                                <div class="order-number">Order No.: ${orderNo}</div>
+                                <input type="hidden" name="order_no" value="${orderNo}">
+                                <div class="order-copy">Order Copy: Customer</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 my-5 border-gray-600">
+                        <div id="order-header" class="order-header w-full flex justify-between px-5">
+                            <div class="left w-50">
+                                <div class="order-to text-sm text-gray-500">Order to:</div>
+                                <div class="order-customer text-lg">${customerData.customer_name}</div>
+                                <div class="order-person text-md">${customerData.person_name}</div>
+                                <div class="order-address text-md">${customerData.address}, ${customerData.city}</div>
+                                <div class="order-phone text-md">${customerData.phone_number}</div>
+                            </div>
+                            <div class="right w-50">
+                                <div class="order-from text-sm text-gray-500">Order from:</div>
+                                <div class="order-customer text-lg">${companyData.name}</div>
+                                <div class="order-person text-md">${companyData.owner_name}</div>
+                                <div class="order-address text-md">${companyData.city}, ${companyData.address}</div>
+                                <div class="order-phone text-md">${companyData.phone_number}</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 mt-5 mb-5 border-gray-600">
+                        <div id="order-body" class="order-body w-[95%] grow mx-auto">
+                            <div class="order-table w-full">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                    <div class="thead w-full">
+                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
+                                            <div class="th text-sm font-medium w-[5%]"></div>
+                                            <div class="th text-sm font-medium w-[5%]">#</div>
+                                            <div class="th text-sm font-medium w-[10%]">Article</div>
+                                            <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
+                                            <div class="th text-sm font-medium grow">Desc.</div>
+                                            <div class="th text-sm font-medium w-1/6">Rate</div>
+                                            <div class="th text-sm font-medium w-1/6">Amount</div>
+                                            <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
+                                        </div>
+                                    </div>
+                                    <div id="tbody" class="tbody w-full">
+                                        ${selectedArticles.map((article, index) => {
+                                            if (index == 0) {
+                                                return `
+                                                        <div>
+                                                            <hr class="w-full mb-3 border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[5%] flex items-center"><input type="checkbox" class="mr-2"></div>
+                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
+                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
+                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                            } else {
+                                                return `
+                                                        <div>
+                                                            <hr class="w-full my-3 border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[5%] flex items-center"><input type="checkbox" class="mr-2"></div>
+                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
+                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
+                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                            }
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="flex flex-col space-y-2">
+                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Quantity - Pcs</div>
+                                    <div class="w-1/4 text-right grow">1,200</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Amount</div>
+                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Discount - %</div>
+                                    <div class="w-1/4 text-right grow">0</div>
+                                </div>
+                            </div>
+                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Previous Balance</div>
+                                    <div class="w-1/4 text-right grow">150,000.0</div>
+                                </div>
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Net Amount</div>
+                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                </div>
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Current Balance</div>
+                                    <div class="w-1/4 text-right grow">14,000.0</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                            <P>${ companyData.name }</P>
+                            <p>&copy; Spark Pair 2025 | sparkpair.com</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                previewDom.innerHTML = `
+                    <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
+                `;
+            }
         }
 
         function validateForNextStep() {

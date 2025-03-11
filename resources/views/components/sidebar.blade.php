@@ -129,7 +129,7 @@
             
             <div class="relative group">
                 <x-nav-link-item 
-                    label="Physical Quantities" 
+                    label="Physical-Quantities" 
                     icon="fas fa-boxes-stacked"
                     includesDropdown="true"
                     :items="[

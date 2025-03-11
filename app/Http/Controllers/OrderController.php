@@ -27,7 +27,10 @@ class OrderController extends Controller
 
         $customers_options = [];
         foreach ($customers as $customer) {
-            $customers_options[(int)$customer->id] = $customer->customer_name . ' | ' . $customer->city;
+            $customers_options[(int)$customer->id] = [
+                'text' => $customer->customer_name . ' | ' . $customer->city,
+                'data_option' => $customer
+            ];
         }
 
         $articles = Article::all();
@@ -38,7 +41,15 @@ class OrderController extends Controller
             $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
         }
 
-        return view('orders.generate', compact('customers_options', 'articles'));
+        // $last_order = Order::orderby('id', 'desc')->first();
+
+        // if (!$last_order) {
+            $last_order = new Order();
+            $last_order->order_no = '0000-0000';
+        // }
+
+        return view('orders.generate', compact('customers_options', 'articles', 'last_order'));
+        // return $customers_options;
     }
 
     /**
@@ -50,6 +61,7 @@ class OrderController extends Controller
             'date' => 'required|date',
             'customer_id' => 'required|integer|exists:customers,id',
             'ordered_articles' => 'required|json',
+            'order_no' => 'required|string',
         ]);
 
         if ($validator->fails()) {

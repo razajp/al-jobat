@@ -2,17 +2,17 @@
     $authUser = Auth::user();
 
     $roleOptions = [
-        'guest' => 'Guest',
-        'accountant' => 'Accountant'
+        'guest' => ['text' => 'Guest'],
+        'accountant' => ['text' => 'Accountant']
     ];
 
     if ($authUser->role == 'developer') {
-        $roleOptions['admin'] = 'Admin';
-        $roleOptions['owner'] = 'Owner';
+        $roleOptions['admin'] = ['text' => 'Admin'];
+        $roleOptions['owner'] = ['text' => 'Owner'];
     }
 
     if ($authUser->role == 'owner') {
-        $roleOptions['admin'] = 'Admin';
+        $roleOptions['admin'] = ['text' => 'Admin'];
     }
 @endphp
 

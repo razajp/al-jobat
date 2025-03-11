@@ -40,8 +40,8 @@
 
             @if ($haveOptions)
                 @foreach($options as $optionValue => $optionText)
-                    <option value="{{ $optionValue }}" {{ old($name, $value) == $optionValue ? 'selected' : '' }}>
-                        {{ $optionText }}
+                    <option data-option='{{ $optionText['data_option'] ?? '' }}' value="{{ $optionValue }}" {{ old($name, $value) == $optionValue ? 'selected' : '' }}>
+                        {{ $optionText['text'] }}
                     </option>
                 @endforeach
             @else

@@ -21,8 +21,9 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = $supplier_category->title;
+            $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
+        
 
         foreach ($Suppliers as $supplier) {
             // Decode JSON array of category IDs
@@ -51,7 +52,7 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = $supplier_category->title;
+            $categories_options[(int)$supplier_category->id] = [ 'text' => $supplier_category->title,];
         }
 
         // return $categories_options;

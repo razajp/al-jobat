@@ -13,5 +13,6 @@ class Order extends Model
         'customer_id',
         'date',
         'ordered_articles',
+        'order_no',
     ];
 }

@@ -14,6 +14,9 @@
     'listOptions' => [],
     'max' => "",
     'validateMax' => false,
+    'readonly' => false,
+    'withImg' => false,
+    'imgUrl' => "",
 ])
 
 @if ($uppercased)
@@ -28,28 +31,34 @@
     </style>
 @endif
 
-<div class="form-group">
+<div class="form-group relative">
     @if($label)
         <label for="{{ $name }}" class="block font-medium text-[--secondary-text] mb-2">{{ $label }}</label>
     @endif
 
-    <input 
-        id="{{ $id }}"
-        type="{{ $type }}" 
-        name="{{ $name }}" 
-        value="{{ old($name, $value) }}" 
-        placeholder="{{ $placeholder }}"
-        autocomplete="{{ $autocomplete }}"
-        list="{{ $list }}"
-        {{ $required ? 'required' : '' }}
-        {{ $disabled ? 'disabled' : '' }}
-        {{ $attributes->merge([
-            'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
-        ]) }}
-        {{
-            $validateMax ? 'max='.$max : ''
-        }}
-    />
+    <div class="relative">
+        <input 
+            id="{{ $id }}"
+            type="{{ $type }}" 
+            name="{{ $name }}" 
+            value="{{ old($name, $value) }}"
+            placeholder="{{ $placeholder }}"
+            autocomplete="{{ $autocomplete }}"
+            list="{{ $list }}"
+            {{ $required ? 'required' : '' }}
+            {{ $readonly ? 'readonly' : '' }}
+            {{ $disabled ? 'disabled' : '' }}
+            {{ $attributes->merge([
+                'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
+            ]) }}
+            {{
+                $validateMax ? 'max='.$max : ''
+            }}
+        />
+        @if ($withImg)
+            <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">
+        @endif
+    </div>
     
     @if($list != '')
         <datalist id="{{ $list }}">
