@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->string('order_no');
+            $table->integer('discount');
+            $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
             $table->json('ordered_articles');
             $table->timestamps();

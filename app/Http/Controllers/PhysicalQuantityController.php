@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\PhysicalQuantity;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PhysicalQuantityController extends Controller
 {
@@ -24,6 +25,12 @@ class PhysicalQuantityController extends Controller
         $articles = Article::all();
 
         foreach ($articles as $article) {
+            $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
+            if ($physical_quantity) {
+                $article['physical_quantity'] = $physical_quantity * $article->pcs_per_packet;
+            } else {
+                $article['physical_quantity'] = 0;
+            }
             $article["rates_array"] = json_decode($article->rates_array, true);
             $article['date'] = date('d-M-Y, D', strtotime($article['date']));
             $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
@@ -37,7 +44,31 @@ class PhysicalQuantityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'article_id' => 'required|integer|exists:articles,id',
+            'pcs_per_packet' => 'required|integer|min:1',
+            'packets' => 'required|integer|min:1',
+        ]);
+        
+        if ($validator->fails())
+        {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        
+        $data = $request->all();
+        
+        $article = Article::where('id', $data['article_id'])->update([
+            'pcs_per_packet' => $data['pcs_per_packet'],
+        ]);
+
+        PhysicalQuantity::create([
+            'date' => $data['date'],
+            'article_id' => $data['article_id'],
+            'packets' => $data['packets'],
+        ]);
+
+        return redirect()->route('physical-quantities.create')->with('success', 'Physical quantity added successfully');
     }
 
     /**

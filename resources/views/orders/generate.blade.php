@@ -45,16 +45,16 @@
                     <div class="w-[10%]">#</div>
                     <div class="w-1/6">Qty.</div>
                     <div class="grow">Decs.</div>
-                    <div class="w-1/6">Rate</div>
+                    <div class="w-1/6">Rate/Pc</div>
                     <div class="w-1/5">Amount</div>
                     <div class="w-[10%] text-center">Action</div>
                 </div>
-                <div id="order-list" class="h-[250px] overflow-y-auto my-scroller-2">
+                <div id="order-list" class="h-[20rem] overflow-y-auto my-scroller-2">
                     <div class="text-center bg-[--h-bg-color] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
 
-            <div class="flex w-full gap-4 text-sm mt-5">
+            <div class="flex w-full grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mt-5 text-nowrap">
                 <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="finalOrderedQuantity">0</div>
@@ -62,6 +62,24 @@
                 <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Amount - Rs.</div>
                     <div id="finalOrderAmount">0.0</div>
+                </div>
+                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Discount - %</div>
+                    <input type="text" name="discount" id="discount" value="0"
+                        class="text-right bg-transparent outline-none w-1/2 border-none" />
+                </div>
+                <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Previous Balance - Rs.</div>
+                    <div id="finalPreviousBalance">0</div>
+                </div>
+                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Net Amount - Rs.</div>
+                    <input type="text" name="netAmount" id="finalNetAmount" value="0.0" readonly
+                        class="text-right bg-transparent outline-none w-1/2 border-none" />
+                </div>
+                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Current Balance - Rs.</div>
+                    <div id="finalCurrentBalance">0.0</div>
                 </div>
             </div>
             <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
@@ -183,8 +201,10 @@
         let selectedArticles = [];
         let totalOrderedQuantity = 0;
         let totalOrderAmount = 0;
+        let netAmount = 0;
 
         const lastOrder = @json($last_order);
+        let customerData;
         const articleModalDom = document.getElementById("articleModal");
         const quantityModalDom = document.getElementById("quantityModal");
         const customerSelectDom = document.getElementById("customer_id");
@@ -198,6 +218,8 @@
         let isQuantityModalOpened = false;
 
         customerSelectDom.addEventListener("change", (e) => {
+            let customerDataDom = customerSelectDom.options[customerSelectDom.selectedIndex].getAttribute('data-option');
+            customerData = JSON.parse(customerDataDom);
             selectedArticles = [];
             totalOrderedQuantity = 0;
             totalOrderAmount = 0;
@@ -225,7 +247,66 @@
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
                         <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
-                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
+                            <div class="header flex items-center justify-between pr-6">
+                                <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
+
+                                <!-- Search Form -->
+                                <div id="search-form" class="search-box w-1/3">
+                                    <!-- Search Input -->
+                                    <div class="search-input relative">
+                                        <x-input name="search_box" id="search_box" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
+                                        <div class="dropdownMenu text-sm absolute mt-2 top-100 right-0 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
+                                            <ul class="p-2">
+                                                <li>
+                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                        <input type="radio" name="filter" value="all" class="hidden peer" checked/>
+                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">All</span>
+                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                        </div>
+                                                    </label>
+                                                </li>
+                                                <li>
+                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                        <input type="radio" name="filter" value="article_no" class="hidden peer" />
+                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Article No.</span>
+                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                        </div>
+                                                    </label>
+                                                </li>
+                                                <li>
+                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                        <input type="radio" name="filter" value="category" class="hidden peer" />
+                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Category</span>
+                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                        </div>
+                                                    </label>
+                                                </li>
+                                                <li>
+                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                        <input type="radio" name="filter" value="season" class="hidden peer" />
+                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Season</span>
+                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                        </div>
+                                                    </label>
+                                                </li>
+                                                <li>
+                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                        <input type="radio" name="filter" value="size" class="hidden peer" />
+                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Size</span>
+                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                        </div>
+                                                    </label>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <hr class="border-gray-600 my-3">
                 
@@ -239,7 +320,6 @@
                                                     'image' => $article->image == 'no_image_icon.png' 
                                                         ? asset('images/no_image_icon.png') 
                                                         : asset('storage/uploads/images/' . $article->image),
-                                                    'status' => $article->image == 'no_image_icon.png' ? 'no_Image' : 'transparent',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [
@@ -272,6 +352,7 @@
             `;
 
             openArticlesModal();
+            setDropdownListeners();
 
             if (selectedArticles.length > 0) {
                 selectedArticles.forEach(selectedArticle => {
@@ -335,7 +416,13 @@
                             <div class="w-2/3 mx-auto p-5 flex flex-col gap-4">
                                 <x-input 
                                     label="Current Stock"
-                                    value="${data.quantity - data.sold_quantity}" 
+                                    value="${data.quantity - data.ordered_quantity}" 
+                                    disabled
+                                />
+                                
+                                <x-input 
+                                    label="Physical Stock"
+                                    value="${data.physical_quantity}" 
                                     disabled
                                 />
                                 
@@ -348,7 +435,7 @@
                                     required
                                     
                                     validateMax
-                                    max="${data.quantity - data.sold_quantity}"
+                                    max="${data.quantity - data.ordered_quantity}"
                                 />
                             </div>
                         </div>
@@ -454,6 +541,7 @@
 
             calculateTotalOrderedQuantity();
             calculateTotalOrderAmount();
+            calculateNetAmount();
             renderTotals();
             closeQuantityModal();
         }
@@ -472,10 +560,18 @@
 
             calculateTotalOrderedQuantity();
             calculateTotalOrderAmount();
+            calculateNetAmount();
 
             renderFinals();
             renderTotals();
         }
+
+        const finalOrderedQuantity = document.getElementById('finalOrderedQuantity');
+        const finalOrderAmount = document.getElementById('finalOrderAmount');
+        const discountDOM = document.getElementById('discount');
+        const finalPreviousBalance = document.getElementById('finalPreviousBalance');
+        const finalNetAmount = document.getElementById('finalNetAmount');
+        const finalCurrentBalance = document.getElementById('finalCurrentBalance');
 
         function calculateTotalOrderedQuantity() {
             totalOrderedQuantity = 0;
@@ -505,6 +601,20 @@
                 selectedArticle.description = `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
             });
         }
+
+        function calculateNetAmount() {
+            let totalAmount = parseFloat(totalOrderAmount.replace(/,/g, ''));
+            let discount = document.getElementById('discount').value;
+            let discountAmount = totalAmount - (totalAmount * (discount / 100));
+            netAmount = discountAmount;
+            netAmount = new Intl.NumberFormat('en-US', {
+                minimumFractionDigits: 1,
+                maximumFractionDigits: 1
+            }).format(netAmount);
+            renderFinals();
+        }
+
+        discountDOM.addEventListener('input', calculateNetAmount);
 
         function renderTotals() {
             totalQuantityDOM.textContent = totalOrderedQuantity;
@@ -542,12 +652,12 @@
         }
         renderList();
 
-        const finalOrderedQuantity = document.getElementById('finalOrderedQuantity');
-        const finalOrderAmount = document.getElementById('finalOrderAmount');
-
         function renderFinals() {
             finalOrderedQuantity.textContent = totalOrderedQuantity;
             finalOrderAmount.textContent = totalOrderAmount;
+            finalPreviousBalance.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits:1, minimumFractionDigits:1}).format(customerData.balance); 
+            finalNetAmount.value = netAmount;
+            finalCurrentBalance.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits:1, minimumFractionDigits:1}).format(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')));
         }
 
         function updateInputOrderedArticles() {
@@ -594,9 +704,6 @@
         function generateOrder() {
             orderNo = generateOrderNo();
             orderDate = getOrderDate();
-
-            let customerDataDom = customerSelectDom.options[customerSelectDom.selectedIndex].getAttribute('data-option');
-            let customerData = JSON.parse(customerDataDom);
             
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
@@ -638,12 +745,11 @@
                                 <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
                                     <div class="thead w-full">
                                         <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
-                                            <div class="th text-sm font-medium w-[5%]"></div>
                                             <div class="th text-sm font-medium w-[5%]">#</div>
                                             <div class="th text-sm font-medium w-[10%]">Article</div>
-                                            <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
+                                            <div class="th text-sm font-medium w-[10%]">Qty-Pcs.</div>
                                             <div class="th text-sm font-medium grow">Desc.</div>
-                                            <div class="th text-sm font-medium w-1/6">Rate</div>
+                                            <div class="th text-sm font-medium w-1/6">Rate/Pc.</div>
                                             <div class="th text-sm font-medium w-1/6">Amount</div>
                                             <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
                                         </div>
@@ -655,9 +761,8 @@
                                                         <div>
                                                             <hr class="w-full mb-3 border-gray-600">
                                                             <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%] flex items-center"><input type="checkbox" class="mr-2"></div>
                                                                 <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
                                                                 <div class="td text-sm font-semibold grow">${article.description}</div>
                                                                 <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
@@ -671,9 +776,8 @@
                                                         <div>
                                                             <hr class="w-full my-3 border-gray-600">
                                                             <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%] flex items-center"><input type="checkbox" class="mr-2"></div>
                                                                 <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
                                                                 <div class="td text-sm font-semibold grow">${article.description}</div>
                                                                 <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
@@ -693,31 +797,31 @@
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Quantity - Pcs</div>
-                                    <div class="w-1/4 text-right grow">1,200</div>
+                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.textContent}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Amount</div>
-                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                    <div class="w-1/4 text-right grow">${totalAmountDOM.textContent}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Discount - %</div>
-                                    <div class="w-1/4 text-right grow">0</div>
+                                    <div class="w-1/4 text-right grow">${discountDOM.value}</div>
                                 </div>
                             </div>
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Previous Balance</div>
-                                    <div class="w-1/4 text-right grow">150,000.0</div>
+                                    <div class="w-1/4 text-right grow">${finalPreviousBalance.textContent}</div>
                                 </div>
                                 <div
                                     class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Net Amount</div>
-                                    <div class="w-1/4 text-right grow">12,000.0</div>
+                                    <div class="w-1/4 text-right grow">${finalNetAmount.value}</div>
                                 </div>
                                 <div
                                     class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Current Balance</div>
-                                    <div class="w-1/4 text-right grow">14,000.0</div>
+                                    <div class="w-1/4 text-right grow">${finalCurrentBalance.textContent}</div>
                                 </div>
                             </div>
                         </div>
@@ -736,6 +840,7 @@
         }
 
         function validateForNextStep() {
+            generateOrder()
             return true;
         }
     </script>

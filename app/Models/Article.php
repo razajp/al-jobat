@@ -20,6 +20,7 @@ class Article extends Model
         'fabric_type',
         'sales_rate',
         'rates_array',
+        'pcs_per_packet',
         'image',
     ];
 }

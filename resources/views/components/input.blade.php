@@ -17,6 +17,10 @@
     'readonly' => false,
     'withImg' => false,
     'imgUrl' => "",
+    'withButton' => false,
+    'btnId' => "",
+    'btnText' => "+",
+    'btnClass' => "",
 ])
 
 @if ($uppercased)
@@ -36,12 +40,14 @@
         <label for="{{ $name }}" class="block font-medium text-[--secondary-text] mb-2">{{ $label }}</label>
     @endif
 
-    <div class="relative">
+    <div class="relative flex gap-4">
         <input 
             id="{{ $id }}"
             type="{{ $type }}" 
             name="{{ $name }}" 
-            value="{{ old($name, $value) }}"
+            @if ($value != '')
+                value="{{ $value }}"
+            @endif
             placeholder="{{ $placeholder }}"
             autocomplete="{{ $autocomplete }}"
             list="{{ $list }}"
@@ -57,6 +63,9 @@
         />
         @if ($withImg)
             <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">
+        @endif
+        @if ($withButton)
+            <button id="{{$btnId}}" type="button" class="{{ $btnClass }} bg-[--primary-color] px-4 rounded-lg hover:bg-[--h-primary-color] transition-all 0.3s ease-in-out {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{!! $btnText !!}</button>
         @endif
     </div>
     

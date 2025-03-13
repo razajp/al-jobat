@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Order | ' . app('company')->name)
+@section('title', 'Add Physical Quantities | ' . app('company')->name)
 @section('content')
     <!-- Modal -->
     <div id="articleModal"
@@ -8,22 +8,16 @@
     <!-- Main Content -->
     <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Physical Quantity </h1>
 
-    <!-- Progress Bar -->
-    <div class="mb-5 max-w-3xl mx-auto">
-        <x-progress-bar :steps="['Generate Order', 'View Order']" :currentStep="1" />
-    </div>
-
     <!-- Form -->
-    <form id="form" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+    <form id="form" action="{{ route('physical-quantities.store') }}" method="post"
+        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add Physical Quantity</h4>
         </div>
 
-        <!-- Step 1: Generate order -->
-        <div class="step1 space-y-4 ">
+        <div class="space-y-4 ">
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
@@ -32,7 +26,8 @@
                 
                 {{-- article --}}
                 <div class="grow">
-                    <x-input label="Article" name="article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <input type="hidden" name="article_id" id="article_id" value="" />
                 </div>
             </div>
 
@@ -52,13 +47,19 @@
 
             <div class="flex w-full gap-4 text-sm mt-5 items-start">
                 <div class="first w-full">
+                    <div class="current-phys-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                        <div class="grow">Total Physical Stock - Pcs</div>
+                        <div id="currentPhysicalQuantity">0</div>
+                    </div>
+                </div>
+                <div class="second w-full">
                     <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
                         <div class="grow">Total Quantity - Pcs</div>
                         <div id="finalOrderedQuantity">0</div>
                     </div>
                     <div id="total-qty-error" class="text-[--border-error] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
                 </div>
-                <div class="second w-full">
+                <div class="thered w-full">
                     <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
                         <div class="grow">Total Amount - Rs.</div>
                         <div id="finalOrderAmount">0.0</div>
@@ -66,22 +67,24 @@
                 </div>
             </div>
         </div>
-
-        <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4">
-            <x-image-upload id="image_upload" name="image_upload" placeholder="{{ asset('images/image_icon.png') }}"
-                uploadText="Upload article image" />
+        <div class="w-full flex justify-end mt-4">
+            <button type="submit"
+                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                <i class='fas fa-save mr-1'></i> Save
+            </button>
         </div>
     </form>
 
     <script>
         const articleModalDom = document.getElementById("articleModal");
         const articleSelectInputDOM = document.getElementById("article");
+        const articleIdInputDOM = document.getElementById("article_id");
         const articleImageShowDOM = document.getElementById("img-article");
 
         const pcsPerPacketDom = document.getElementById('pcs_per_packet');
         const packetsDom = document.getElementById('packets');
 
+        const totalPhysicalQuantityDom = document.getElementById('currentPhysicalQuantity');
         const finalOrderedQuantityDom = document.getElementById('finalOrderedQuantity');
         const finalOrderAmountDom = document.getElementById('finalOrderAmount');
 
@@ -187,6 +190,7 @@
         function selectThisArticle(articleElem) {
             selectedArticle = JSON.parse(articleElem.getAttribute('data-json'));
 
+            articleIdInputDOM.value = selectedArticle.id;
             let value = `#${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.quantity} (pcs) | Rs. ${selectedArticle.sales_rate}`;
             articleSelectInputDOM.value = value;
             
@@ -196,6 +200,16 @@
             closeArticlesModal();
             trackFieldsDisability();
             calculateTotal();
+
+            totalPhysicalQuantityDom.innerText = selectedArticle.physical_quantity;
+            
+            if (selectedArticle.pcs_per_packet > 0) {
+                pcsPerPacketDom.readOnly = true;
+                pcsPerPacketDom.value = selectedArticle.pcs_per_packet;
+            } else {
+                pcsPerPacketDom.readOnly = false;
+                pcsPerPacketDom.value = '';
+            }
         }
 
         document.getElementById('pcs_per_packet').addEventListener('input', () => {
@@ -240,7 +254,7 @@
         const totalQtyErrorDom = document.getElementById('total-qty-error');
 
         function trackArticleQuantity() {
-            if (selectedArticle && totalQuantity > selectedArticle.quantity) {
+            if (selectedArticle && (totalQuantity + parseInt(totalPhysicalQuantityDom.textContent)) > selectedArticle.quantity) {
                 totalQtyDom.classList.add('border', 'border-[--border-error]');
                 totalQtyErrorDom.innerText = `Quantity exceeds the available stock (${selectedArticle.quantity} pcs)`;
                 totalQtyErrorDom.classList.remove('hidden');

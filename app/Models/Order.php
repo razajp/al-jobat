@@ -12,7 +12,13 @@ class Order extends Model
     protected $fillable = [
         'customer_id',
         'date',
+        'discount',
+        'netAmount',
         'ordered_articles',
         'order_no',
     ];
+
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'customer_id');
+    }
 }

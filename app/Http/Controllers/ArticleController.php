@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Order;
 use App\Models\Setup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -49,6 +50,14 @@ class ArticleController extends Controller
         // $articles = $articles->get();
 
         foreach ($articles as $article) {
+            $orders = Order::all();
+
+            if ($orders) {
+                foreach ($orders as $order) {
+                    $articlesArray = json_decode($order->ordered_articles, true);
+                }
+            }
+
             $article["rates_array"] = json_decode($article->rates_array, true);
             $article['date'] = date('d-M-Y, D', strtotime($article['date']));
             $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');

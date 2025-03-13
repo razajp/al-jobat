@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Setup;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,6 +18,17 @@ class CustomerController extends Controller
     public function index()
     {
         $customers = Customer::with('user', 'category')->get();
+
+        foreach ($customers as $customer) {
+            $orders = Order::where('customer_id', $customer->id)->get();
+            $customer['balance'] = 0;
+
+            foreach ($orders as $order) {
+                $customer['balance'] += $order->netAmount;
+            }
+
+            $customer['balance'] = number_format($customer['balance'], 1, '.', ',');
+        }
     
         // return $customers;
         return view("customers.index", compact('customers'));

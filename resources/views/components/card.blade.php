@@ -10,13 +10,15 @@
 @endif
 
 {{-- Profile Picture --}}
-<div class="{{ $data['classImg'] ?? '' }} img aspect-square h-full rounded-full overflow-hidden relative">
-    <img src="{{ $data['image'] }}" alt="" class="w-full h-full object-cover">
-</div>
+@if (isset($data['image']))
+    <div class="{{ $data['classImg'] ?? '' }} img aspect-square h-full rounded-full overflow-hidden relative">
+        <img src="{{ $data['image'] }}" alt="" class="w-full h-full object-cover">
+    </div>
+@endif
 
 {{-- Details --}}
 <div class="text-start">
-    <h5 class="text-xl my-1 text-[--text-color] capitalize font-semibold">
+    <h5 class="text-xl mb-1 text-[--text-color] capitalize font-semibold">
         {{ $data['name'] ?? 'N/A' }}
     </h5>
     @if (isset($data['details']) && is_array($data['details']))

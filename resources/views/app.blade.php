@@ -242,10 +242,39 @@
         }
         messageBoxAnimation();
         
+        let dropdownMenus, dropdownTriggers;
+
         // drop down toggle
-        const dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
-        const dropdownMenus = document.querySelectorAll('.dropdownMenu');
-    
+        function setDropdownListeners(params) {
+            dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
+            dropdownMenus = document.querySelectorAll('.dropdownMenu');
+        
+            dropdownTriggers.forEach((trigger, index) => {
+                const dropdownMenu = dropdownMenus[index];
+        
+                trigger.onclick = (e) => {
+                    e.stopPropagation();
+        
+                    if (dropdownMenu.classList.contains('hidden')) {
+                        closeAllDropdowns();
+        
+                        dropdownMenu.classList.remove('hidden');
+                        setTimeout(() => {
+                            dropdownMenu.classList.add('opacity-100', 'scale-100');
+                            dropdownMenu.classList.remove('opacity-0', 'scale-95');
+                        }, 10);
+                    } else {
+                        dropdownMenu.classList.remove('opacity-100', 'scale-100');
+                        dropdownMenu.classList.add('opacity-0', 'scale-95');
+                        setTimeout(() => {
+                            dropdownMenu.classList.add('hidden');
+                        }, 300);
+                    }
+                }
+            });
+        }
+        setDropdownListeners();
+
         function closeAllDropdowns() {
             dropdownMenus.forEach(menu => {
                 menu.classList.add('hidden');
@@ -253,30 +282,6 @@
                 menu.classList.add('opacity-0', 'scale-95');
             });
         }
-    
-        dropdownTriggers.forEach((trigger, index) => {
-            const dropdownMenu = dropdownMenus[index];
-    
-            trigger.addEventListener('click', function(e) {
-                e.stopPropagation();
-    
-                if (dropdownMenu.classList.contains('hidden')) {
-                    closeAllDropdowns();
-    
-                    dropdownMenu.classList.remove('hidden');
-                    setTimeout(() => {
-                        dropdownMenu.classList.add('opacity-100', 'scale-100');
-                        dropdownMenu.classList.remove('opacity-0', 'scale-95');
-                    }, 10);
-                } else {
-                    dropdownMenu.classList.remove('opacity-100', 'scale-100');
-                    dropdownMenu.classList.add('opacity-0', 'scale-95');
-                    setTimeout(() => {
-                        dropdownMenu.classList.add('hidden');
-                    }, 300);
-                }
-            });
-        });
 
         document.addEventListener('focus', function(event) {
             if (event.target.matches('input[type="date"]')) {
@@ -303,6 +308,14 @@
                 reader.readAsDataURL(file);
             }
         };
+
+        function formatNumbersDigitLess(number) {
+            return new Intl.NumberFormat('en-US').format(number);
+        }
+
+        function formatNumbersWithDigits(number, maxFraction, minFraction) {
+            return new Intl.NumberFormat('en-US', { maximumFractionsDigits:maxFraction, minimumFractionDigits:minFraction}).format(number);
+        }
 
         document.addEventListener("contextmenu", e => e.preventDefault());
     </script>

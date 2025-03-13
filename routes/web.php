@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\SetupController;
@@ -50,6 +51,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('orders', OrderController::class);
     
     Route::resource('physical-quantities', PhysicalQuantityController::class);
+
+    Route::resource('invoices', InvoiceController::class);
+    Route::post('get-order-details', [InvoiceController::class, 'getOrderDetails'])->name('get-order-details');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

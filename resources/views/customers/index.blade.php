@@ -45,6 +45,7 @@
                                     'details' => [
                                         'Person Name' => $customer->person_name,
                                         'Category' => $customer->category->title,
+                                        'Balance' => $customer->balance,
                                     ],
                                 ]" />
                             </div>
@@ -232,6 +233,7 @@
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.balance}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category.title}</span></p>
                         </div>
                     </div>

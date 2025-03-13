@@ -138,6 +138,18 @@
                     ]"
                 />
             </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Invoices" 
+                    icon="fas fa-receipt"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
+                        ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
+                    ]"
+                />
+            </div>
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
@@ -243,6 +255,15 @@
                     :dropdown="[
                         ['href' => route('physical-quantities.index'), 'title' => 'Show Phys. Quantity'],
                         ['href' => route('physical-quantities.create'), 'title' => 'Add Phys. Quantity'],
+                    ]"
+                />
+
+                <x-mobile-menu-item 
+                    title="Invoices" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('invoices.index'), 'title' => 'Show Invoices'],
+                        ['href' => route('invoices.create'), 'title' => 'Generate Invoice'],
                     ]"
                 />
                 </div>

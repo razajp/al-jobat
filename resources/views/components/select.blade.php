@@ -20,7 +20,7 @@
         <label for="{{ $name }}" class="block font-medium text-[--secondary-text] mb-2">{{ $label }}</label>
     @endif
 
-    <div class="relative flex gap-2">
+    <div class="relative flex gap-4">
         <select
             @if (!$haveOptions)
                 disabled

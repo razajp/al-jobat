@@ -467,7 +467,8 @@
                             <hr class="border-gray-600 my-3">
                 
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Fabric Type:</strong> <span>${data.fabric_type}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Quantity/Pcs:</strong> <span>${data.quantity}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Quantity-Pcs:</strong> <span>${data.quantity}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Current Stock-Pcs:</strong> <span>${data.quantity - data.ordered_quantity}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Ready Date:</strong> <span>${data.date}</span></p>
 
                             <hr class="border-gray-600 my-3">
