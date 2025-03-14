@@ -25,7 +25,7 @@
         </div>
         <div>
             @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('customers/create') || request()->is('orders/create'))
-                <button id="saveBtn" class="bg-[--success-color] text-[--text-color] px-5 py-1 rounded-md hover:bg-[--h-success-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center gap-1 hidden">
+                <button id="saveBtn" class="bg-[--success-color] text-[#e2e8f0] px-5 py-1 rounded-md hover:bg-[--h-success-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center gap-1 hidden">
                     <i class='fas fa-save mr-1'></i> Save
                 </button>
             @endif

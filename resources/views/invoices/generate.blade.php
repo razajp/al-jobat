@@ -34,11 +34,12 @@
             {{-- rate showing --}}
             <div id="article-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
-                    <div class="w-[8%]">#</div>
-                    <div class="w-[12%]">Article</div>
-                    <div class="w-1/6">Packets</div>
+                    <div class="w-[5%]">#</div>
+                    <div class="w-[11%]">Article</div>
+                    <div class="w-[11%]">Packets</div>
+                    <div class="w-[10%]">Pcs</div>
                     <div class="grow">Decs.</div>
-                    <div class="w-[12%]">Pcs/Packet</div>
+                    <div class="w-[8%]">Pcs/Pkt.</div>
                     <div class="w-[12%] text-right">Rate/Pc</div>
                     <div class="w-[15%] text-right">Amount</div>
                 </div>
@@ -250,6 +251,7 @@
                     orderedArticles = response.ordered_articles;
                     discount = response.discount;
 
+                    document.getElementById('date').value = '';
                     document.getElementById('date').min = response.date;
                     
                     renderList();
@@ -290,13 +292,14 @@
                         
                         clutter += `
                             <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
-                                <div class="w-[8%]">${index + 1}.</div>
-                                <div class="w-[12%]">#${selectedArticle.article.article_no}</div>
-                                <div class="w-1/6">
-                                    <input type="number" class="w-full bg-transparent focus:outline-none" value="${orderedPhysicalQuantity}" max="${orderedPhysicalQuantity}"/>
+                                <div class="w-[5%]">${index + 1}.</div>
+                                <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
+                                <div class="w-[11%]">
+                                    <input type="number" class="w-full bg-transparent focus:outline-none" value="${orderedPhysicalQuantity}" max="${orderedPhysicalQuantity}" onclick='this.select()' oninput="packetEdited(this)" />
                                 </div>
+                                <div class="w-[10%]">${formatNumbersDigitLess(orderedPhysicalQuantity * selectedArticle.article.pcs_per_packet)}</div>
                                 <div class="grow">${selectedArticle.description}</div>
-                                <div class="w-[12%]">${selectedArticle.article.pcs_per_packet}</div>
+                                <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                 <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
                                 <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
                             </div>
@@ -321,6 +324,46 @@
             totalAmountInFormDom.textContent = formatNumbersWithDigits(totalAmount, 1, 1);
             dicountInFormDom.textContent = discount;
             netAmountInFormDom.value = formatNumbersWithDigits(netAmount, 1, 1);
+        }
+
+        function packetEdited(elem) {
+            let max = parseInt(elem.max);
+            
+            if (elem.value > max) {
+                elem.value = max;
+            } else if (elem.value < 1) {
+                elem.value = 1;
+            }
+
+            elem.value = elem.value.replace(/\./g, '');
+
+            calculateAndApplyChangesOnOrderArticle(elem);
+        }
+
+        function calculateAndApplyChangesOnOrderArticle(elem) {
+            let childrenDom = elem.parentElement.parentElement.children;
+
+            let packetsValue = parseInt(elem.value);
+
+            let pcsInRowDom = childrenDom[3];
+            totalQuantityPcs -= parseInt(pcsInRowDom.textContent.replace(/[,]/g, ''));
+            let pcsPerPktInRowDom = childrenDom[5];
+            let ratePerPcInRowDom = childrenDom[6];
+
+            let amountInRowDom = childrenDom[childrenDom.length - 1];
+            totalAmount -= parseInt(amountInRowDom.textContent.replace(/[,]/g, ''));
+
+            let pcsCalculated = packetsValue * parseInt(pcsPerPktInRowDom.textContent);
+            totalQuantityPcs += pcsCalculated;
+
+            pcsInRowDom.textContent = formatNumbersDigitLess(pcsCalculated) || 0;
+
+            let amountCalculated = parseInt(pcsInRowDom.textContent.replace(/[,]/g, '')) * parseInt(ratePerPcInRowDom.textContent.replace(/[,]/g, ''));
+            totalAmount += amountCalculated;
+            
+            amountInRowDom.textContent = formatNumbersWithDigits(amountCalculated, 1, 1) || 0.0;
+
+            renderCalcBottom();
         }
 
         // function renderFinals() {

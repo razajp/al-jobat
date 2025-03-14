@@ -72,7 +72,7 @@
             filter: invert(1);
         }
 
-        .bg-\[--primary-color\], .bg-\[--success-color\], .bg-\[--bg-success\], .bg-\[--border-success\], .bg-\[--danger-color\], .bg-\[--bg-error\], .bg-\[--border-error\], .bg-\[--bg-warning\], .bg-\[--border-warning\] {
+        .bg-\[--primary-color\]{
             color: #e2e8f0 !important;
         }
         

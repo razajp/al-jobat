@@ -4,7 +4,114 @@
     <!-- Modal -->
     <div id="articleModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
+        <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
+            <!-- Modal Content Slot -->
+            <div class="flex items-start relative h-full">
+                <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
+                    <div class="header flex items-center justify-between pr-6">
+                        <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
+
+                        <!-- Search Form -->
+                        <div id="search-form" class="search-box w-1/3">
+                            <!-- Search Input -->
+                            <div class="search-input relative">
+                                <x-input name="search_box" id="search_box" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
+                                <div class="dropdownMenu text-sm absolute mt-2 top-100 right-0 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
+                                    <ul class="p-2">
+                                        <li>
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                <input type="radio" name="filter" value="all" class="hidden peer" checked/>
+                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">All</span>
+                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                <input type="radio" name="filter" value="article_no" class="hidden peer" />
+                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Article No.</span>
+                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                <input type="radio" name="filter" value="category" class="hidden peer" />
+                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Category</span>
+                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                <input type="radio" name="filter" value="season" class="hidden peer" />
+                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Season</span>
+                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                        <li>
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                                <input type="radio" name="filter" value="size" class="hidden peer" />
+                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Size</span>
+                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
+                                                </div>
+                                            </label>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-600 my-3">
+        
+                    @if (count($articles) > 0)
+                        <div class='overflow-y-auto my-scroller-2 pt-2 grow'>
+                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                @foreach ($articles as $article)
+                                    <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='generateQuantityModal(this)'
+                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
+                                        <x-card :data="[
+                                            'image' => $article->image == 'no_image_icon.png' 
+                                                ? asset('images/no_image_icon.png') 
+                                                : asset('storage/uploads/images/' . $article->image),
+                                            'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
+                                            'name' => '#' . $article->article_no,
+                                            'details' => [
+                                                'Season' => $article->season,
+                                                'Size' => $article->size,
+                                                'Category' => $article->category,
+                                            ],
+                                        ]" />
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                    
+                    <div class="flex w-full gap-4 text-sm mt-5">
+                        <div
+                            class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                            <div class="grow">Total Quantity - Pcs</div>
+                            <div id="totalOrderedQty">0</div>
+                        </div>
+                        <div
+                            class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                            <div class="grow">Total Amount - Rs.</div>
+                            <div id="totalOrderAmount">0.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </x-modal>
     </div>
+
     <div id="quantityModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
@@ -30,7 +137,7 @@
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" required />
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" required />
                 </div>
 
                 {{-- title --}}
@@ -242,115 +349,6 @@
         })
 
         function generateArticlesModal() {
-            articleModalDom.innerHTML = `
-                <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
-                            <div class="header flex items-center justify-between pr-6">
-                                <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
-
-                                <!-- Search Form -->
-                                <div id="search-form" class="search-box w-1/3">
-                                    <!-- Search Input -->
-                                    <div class="search-input relative">
-                                        <x-input name="search_box" id="search_box" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
-                                        <div class="dropdownMenu text-sm absolute mt-2 top-100 right-0 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
-                                            <ul class="p-2">
-                                                <li>
-                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                                                        <input type="radio" name="filter" value="all" class="hidden peer" checked/>
-                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">All</span>
-                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                        </div>
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                                                        <input type="radio" name="filter" value="article_no" class="hidden peer" />
-                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Article No.</span>
-                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                        </div>
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                                                        <input type="radio" name="filter" value="category" class="hidden peer" />
-                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Category</span>
-                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                        </div>
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                                                        <input type="radio" name="filter" value="season" class="hidden peer" />
-                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Season</span>
-                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                        </div>
-                                                    </label>
-                                                </li>
-                                                <li>
-                                                    <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                                                        <input type="radio" name="filter" value="size" class="hidden peer" />
-                                                        <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Size</span>
-                                                        <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                            <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                        </div>
-                                                    </label>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            @if (count($articles) > 0)
-                                <div class='overflow-y-auto my-scroller-2 pt-2 grow'>
-                                    <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($articles as $article)
-                                            <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='generateQuantityModal(this)'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'image' => $article->image == 'no_image_icon.png' 
-                                                        ? asset('images/no_image_icon.png') 
-                                                        : asset('storage/uploads/images/' . $article->image),
-                                                    'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                                    'name' => '#' . $article->article_no,
-                                                    'details' => [
-                                                        'Season' => $article->season,
-                                                        'Size' => $article->size,
-                                                        'Category' => $article->category,
-                                                    ],
-                                                ]" />
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @endif
-                            
-                            <div class="flex w-full gap-4 text-sm mt-5">
-                                <div
-                                    class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                                    <div class="grow">Total Quantity - Pcs</div>
-                                    <div id="totalOrderedQty">0</div>
-                                </div>
-                                <div
-                                    class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                                    <div class="grow">Total Amount - Rs.</div>
-                                    <div id="totalOrderAmount">0.0</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </x-modal>
-            `;
-
             openArticlesModal();
             setDropdownListeners();
 
@@ -398,6 +396,17 @@
 
         function generateQuantityModal(elem) {
             let data = JSON.parse(elem.dataset.json);
+            let physicalQuantity = 0;
+
+            const physicalQuantityInpDom = document.getElementById('physical_quantity');
+            const physicalQuantityDb = data.physical_quantity;
+            const dateInpDom = document.getElementById('date');
+
+            physicalQuantityDb.forEach(physical_quantity => {
+            //     if (physical_quantity.date >= dateInpDom.value) {
+                    physicalQuantity += physical_quantity.quantity;
+            //     }
+            });
 
             quantityModalDom.innerHTML = `
                 <x-modal id="quantityModalForm" classForBody="p-5" closeAction="closeQuantityModal">
@@ -422,7 +431,8 @@
                                 
                                 <x-input 
                                     label="Physical Stock"
-                                    value="${data.physical_quantity}" 
+                                    id="physical_quantity"
+                                    value="${physicalQuantity}" 
                                     disabled
                                 />
                                 
@@ -448,7 +458,7 @@
                             Cancel
                         </button>
                         <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
                             Set Quantity
                         </button>
                     </x-slot>
@@ -837,6 +847,41 @@
                     <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
                 `;
             }
+        }
+
+        function getDataByDate(inputElem) {
+            $.ajax({
+                url: '{{ route('orders.create') }}',
+                method: 'GET',
+                data: {
+                    date: inputElem.value,
+                },
+                success: function(response) {
+                    const customersOptions = $(response).find('#customer_id').html();
+                    const customerSelectDom = document.getElementById('customer_id');
+                    
+                    if (customersOptions !== undefined && customersOptions.trim() !== "") {
+                        customerSelectDom.innerHTML = customersOptions;
+                        customerSelectDom.disabled = false;
+                        // addListenerToCards();
+                        // addContextMenuListenerToCards();
+                    } else {
+                        customerSelectDom.disabled = true;
+                    }
+
+                    const articleModal = $(response).find('#articleModal').html();
+                    const articleModalDom = document.getElementById('articleModal');
+
+                    if (articleModal !== undefined && articleModal.trim() !== "") {
+                        articleModalDom.innerHTML = articleModal;
+                        // addListenerToCards();
+                        // addContextMenuListenerToCards();
+                    }
+                },
+                error: function() {
+                    alert('Error submitting form');
+                }
+            });
         }
 
         function validateForNextStep() {

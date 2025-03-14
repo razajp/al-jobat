@@ -19,15 +19,15 @@
 
         <div class="space-y-4 ">
             <div class="flex justify-between gap-4">
-                {{-- order date --}}
-                <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" required />
-                </div>
-                
                 {{-- article --}}
                 <div class="grow">
                     <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
+                </div>
+
+                {{-- date --}}
+                <div class="w-1/3">
+                    <x-input label="Date" name="date" id="date" type="date" required />
                 </div>
             </div>
 
@@ -69,7 +69,7 @@
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
-                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
                 <i class='fas fa-save mr-1'></i> Save
             </button>
         </div>
@@ -202,6 +202,21 @@
             calculateTotal();
 
             totalPhysicalQuantityDom.innerText = selectedArticle.physical_quantity;
+            
+            function formatArticleDate(inputDate) {
+                let [day, month, yearWithDay] = inputDate.replace(',', '').split('-');
+                let [year] = yearWithDay.split(' ');
+
+                const monthMap = {
+                    Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                    Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+                };
+
+                return `${year}-${monthMap[month]}-${day.padStart(2, '0')}`;
+            }
+
+            document.getElementById('date').min = formatArticleDate(selectedArticle.date);
+            
             
             if (selectedArticle.pcs_per_packet > 0) {
                 pcsPerPacketDom.readOnly = true;

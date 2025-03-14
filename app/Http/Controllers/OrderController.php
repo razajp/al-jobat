@@ -50,36 +50,45 @@ class OrderController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        $customers = Customer::all();
-
         $customers_options = [];
-        foreach ($customers as $customer) {
-            $user = User::where('id', $customer->user_id)->first();
-            $customer['status'] = $user->status;
+        $articles = [];
 
-            if ($customer->status == 'active') {
-                $customer['balance'] = Order::where('customer_id', $customer->id)->sum('netAmount');
-                $customers_options[(int)$customer->id] = [
-                    'text' => $customer->customer_name . ' | ' . $customer->city,
-                    'data_option' => $customer
-                ];
+        if ($request->date) {
+            $customers = Customer::where('date', '<=', $request->date)->get();
+
+            foreach ($customers as $customer) {
+                $user = User::where('id', $customer->user_id)->first();
+                $customer['status'] = $user->status;
+    
+                if ($customer->status == 'active') {
+                    $customer['balance'] = Order::where('customer_id', $customer->id)->sum('netAmount');
+                    $customers_options[(int)$customer->id] = [
+                        'text' => $customer->customer_name . ' | ' . $customer->city,
+                        'data_option' => $customer
+                    ];
+                }
             }
-        }
-
-        $articles = Article::all();
-
-        foreach ($articles as $article) {
-            $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
-            if ($physical_quantity) {
-                $article['physical_quantity'] = $physical_quantity * $article->pcs_per_packet;
-            } else {
-                $article['physical_quantity'] = 0;
+            
+            $articles = Article::where('date', '<=', $request->date)->get();
+    
+            foreach ($articles as $article) {
+                $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->get();
+                $article['physical_quantity'] = $physical_quantity;
+    
+                foreach ($article['physical_quantity'] as $physical_quantity) {
+                    if ($physical_quantity) {
+                        $physical_quantity['quantity'] = $physical_quantity['packets'] * $article->pcs_per_packet;
+                    } else {
+                        $physical_quantity['quantity'] = 0;
+                    }
+                }
+    
+                $article["rates_array"] = json_decode($article->rates_array, true);
+                $article['date'] = date('d-M-Y, D', strtotime($article['date']));
+                $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
             }
-            $article["rates_array"] = json_decode($article->rates_array, true);
-            $article['date'] = date('d-M-Y, D', strtotime($article['date']));
-            $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
         }
 
         $last_order = Order::orderby('id', 'desc')->first();
@@ -90,7 +99,7 @@ class OrderController extends Controller
         }
 
         return view('orders.generate', compact('customers_options', 'articles', 'last_order'));
-        // return $customers_options;
+        // return $articles;
     }
 
     /**

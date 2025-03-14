@@ -109,7 +109,7 @@
                         </div> --}}
                         
                         <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto fade-in">
-                            <div class="text tracking-wide text-gray-400">Please add category</div>
+                            <div class="text tracking-wide text-[--secondary-text]">Please add category</div>
                         </div>
                     </div>
                     <div id="category-error" class="text-[--border-error] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
@@ -203,13 +203,13 @@
             if (selectedCategoryId) {
                 // Create the chip element
                 let chip = document.createElement('div');
-                chip.className = 'chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
+                chip.className = 'chip border border-gray-600 text-[--secondary-text] text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
                 chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
                 chip.innerHTML = `
                     <div class="text tracking-wide">${selectedCategoryName}</div>
                     <button class="delete" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            class="size-3 stroke-gray-300">
+                            class="size-3 stroke-[--secondary-text]">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>
@@ -227,7 +227,7 @@
                         
                         if (categoriesArray.length <= 0) {
                             chipsDom.innerHTML = `
-                                <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto">
+                                <div class="chip border border-gray-600 text-[--secondary-text] text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto">
                                     <div class="text tracking-wide text-gray-400">Please add category</div>
                                 </div>
                             `;

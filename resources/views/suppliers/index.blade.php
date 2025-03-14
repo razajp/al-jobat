@@ -306,7 +306,7 @@
             let chipsClutter = "";
             data.categories.forEach((category) => {
                 chipsClutter += `
-                    <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                    <div class="chip border border-gray-600 text-[--secondary-text] text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
                         <div class="text tracking-wide">${category.title}</div>
                     </div>
                 `

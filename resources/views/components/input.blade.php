@@ -21,6 +21,7 @@
     'btnId' => "",
     'btnText' => "+",
     'btnClass' => "",
+    'onchange' => "",
 ])
 
 @if ($uppercased)
@@ -60,6 +61,7 @@
             {{
                 $validateMax ? 'max='.$max : ''
             }}
+            {{ $onchange ? 'onchange='.$onchange : '' }}
         />
         @if ($withImg)
             <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">

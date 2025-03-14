@@ -329,7 +329,7 @@
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
-                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
                             Add Image
                         </button>
                     </x-slot>
@@ -386,7 +386,7 @@
                     alert('Error submitting form');
                 }
             });
-        };
+        }
 
         const close = document.querySelectorAll('#close');
 
@@ -502,7 +502,7 @@
                         </button>
 
                         <button id="add-image-in-modal" type="button"
-                            class="px-4 py-2 bg-[--bg-warning] border border-[--bg-warning] text-nowrap rounded-lg hover:bg-[--h-bg-warning] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[--bg-warning] border border-[--bg-warning] text-[--text-warning] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-warning] transition-all 0.3s ease-in-out">
                             Add Image
                         </button>
                     </x-slot>
