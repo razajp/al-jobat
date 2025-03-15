@@ -67,7 +67,7 @@
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
             </div>
-            <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
+            <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
         </div>
 
         <!-- Step 2: view order -->
@@ -184,6 +184,7 @@
 
     <script>
         let orderedArticles = [];
+        let articlesInInvoice = [];
         let totalQuantityPcs = 0;
         let totalAmount = 0;
         let netAmount = 0;
@@ -248,8 +249,11 @@
                     order_no: orderNoDom.value
                 },
                 success: function (response) {
+                    console.log(response);
+                    
                     orderedArticles = response.ordered_articles;
                     discount = response.discount;
+                    customerData = response.customer;
 
                     document.getElementById('date').value = '';
                     document.getElementById('date').min = response.date;
@@ -282,7 +286,7 @@
                         let orderedQuantity = selectedArticle.ordered_quantity;
                         let totalPhysicalStockPackets = selectedArticle.total_physical_stock_packets;
                         let totalPhysicalStockPcs = selectedArticle.total_physical_stock_packets * selectedArticle.article.pcs_per_packet;
-                        let orderedPhysicalQuantity = orderedQuantity > totalPhysicalStockPcs ? totalPhysicalStockPackets : Math.floor(orderedQuantity / selectedArticle.article.pcs_per_packet);
+                        let orderedPhysicalQuantity = Math.floor(totalPhysicalStockPackets);
                         
                         totalQuantityPcs += orderedPhysicalQuantity * selectedArticle.article.pcs_per_packet;
 
@@ -306,6 +310,9 @@
                         `;
 
                         totalAmount += articleAmount;
+
+                        selectedArticle.packets = orderedPhysicalQuantity
+                        selectedArticle.ordered_quantity = orderedPhysicalQuantity * selectedArticle.article.pcs_per_packet
                     }
                 });
 
@@ -314,9 +321,21 @@
                 articleListDOM.innerHTML =
                     `<div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Orders Yet</div>`;
             }
-            // updateInputOrderedArticles();
         }
         renderList();
+
+        function updateInputArticlesInInvoice() {
+            const articlesInInvoiceInpDom = document.getElementById("articles_in_invoice");
+            let finalArticlesArray = orderedArticles.map(article => {
+                return {
+                    id: article.article.id,
+                    description: article.description,
+                    invoice_quantity: article.ordered_quantity,
+                }
+            })
+            articlesInInvoiceInpDom.value = JSON.stringify(finalArticlesArray);
+            console.log(finalArticlesArray);
+        }
 
         function renderCalcBottom() {
             netAmount = totalAmount - (totalAmount * (discount / 100));
@@ -345,6 +364,7 @@
 
             let packetsValue = parseInt(elem.value);
 
+            let articleNoInRowDom = childrenDom[1];
             let pcsInRowDom = childrenDom[3];
             totalQuantityPcs -= parseInt(pcsInRowDom.textContent.replace(/[,]/g, ''));
             let pcsPerPktInRowDom = childrenDom[5];
@@ -363,198 +383,179 @@
             
             amountInRowDom.textContent = formatNumbersWithDigits(amountCalculated, 1, 1) || 0.0;
 
+            let currentArticle = orderedArticles.find(article => article.article.article_no == parseInt(articleNoInRowDom.textContent.replace(/#/g, '')))
+            
+            if (currentArticle) {
+                currentArticle.packets = packetsValue
+                currentArticle.ordered_quantity = pcsCalculated
+            }
+            
+            
             renderCalcBottom();
         }
 
-        // function renderFinals() {
-        //     finalOrderedQuantity.textContent = totalOrderedQuantity;
-        //     finalOrderAmount.textContent = totalOrderAmount;
-        //     finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
-        //     finalNetAmount.value = netAmount;
-        //     finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')), 1, 1);
-        // }
+        let companyData = @json(app('company'));
+        let invoiceNo;
+        let invoiceDate;
+        const previewDom = document.getElementById('preview');
 
-        // function updateInputOrderedArticles() {
-        //     let inputOrderedArticles = document.getElementById('ordered_articles');
-        //     let finalArticlesArray = selectedArticles.map(article => {
-        //         return {
-        //             id: article.id,
-        //             description: article.description,
-        //             ordered_quantity: article.orderedQuantity
-        //         }
-        //     });
-        //     inputOrderedArticles.value = JSON.stringify(finalArticlesArray);
-        // }
+        function generateInvoiceNo() {
+            let lastInvoiceNo = lastInvoice.invoice_no.replace("2025-", "")
+            const todayYear = new Date().getFullYear();
+            const nextInvoiceNo = String(parseInt(lastInvoiceNo, 10) + 1).padStart(4, '0');
+            return todayYear + '-' + nextInvoiceNo;
+        }
 
-        // let companyData = @json(app('company'));
-        // let orderNo;
-        // let orderDate;
-        // const previewDom = document.getElementById('preview');
+        function getInvoiceDate() {
+            const dateDom = document.getElementById('date').value;
+            const date = new Date(dateDom);
 
-        // function generateOrderNo() {
-        //     let lastInvoiceNo = lastInvoice.order_no.replace("2025-", "")
-        //     const todayYear = new Date().getFullYear();
-        //     const nextOrderNo = String(parseInt(lastInvoiceNo, 10) + 1).padStart(4, '0');
-        //     return todayYear + '-' + nextOrderNo;
-        // }
+            // Extract day, month, and year
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+            const year = date.getFullYear();
+            const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
-        // function getOrderDate() {
-        //     const dateDom = document.getElementById('date').value;
-        //     const date = new Date(dateDom);
+            // Array of weekday names
+            const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-        //     // Extract day, month, and year
-        //     const day = String(date.getDate()).padStart(2, '0');
-        //     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-        //     const year = date.getFullYear();
-        //     const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            // Return the formatted date
+            return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
+        }
 
-        //     // Array of weekday names
-        //     const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-
-        //     // Return the formatted date
-        //     return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
-        // }
-
-        // function generateOrder() {
-        //     orderNo = generateOrderNo();
-        //     orderDate = getOrderDate();
+        function generateInvoice() {
+            invoiceNo = generateInvoiceNo();
+            invoiceDate = getInvoiceDate();
             
-        //     if (selectedArticles.length > 0) {
-        //         previewDom.innerHTML = `
-        //             <div id="order" class="order flex flex-col h-full">
-        //                 <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
-        //                     <div class="left w-50">
-        //                         <div class="order-logo">
-        //                             <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-        //                                 class="w-[150px]" />
-        //                         </div>
-        //                     </div>
-        //                     <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
-        //                         <div class="order-date">Date: ${orderDate}</div>
-        //                         <div class="order-number">Order No.: ${orderNo}</div>
-        //                         <input type="hidden" name="order_no" value="${orderNo}">
-        //                         <div class="order-copy">Order Copy: Customer</div>
-        //                     </div>
-        //                 </div>
-        //                 <hr class="w-100 my-5 border-gray-600">
-        //                 <div id="order-header" class="order-header w-full flex justify-between px-5">
-        //                     <div class="left w-50">
-        //                         <div class="order-to text-sm text-gray-500">Order to:</div>
-        //                         <div class="order-customer text-lg">${customerData.customer_name}</div>
-        //                         <div class="order-person text-md">${customerData.person_name}</div>
-        //                         <div class="order-address text-md">${customerData.address}, ${customerData.city}</div>
-        //                         <div class="order-phone text-md">${customerData.phone_number}</div>
-        //                     </div>
-        //                     <div class="right w-50">
-        //                         <div class="order-from text-sm text-gray-500">Order from:</div>
-        //                         <div class="order-customer text-lg">${companyData.name}</div>
-        //                         <div class="order-person text-md">${companyData.owner_name}</div>
-        //                         <div class="order-address text-md">${companyData.city}, ${companyData.address}</div>
-        //                         <div class="order-phone text-md">${companyData.phone_number}</div>
-        //                     </div>
-        //                 </div>
-        //                 <hr class="w-100 mt-5 mb-5 border-gray-600">
-        //                 <div id="order-body" class="order-body w-[95%] grow mx-auto">
-        //                     <div class="order-table w-full">
-        //                         <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
-        //                             <div class="thead w-full">
-        //                                 <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
-        //                                     <div class="th text-sm font-medium w-[5%]">#</div>
-        //                                     <div class="th text-sm font-medium w-[10%]">Article</div>
-        //                                     <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
-        //                                     <div class="th text-sm font-medium grow">Desc.</div>
-        //                                     <div class="th text-sm font-medium w-1/6">Rate</div>
-        //                                     <div class="th text-sm font-medium w-1/6">Amount</div>
-        //                                     <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
-        //                                 </div>
-        //                             </div>
-        //                             <div id="tbody" class="tbody w-full">
-        //                                 ${selectedArticles.map((article, index) => {
-        //                                     if (index == 0) {
-        //                                         return `
-        //                                                 <div>
-        //                                                     <hr class="w-full mb-3 border-gray-600">
-        //                                                     <div class="tr flex justify-between w-full px-4">
-        //                                                         <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-        //                                                         <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-        //                                                         <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-        //                                                         <div class="td text-sm font-semibold grow">${article.description}</div>
-        //                                                         <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
-        //                                                         <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
-        //                                                         <div class="td text-sm font-semibold w-[12%]">____________</div>
-        //                                                     </div>
-        //                                                 </div>
-        //                                             `;
-        //                                     } else {
-        //                                         return `
-        //                                                 <div>
-        //                                                     <hr class="w-full my-3 border-gray-600">
-        //                                                     <div class="tr flex justify-between w-full px-4">
-        //                                                         <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-        //                                                         <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-        //                                                         <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-        //                                                         <div class="td text-sm font-semibold grow">${article.description}</div>
-        //                                                         <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
-        //                                                         <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
-        //                                                         <div class="td text-sm font-semibold w-[12%]">____________</div>
-        //                                                     </div>
-        //                                                 </div>
-        //                                             `;
-        //                                     }
-        //                                 }).join('')}
-        //                             </div>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //                 <hr class="w-full my-4 border-gray-600">
-        //                 <div class="flex flex-col space-y-2">
-        //                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-        //                         <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Total Quantity - Pcs</div>
-        //                             <div class="w-1/4 text-right grow">${totalQuantityDOM.textContent}</div>
-        //                         </div>
-        //                         <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Total Amount</div>
-        //                             <div class="w-1/4 text-right grow">${totalAmountDOM.textContent}</div>
-        //                         </div>
-        //                         <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Discount - %</div>
-        //                             <div class="w-1/4 text-right grow">${discountDOM.value}</div>
-        //                         </div>
-        //                     </div>
-        //                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-        //                         <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Previous Balance</div>
-        //                             <div class="w-1/4 text-right grow">${finalPreviousBalance.textContent}</div>
-        //                         </div>
-        //                         <div
-        //                             class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Net Amount</div>
-        //                             <div class="w-1/4 text-right grow">${finalNetAmount.value}</div>
-        //                         </div>
-        //                         <div
-        //                             class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-        //                             <div class="text-nowrap">Current Balance</div>
-        //                             <div class="w-1/4 text-right grow">${finalCurrentBalance.textContent}</div>
-        //                         </div>
-        //                     </div>
-        //                 </div>
-        //                 <hr class="w-full my-4 border-gray-600">
-        //                 <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
-        //                     <P>${ companyData.name }</P>
-        //                     <p>&copy; Spark Pair 2025 | sparkpair.com</p>
-        //                 </div>
-        //             </div>
-        //         `;
-        //     } else {
-        //         previewDom.innerHTML = `
-        //             <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
-        //         `;
-        //     }
-        // }
+            if (orderedArticles.length > 0) {
+                previewDom.innerHTML = `
+                    <div id="invoice" class="invoice flex flex-col h-full">
+                        <div id="invoice-banner" class="invoice-banner w-full flex justify-between mt-8 px-5">
+                            <div class="left w-50">
+                                <div class="invoice-logo">
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                        class="w-[150px]" />
+                                </div>
+                            </div>
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
+                                <div class="invoice-date">Date: ${invoiceDate}</div>
+                                <div class="invoice-number">Invoice No.: ${invoiceNo}</div>
+                                <input type="hidden" name="invoice_no" value="${invoiceNo}">
+                                <div class="invoice-copy">Invoice Copy: Customer</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 my-5 border-gray-600">
+                        <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
+                            <div class="left w-50">
+                                <div class="invoice-to text-sm text-gray-500">Invoice to:</div>
+                                <div class="invoice-customer text-lg">${customerData.customer_name}</div>
+                                <div class="invoice-person text-md">${customerData.person_name}</div>
+                                <div class="invoice-address text-md">${customerData.address}, ${customerData.city}</div>
+                                <div class="invoice-phone text-md">${customerData.phone_number}</div>
+                            </div>
+                            <div class="right w-50">
+                                <div class="invoice-from text-sm text-gray-500">Invoice from:</div>
+                                <div class="invoice-customer text-lg">${companyData.name}</div>
+                                <div class="invoice-person text-md">${companyData.owner_name}</div>
+                                <div class="invoice-address text-md">${companyData.city}, ${companyData.address}</div>
+                                <div class="invoice-phone text-md">${companyData.phone_number}</div>
+                            </div>
+                        </div>
+                        <hr class="w-100 mt-5 mb-5 border-gray-600">
+                        <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
+                            <div class="invoice-table w-full">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                    <div class="thead w-full">
+                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
+                                            <div class="th text-sm font-medium w-[5%]">#</div>
+                                            <div class="th text-sm font-medium w-[11%]">Article</div>
+                                            <div class="th text-sm font-medium w-[11%]">Packets</div>
+                                            <div class="th text-sm font-medium w-[10%]">Pcs</div>
+                                            <div class="th text-sm font-medium grow">Desc.</div>
+                                            <div class="th text-sm font-medium w-[8%]">Pcs/Pkt</div>
+                                            <div class="th text-sm font-medium w-[12%]">Rate/Pc</div>
+                                            <div class="th text-sm font-medium w-[15%]">Amount</div>
+                                        </div>
+                                    </div>
+                                    <div id="tbody" class="tbody w-full">
+                                        ${orderedArticles.map((articles, index) => {
+                                            if (index == 0) {
+                                                return `
+                                                        <div>
+                                                            <hr class="w-full mb-3 border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[11%]">#${articles.article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[11%]">${articles.packets}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${articles.ordered_quantity}</div>
+                                                                <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                                <div class="td text-sm font-semibold w-[8%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                                <div class="td text-sm font-semibold w-[12%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                                <div class="td text-sm font-semibold w-[15%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.ordered_quantity, 1, 1)}</div>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                            } else {
+                                                return `
+                                                        <div>
+                                                            <hr class="w-full my-3 border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[11%]">#${articles.article.article_no}</div>
+                                                                <div class="td text-sm font-semibold w-[11%]">${articles.packets}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${articles.ordered_quantity}</div>
+                                                                <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                                <div class="td text-sm font-semibold w-[8%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                                <div class="td text-sm font-semibold w-[12%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                                <div class="td text-sm font-semibold w-[15%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.ordered_quantity, 1, 1)}</div>
+                                                            </div>
+                                                        </div>
+                                                    `;
+                                            }
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="flex flex-col space-y-2">
+                            <div id="invoice-total" class="tr grid grid-cols-2 w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Quantity - Pcs</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantityPcs)}</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Gross Amount</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Discount - %</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersDigitLess(discount)}</div>
+                                </div>
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Net Amount</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-4 border-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                            <P>${ companyData.name }</P>
+                            <p>&copy; Spark Pair 2025 | sparkpair.com</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                previewDom.innerHTML = `
+                    <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
+                `;
+            }
+        }
 
         function validateForNextStep() {
-            generateOrder()
+            generateInvoice()
+            updateInputArticlesInInvoice();
             return true;
         }
     </script>

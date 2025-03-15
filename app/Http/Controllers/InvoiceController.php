@@ -24,12 +24,12 @@ class InvoiceController extends Controller
      */
     public function create()
     {
-        // $last_Invoice = invoice::orderby('id', 'desc')->first();
+        $last_Invoice = invoice::orderby('id', 'desc')->first();
 
-        // if (!$last_Invoice) {
+        if (!$last_Invoice) {
             $last_Invoice = new invoice();
             $last_Invoice->invoice_no = '0000-0000';
-        // }
+        }
 
         return view("invoices.generate", compact("last_Invoice"));
     }
@@ -39,7 +39,49 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return $request;
+        $validator = Validator::make($request->all(), [
+            "invoice_no" => "required|string|unique:invoices,invoice_no",
+            "order_no" => "required|string|exists:orders,order_no",
+            "date" => "required|date",
+            "netAmount" => "required|string|regex:/^\d{1,3}(,\d{3})*(\.\d+)?$/",
+            "articles_in_invoice" => "required|string",
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        $articles = json_decode($data["articles_in_invoice"], true);
+
+        foreach ($articles as $article) {
+            $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
+        }
+
+        foreach ($articles as $article) {
+            $orderDb = Order::where("order_no", $data["order_no"])->first();
+            $orderedArticleDb = json_decode($orderDb["ordered_articles"], true);
+
+            // Update all matching articles
+            foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference to modify in place
+                if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
+                    // Update invoice_quantity without overwriting existing value
+                    $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
+                }
+            }
+
+            // Save updated ordered_articles back to the database
+            $orderDb->ordered_articles = json_encode($orderedArticleDb);
+            $orderDb->save();
+        }
+
+        $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
+        
+        invoice::create($data);
+
+        return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
     }
 
     /**
@@ -94,9 +136,13 @@ class InvoiceController extends Controller
             $orderedArticle->article = $article;
 
             $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
-            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPackets;
-        }
+            $totalPhysicalStockPcs = ($totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet) > $orderedArticle->ordered_quantity ? $orderedArticle->ordered_quantity : $totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet;
+            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet;
 
+            if (isset($orderedArticle->invoice_quantity)) {
+                $orderedArticle->total_physical_stock_packets -= $orderedArticle->invoice_quantity / $orderedArticle->article['pcs_per_packet'];
+            }
+        }
         $order->ordered_articles = $orderedArticles;
 
         return response()->json($order);
