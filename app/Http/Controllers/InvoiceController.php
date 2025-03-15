@@ -136,12 +136,18 @@ class InvoiceController extends Controller
             $orderedArticle->article = $article;
 
             $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
-            $totalPhysicalStockPcs = ($totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet) > $orderedArticle->ordered_quantity ? $orderedArticle->ordered_quantity : $totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet;
-            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet;
-
+            $totalPhysicalStockPcs = $totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet;
+            $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
+            
+            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet; 
+            
             if (isset($orderedArticle->invoice_quantity)) {
                 $orderedArticle->total_physical_stock_packets -= $orderedArticle->invoice_quantity / $orderedArticle->article['pcs_per_packet'];
+            } else {
+                $totalSoldQunatity = $article->sold_quantity;
+                $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQunatity)/ $orderedArticle->article->pcs_per_packet; 
             }
+            $orderedArticle->total_physical_stock_packets = $orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets; 
         }
         $order->ordered_articles = $orderedArticles;
 

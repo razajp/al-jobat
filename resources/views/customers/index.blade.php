@@ -123,7 +123,7 @@
 
             ac_in_context.classList.add('hidden');
 
-            if (ac_in_btn_context) {
+            if (ac_in_btn_context && data.balance == 0) {
                 ac_in_btn_context.classList.add('text-[--border-error]');
                 if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
                     if (data.user.status === 'active') {
@@ -273,31 +273,35 @@
             } else {
                 imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
             }
+            
+            if (data.balance != 0) {
+                ac_in_modal.classList.add('hidden');
 
-            if (data.user.status === 'active') {
-                ac_in_btn.classList.add('bg-[--bg-error]')
-                ac_in_btn.classList.add('border-[--bg-error]')
-                ac_in_btn.classList.remove('bg-[--bg-success]')
-                ac_in_btn.classList.remove('border-[--bg-success]')
-                ac_in_btn.classList.add('hover:bg-[--h-bg-error]')
-                ac_in_btn.classList.remove('hover:bg-[--h-bg-success]')
-                ac_in_btn.classList.add('text-[--text-error]')
-                ac_in_btn.classList.remove('text-[--text-success]')
-                ac_in_btn.textContent = 'In Active'
-                active_inactive_dot_modal.classList.remove('bg-[--border-error]')
-                active_inactive_dot_modal.classList.add('bg-[--border-success]')
-            } else {
-                ac_in_btn.classList.remove('bg-[--bg-error]')
-                ac_in_btn.classList.remove('border-[--bg-error]')
-                ac_in_btn.classList.add('bg-[--bg-success]')
-                ac_in_btn.classList.add('border-[--bg-success]')
-                ac_in_btn.classList.remove('hover:bg-[--h-bg-error]')
-                ac_in_btn.classList.add('hover:bg-[--h-bg-success]')
-                ac_in_btn.classList.remove('text-[--text-error]')
-                ac_in_btn.classList.add('text-[--text-success]')
-                ac_in_btn.textContent = 'Active'
-                active_inactive_dot_modal.classList.add('bg-[--border-error]')
-                active_inactive_dot_modal.classList.remove('bg-[--border-success]')
+                if (data.user.status === 'active') {
+                    ac_in_btn.classList.add('bg-[--bg-error]')
+                    ac_in_btn.classList.add('border-[--bg-error]')
+                    ac_in_btn.classList.remove('bg-[--bg-success]')
+                    ac_in_btn.classList.remove('border-[--bg-success]')
+                    ac_in_btn.classList.add('hover:bg-[--h-bg-error]')
+                    ac_in_btn.classList.remove('hover:bg-[--h-bg-success]')
+                    ac_in_btn.classList.add('text-[--text-error]')
+                    ac_in_btn.classList.remove('text-[--text-success]')
+                    ac_in_btn.textContent = 'In Active'
+                    active_inactive_dot_modal.classList.remove('bg-[--border-error]')
+                    active_inactive_dot_modal.classList.add('bg-[--border-success]')
+                } else {
+                    ac_in_btn.classList.remove('bg-[--bg-error]')
+                    ac_in_btn.classList.remove('border-[--bg-error]')
+                    ac_in_btn.classList.add('bg-[--bg-success]')
+                    ac_in_btn.classList.add('border-[--bg-success]')
+                    ac_in_btn.classList.remove('hover:bg-[--h-bg-error]')
+                    ac_in_btn.classList.add('hover:bg-[--h-bg-success]')
+                    ac_in_btn.classList.remove('text-[--text-error]')
+                    ac_in_btn.classList.add('text-[--text-success]')
+                    ac_in_btn.textContent = 'Active'
+                    active_inactive_dot_modal.classList.add('bg-[--border-error]')
+                    active_inactive_dot_modal.classList.remove('bg-[--border-success]')
+                }
             }
 
             openModal()

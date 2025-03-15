@@ -14,6 +14,8 @@
     'listOptions' => [],
     'max' => "",
     'validateMax' => false,
+    'min' => "",
+    'validateMin' => false,
     'readonly' => false,
     'withImg' => false,
     'imgUrl' => "",
@@ -22,6 +24,7 @@
     'btnText' => "+",
     'btnClass' => "",
     'onchange' => "",
+    'oninput' => "",
 ])
 
 @if ($uppercased)
@@ -58,10 +61,10 @@
             {{ $attributes->merge([
                 'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
             ]) }}
-            {{
-                $validateMax ? 'max='.$max : ''
-            }}
+            {{ $validateMax ? 'max='.$max : '' }}
+            {{ $validateMin ? 'min='.$min : '' }}
             {{ $onchange ? 'onchange='.$onchange : '' }}
+            {{ $oninput ? 'oninput='.$oninput : '' }}
         />
         @if ($withImg)
             <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">

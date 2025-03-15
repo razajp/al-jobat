@@ -15,50 +15,50 @@
                         <div id="search-form" class="search-box w-1/3">
                             <!-- Search Input -->
                             <div class="search-input relative">
-                                <x-input name="search_box" id="search_box" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
+                                <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
                                 <div class="dropdownMenu text-sm absolute mt-2 top-100 right-0 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
                                     <ul class="p-2">
                                         <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("all")'>
                                                 <input type="radio" name="filter" value="all" class="hidden peer" checked/>
                                                 <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">All</span>
-                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                                 </div>
                                             </label>
                                         </li>
                                         <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("#")'>
                                                 <input type="radio" name="filter" value="article_no" class="hidden peer" />
                                                 <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Article No.</span>
-                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                                 </div>
                                             </label>
                                         </li>
                                         <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("category")'>
                                                 <input type="radio" name="filter" value="category" class="hidden peer" />
                                                 <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Category</span>
-                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                                 </div>
                                             </label>
                                         </li>
                                         <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("season")'>
                                                 <input type="radio" name="filter" value="season" class="hidden peer" />
                                                 <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Season</span>
-                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                                 </div>
                                             </label>
                                         </li>
                                         <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
+                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("size")'>
                                                 <input type="radio" name="filter" value="size" class="hidden peer" />
                                                 <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Size</span>
-                                                <div class="w-4 h-4 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
+                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                                 </div>
                                             </label>
@@ -137,7 +137,7 @@
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" required />
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
 
                 {{-- title --}}
@@ -399,14 +399,7 @@
             let physicalQuantity = 0;
 
             const physicalQuantityInpDom = document.getElementById('physical_quantity');
-            const physicalQuantityDb = data.physical_quantity;
             const dateInpDom = document.getElementById('date');
-
-            physicalQuantityDb.forEach(physical_quantity => {
-            //     if (physical_quantity.date >= dateInpDom.value) {
-                    physicalQuantity += physical_quantity.quantity;
-            //     }
-            });
 
             quantityModalDom.innerHTML = `
                 <x-modal id="quantityModalForm" classForBody="p-5" closeAction="closeQuantityModal">
@@ -432,7 +425,7 @@
                                 <x-input 
                                     label="Physical Stock"
                                     id="physical_quantity"
-                                    value="${physicalQuantity}" 
+                                    value="${data.physical_quantity}" 
                                     disabled
                                 />
                                 
@@ -848,6 +841,9 @@
                 `;
             }
         }
+        
+        let cardsDom;
+        let cardsDataArray = [];
 
         function getDataByDate(inputElem) {
             $.ajax({
@@ -876,12 +872,93 @@
                         articleModalDom.innerHTML = articleModal;
                         // addListenerToCards();
                         // addContextMenuListenerToCards();
+
+                        cardsDom = $(articleModal).find('.card_container').children().toArray();
+
+                        cardsDom.forEach((card) => {
+                            cardsDataArray.push(JSON.parse(card.dataset.json));
+                        })
                     }
                 },
                 error: function() {
                     alert('Error submitting form');
                 }
             });
+        }
+
+        let filterType;
+
+        function setFilter(filterTypeArg) {
+            filterType = filterTypeArg;
+
+            searchData(document.getElementById('search_box').value);
+        }
+        setFilter('all');
+
+        function searchData(search) {
+            search = search.toLowerCase();
+
+            const filteredData = cardsDataArray.filter(item => {
+                switch (filterType) {
+                    case 'all':
+                        return (
+                            item.article_no.toString().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
+                            item.season.toLowerCase().includes(search) ||
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case '#':
+                        return (
+                            item.article_no.toString().includes(search)
+                        );
+                        break;
+                        
+                    case 'category':
+                        return (
+                            item.category.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'season':
+                        return (
+                            item.season.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'size':
+                        return (
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                
+                    default:
+                        return (
+                            item.article_no.toString().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
+                            item.season.toLowerCase().includes(search) ||
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                }
+            });
+
+            const cardContainerDom = document.querySelector('.card_container');
+            cardContainerDom.innerHTML = "";
+
+            if (filteredData.length === 0) {
+                // Show "No articles found" message if no results
+                const noResultMessage = "<p class='text-center col-span-full text-[--border-error]'>No articles found</p>"
+                cardContainerDom.innerHTML = noResultMessage;
+            } else {
+                filteredData.forEach(item => {
+                    const cardElement = cardsDom.find(card => card.id == item.id);
+                    if (cardElement) {
+                        cardContainerDom.appendChild(cardElement);
+                    }
+                });
+            }
         }
 
         function validateForNextStep() {

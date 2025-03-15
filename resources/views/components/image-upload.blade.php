@@ -6,7 +6,7 @@
             onchange="previewImage(event)" />
         <div id="image_preview_{{ $id }}" class="flex flex-col items-center max-w-[50%]">
             <img src="{{ $placeholder }}" alt="Upload Icon"
-                class="placeholder_icon w-16 h-16 mb-2" id="placeholder_icon_{{ $id }}" />
+                class="placeholder_icon w-16 h-16 mb-2 rounded-md" id="placeholder_icon_{{ $id }}" />
             <p id="upload_text_{{ $id }}" class="upload_text text-md text-gray-500">{{ $uploadText }}</p>
         </div>
         @error($name)

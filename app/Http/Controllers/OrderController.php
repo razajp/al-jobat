@@ -74,16 +74,8 @@ class OrderController extends Controller
             $articles = Article::where('date', '<=', $request->date)->get();
     
             foreach ($articles as $article) {
-                $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->get();
-                $article['physical_quantity'] = $physical_quantity;
-    
-                foreach ($article['physical_quantity'] as $physical_quantity) {
-                    if ($physical_quantity) {
-                        $physical_quantity['quantity'] = $physical_quantity['packets'] * $article->pcs_per_packet;
-                    } else {
-                        $physical_quantity['quantity'] = 0;
-                    }
-                }
+                $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
+                $article['physical_quantity'] = ( $physical_quantity * $article->pcs_per_packet ) - $article['sold_quantity'];
     
                 $article["rates_array"] = json_decode($article->rates_array, true);
                 $article['date'] = date('d-M-Y, D', strtotime($article['date']));

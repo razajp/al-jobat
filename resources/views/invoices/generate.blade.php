@@ -23,12 +23,7 @@
             <div class="flex justify-between gap-4">
                 {{-- order_no --}}
                 <div class="grow">
-                    <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice"/>
-                </div>
-
-                {{-- Invoice date --}}
-                <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" required />
+                    <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
                 </div>
             </div>
             {{-- rate showing --}}
@@ -254,9 +249,6 @@
                     orderedArticles = response.ordered_articles;
                     discount = response.discount;
                     customerData = response.customer;
-
-                    document.getElementById('date').value = '';
-                    document.getElementById('date').min = response.date;
                     
                     renderList();
                     renderCalcBottom();
@@ -407,8 +399,7 @@
         }
 
         function getInvoiceDate() {
-            const dateDom = document.getElementById('date').value;
-            const date = new Date(dateDom);
+            const date = new Date();
 
             // Extract day, month, and year
             const day = String(date.getDate()).padStart(2, '0');
