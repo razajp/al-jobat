@@ -27,4 +27,14 @@ class Customer extends Model
     public function category() {
         return $this->belongsTo(Setup::class, 'category_id')->where("type", "customer_category");
     }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'customer_id');
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class, 'customer_id');
+    }
 }

@@ -11,61 +11,17 @@
     <div id="addImageModal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
+    
+    {{-- header --}}
+    <x-search-header heading="Articles" :filter_items="[
+        'all' => 'All',
+        '#' => 'Article No.',
+        'category' => 'Category',
+        'season' => 'Season',
+        'size' => 'Size',
+    ]"/>
+
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color] fade-in"> Show Articles </h1>
-
-    <!-- Search Form -->
-    {{-- <form id="search-form" method="GET" action="{{ route('article.index') }}" autocomplete="off"
-        class="search-box w-[80%] text-sm mx-auto my-5 flex items-center gap-4">
-        <!-- Search Input -->
-        <div class="search-input relative flex-1">
-            <input type="text" name="search" value="{{ request('search') }}" placeholder="Search Article Number"
-                id="article_no_search"
-                class="w-full px-4 py-2 rounded-lg bg-[--h-bg-color] text-[--text-color] placeholder-[--text-color] focus:outline-none focus:ring-2 focus:ring-[--primary-color] focus:ring-opacity-50">
-        </div>
-
-        <!-- Filters -->
-        <div class="filter-box flex flex-1 items-center gap-4">
-            <!-- Season Filter -->
-            <div class="filter-select relative w-full">
-                <select name="season" id="season"
-                    class="w-full px-4 py-2 rounded-lg bg-[--h-bg-color] text-[--text-color] placeholder-[--text-color] appearance-none focus:outline-none focus:ring-2 focus:ring-[--primary-color] focus:ring-opacity-50">
-                    <option value="all" {{ request('season') === 'all' ? 'selected' : '' }}>All Seasons</option>
-                    @foreach ($seasons as $season)
-                        <option value="{{ $season->id }}" {{ request('season') == $season->id ? 'selected' : '' }}>
-                            {{ $season->title }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Size Filter -->
-            <div class="filter-select relative w-full">
-                <select name="size" id="size"
-                    class="w-full px-4 py-2 rounded-lg bg-[--h-bg-color] text-[--text-color] placeholder-[--text-color] appearance-none focus:outline-none focus:ring-2 focus:ring-[--primary-color] focus:ring-opacity-50">
-                    <option value="all">All Sizes</option>
-                    @foreach ($sizes as $size)
-                        <option value="{{ $size->id }}" {{ request('size') == $size->id ? 'selected' : '' }}>
-                            {{ $size->title }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Category Filter -->
-            <div class="filter-select relative w-full">
-                <select name="category" id="category"
-                    class="w-full px-4 py-2 rounded-lg bg-[--h-bg-color] text-[--text-color] placeholder-[--text-color] appearance-none focus:outline-none focus:ring-2 focus:ring-[--primary-color] focus:ring-opacity-50">
-                    <option value="all" {{ request('category') === 'all' ? 'selected' : '' }}>All Categories
-                    </option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>
-                            {{ $category->title }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
-        </div>
-    </form> --}}
-
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
@@ -118,7 +74,7 @@
                         @if ($authLayout == 'grid')
                             <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                 @foreach ($articles as $article)
-                                    <div data-json='{{ $article }}'
+                                    <div id="{{ $article->id }}" data-json='{{ $article }}'
                                         class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
                                         <x-card :data="[
                                             'image' => $article->image == 'no_image_icon.png' 
@@ -587,6 +543,57 @@
             }, {
                 once: true
             });
+        }
+
+        // Function for Search
+        function filterData(search) {
+            const filteredData = cardsDataArray.filter(item => {
+                switch (filterType) {
+                    case 'all':
+                        return (
+                            item.article_no.toString().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
+                            item.season.toLowerCase().includes(search) ||
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case '#':
+                        return (
+                            item.article_no.toString().includes(search)
+                        );
+                        break;
+                        
+                    case 'category':
+                        return (
+                            item.category.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'season':
+                        return (
+                            item.season.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'size':
+                        return (
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                
+                    default:
+                        return (
+                            item.article_no.toString().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
+                            item.season.toLowerCase().includes(search) ||
+                            item.size.toLowerCase().includes(search)
+                        );
+                        break;
+                }
+            });
+
+            return filteredData;
         }
     </script>
 @endsection

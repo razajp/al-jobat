@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class invoice extends Model
+class Invoice extends Model
 {
     use HasFactory;
 
@@ -18,6 +18,6 @@ class invoice extends Model
     ];
 
     public function order() {
-        return $this->belongsTo(Order::class, 'order_no');
+        return $this->belongsTo(Order::class, 'order_no', 'order_no');
     }
 }

@@ -177,9 +177,26 @@
             /* For Firefox */
         }
 
+        input[disabled] {
+            cursor: not-allowed;
+        }
+
+        select[disabled] {
+            cursor: not-allowed;
+        }
+
         input::-webkit-calendar-picker-indicator {
             display: none !important;
             -webkit-appearance: none;
+        }
+
+        strong {
+            font-weight: 600 !important;
+        }
+
+        span {
+            color: var(--secondary-text) !important;
+            opacity: 0.7;
         }
     </style>
 </head>
@@ -318,6 +335,49 @@
         }
 
         document.addEventListener("contextmenu", e => e.preventDefault());
+
+
+        // Search Script
+        let filterType;
+        let cardsDataArray = [];
+
+        let cardsArray = $('.card_container').children().toArray();
+
+        function setCardsData() {
+            cardsArray = $('.card_container').children().toArray();
+
+            cardsArray.forEach((card) => {
+                cardsDataArray.push(JSON.parse(card.dataset.json));
+            })
+        }
+        setCardsData();
+
+        function setFilter(filterTypeArg) {
+            filterType = filterTypeArg;
+
+            searchData(document.getElementById('search_box').value);
+        }
+
+        function searchData(search) {
+            search = search.toLowerCase();
+
+            let filteredData = filterData(search);
+
+            const cardContainerDom = document.querySelector('.card_container');
+            cardContainerDom.innerHTML = "";
+
+            if (filteredData.length === 0) {
+                const noResultMessage = "<p class='text-center col-span-full text-[--border-error]'>No data found</p>"
+                cardContainerDom.innerHTML = noResultMessage;
+            } else {
+                filteredData.forEach(item => {
+                    const cardElement = cardsArray.find(card => card.id == item.id);
+                    if (cardElement) {
+                        cardContainerDom.appendChild(cardElement);
+                    }
+                });
+            }
+        }
     </script>
 </body>
 

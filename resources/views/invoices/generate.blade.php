@@ -21,6 +21,7 @@
         <!-- Step 1: Generate Invoice -->
         <div class="step1 space-y-4 ">
             <div class="flex justify-between gap-4">
+                <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
                 {{-- order_no --}}
                 <div class="grow">
                     <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>

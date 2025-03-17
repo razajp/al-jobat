@@ -150,6 +150,18 @@
                     ]"
                 />
             </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Payments" 
+                    icon="fas fa-money-check-dollar"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
+                        ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
+                    ]"
+                />
+            </div>
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
@@ -264,6 +276,15 @@
                     :dropdown="[
                         ['href' => route('invoices.index'), 'title' => 'Show Invoices'],
                         ['href' => route('invoices.create'), 'title' => 'Generate Invoice'],
+                    ]"
+                />
+
+                <x-mobile-menu-item 
+                    title="Payments" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('payments.index'), 'title' => 'Show Payments'],
+                        ['href' => route('payments.create'), 'title' => 'Add Payment'],
                     ]"
                 />
                 </div>

@@ -17,15 +17,18 @@ class CustomerController extends Controller
      */
     public function index()
     {
-        $customers = Customer::with('user', 'category')->get();
+        $customers = Customer::with('user', 'category', 'orders', 'payments')->get();
 
         foreach ($customers as $customer) {
-            $orders = Order::where('customer_id', $customer->id)->get();
-            $customer['balance'] = 0;
-
-            foreach ($orders as $order) {
-                $customer['balance'] += $order->netAmount;
+            foreach ($customer['orders'] as $order) {
+                $customer['totalAmount'] += $order->netAmount;
             }
+            
+            foreach ($customer['payments'] as $payment) {
+                $customer['totalPayment'] += $payment->amount;
+            }
+
+            $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
 
             $customer['balance'] = number_format($customer['balance'], 1, '.', ',');
         }

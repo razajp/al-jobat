@@ -18,6 +18,11 @@ class Order extends Model
         'order_no',
     ];
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'order_no', 'order_no');
+    }
+
     public function customer() {
         return $this->belongsTo(Customer::class, 'customer_id');
     }

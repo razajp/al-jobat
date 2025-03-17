@@ -18,7 +18,7 @@
 
 {{-- Details --}}
 <div class="text-start">
-    <h5 class="text-xl mb-1 text-[--text-color] capitalize font-semibold">
+    <h5 class="text-xl mb-2 text-[--text-color] capitalize font-semibold leading-none">
         {{ $data['name'] ?? 'N/A' }}
     </h5>
     @if (isset($data['details']) && is_array($data['details']))

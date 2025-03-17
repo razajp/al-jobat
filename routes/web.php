@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
@@ -54,6 +55,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::resource('invoices', InvoiceController::class);
     Route::post('get-order-details', [InvoiceController::class, 'getOrderDetails'])->name('get-order-details');
+    
+    Route::resource('payments', PaymentController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

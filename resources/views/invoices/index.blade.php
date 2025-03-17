@@ -3,18 +3,18 @@
 @section('content')
     @php $authLayout = Auth::user()->layout; @endphp
     <!-- Modals -->
-    {{-- article details modal --}}
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     
-    <x-search-header heading="Orders" :filter_items="[
+    <x-search-header heading="Invoices" :filter_items="[
         'all' => 'All',
+        'invoice_no' => 'Invoice No.',
         'order_no' => 'Order No.',
         'customer_name' => 'Customer Name',
         'date' => 'Date',
     ]"/>
-    
+
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
@@ -22,7 +22,7 @@
             @if ($authLayout == 'grid')
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
-                    <h4>Show Articles</h4>
+                    <h4>Show Invoices</h4>
                 </div>
             @endif
 
@@ -49,10 +49,10 @@
                 </div>
             </div>
 
-            @if (count($orders) > 0)
+            @if (count($invoices) > 0)
                 <div
                     class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('orders.create') }}"
+                    <a href="{{ route('invoices.create') }}"
                         class="bg-[--primary-color] text-[--text-color] px-3 py-2 rounded-full hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -62,19 +62,20 @@
                 </div>
             @endif
 
-            @if (count($orders) > 0)
+            @if (count($invoices) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scroller">
                         @if ($authLayout == 'grid')
-                            <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                @foreach ($orders as $order)
-                                    <div id="{{ $order->id }}" data-json='{{ $order }}'
+                            <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                @foreach ($invoices as $invoice)
+                                    <div id="{{ $invoice->id }}" data-json='{{ $invoice }}'
                                         class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
                                         <x-card :data="[
-                                            'name' => 'Order No: ' . $order->order_no,
+                                            'name' => 'Invoice No: ' . $invoice->invoice_no,
                                             'details' => [
-                                                'Customer' => $order->customer->customer_name,
-                                                'Date' => $order->date,
+                                                'Order No.' => $invoice->order_no,
+                                                'Customer Name' => $invoice->order->customer->customer_name,
+                                                'Date' => $invoice->date,
                                             ],
                                         ]" />
                                     </div>
@@ -89,7 +90,7 @@
                                     <div class="p-2">Category</div>
                                     <div class="p-2">Sales Rate</div>
                                 </div>
-                                @foreach ($orders as $article)
+                                @foreach ($invoices as $article)
                                     <div data-article="{{ $article }}"
                                         class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-gray-600 items-center py-0.5 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out"
                                         onclick="toggleDetails(this)">
@@ -134,7 +135,7 @@
                     <li>
                         <button id="show-details" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Print
-                            Order</button>
+                            Invoice</button>
                     </li>
                 </ul>
             </div>
@@ -312,152 +313,151 @@
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
+            let customerData = data.order.customer;
+
             let totalAmount = 0;
             let totalQuantity = 0;
-            let discount = data.discount;
-            let previousBalance = data.customer.previous_balance;
+            let discount = data.order.discount;
             let netAmount = data.netAmount;
-            let currentBalance = data.customer.current_balance;
 
             modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scroller-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
+             <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scroller-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
-                            <div id="order" class="order flex flex-col h-full">
-                                <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
-                                    <div class="left w-50">
-                                        <div class="order-logo">
-                                            <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                class="w-[150px]" />
+                                <div id="invoice" class="invoice flex flex-col h-full">
+                                    <div id="invoice-banner" class="invoice-banner w-full flex justify-between mt-8 px-5">
+                                        <div class="left w-50">
+                                            <div class="invoice-logo">
+                                                <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                                    class="w-[150px]" />
+                                            </div>
+                                        </div>
+                                        <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
+                                            <div class="invoice-date">Date: ${data.date}</div>
+                                            <div class="invoice-number">Invoice No.: ${data.invoice_no}</div>
+                                            <div class="invoice-copy">Invoice Copy: Customer</div>
                                         </div>
                                     </div>
-                                    <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
-                                        <div class="order-date">Date: ${data.date}</div>
-                                        <div class="order-number">Order No.: ${data.order_no}</div>
-                                        <div class="order-copy">Order Copy: Customer</div>
+                                    <hr class="w-100 my-5 border-gray-600">
+                                    <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
+                                        <div class="left w-50">
+                                            <div class="invoice-to text-sm text-gray-500">Invoice to:</div>
+                                            <div class="invoice-customer text-lg">${customerData.customer_name}</div>
+                                            <div class="invoice-person text-md">${customerData.person_name}</div>
+                                            <div class="invoice-address text-md">${customerData.address}, ${customerData.city}</div>
+                                            <div class="invoice-phone text-md">${customerData.phone_number}</div>
+                                        </div>
+                                        <div class="right w-50">
+                                            <div class="invoice-from text-sm text-gray-500">Invoice from:</div>
+                                            <div class="invoice-customer text-lg">${companyData.name}</div>
+                                            <div class="invoice-person text-md">${companyData.owner_name}</div>
+                                            <div class="invoice-address text-md">${companyData.city}, ${companyData.address}</div>
+                                            <div class="invoice-phone text-md">${companyData.phone_number}</div>
+                                        </div>
                                     </div>
-                                </div>
-                                <hr class="w-100 my-5 border-gray-600">
-                                <div id="order-header" class="order-header w-full flex justify-between px-5">
-                                    <div class="left w-50">
-                                        <div class="order-to text-sm text-gray-500">Order to:</div>
-                                        <div class="order-customer text-lg">${data.customer.customer_name}</div>
-                                        <div class="order-person text-md">${data.customer.person_name}</div>
-                                        <div class="order-address text-md">${data.customer.address}, ${data.customer.city}</div>
-                                        <div class="order-phone text-md">${data.customer.phone_number}</div>
-                                    </div>
-                                    <div class="right w-50">
-                                        <div class="order-from text-sm text-gray-500">Order from:</div>
-                                        <div class="order-customer text-lg">${companyData.name}</div>
-                                        <div class="order-person text-md">${companyData.owner_name}</div>
-                                        <div class="order-address text-md">${companyData.city}, ${companyData.address}</div>
-                                        <div class="order-phone text-md">${companyData.phone_number}</div>
-                                    </div>
-                                </div>
-                                <hr class="w-100 mt-5 mb-5 border-gray-600">
-                                <div id="order-body" class="order-body w-[95%] grow mx-auto">
-                                    <div class="order-table w-full">
-                                        <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
-                                            <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
-                                                    <div class="th text-sm font-medium w-[5%]">#</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Article</div>
-                                                    <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
-                                                    <div class="th text-sm font-medium grow">Desc.</div>
-                                                    <div class="th text-sm font-medium w-1/6">Rate</div>
-                                                    <div class="th text-sm font-medium w-1/6">Amount</div>
-                                                    <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
+                                    <hr class="w-100 mt-5 mb-5 border-gray-600">
+                                    <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
+                                        <div class="invoice-table w-full">
+                                            <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                                <div class="thead w-full">
+                                                    <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
+                                                        <div class="th text-sm font-medium w-[5%]">#</div>
+                                                        <div class="th text-sm font-medium w-[11%]">Article</div>
+                                                        <div class="th text-sm font-medium w-[11%]">Packets</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Pcs</div>
+                                                        <div class="th text-sm font-medium grow">Desc.</div>
+                                                        <div class="th text-sm font-medium w-[8%]">Pcs/Pkt</div>
+                                                        <div class="th text-sm font-medium w-[12%]">Rate/Pc</div>
+                                                        <div class="th text-sm font-medium w-[15%]">Amount</div>
+                                                    </div>
+                                                </div>
+                                                <div id="tbody" class="tbody w-full">
+                                                    ${data.articles.map((articles, index) => {
+                                                        totalAmount += parseInt(articles.article.sales_rate) * articles.invoice_quantity;
+                                                        totalQuantity += articles.invoice_quantity;
+
+                                                        if (index == 0) {
+                                                            return `
+                                                                    <div>
+                                                                        <hr class="w-full mb-3 border-gray-600">
+                                                                        <div class="tr flex justify-between w-full px-4">
+                                                                            <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                            <div class="td text-sm font-semibold w-[11%]">#${articles.article.article_no}</div>
+                                                                            <div class="td text-sm font-semibold w-[11%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
+                                                                            <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
+                                                                            <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                                            <div class="td text-sm font-semibold w-[8%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                                            <div class="td text-sm font-semibold w-[12%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                                            <div class="td text-sm font-semibold w-[15%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.invoice_quantity, 1, 1)}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
+                                                        } else {
+                                                            return `
+                                                                    <div>
+                                                                        <hr class="w-full my-3 border-gray-600">
+                                                                        <div class="tr flex justify-between w-full px-4">
+                                                                            <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                            <div class="td text-sm font-semibold w-[11%]">#${articles.article.article_no}</div>
+                                                                            <div class="td text-sm font-semibold w-[11%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
+                                                                            <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
+                                                                            <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                                            <div class="td text-sm font-semibold w-[8%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                                            <div class="td text-sm font-semibold w-[12%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                                            <div class="td text-sm font-semibold w-[15%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.invoice_quantity, 1, 1)}</div>
+                                                                        </div>
+                                                                    </div>
+                                                                `;
+                                                        }
+                                                    }).join('')}
                                                 </div>
                                             </div>
-                                            <div id="tbody" class="tbody w-full">
-                                                ${data.ordered_articles.map((orderedArticle, index) => {
-                                                    const article = orderedArticle.article;
-                                                    const salesRate = article.sales_rate;
-                                                    const orderedQuantity = orderedArticle.ordered_quantity;
-                                                    const total = parseInt(salesRate) * orderedQuantity;
-                                                    const hrClass = index === 0 ? "mb-3" : "my-3";
-
-                                                    totalAmount += total;
-                                                    totalQuantity += orderedQuantity;
-
-                                                    return `
-                                                        <div>
-                                                            <hr class="w-full ${hrClass} border-gray-600">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-1/6">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
-                                                            </div>
-                                                        </div>
-                                                    `;
-                                                }).join('')}
+                                        </div>
+                                    </div>
+                                    <hr class="w-full my-4 border-gray-600">
+                                    <div class="flex flex-col space-y-2">
+                                        <div id="invoice-total" class="tr grid grid-cols-2 w-full px-2 gap-2 text-sm">
+                                            <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                                <div class="text-nowrap">Total Quantity - Pcs</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
+                                            </div>
+                                            <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                                <div class="text-nowrap">Gross Amount</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                                            </div>
+                                            <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                                <div class="text-nowrap">Discount - %</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersDigitLess(discount)}</div>
+                                            </div>
+                                            <div
+                                                class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                                <div class="text-nowrap">Net Amount</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr class="w-full my-4 border-gray-600">
-                                <div class="flex flex-col space-y-2">
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Total Quantity - Pcs</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Total Amount</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Discount - %</div>
-                                            <div class="w-1/4 text-right grow">${discount}</div>
-                                        </div>
+                                    <hr class="w-full my-4 border-gray-600">
+                                    <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                                        <P>${ companyData.name }</P>
+                                        <p>&copy; Spark Pair 2025 | sparkpair.com</p>
                                     </div>
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Previous Balance</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(previousBalance)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Net Amount</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Current Balance</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(currentBalance)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-4 border-gray-600">
-                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
-                                    <P>${ companyData.name }</P>
-                                    <p>&copy; Spark Pair 2025 | sparkpair.com</p>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
-                            Print Order
-                        </button>
+                        <!-- Modal Action Slot -->
+                        <x-slot name="actions">
+                            <button type="button"
+                                class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                                Print Order
+                            </button>
 
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
-                            Cancel
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
+                            <button onclick="closeModal()" type="button"
+                                class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                                Cancel
+                            </button>
+                        </x-slot>
+                    </x-modal>
+                `;
 
             openModal();
             document.getElementById('modal').classList.remove('hidden');
@@ -491,21 +491,28 @@
                 switch (filterType) {
                     case 'all':
                         return (
+                            item.invoice_no.toString().includes(search) ||
                             item.order_no.toString().includes(search) ||
-                            item.customer.customer_name.toLowerCase().includes(search) ||
+                            item.order.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'invoice_no':
+                        return (
+                            item.invoice_no.toString().includes(search)
                         );
                         break;
                         
                     case 'order_no':
                         return (
-                            item.order_no.toLowerCase().includes(search)
+                            item.order_no.toString().includes(search)
                         );
                         break;
                         
                     case 'customer_name':
                         return (
-                            item.customer.customer_name.toLowerCase().includes(search)
+                            item.order.customer.customer_name.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -517,8 +524,9 @@
                 
                     default:
                         return (
+                            item.invoice_no.toString().includes(search) ||
                             item.order_no.toString().includes(search) ||
-                            item.customer.customer_name.toLowerCase().includes(search) ||
+                            item.order.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;

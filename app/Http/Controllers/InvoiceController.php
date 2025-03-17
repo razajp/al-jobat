@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Models\invoice;
+use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PhysicalQuantity;
 use Illuminate\Http\Request;
@@ -16,8 +16,28 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        //
-    }
+        $invoices = Invoice::with(['order.customer'])->get();
+    
+        foreach ($invoices as $invoice) {
+            $invoice['articles_in_invoice'] = json_decode($invoice->articles_in_invoice, true);
+
+            $articles = [];
+    
+            foreach ($invoice->articles_in_invoice as $article_in_invoice) {
+                $article = Article::find($article_in_invoice['id']);
+    
+                $articles[] = [
+                    'article' => $article,
+                    'description' => $article_in_invoice['description'],
+                    'invoice_quantity' => $article_in_invoice['invoice_quantity'],
+                ];
+            }
+            $invoice['articles'] = $articles;
+            $invoice['date'] = date('d-M-Y, D', strtotime($invoice['date']));
+        }
+        
+        return view('invoices.index', compact('invoices'));
+    }    
 
     /**
      * Show the form for creating a new resource.
@@ -39,19 +59,18 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request;
         $validator = Validator::make($request->all(), [
             "invoice_no" => "required|string|unique:invoices,invoice_no",
             "order_no" => "required|string|exists:orders,order_no",
             "date" => "required|date",
-            "netAmount" => "required|string|regex:/^\d{1,3}(,\d{3})*(\.\d+)?$/",
+            "netAmount" => "required|string",
             "articles_in_invoice" => "required|string",
         ]);
         
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+        
         $data = $request->all();
 
         $articles = json_decode($data["articles_in_invoice"], true);
@@ -79,7 +98,7 @@ class InvoiceController extends Controller
 
         $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
         
-        invoice::create($data);
+        Invoice::create($data);
 
         return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
     }

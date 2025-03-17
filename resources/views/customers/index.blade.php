@@ -5,12 +5,16 @@
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
-    <!-- Main Content -->
     <div>
-        <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
-            Show Customers
-        </h1>
+        <x-search-header heading="Customers" :filter_items="[
+            'all' => 'All',
+            'customer_name' => 'Customer Name',
+            'person_name' => 'Person Name',
+            'category' => 'Category',
+            'username' => 'Username',
+        ]"/>
 
+        <!-- Main Content -->
         <section class="text-center mx-auto ">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
@@ -33,7 +37,7 @@
                 @if (count($customers) > 0)
                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                         @foreach ($customers as $customer)
-                            <div data-json='{{ $customer }}'
+                            <div id='{{ $customer->id }}' data-json='{{ $customer }}'
                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                 <x-card :data="[
                                     'image' =>
@@ -337,6 +341,57 @@
             }, {
                 once: true
             });
+        }
+
+        // Function for Search
+        function filterData(search) {
+            const filteredData = cardsDataArray.filter(item => {
+                switch (filterType) {
+                    case 'all':
+                        return (
+                            item.customer_name.toLowerCase().includes(search) ||
+                            item.person_name.toLowerCase().includes(search) ||
+                            item.category.title.toLowerCase().includes(search) ||
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'customer_name':
+                        return (
+                            item.customer_name.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'person_name':
+                        return (
+                            item.person_name.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'category':
+                        return (
+                            item.category.title.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'username':
+                        return (
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                
+                    default:
+                        return (
+                            item.customer_name.toLowerCase().includes(search) ||
+                            item.person_name.toLowerCase().includes(search) ||
+                            item.category.title.toLowerCase().includes(search) ||
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                }
+            });
+
+            return filteredData;
         }
     </script>
 @endsection

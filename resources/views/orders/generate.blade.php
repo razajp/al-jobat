@@ -109,6 +109,13 @@
                     </div>
                 </div>
             </div>
+            <!-- Modal Action Slot -->
+            <x-slot name="actions">
+                <button onclick="closeArticlesModal()" type="button"
+                    class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                    Close
+                </button>
+            </x-slot>
         </x-modal>
     </div>
 
