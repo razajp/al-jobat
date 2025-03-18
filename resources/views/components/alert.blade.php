@@ -1,5 +1,5 @@
 @props([
-    'type' => 'success',  {{-- success, warning, error --}}
+    'type' => 'success',
     'messages' => [],
 ])
 
