@@ -95,13 +95,18 @@
                                 @else
                                     <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
                                         <div>Article No.</div>
-                                        <div>Date</div>
-                                        <div>Pc/Pkt</div>
-                                        <div>Pakets</div>
+                                        <div>Season</div>
+                                        <div>Size</div>
+                                        <div>Category</div>
                                     </div>
                                     <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                         @forEach ($articles as $article)
-                                            <x-table-row id="{{ $article->id }}" data-json="{{ $article }}" :cols="[ '#'.$article->article_no, $article->season, $article->size, $article->category ]" />
+                                            <div id="{{ $article->id }}" data-json='{{ $article }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                                <span>#{{ $article->article_no }}</span>
+                                                <span>{{ $article->season }}</span>
+                                                <span>{{ $article->size }}</span>
+                                                <span>{{ $article->category }}</span>
+                                            </div>
                                         @endforeach
                                     </div>
                                 @endif

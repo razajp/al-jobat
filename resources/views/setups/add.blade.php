@@ -43,8 +43,8 @@
                     name="type" 
                     id="type" 
                     :options="[
-                        'supplier_category' => 'Supplier Category',
-                        'customer_category' => 'Customer Category'
+                        'supplier_category' => ['text' => 'Supplier Category'],
+                        'customer_category' => ['text' => 'Customer Category']
                     ]"
                     showDefault='true'
                 />

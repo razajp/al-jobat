@@ -30,6 +30,14 @@
                     placeholder="Enter supplire name" 
                     required 
                 />
+                <!-- urdu_title -->
+                <x-input 
+                    label="Urdu Title"
+                    name="urdu_title" 
+                    id="urdu_title" 
+                    placeholder="Enter urdu title" 
+                    required 
+                />
                 {{-- person name --}}
                 <x-input 
                     label="Person Name"
@@ -98,15 +106,13 @@
                 />
 
                 {{-- customer_address --}}
-                <div class="col-span-2">
-                    <x-input 
-                        label="Address" 
-                        name="address" 
-                        id="address"
-                        placeholder="Enter address"
-                        required
-                    />
-                </div>
+                <x-input 
+                    label="Address" 
+                    name="address" 
+                    id="address"
+                    placeholder="Enter address"
+                    required
+                />
             </div>
         </div>
 

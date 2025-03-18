@@ -16,13 +16,11 @@
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
-            @if ($authLayout == 'grid')
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
-                    <h4>Show Articles</h4>
-                </div>
-            @endif
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
+            <div
+                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
+                <h4>Show physical Quantities</h4>
+            </div>
 
             @if (count($physicalQuantities) > 0)
                 <div
@@ -40,9 +38,9 @@
             @if (count($physicalQuantities) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar">
-                        <div class="card_container p-5 pr-3 ">
+                        <div class="card_container p-5 pr-3">
                             <div class="table_container overflow-hidden text-sm">
-                                <div class="grid grid-cols-4 bg-[--h-bg-color] font-medium py-2">
+                                <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
                                     <div>Article No.</div>
                                     <div>Date</div>
                                     <div>Pc/Pkt</div>

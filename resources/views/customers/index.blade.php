@@ -10,6 +10,7 @@
             <x-search-header heading="Customers" :filter_items="[
                 'all' => 'All',
                 'customer_name' => 'Customer Name',
+                'urdu_title' => 'Urdu Title',
                 'person_name' => 'Person Name',
                 'category' => 'Category',
                 'username' => 'Username',
@@ -51,7 +52,7 @@
                                             'name' => $customer->customer_name,
                                             'status' => $customer->user->status,
                                             'details' => [
-                                                'Person Name' => $customer->person_name,
+                                                'Urdu Title' => $customer->urdu_title,
                                                 'Category' => $customer->category->title,
                                                 'Balance' => $customer->balance,
                                             ],
@@ -60,15 +61,22 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
-                                <div>Article No.</div>
-                                <div>Date</div>
-                                <div>Pc/Pkt</div>
-                                <div>Pakets</div>
+                            <div class="grid grid-cols-5 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                <div class="text-left pl-5">Customer</div>
+                                <div class="text-left pl-5">Urdu Title</div>
+                                <div class="text-center">Category</div>
+                                <div class="text-right">Balance</div>
+                                <div class="text-right pr-5">Status</div>
                             </div>
                             <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @forEach ($articles as $article)
-                                    <x-table-row id="{{ $article->id }}" data-json="{{ $article }}" :cols="[ '#'.$article->article_no, $article->season, $article->size, $article->category ]" />
+                                @forEach ($customers as $customer)
+                                    <div id="{{ $customer->id }}" data-json='{{ $customer }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                        <span class="text-left pl-5">{{ $customer->customer_name }}</span>
+                                        <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
+                                        <span class="text-center">{{ $customer->category->title }}</span>
+                                        <span class="text-right">{{ $customer->balance }}</span>
+                                        <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[--border-success]' : 'text-[--border-error]' }}">{{ $customer->user->status }}</span>
+                                    </div>
                                 @endforeach
                             </div>
                         @endif
@@ -76,7 +84,7 @@
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[--secondary-text] capitalize">No Customer yet</h1>
-                        <a href="{{ route('cutomers.create') }}"
+                        <a href="{{ route('customers.create') }}"
                             class="text-md bg-[--primary-color] text-[--text-color] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
                             New</a>
                     </div>
@@ -252,6 +260,7 @@
                 
                         <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.customer_name}</h5>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.urdu_title}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
@@ -368,6 +377,7 @@
                     case 'all':
                         return (
                             item.customer_name.toLowerCase().includes(search) ||
+                            item.urdu_title.toLowerCase().includes(search) ||
                             item.person_name.toLowerCase().includes(search) ||
                             item.category.title.toLowerCase().includes(search) ||
                             item.user.username.toLowerCase().includes(search)
@@ -379,6 +389,13 @@
                             item.customer_name.toLowerCase().includes(search)
                         );
                         break;
+                        
+                    case 'urdu_title':
+                        return (
+                            item.urdu_title.toLowerCase().includes(search)
+                        );
+                        break;
+                        
                         
                     case 'person_name':
                         return (
@@ -401,6 +418,7 @@
                     default:
                         return (
                             item.customer_name.toLowerCase().includes(search) ||
+                            item.urdu_title.toLowerCase().includes(search) ||
                             item.person_name.toLowerCase().includes(search) ||
                             item.category.title.toLowerCase().includes(search) ||
                             item.user.username.toLowerCase().includes(search)

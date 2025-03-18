@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->string('customer_name')->unique();  // Fixed the typo here
             $table->string('person_name');  // Fixed the typo here
+            $table->string('urdu_title')->nullable();
             $table->string('phone_number');
             $table->date('date');
             $table->unsignedBigInteger('category_id');

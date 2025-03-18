@@ -18,13 +18,11 @@
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
-            @if ($authLayout == 'grid')
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
-                    <h4>Show Payments</h4>
-                </div>
-            @endif
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
+            <div
+                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
+                <h4>Show Payments</h4>
+            </div>
 
             <div class="buttons absolute {{ $authLayout == 'grid' ? 'top-0' : 'top-0.5' }} right-4 text-sm">
                 <div class="relative group">
@@ -65,52 +63,42 @@
             @if (count($payments) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar">
-                        @if ($authLayout == 'grid')
-                            <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                @foreach ($payments as $payment)
-                                    <div id="{{ $payment->id }}" data-json='{{ $payment }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'name' => 'Customer: ' . $payment->customer->customer_name,
-                                            'details' => [
-                                                'Type' => $payment->type,
-                                                'Date' => $payment->date,
-                                                'Amount' => $payment->amount,
-                                            ],
-                                        ]" />
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            {{-- <div class="table_container rounded-tl-lg rounded-tr-lg overflow-hidden text-sm">
-                                <div class="grid grid-cols-5 bg-[--primary-color] font-medium">
-                                    <div class="p-2">Article No</div>
-                                    <div class="p-2">Season</div>
-                                    <div class="p-2">Size</div>
-                                    <div class="p-2">Category</div>
-                                    <div class="p-2">Sales Rate</div>
+                        <div class="card_container p-5 pr-3">
+                            @if ($authLayout == 'grid')
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                                    @foreach ($payments as $payment)
+                                        <div id="{{ $payment->id }}" data-json='{{ $payment }}'
+                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
+                                            <x-card :data="[
+                                                'name' => 'Customer: ' . $payment->customer->customer_name,
+                                                'details' => [
+                                                    'Type' => $payment->type,
+                                                    'Date' => $payment->date,
+                                                    'Amount' => $payment->amount,
+                                                ],
+                                            ]" />
+                                        </div>
+                                    @endforeach
                                 </div>
-                                @foreach ($payments as $article)
-                                    <div data-article="{{ $article }}"
-                                        class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-gray-600 items-center py-0.5 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out"
-                                        onclick="toggleDetails(this)">
-                                        @if ($article->image == 'no_image_icon.png')
-                                            <div
-                                                class="warning_dot absolute top-4 left-3 w-[0.5rem] h-[0.5rem] bg-[--border-warning] rounded-full group-hover:opacity-0 transition-all 0.3s ease-in-out">
-                                            </div>
-                                            <div
-                                                class="text-xs absolute opacity-0 top-3 left-3 text-nowrap text-[--border-warning] h-[1rem] group-hover:opacity-100 transition-all 0.3s ease-in-out">
-                                                No Image</div>
-                                        @endif
-                                        <div class="p-2">#{{ $article->article_no }}</div>
-                                        <div class="p-2">{{ $article->season->title }}</div>
-                                        <div class="p-2">{{ $article->size->title }}</div>
-                                        <div class="p-2">{{ $article->category->title }}</div>
-                                        <div class="p-2">{{ $article->sales_rate }}</div>
-                                    </div>
-                                @endforeach
-                            </div> --}}
-                        @endif
+                            @else
+                                <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                    <div class="text-center">Customer</div>
+                                    <div class="text-center">Type</div>
+                                    <div class="text-center">Date</div>
+                                    <div class="text-center">Amount</div>
+                                </div>
+                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                    @forEach ($payments as $payment)
+                                        <div id="{{ $payment->id }}" data-json='{{ $payment }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $payment->customer->customer_name }}</span>
+                                            <span class="text-center">{{ $payment->type }}</span>
+                                            <span class="text-center">{{ $payment->date }}</span>
+                                            <span class="text-center">{{ $payment->amount }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 </div>
             @else

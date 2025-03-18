@@ -13,6 +13,7 @@ class Customer extends Model
         'user_id',
         'customer_name',
         'person_name',
+        'urdu_title',
         'phone_number',
         'date',
         'category_id',
