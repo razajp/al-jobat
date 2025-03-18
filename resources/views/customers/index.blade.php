@@ -6,16 +6,18 @@
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     <div>
-        <x-search-header heading="Customers" :filter_items="[
-            'all' => 'All',
-            'customer_name' => 'Customer Name',
-            'person_name' => 'Person Name',
-            'category' => 'Category',
-            'username' => 'Username',
-        ]"/>
+        <div class="w-[80%] mx-auto">
+            <x-search-header heading="Customers" :filter_items="[
+                'all' => 'All',
+                'customer_name' => 'Customer Name',
+                'person_name' => 'Person Name',
+                'category' => 'Category',
+                'username' => 'Username',
+            ]"/>
+        </div>
 
         <!-- Main Content -->
-        <section class="text-center mx-auto ">
+        <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <div
@@ -35,25 +37,41 @@
                 </div>
 
                 @if (count($customers) > 0)
-                    <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($customers as $customer)
-                            <div id='{{ $customer->id }}' data-json='{{ $customer }}'
-                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                <x-card :data="[
-                                    'image' =>
-                                        $customer->user['profile_picture'] == 'default_avatar.png'
-                                            ? asset('images/default_avatar.png')
-                                            : asset('storage/uploads/images/' . $customer->user['profile_picture']),
-                                    'name' => $customer->customer_name,
-                                    'status' => $customer->user->status,
-                                    'details' => [
-                                        'Person Name' => $customer->person_name,
-                                        'Category' => $customer->category->title,
-                                        'Balance' => $customer->balance,
-                                    ],
-                                ]" />
+                    <div class="card_container">
+                        @if ($authLayout == 'grid')
+                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                @foreach ($customers as $customer)
+                                    <div id='{{ $customer->id }}' data-json='{{ $customer }}'
+                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                        <x-card :data="[
+                                            'image' =>
+                                                $customer->user['profile_picture'] == 'default_avatar.png'
+                                                    ? asset('images/default_avatar.png')
+                                                    : asset('storage/uploads/images/' . $customer->user['profile_picture']),
+                                            'name' => $customer->customer_name,
+                                            'status' => $customer->user->status,
+                                            'details' => [
+                                                'Person Name' => $customer->person_name,
+                                                'Category' => $customer->category->title,
+                                                'Balance' => $customer->balance,
+                                            ],
+                                        ]" />
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        @else
+                            <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                <div>Article No.</div>
+                                <div>Date</div>
+                                <div>Pc/Pkt</div>
+                                <div>Pakets</div>
+                            </div>
+                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                @forEach ($articles as $article)
+                                    <x-table-row id="{{ $article->id }}" data-json="{{ $article }}" :cols="[ '#'.$article->article_no, $article->season, $article->size, $article->category ]" />
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
@@ -232,7 +250,7 @@
                                 class="w-full h-full object-cover">
                         </div>
                 
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.customer_name}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>

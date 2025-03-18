@@ -39,7 +39,7 @@
                     <div class="w-[12%] text-right">Rate/Pc</div>
                     <div class="w-[15%] text-right">Amount</div>
                 </div>
-                <div id="article-list" class="h-[20rem] overflow-y-auto my-scroller-2">
+                <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[--h-bg-color] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
@@ -67,7 +67,7 @@
         </div>
 
         <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scroller-2 bg-white rounded-md">
+        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
                     <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>

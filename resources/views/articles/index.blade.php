@@ -1,7 +1,6 @@
 @extends('app')
 @section('title', 'Show Articles | ' . app('company')->name)
 @section('content')
-    @php $authLayout = Auth::user()->layout; @endphp
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
@@ -13,24 +12,24 @@
     </div>
     
     {{-- header --}}
-    <x-search-header heading="Articles" :filter_items="[
-        'all' => 'All',
-        '#' => 'Article No.',
-        'category' => 'Category',
-        'season' => 'Season',
-        'size' => 'Size',
-    ]"/>
+    <div class="w-[80%] mx-auto">
+        <x-search-header heading="Articles" :filter_items="[
+            'all' => 'All',
+            '#' => 'Article No.',
+            'category' => 'Category',
+            'season' => 'Season',
+            'size' => 'Size',
+        ]"/>
+    </div>
 
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
-            @if ($authLayout == 'grid')
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
                     <h4>Show Articles</h4>
                 </div>
-            @endif
 
             <div class="buttons absolute {{ $authLayout == 'grid' ? 'top-0' : 'top-0.5' }} right-4 text-sm">
                 <div class="relative group">
@@ -57,7 +56,7 @@
 
             @if (count($articles) > 0)
                 <div
-                    class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
+                    class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out z-50">
                     <a href="{{ route('articles.create') }}"
                         class="bg-[--primary-color] text-[--text-color] px-3 py-2 rounded-full hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
@@ -70,58 +69,43 @@
 
             @if (count($articles) > 0)
                 <div class="details h-full">
-                    <div class="container-parent h-full overflow-y-auto my-scroller">
-                        @if ($authLayout == 'grid')
-                            <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($articles as $article)
-                                    <div id="{{ $article->id }}" data-json='{{ $article }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'image' => $article->image == 'no_image_icon.png' 
-                                                ? asset('images/no_image_icon.png') 
-                                                : asset('storage/uploads/images/' . $article->image),
-                                            'status' => $article->image == 'no_image_icon.png' ? 'no_Image' : 'transparent',
-                                            'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                            'name' => '#' . $article->article_no,
-                                            'details' => [
-                                                'Season' => $article->season,
-                                                'Size' => $article->size,
-                                                'Category' => $article->category,
-                                            ],
-                                        ]" />
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            {{-- <div class="table_container rounded-tl-lg rounded-tr-lg overflow-hidden text-sm">
-                                <div class="grid grid-cols-5 bg-[--primary-color] font-medium">
-                                    <div class="p-2">Article No</div>
-                                    <div class="p-2">Season</div>
-                                    <div class="p-2">Size</div>
-                                    <div class="p-2">Category</div>
-                                    <div class="p-2">Sales Rate</div>
-                                </div>
-                                @foreach ($articles as $article)
-                                    <div data-article="{{ $article }}"
-                                        class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-gray-600 items-center py-0.5 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out"
-                                        onclick="toggleDetails(this)">
-                                        @if ($article->image == 'no_image_icon.png')
-                                            <div
-                                                class="warning_dot absolute top-4 left-3 w-[0.5rem] h-[0.5rem] bg-[--border-warning] rounded-full group-hover:opacity-0 transition-all 0.3s ease-in-out">
+                    <div class="container-parent h-full overflow-y-auto my-scrollbar">
+                        <div class="card_container p-5 pr-3 h-full flex flex-col">
+                                @if ($authLayout == 'grid')
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        @foreach ($articles as $article)
+                                            <div id="{{ $article->id }}" data-json='{{ $article }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
+                                                <x-card :data="[
+                                                    'image' => $article->image == 'no_image_icon.png' 
+                                                        ? asset('images/no_image_icon.png') 
+                                                        : asset('storage/uploads/images/' . $article->image),
+                                                    'status' => $article->image == 'no_image_icon.png' ? 'no_Image' : 'transparent',
+                                                    'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
+                                                    'name' => '#' . $article->article_no,
+                                                    'details' => [
+                                                        'Season' => $article->season,
+                                                        'Size' => $article->size,
+                                                        'Category' => $article->category,
+                                                    ],
+                                                ]" />
                                             </div>
-                                            <div
-                                                class="text-xs absolute opacity-0 top-3 left-3 text-nowrap text-[--border-warning] h-[1rem] group-hover:opacity-100 transition-all 0.3s ease-in-out">
-                                                No Image</div>
-                                        @endif
-                                        <div class="p-2">#{{ $article->article_no }}</div>
-                                        <div class="p-2">{{ $article->season->title }}</div>
-                                        <div class="p-2">{{ $article->size->title }}</div>
-                                        <div class="p-2">{{ $article->category->title }}</div>
-                                        <div class="p-2">{{ $article->sales_rate }}</div>
+                                        @endforeach
                                     </div>
-                                @endforeach
-                            </div> --}}
-                        @endif
+                                @else
+                                    <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                        <div>Article No.</div>
+                                        <div>Date</div>
+                                        <div>Pc/Pkt</div>
+                                        <div>Pakets</div>
+                                    </div>
+                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                        @forEach ($articles as $article)
+                                            <x-table-row id="{{ $article->id }}" data-json="{{ $article }}" :cols="[ '#'.$article->article_no, $article->season, $article->size, $article->category ]" />
+                                        @endforeach
+                                    </div>
+                                @endif
+                        </div>
                     </div>
                 </div>
             @else
@@ -259,7 +243,7 @@
                 <x-modal id="addImageModalForm" classForBody="p-5" closeAction="closeAddImageModal" action="{{ route('add-image') }}">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative">
-                        <div class="flex-1 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Article Details</h5>
                             <x-input 
                                 value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.sales_rate} - Rs." 
@@ -413,7 +397,7 @@
                                 class="w-full h-full object-cover">
                         </div>
                 
-                        <div class="flex-1 ml-6 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 ml-6 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">#${data.article_no}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Season:</strong> <span>${data.season}</span></p>
@@ -435,7 +419,7 @@
                                     <div class="grow ml-5">Title</div>
                                     <div class="w-1/4">Rate</div>
                                 </div>
-                                <div id="modal-rate-list" class="overflow-y-auto my-scroller-2">
+                                <div id="modal-rate-list" class="overflow-y-auto my-scrollbar-2">
                                 </div>
                             </div>
                         </div>

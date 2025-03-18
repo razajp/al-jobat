@@ -102,13 +102,13 @@
                 <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
                             
                             <hr class="border-gray-600 my-3">
                 
                             @if (count($articles) > 0)
-                                <div class='overflow-y-auto my-scroller-2 pt-2 grow'>
+                                <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
                                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                         @foreach ($articles as $article)
                                             <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='selectThisArticle(this)'

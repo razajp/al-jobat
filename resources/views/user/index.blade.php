@@ -1,7 +1,6 @@
 @extends('app')
 @section('title', 'Show Users | ' . app('company')->name)
 @section('content')
-@php $authLayout = Auth::user()->layout; @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">

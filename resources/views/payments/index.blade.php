@@ -1,18 +1,19 @@
 @extends('app')
 @section('title', 'Show Payments | ' . app('company')->name)
 @section('content')
-    @php $authLayout = Auth::user()->layout; @endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     
-    <x-search-header heading="Payments" :filter_items="[
-        'all' => 'All',
-        'customer_name' => 'Customer Name',
-        'type' => 'Type',
-        'date' => 'Date',
-    ]"/>
+    <div class="w-[80%] mx-auto">
+        <x-search-header heading="Payments" :filter_items="[
+            'all' => 'All',
+            'customer_name' => 'Customer Name',
+            'type' => 'Type',
+            'date' => 'Date',
+        ]"/>
+    </div>
     
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -63,7 +64,7 @@
 
             @if (count($payments) > 0)
                 <div class="details h-full">
-                    <div class="container-parent h-full overflow-y-auto my-scroller">
+                    <div class="container-parent h-full overflow-y-auto my-scrollbar">
                         @if ($authLayout == 'grid')
                             <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
                                 @foreach ($payments as $payment)
@@ -270,7 +271,7 @@
                 <x-modal id="modalForm" closeAction="closeModal">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-[15rem]">
-                        <div class="flex-1 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <div class="px-2">
                                 <h5 id="name" class="text-2xl mb-2 text-[--text-color] capitalize font-semibold leading-none">Customer: ${data.customer.customer_name}</h5>
                                 <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>

@@ -1,19 +1,20 @@
 @extends('app')
 @section('title', 'Show Articles | ' . app('company')->name)
 @section('content')
-    @php $authLayout = Auth::user()->layout; @endphp
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     
-    <x-search-header heading="Orders" :filter_items="[
-        'all' => 'All',
-        'order_no' => 'Order No.',
-        'customer_name' => 'Customer Name',
-        'date' => 'Date',
-    ]"/>
+    <div class="w-[80%] mx-auto">
+        <x-search-header heading="Orders" :filter_items="[
+            'all' => 'All',
+            'order_no' => 'Order No.',
+            'customer_name' => 'Customer Name',
+            'date' => 'Date',
+        ]"/>
+    </div>
     
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -64,21 +65,23 @@
 
             @if (count($orders) > 0)
                 <div class="details h-full">
-                    <div class="container-parent h-full overflow-y-auto my-scroller">
+                    <div class="container-parent h-full overflow-y-auto my-scrollbar">
                         @if ($authLayout == 'grid')
-                            <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                @foreach ($orders as $order)
-                                    <div id="{{ $order->id }}" data-json='{{ $order }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'name' => 'Order No: ' . $order->order_no,
-                                            'details' => [
-                                                'Customer' => $order->customer->customer_name,
-                                                'Date' => $order->date,
-                                            ],
-                                        ]" />
-                                    </div>
-                                @endforeach
+                            <div class="card_container p-5 pr-3">
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                                    @foreach ($orders as $order)
+                                        <div id="{{ $order->id }}" data-json='{{ $order }}'
+                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
+                                            <x-card :data="[
+                                                'name' => 'Order No: ' . $order->order_no,
+                                                'details' => [
+                                                    'Customer' => $order->customer->customer_name,
+                                                    'Date' => $order->date,
+                                                ],
+                                            ]" />
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         @else
                             {{-- <div class="table_container rounded-tl-lg rounded-tr-lg overflow-hidden text-sm">
@@ -320,7 +323,7 @@
             let currentBalance = data.customer.current_balance;
 
             modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scroller-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
+                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
                             <div id="order" class="order flex flex-col h-full">

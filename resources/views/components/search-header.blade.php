@@ -3,7 +3,7 @@
     'filter_items' => [],
 ])
 
-<div class="header w-[80%] mx-auto flex items-end justify-between px-6">
+<div class="header w-full flex items-end justify-between">
     <h5 id="name" class="text-3xl text-[--text-color] capitalize font-semibold leading-none">{{ $heading }}</h5>
 
     <!-- Search Form -->
@@ -30,4 +30,4 @@
     </div>
 </div>
 
-<hr class="border-gray-600 my-4 w-[80%] mx-auto">
+<hr class="border-gray-600 my-4 w-full">

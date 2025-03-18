@@ -240,7 +240,7 @@
                                 class="w-full h-full object-cover">
                         </div>
                 
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.supplier_name}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
@@ -413,7 +413,7 @@
                             <hr class="border-gray-600 my-3">
                 
                             <div class="chipsContainer">
-                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scroller-2">
+                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2">
                                 </div>
                             </div>
                         </div>

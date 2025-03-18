@@ -7,72 +7,19 @@
         <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
             <!-- Modal Content Slot -->
             <div class="flex items-start relative h-full">
-                <div class="flex-1 h-full overflow-y-auto my-scroller-2 flex flex-col">
-                    <div class="header flex items-center justify-between pr-6">
-                        <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
-
-                        <!-- Search Form -->
-                        <div id="search-form" class="search-box w-1/3">
-                            <!-- Search Input -->
-                            <div class="search-input relative">
-                                <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search Articles..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
-                                <div class="dropdownMenu text-sm absolute mt-2 top-100 right-0 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
-                                    <ul class="p-2">
-                                        <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("all")'>
-                                                <input type="radio" name="filter" value="all" class="hidden peer" checked/>
-                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">All</span>
-                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                </div>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("#")'>
-                                                <input type="radio" name="filter" value="article_no" class="hidden peer" />
-                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Article No.</span>
-                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                </div>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("category")'>
-                                                <input type="radio" name="filter" value="category" class="hidden peer" />
-                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Category</span>
-                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                </div>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("season")'>
-                                                <input type="radio" name="filter" value="season" class="hidden peer" />
-                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Season</span>
-                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                </div>
-                                            </label>
-                                        </li>
-                                        <li>
-                                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("size")'>
-                                                <input type="radio" name="filter" value="size" class="hidden peer" />
-                                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">Size</span>
-                                                <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
-                                                    <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
-                                                </div>
-                                            </label>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
+                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
+                    <div class="pr-5">
+                        <x-search-header heading="Articles" :filter_items="[
+                            'all' => 'All',
+                            '#' => 'Article No.',
+                            'category' => 'Category',
+                            'season' => 'Season',
+                            'size' => 'Size',
+                        ]"/>
                     </div>
-                    
-                    <hr class="border-gray-600 my-3">
         
                     @if (count($articles) > 0)
-                        <div class='overflow-y-auto my-scroller-2 pt-2 grow'>
+                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
                             <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                 @foreach ($articles as $article)
                                     <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='generateQuantityModal(this)'
@@ -163,7 +110,7 @@
                     <div class="w-1/5">Amount</div>
                     <div class="w-[10%] text-center">Action</div>
                 </div>
-                <div id="order-list" class="h-[20rem] overflow-y-auto my-scroller-2">
+                <div id="order-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[--h-bg-color] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
@@ -200,7 +147,7 @@
         </div>
 
         <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scroller-2 bg-white rounded-md">
+        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
                     <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
@@ -412,7 +359,7 @@
                 <x-modal id="quantityModalForm" classForBody="p-5" closeAction="closeQuantityModal">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scroller-2">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Article Details</h5>
 
                             <x-input 
@@ -885,6 +832,8 @@
                         cardsDom.forEach((card) => {
                             cardsDataArray.push(JSON.parse(card.dataset.json));
                         })
+
+                        setFilter('all');
                     }
                 },
                 error: function() {
@@ -900,7 +849,6 @@
 
             searchData(document.getElementById('search_box').value);
         }
-        setFilter('all');
 
         function searchData(search) {
             search = search.toLowerCase();

@@ -73,6 +73,7 @@
         let dateDom = document.getElementById('date');
         let balanceDom = document.getElementById('balance');
         let paymentDetailsDom = document.getElementById('paymentDetails');
+        let selectedCustomer;
 
         const today = new Date().toISOString().split('T')[0];
 
@@ -81,7 +82,7 @@
             balanceDom.value = '';
 
             if (customerSelectDom.value != '') {
-                let selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
+                selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
                 dateDom.disabled = false;
                 typeSelectDom.disabled = false;
                 dateDom.min = selectedCustomer.date;
@@ -104,45 +105,49 @@
                 `;
             } else if (elem.value == 'cheque') {
                 paymentDetailsDom.innerHTML = `
+                    {{-- bank --}}
+                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
+
                     {{-- amount --}}
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
 
                     {{-- cheque_date --}}
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
 
-                    {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
-
-                    {{-- bank --}}
-                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
+                    {{-- cheque_no --}}
+                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+
+                    {{-- clear_date --}}
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
                 `;
             } else if (elem.value == 'slip') {
                 paymentDetailsDom.innerHTML = `
+                    {{-- customer --}}
+                    <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
+
                     {{-- amount --}}
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
 
                     {{-- slip_date --}}
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
 
+                    {{-- slip_no --}}
+                    <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
+
+                    {{-- remarks --}}
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+
                     {{-- clear_date --}}
                     <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
-
-                    <div class="col-span-full">
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    </div>
                 `;
             } else if (elem.value == 'online') {
                 paymentDetailsDom.innerHTML = `
+                    {{-- amount --}}
+                    <x-input label="A/C Title" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    
                     {{-- amount --}}
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 

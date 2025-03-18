@@ -14,7 +14,13 @@ class PhysicalQuantityController extends Controller
      */
     public function index()
     {
-        //
+        $physicalQuantities = PhysicalQuantity::with('article')->get();
+        
+        foreach ($physicalQuantities as $physicalQuantity) {
+            $physicalQuantity['date'] = date('d-M-y, D', strtotime($physicalQuantity['date']));
+        }
+
+        return view("physical-quantities.index", compact("physicalQuantities"));
     }
 
     /**

@@ -144,7 +144,7 @@
                             <div class="w-1/4">Rate</div>
                             <div class="w-[10%] text-center">Action</div>
                         </div>
-                        <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scroller-2">
+                        <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
                             <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                             <div class="grow ml-5">Title</div>
                             <div class="w-1/4">Rate</div>
                         </div>
-                        <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scroller-2">
+                        <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
                             @if (count($lastRecord->rates_array) === 0)
                                 <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added
                                 </div>
@@ -637,7 +637,7 @@
                 <div class="grow ml-5">Title</div>
                 <div class="w-1/4">Rate</div>
             </div>
-            <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scroller-2">
+            <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
                 @if (count($lastRecord->rates_array) === 0)
                     <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added
                     </div>

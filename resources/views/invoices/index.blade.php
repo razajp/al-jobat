@@ -1,19 +1,20 @@
 @extends('app')
 @section('title', 'Show Articles | ' . app('company')->name)
 @section('content')
-    @php $authLayout = Auth::user()->layout; @endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     
-    <x-search-header heading="Invoices" :filter_items="[
-        'all' => 'All',
-        'invoice_no' => 'Invoice No.',
-        'order_no' => 'Order No.',
-        'customer_name' => 'Customer Name',
-        'date' => 'Date',
-    ]"/>
+    <div class="w-[80%] mx-auto">
+        <x-search-header heading="Invoices" :filter_items="[
+            'all' => 'All',
+            'invoice_no' => 'Invoice No.',
+            'order_no' => 'Order No.',
+            'customer_name' => 'Customer Name',
+            'date' => 'Date',
+        ]"/>
+    </div>
 
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -64,7 +65,7 @@
 
             @if (count($invoices) > 0)
                 <div class="details h-full">
-                    <div class="container-parent h-full overflow-y-auto my-scroller">
+                    <div class="container-parent h-full overflow-y-auto my-scrollbar">
                         @if ($authLayout == 'grid')
                             <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                 @foreach ($invoices as $invoice)
@@ -321,7 +322,7 @@
             let netAmount = data.netAmount;
 
             modalDom.innerHTML = `
-             <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scroller-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
+             <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
                                 <div id="invoice" class="invoice flex flex-col h-full">

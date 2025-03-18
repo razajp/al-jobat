@@ -76,7 +76,7 @@
             color: #e2e8f0 !important;
         }
         
-        .my-scroller-2::-webkit-scrollbar {
+        .my-scrollbar-2::-webkit-scrollbar {
             display: none;
         }
         
@@ -337,47 +337,49 @@
         document.addEventListener("contextmenu", e => e.preventDefault());
 
 
-        // Search Script
-        let filterType;
-        let cardsDataArray = [];
+        @if(!request()->is('orders/create'))
+            // Search Script
+            let filterType;
+            let cardsDataArray = [];
 
-        let cardsArray = $('.card_container').children().toArray();
+            let cardsArray = $('.search_container').children().toArray();
 
-        function setCardsData() {
-            cardsArray = $('.card_container').children().toArray();
+            function setCardsData() {
+                cardsArray = $('.search_container').children().toArray();
 
-            cardsArray.forEach((card) => {
-                cardsDataArray.push(JSON.parse(card.dataset.json));
-            })
-        }
-        setCardsData();
-
-        function setFilter(filterTypeArg) {
-            filterType = filterTypeArg;
-
-            searchData(document.getElementById('search_box').value);
-        }
-
-        function searchData(search) {
-            search = search.toLowerCase();
-
-            let filteredData = filterData(search);
-
-            const cardContainerDom = document.querySelector('.card_container');
-            cardContainerDom.innerHTML = "";
-
-            if (filteredData.length === 0) {
-                const noResultMessage = "<p class='text-center col-span-full text-[--border-error]'>No data found</p>"
-                cardContainerDom.innerHTML = noResultMessage;
-            } else {
-                filteredData.forEach(item => {
-                    const cardElement = cardsArray.find(card => card.id == item.id);
-                    if (cardElement) {
-                        cardContainerDom.appendChild(cardElement);
-                    }
-                });
+                cardsArray.forEach((card) => {
+                    cardsDataArray.push(JSON.parse(card.dataset.json));
+                })
             }
-        }
+            setCardsData();
+
+            function setFilter(filterTypeArg) {
+                filterType = filterTypeArg;
+
+                searchData(document.getElementById('search_box').value);
+            }
+
+            function searchData(search) {
+                search = search.toLowerCase();
+
+                let filteredData = filterData(search);
+
+                const cardContainerDom = document.querySelector('.search_container');
+                cardContainerDom.innerHTML = "";
+
+                if (filteredData.length === 0) {
+                    const noResultMessage = "<p class='text-center col-span-full text-[--border-error]'>No data found</p>"
+                    cardContainerDom.innerHTML = noResultMessage;
+                } else {
+                    filteredData.forEach(item => {
+                        const cardElement = cardsArray.find(card => card.id == item.id);
+                        if (cardElement) {
+                            cardContainerDom.appendChild(cardElement);
+                        }
+                    });
+                }
+            }
+        @endif
     </script>
 </body>
 

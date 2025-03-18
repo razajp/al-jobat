@@ -3,7 +3,7 @@
 
     $roleOptions = [
         'guest' => ['text' => 'Guest'],
-        'accountant' => ['text' => 'Accountant']
+        'accountant' => ['text' => 'Accountant'],
     ];
 
     if ($authUser->role == 'developer') {
@@ -23,12 +23,9 @@
         Add User
     </h1>
 
-    
+
     <div class="mb-5 max-w-2xl mx-auto fade-in">
-        <x-progress-bar 
-            :steps="['Enter Details', 'Upload Image']" 
-            :currentStep="1"
-        />
+        <x-progress-bar :steps="['Enter Details', 'Upload Image']" :currentStep="1" />
     </div>
 
     <!-- Form -->
@@ -43,51 +40,24 @@
         <div class="step1 space-y-6 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Name --}}
-                <x-input 
-                label="Name" 
-                name="name" 
-                id="name" 
-                placeholder="Enter name" 
-                required 
-                />
+                <x-input label="Name" name="name" id="name" placeholder="Enter name" required />
 
                 {{-- Username --}}
-                <x-input 
-                label="Username" 
-                name="username" 
-                id="username" 
-                placeholder="Enter username" 
-                required 
-                />
+                <x-input label="Username" name="username" id="username" placeholder="Enter username" required />
 
                 {{-- Password --}}
-                <x-input 
-                label="Password" 
-                name="password" 
-                id="password" 
-                type="password" 
-                placeholder="Enter password" 
-                required 
-                />
+                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password"
+                    required />
 
                 {{-- Role --}}
-                <x-select 
-                label="Role" 
-                name="role" 
-                id="role" 
-                :options="$roleOptions"
-                />
+                <x-select label="Role" name="role" id="role" :options="$roleOptions" />
             </div>
         </div>
 
         <!-- Step 2: Production Details -->
         <div class="step2 hidden space-y-6 ">
-            <x-image-upload 
-                id="profile_picture"
-                name="profile_picture"
-                placeholder="{{ asset('images/image_icon.png') }}"
-                uploadText="Upload Profile Picture"
-            />
+            <x-image-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
+                uploadText="Upload Profile Picture" />
         </div>
     </form>
     <script>
@@ -114,8 +84,8 @@
         }
 
         function validateUsername() {
-           // Validate Username
-           if (usernameDom.value.trim() === "") {
+            // Validate Username
+            if (usernameDom.value.trim() === "") {
                 usernameDom.classList.add("border-[--border-error]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
@@ -150,16 +120,16 @@
                 return true;
             }
         }
-        
-        passwordDom.addEventListener("input", function () {
+
+        passwordDom.addEventListener("input", function() {
             validatePassword()
         })
-        
-        usernameDom.addEventListener("input", function () {
+
+        usernameDom.addEventListener("input", function() {
             validateUsername()
         });
 
-        nameDom.addEventListener("input", function(){
+        nameDom.addEventListener("input", function() {
             validateName()
         });
 
