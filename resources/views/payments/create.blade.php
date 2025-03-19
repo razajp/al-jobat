@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Physical Quantities | ' . app('company')->name)
+@section('title', 'Add Payment | ' . app('company')->name)
 @section('content')
     @php
         $type_options = [
@@ -11,7 +11,7 @@
         ];
     @endphp
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Physical Quantity </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Payment </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
@@ -24,7 +24,7 @@
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Add Physical Quantity</h4>
+            <h4>Add Payment</h4>
         </div>
 
         <div class="step1 space-y-4 ">
