@@ -147,7 +147,7 @@ class InvoiceController extends Controller
         
         $order = Order::with('customer')->where("order_no", $request->order_no)->first();
         $order->ordered_articles = json_decode($order->ordered_articles);
-
+        
         $orderedArticles = $order->ordered_articles;
 
         $orderedArticles = array_filter($orderedArticles, function ($orderedArticle) {
@@ -167,7 +167,7 @@ class InvoiceController extends Controller
                 $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQuantity) / $orderedArticle->article->pcs_per_packet;
             }
         
-            $orderedArticle->total_physical_stock_packets = floor(($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - ($orderedArticle->invoice_quantity / $article->pcs_per_packet));
+            $orderedArticle->total_physical_stock_packets = floor(($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - (($orderedArticle->invoice_quantity ?? 0) / $article->pcs_per_packet));
         
             return $orderedArticle->total_physical_stock_packets > 0;
         });

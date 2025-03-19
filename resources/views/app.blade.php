@@ -10,6 +10,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>@yield('title', app('company')->name)</title>
     <style>
+        @font-face {
+            font-family: 'Calibri';
+            src: url('/calibri.ttf') format('truetype'); /* For TTF */
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* *:not(i) {
+            font-family: 'Calibri', sans-serif !important;
+        } */
+
         /* color theme */
         :root {
             --bg-color: #111827;

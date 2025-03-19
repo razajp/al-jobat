@@ -143,6 +143,8 @@
                     order_no: orderNoDom.value
                 },
                 success: function (response) {
+                    console.log(response);
+                    
                     orderedArticles = response.ordered_articles;
                     discount = response.discount;
                     customerData = response.customer;

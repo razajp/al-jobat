@@ -311,50 +311,44 @@
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
                             <div id="order" class="order flex flex-col h-full">
-                                <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
-                                    <div class="left w-50">
+                                <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                                    <div class="left">
                                         <div class="order-logo">
                                             <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                class="w-[150px]" />
+                                                class="w-[12rem]" />
+                                            <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
-                                        <div class="order-date">Date: ${data.date}</div>
-                                        <div class="order-number">Order No.: ${data.order_no}</div>
-                                        <div class="order-copy">Order Copy: Customer</div>
-                                        <div class="d">Document: Order</div>
-                                    </div>
+                                    <h1 class="text-2xl font-medium text-[--primary-color] pr-2">Sales Order</h1>
                                 </div>
-                                <hr class="w-100 my-5 border-gray-600">
+                                <hr class="w-100 my-3 border-gray-600">
                                 <div id="order-header" class="order-header w-full flex justify-between px-5">
-                                    <div class="left w-50">
-                                        <div class="order-to text-sm text-gray-500">Order to:</div>
-                                        <div class="order-customer text-lg">${data.customer.customer_name}</div>
-                                        <div class="order-person text-md">${data.customer.person_name}</div>
-                                        <div class="order-address text-md">${data.customer.address}, ${data.customer.city}</div>
-                                        <div class="order-phone text-md">${data.customer.phone_number}</div>
+                                    <div class="left w-50 space-y-1">
+                                        <div class="order-customer text-lg leading-none">M/s: ${data.customer.customer_name}</div>
+                                        <div class="order-person text-md text-lg leading-none">${data.customer.urdu_title}</div>
+                                        <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
+                                        <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
                                     </div>
-                                    <div class="right w-50">
-                                        <div class="order-from text-sm text-gray-500">Order from:</div>
-                                        <div class="order-customer text-lg">${companyData.name}</div>
-                                        <div class="order-person text-md">${companyData.owner_name}</div>
-                                        <div class="order-address text-md">${companyData.city}, ${companyData.address}</div>
-                                        <div class="order-phone text-md">${companyData.phone_number}</div>
+                                    <div class="right w-50 my-auto pr-3 text-sm text-gray-500 space-y-2">
+                                        <div class="order-date leading-none">Date: ${data.date}</div>
+                                        <div class="order-number leading-none">Order No.: ${data.order_no}</div>
+                                        <div class="order-copy leading-none">Order Copy: Customer</div>
                                     </div>
                                 </div>
-                                <hr class="w-100 mt-5 mb-5 border-gray-600">
+                                <hr class="w-100 my-3 border-gray-600">
                                 <div id="order-body" class="order-body w-[95%] grow mx-auto">
                                     <div class="order-table w-full">
-                                        <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                        <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
-                                                    <div class="th text-sm font-medium w-[5%]">#</div>
+                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[--primary-color] text-white">
+                                                    <div class="th text-sm font-medium w-[8%]">S.No</div>
                                                     <div class="th text-sm font-medium w-[10%]">Article</div>
-                                                    <div class="th text-sm font-medium w-1/6">Qty/Pcs.</div>
-                                                    <div class="th text-sm font-medium grow">Desc.</div>
-                                                    <div class="th text-sm font-medium w-1/6">Rate</div>
+                                                    <div class="th text-sm font-medium grow">Description</div>
+                                                    <div class="th text-sm font-medium w-[10%]">Pcs.</div>
+                                                    <div class="th text-sm font-medium w-[10%]">Packets</div>
+                                                    <div class="th text-sm font-medium w-[10%]">Rate</div>
                                                     <div class="th text-sm font-medium w-1/6">Amount</div>
-                                                    <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
+                                                    <div class="th text-sm font-medium w-[8%]">Dispatch</div>
                                                 </div>
                                             </div>
                                             <div id="tbody" class="tbody w-full">
@@ -363,7 +357,7 @@
                                                     const salesRate = article.sales_rate;
                                                     const orderedQuantity = orderedArticle.ordered_quantity;
                                                     const total = parseInt(salesRate) * orderedQuantity;
-                                                    const hrClass = index === 0 ? "mb-3" : "my-3";
+                                                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                                                     totalAmount += total;
                                                     totalQuantity += orderedQuantity;
@@ -372,17 +366,18 @@
                                                         <div>
                                                             <hr class="w-full ${hrClass} border-gray-600">
                                                             <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[8%]">${index + 1}.</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
                                                                 <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">
+                                                                <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet)}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
                                                                 </div>
                                                                 <div class="td text-sm font-semibold w-1/6">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
                                                                 </div>
-                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                                                <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
                                                         </div>
                                                     `;
@@ -391,43 +386,43 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr class="w-full my-4 border-gray-600">
+                                <hr class="w-full my-3 border-gray-600">
                                 <div class="flex flex-col space-y-2">
                                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Total Quantity - Pcs</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
                                         </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Total Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
                                         </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Discount - %</div>
                                             <div class="w-1/4 text-right grow">${discount}</div>
                                         </div>
                                     </div>
                                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Previous Balance</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(previousBalance)}</div>
                                         </div>
                                         <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Net Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
                                         </div>
                                         <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Current Balance</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(currentBalance)}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <hr class="w-full my-4 border-gray-600">
+                                <hr class="w-full my-3 border-gray-600">
                                 <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
-                                    <P>${ companyData.name }</P>
-                                    <p>&copy; Spark Pair 2025 | sparkpair.com</p>
+                                    <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                                    <p class="leading-none">&copy; Spark Pair 2025 | sparkpair.com</p>
                                 </div>
                             </div>
                         </div>
