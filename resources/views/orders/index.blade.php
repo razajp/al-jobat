@@ -322,6 +322,7 @@
                                         <div class="order-date">Date: ${data.date}</div>
                                         <div class="order-number">Order No.: ${data.order_no}</div>
                                         <div class="order-copy">Order Copy: Customer</div>
+                                        <div class="d">Document: Order</div>
                                     </div>
                                 </div>
                                 <hr class="w-100 my-5 border-gray-600">

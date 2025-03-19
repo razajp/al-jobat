@@ -104,8 +104,8 @@
                 </div>
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                    <h1 class="text-sm text-[--secondary-text] capitalize">No Order Found</h1>
-                    <a href="{{ route('orders.create') }}"
+                    <h1 class="text-sm text-[--secondary-text] capitalize">No Invoice Found</h1>
+                    <a href="{{ route('invoices.create') }}"
                         class="text-sm bg-[--primary-color] text-[--text-color] px-4 py-2 rounded-md hover:bg-[--h-primary-color] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
                         New</a>
                 </div>
@@ -325,6 +325,7 @@
                                             <div class="invoice-date">Date: ${data.date}</div>
                                             <div class="invoice-number">Invoice No.: ${data.invoice_no}</div>
                                             <div class="invoice-copy">Invoice Copy: Customer</div>
+                                            <div class="d">Document: Invoice</div>
                                         </div>
                                     </div>
                                     <hr class="w-100 my-5 border-gray-600">

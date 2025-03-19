@@ -82,6 +82,10 @@
                     label="Date" 
                     name="date" 
                     id="date" 
+                    min="{{ now()->subMonth()->toDateString() }}"
+                    validateMin
+                    max="{{ now()->toDateString() }}"
+                    validateMax
                     type="date"
                     required
                 />
