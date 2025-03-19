@@ -341,13 +341,13 @@
                                         <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[--primary-color] text-white">
-                                                    <div class="th text-sm font-medium w-[8%]">S.No</div>
+                                                    <div class="th text-sm font-medium w-[7%]">S.No</div>
                                                     <div class="th text-sm font-medium w-[10%]">Article</div>
                                                     <div class="th text-sm font-medium grow">Description</div>
                                                     <div class="th text-sm font-medium w-[10%]">Pcs.</div>
                                                     <div class="th text-sm font-medium w-[10%]">Packets</div>
                                                     <div class="th text-sm font-medium w-[10%]">Rate</div>
-                                                    <div class="th text-sm font-medium w-1/6">Amount</div>
+                                                    <div class="th text-sm font-medium w-[10%]">Amount</div>
                                                     <div class="th text-sm font-medium w-[8%]">Dispatch</div>
                                                 </div>
                                             </div>
@@ -366,7 +366,7 @@
                                                         <div>
                                                             <hr class="w-full ${hrClass} border-gray-600">
                                                             <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[8%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                                 <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
@@ -374,7 +374,7 @@
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
                                                                 </div>
-                                                                <div class="td text-sm font-semibold w-1/6">
+                                                                <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
                                                                 </div>
                                                                 <div class="td text-sm font-semibold w-[8%]"></div>

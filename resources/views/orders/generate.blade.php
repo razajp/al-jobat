@@ -584,84 +584,88 @@
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
                     <div id="order" class="order flex flex-col h-full">
-                        <div id="order-banner" class="order-banner w-full flex justify-between mt-8 px-5">
-                            <div class="left w-50">
+                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                            <div class="left">
                                 <div class="order-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                        class="w-[150px]" />
+                                        class="w-[12rem]" />
+                                    <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
-                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500">
-                                <div class="order-date">Date: ${orderDate}</div>
-                                <div class="order-number">Order No.: ${orderNo}</div>
-                                <input type="hidden" name="order_no" value="${orderNo}">
-                                <div class="order-copy">Order Copy: Customer</div>
-                                <div class="d">Document: Order</div>
-                            </div>
+                            <h1 class="text-2xl font-medium text-[--primary-color] pr-2">Sales Order</h1>
                         </div>
-                        <hr class="w-100 my-5 border-gray-600">
+                        <hr class="w-100 my-3 border-gray-600">
                         <div id="order-header" class="order-header w-full flex justify-between px-5">
-                            <div class="left w-50">
-                                <div class="order-to text-sm text-gray-500">Order to:</div>
-                                <div class="order-customer text-lg">${customerData.customer_name}</div>
-                                <div class="order-person text-md">${customerData.person_name}</div>
-                                <div class="order-address text-md">${customerData.address}, ${customerData.city}</div>
-                                <div class="order-phone text-md">${customerData.phone_number}</div>
+                            <div class="left w-50 space-y-1">
+                                <div class="order-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                <div class="order-person text-md text-lg leading-none">${customerData.urdu_title}</div>
+                                <div class="order-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
+                                <div class="order-phone text-md leading-none">${customerData.phone_number}</div>
                             </div>
-                            <div class="right w-50">
-                                <div class="order-from text-sm text-gray-500">Order from:</div>
-                                <div class="order-customer text-lg">${companyData.name}</div>
-                                <div class="order-person text-md">${companyData.owner_name}</div>
-                                <div class="order-address text-md">${companyData.city}, ${companyData.address}</div>
-                                <div class="order-phone text-md">${companyData.phone_number}</div>
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500 space-y-2">
+                                <div class="order-date leading-none">Date: ${orderDate}</div>
+                                <div class="order-number leading-none">Order No.: ${orderNo}</div>
+                                <div class="order-copy leading-none">Order Copy: Customer</div>
                             </div>
                         </div>
-                        <hr class="w-100 mt-5 mb-5 border-gray-600">
+                        <hr class="w-100 my-3 border-gray-600">
                         <div id="order-body" class="order-body w-[95%] grow mx-auto">
                             <div class="order-table w-full">
-                                <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
-                                            <div class="th text-sm font-medium w-[5%]">#</div>
+                                        <div class="tr flex justify-between w-full px-4 py-1.5 bg-[--primary-color] text-white">
+                                            <div class="th text-sm font-medium w-[7%]">S.No</div>
                                             <div class="th text-sm font-medium w-[10%]">Article</div>
-                                            <div class="th text-sm font-medium w-[10%]">Qty-Pcs.</div>
-                                            <div class="th text-sm font-medium grow">Desc.</div>
-                                            <div class="th text-sm font-medium w-1/6">Rate/Pc.</div>
-                                            <div class="th text-sm font-medium w-1/6">Amount</div>
-                                            <div class="th text-sm font-medium w-[12%]">Packed Qty.</div>
+                                            <div class="th text-sm font-medium grow">Description</div>
+                                            <div class="th text-sm font-medium w-[10%]">Pcs.</div>
+                                            <div class="th text-sm font-medium w-[10%]">Packets</div>
+                                            <div class="th text-sm font-medium w-[10%]">Rate</div>
+                                            <div class="th text-sm font-medium w-[10%]">Amount</div>
+                                            <div class="th text-sm font-medium w-[8%]">Dispatch</div>
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
                                         ${selectedArticles.map((article, index) => {
+                                            const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             if (index == 0) {
                                                 return `
-                                                        <div>
-                                                            <hr class="w-full mb-3 border-gray-600">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
-                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                                    <div>
+                                                        <hr class="w-full ${hrClass} border-gray-600">
+                                                        <div class="tr flex justify-between w-full px-4">
+                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                            <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity * article.pcs_per_packet}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${Math.floor(article.orderedQuantity / article.pcs_per_packet)}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">
+                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                             </div>
+                                                            <div class="td text-sm font-semibold w-[10%]">
+                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
+                                                            </div>
+                                                            <div class="td text-sm font-semibold w-[8%]"></div>
                                                         </div>
+                                                    </div>
                                                     `;
                                             } else {
                                                 return `
-                                                        <div>
-                                                            <hr class="w-full my-3 border-gray-600">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[5%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}</div>
-                                                                <div class="td text-sm font-semibold w-1/6">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}</div>
-                                                                <div class="td text-sm font-semibold w-[12%]">____________</div>
+                                                    <div>
+                                                        <hr class="w-full ${hrClass} border-gray-600">
+                                                        <div class="tr flex justify-between w-full px-4">
+                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                            <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${Math.floor(article.orderedQuantity / article.pcs_per_packet)}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">
+                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                             </div>
+                                                            <div class="td text-sm font-semibold w-1/6">
+                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
+                                                            </div>
+                                                            <div class="td text-sm font-semibold w-[8%]"></div>
                                                         </div>
+                                                    </div>
                                                     `;
                                             }
                                         }).join('')}
@@ -669,7 +673,7 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="w-full my-4 border-gray-600">
+                        <hr class="w-full my-3 border-gray-600">
                         <div class="flex flex-col space-y-2">
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
@@ -702,10 +706,10 @@
                                 </div>
                             </div>
                         </div>
-                        <hr class="w-full my-4 border-gray-600">
+                        <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
-                            <P>${ companyData.name }</P>
-                            <p>&copy; Spark Pair 2025 | sparkpair.com</p>
+                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <p class="leading-none">&copy; Spark Pair 2025 | sparkpair.com</p>
                         </div>
                     </div>
                 `;

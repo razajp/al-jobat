@@ -23,4 +23,9 @@ class Article extends Model
         'pcs_per_packet',
         'image',
     ];
+    
+    public function physicalQuantity()
+    {
+        return $this->hasMany(physicalQuantity::class, 'article_id');
+    }
 }

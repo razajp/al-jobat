@@ -28,10 +28,12 @@ class PhysicalQuantityController extends Controller
      */
     public function create()
     {
-        $articles = Article::all();
-
+        $articles = Article::with('physicalQuantity')->get();
+        return $articles;
+        
         foreach ($articles as $article) {
-            $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
+            $physical_quantity = array_sum(array_column($article['physical_quantity'], 'packets'));
+
             if ($physical_quantity) {
                 $article['physical_quantity'] = $physical_quantity * $article->pcs_per_packet;
             } else {
