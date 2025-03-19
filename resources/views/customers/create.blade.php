@@ -47,6 +47,19 @@
                     required 
                 />
 
+                {{-- customer_registration_date --}}
+                <x-input 
+                    label="Date" 
+                    name="date" 
+                    id="date" 
+                    min="{{ now()->subMonth()->toDateString() }}"
+                    validateMin
+                    max="{{ now()->toDateString() }}"
+                    validateMax
+                    type="date"
+                    required
+                />
+
                 {{-- customer_username --}}
                 <x-input 
                     label="Username" 
@@ -74,19 +87,6 @@
                     id="phone_number" 
                     type="text"
                     placeholder="Enter phone number"
-                    required
-                />
-
-                {{-- customer_registration_date --}}
-                <x-input 
-                    label="Date" 
-                    name="date" 
-                    id="date" 
-                    min="{{ now()->subMonth()->toDateString() }}"
-                    validateMin
-                    max="{{ now()->toDateString() }}"
-                    validateMax
-                    type="date"
                     required
                 />
 

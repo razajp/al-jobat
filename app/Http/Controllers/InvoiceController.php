@@ -149,26 +149,34 @@ class InvoiceController extends Controller
         $order->ordered_articles = json_decode($order->ordered_articles);
 
         $orderedArticles = $order->ordered_articles;
-        
-        foreach ($orderedArticles as $orderedArticle) {
+
+        $orderedArticles = array_filter($orderedArticles, function ($orderedArticle) {
             $article = Article::find($orderedArticle->id);
             $orderedArticle->article = $article;
-
+        
             $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
             $totalPhysicalStockPcs = $totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet;
             $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
-            
-            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet; 
-            
+        
+            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet;
+        
             if (isset($orderedArticle->invoice_quantity)) {
-                $orderedArticle->total_physical_stock_packets -= $orderedArticle->invoice_quantity / $orderedArticle->article['pcs_per_packet'];
+                $orderedArticle->total_physical_stock_packets -= $orderedArticle->invoice_quantity / $orderedArticle->article->pcs_per_packet;
             } else {
-                $totalSoldQunatity = $article->sold_quantity;
-                $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQunatity)/ $orderedArticle->article->pcs_per_packet; 
+                $totalSoldQuantity = $article->sold_quantity;
+                $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQuantity) / $orderedArticle->article->pcs_per_packet;
             }
-            $orderedArticle->total_physical_stock_packets = ($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - ($orderedArticle->invoice_quantity / $article->pcs_per_packet); 
-        }
+        
+            $orderedArticle->total_physical_stock_packets = floor(($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - ($orderedArticle->invoice_quantity / $article->pcs_per_packet));
+        
+            return $orderedArticle->total_physical_stock_packets > 0;
+        });
+
         $order->ordered_articles = $orderedArticles;
+
+        if (count($order->ordered_articles) == 0) {
+            $order = ['error' => 'data not found'];
+        }
 
         return response()->json($order);
     }

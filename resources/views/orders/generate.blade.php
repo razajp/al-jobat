@@ -204,15 +204,24 @@
             openArticlesModal();
             setDropdownListeners();
 
+            document.querySelectorAll('.card .quantity-label').forEach(previousQuantityLabel => {
+                previousQuantityLabel.remove();
+            });
+
             if (selectedArticles.length > 0) {
                 selectedArticles.forEach(selectedArticle => {
                     let card = document.getElementById(selectedArticle.id);
-                    card.innerHTML += `
-                        <div
-                            class="quantity-label absolute text-xs text-[--border-success] top-1 right-2 h-[1rem]">
-                            ${selectedArticle.orderedQuantity} Pcs
-                        </div>
-                    `;
+                    let quantityLabelDom = card.querySelector('.quantity-label');
+                    if (!quantityLabelDom) {
+                        card.innerHTML += `
+                            <div
+                                class="quantity-label absolute text-xs text-[--border-success] top-1 right-2 h-[1rem]">
+                                ${selectedArticle.orderedQuantity} Pcs
+                            </div>
+                        `;
+                    } else {
+                        quantityLabelDom.textContent = `${selectedArticle.orderedQuantity} Pcs`;
+                    }
                 });
             }
 
@@ -285,12 +294,13 @@
                                     label="Quantity"
                                     name="quantity" 
                                     id="quantity" 
-                                    type="number" 
+                                    type="text" 
                                     placeholder="Enter quantity" 
                                     required
                                     
                                     validateMax
                                     max="${data.quantity - data.ordered_quantity}"
+                                    oninput="checkMax(this)"
                                 />
                             </div>
                         </div>
@@ -371,19 +381,24 @@
             let quantity = quantityInputDOM.value;
 
             let quantityLabel = targetCard.querySelector('.quantity-label');
-            if (quantityLabel && quantity <= 0) {
-                quantityLabel.remove();
-                const index = selectedArticles.findIndex(c => c.id === cardData.id);
-                deselectArticleAtIndex(index);
-            } else if (quantityLabel) {
-                quantityLabel.textContent = `${quantity} Pcs`;
+
+            if (quantity > 0) {
+                if (quantityLabel) {
+                    quantityLabel.textContent = `${quantity} Pcs`;
+                } else {
+                    targetCard.innerHTML += `
+                        <div
+                            class="quantity-label absolute text-xs text-[--border-success] top-1 right-2 h-[1rem]">
+                            ${quantity} Pcs
+                        </div>
+                    `;
+                }
             } else {
-                targetCard.innerHTML += `
-                    <div
-                        class="quantity-label absolute text-xs text-[--border-success] top-1 right-2 h-[1rem]">
-                        ${quantity} Pcs
-                    </div>
-                `;
+                if (quantityLabel) {
+                    quantityLabel.remove();
+                    const index = selectedArticles.findIndex(c => c.id === cardData.id);
+                    deselectArticleAtIndex(index);
+                }
             }
 
             cardData.orderedQuantity = parseInt(quantity);
@@ -399,6 +414,9 @@
             calculateNetAmount();
             renderTotals();
             closeQuantityModal();
+
+            console.log(selectedArticles);
+            
         }
 
         function deselectArticleAtIndex(index) {
@@ -409,6 +427,9 @@
 
         function deselectThisArticle(index) {
             deselectArticleAtIndex(index);
+
+            console.log(selectedArticles);
+            
 
             renderList();
             generateOrder();
