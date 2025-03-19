@@ -166,7 +166,7 @@ class InvoiceController extends Controller
                 $totalSoldQunatity = $article->sold_quantity;
                 $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQunatity)/ $orderedArticle->article->pcs_per_packet; 
             }
-            $orderedArticle->total_physical_stock_packets = $orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets; 
+            $orderedArticle->total_physical_stock_packets = ($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - ($orderedArticle->invoice_quantity / $article->pcs_per_packet); 
         }
         $order->ordered_articles = $orderedArticles;
 

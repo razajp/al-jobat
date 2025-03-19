@@ -325,6 +325,7 @@
                                             <div class="invoice-date">Date: ${data.date}</div>
                                             <div class="invoice-number">Invoice No.: ${data.invoice_no}</div>
                                             <div class="invoice-copy">Invoice Copy: Customer</div>
+                                            <div class="d">Document: Invoice</div>
                                         </div>
                                     </div>
                                     <hr class="w-100 my-5 border-gray-600">

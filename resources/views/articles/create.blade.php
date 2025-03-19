@@ -38,7 +38,11 @@
                     <x-input 
                         label="Date"
                         name="date" 
-                        id="date" 
+                        id="date"
+                        validateMin
+                        min="{{ now()->subDays('14')->toDateString() }}"
+                        validateMax
+                        max="{{ now()->toDateString() }}"
                         type="date" 
                         required 
                     />
