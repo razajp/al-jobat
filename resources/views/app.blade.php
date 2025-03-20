@@ -149,16 +149,18 @@
 
         .active_inactive_dot {
             opacity: 100;
-            transition: all 0.2s ease-in-out;
+            transition: all 0.1s ease-in-out;
         }
 
         .active_inactive {
-            opacity: 0;
-            transition: all 0.2s ease-in-out;
+            max-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: max-width 0.4s ease-in-out;
         }
 
         .card:hover .active_inactive {
-            opacity: 100;
+            max-width: 30vw;
         }
 
         .card:hover .active_inactive_dot {

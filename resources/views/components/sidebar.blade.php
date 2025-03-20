@@ -299,6 +299,15 @@
                         ['href' => route('payments.create'), 'title' => 'Add Payment'],
                     ]"
                 />
+
+                <x-mobile-menu-item 
+                    title="Online Programs" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('online-program.index'), 'title' => 'Show Online Programs'],
+                        ['href' => route('online-program.create'), 'title' => 'Add Online Program'],
+                    ]"
+                />
                 </div>
 
                 <!-- Divider -->

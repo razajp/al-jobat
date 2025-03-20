@@ -76,14 +76,12 @@
                                         @foreach ($articles as $article)
                                             <div id="{{ $article->id }}" data-json='{{ $article }}'
                                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                                {{-- @if ($article->image == 'no_image_icon.png') 
-                                                    <div class="active_inactive_dot absolute -top-5 -left-5 w-28 h-28 rounded-full bg-[--bg-warning] blur-xl"></div>
-                                                @endif --}}
                                                 <x-card :data="[
                                                     'image' => $article->image == 'no_image_icon.png' 
                                                         ? asset('images/no_image_icon.png') 
                                                         : asset('storage/uploads/images/' . $article->image),
                                                     'status' => $article->image == 'no_image_icon.png' ? 'no_Image' : 'transparent',
+                                                    'noRateStatus' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [
