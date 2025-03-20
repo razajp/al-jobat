@@ -1,34 +1,13 @@
-<div class="absolute top-2 right-2 gap-1 flex">
-    {{-- Status Dot and Label --}}
-    @if (isset($data['status']))
-        {{-- <div
-            class="active_inactive_dot w-[0.6rem] h-[0.6rem] rounded-full {{ $data['status'] === 'active' ? 'bg-[--border-success]' : ($data['status'] === 'transparent' ? 'bg-transparent' : ($data['status'] === 'no_Image' ? 'bg-[--border-warning]' : 'bg-[--border-error]')) }}">
-        </div>
-        <div
-            class="active_inactive text-xs capitalize {{ $data['status'] === 'active' ? 'text-[--border-success]' : ($data['status'] === 'transparent' ? 'text-transparent' : ($data['status'] === 'no_Image' ? 'text-[--border-warning]' : 'text-[--border-error]')) }} h-[1rem]">
-            {{ ucfirst(str_replace('_', ' ', $data['status'])) }}
-        </div> --}}
-        
-        <div
-            class="active_inactive_dot w-[0.6rem] h-[0.6rem] rounded-full {{ $data['status'] === 'active' ? 'bg-[--border-success]' : ($data['status'] === 'transparent' ? 'bg-transparent' : ($data['status'] === 'no_Image' ? 'bg-[--border-warning]' : 'bg-[--border-error]')) }}">
-        </div>
-        <div
-            class="active_inactive text-xs capitalize {{ $data['status'] === 'active' ? 'text-[--border-success]' : ($data['status'] === 'transparent' ? 'text-transparent' : ($data['status'] === 'no_Image' ? 'text-[--border-warning]' : 'text-[--border-error]')) }} h-[1rem]">
-            {{ ucfirst(str_replace('_', ' ', $data['status'])) }}
-        </div>
-    @endif
-
-    {{-- Status Dot and Label --}}
-    @if ($data['noRateStatus'] != '')
-        <div
-            class="active_inactive_dot w-[0.6rem] h-[0.6rem] rounded-full bg-[--border-error]">
-        </div>
-        <div
-            class="active_inactive text-xs text-[--border-error] h-[1rem] capitalize">
-            {{ ucfirst(str_replace('_', ' ', $data['noRateStatus'])) }}
-        </div>
-    @endif
-</div>
+{{-- Status Dot and Label --}}
+@if (isset($data['status']))
+    <div
+        class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] rounded-full {{ $data['status'] === 'active' ? 'bg-[--border-success]' : ($data['status'] === 'transparent' ? 'bg-transparent' : ($data['status'] === 'no_Image' ? 'bg-[--border-warning]' : 'bg-[--border-error]')) }}">
+    </div>
+    <div
+        class="active_inactive absolute top-2 right-2 text-xs capitalize {{ $data['status'] === 'active' ? 'text-[--border-success]' : ($data['status'] === 'transparent' ? 'text-transparent' : ($data['status'] === 'no_Image' ? 'text-[--border-warning]' : 'text-[--border-error]')) }} h-[1rem]">
+        {{ ucfirst(str_replace('_', ' ', $data['status'])) }}
+    </div>
+@endif
 
 {{-- Profile Picture --}}
 @if (isset($data['image']))

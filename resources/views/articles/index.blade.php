@@ -80,8 +80,7 @@
                                                     'image' => $article->image == 'no_image_icon.png' 
                                                         ? asset('images/no_image_icon.png') 
                                                         : asset('storage/uploads/images/' . $article->image),
-                                                    'status' => $article->image == 'no_image_icon.png' ? 'no_Image' : 'transparent',
-                                                    'noRateStatus' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
+                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'no_rate',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [

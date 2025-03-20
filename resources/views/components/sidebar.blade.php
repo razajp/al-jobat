@@ -166,7 +166,7 @@
             <div class="relative group">
                 <x-nav-link-item 
                     label="Online Programs" 
-                    icon="fas fa-money-check-dollar"
+                    icon="fas fa-cash-register"
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('online-program.index'), 'label' => 'Show Online Programs'],
