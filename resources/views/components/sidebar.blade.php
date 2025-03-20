@@ -162,6 +162,18 @@
                     ]"
                 />
             </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Online Programs" 
+                    icon="fas fa-money-check-dollar"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('online-program.index'), 'label' => 'Show Online Programs'],
+                        ['type' => 'link', 'href' => route('online-program.create'), 'label' => 'Add online Program'],
+                    ]"
+                />
+            </div>
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">

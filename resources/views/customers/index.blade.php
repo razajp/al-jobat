@@ -292,7 +292,7 @@
             let imageInModal = document.getElementById('imageInModal');
             let ac_in_btn = document.getElementById('ac_in_btn');
             let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
-
+            
             ac_in_modal.classList.add("hidden");
 
             if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
@@ -305,9 +305,7 @@
                 imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
             }
             
-            if (data.balance != 0) {
-                ac_in_modal.classList.add('hidden');
-
+            if (data.balance == 0) {
                 if (data.user.status === 'active') {
                     ac_in_btn.classList.add('bg-[--bg-error]')
                     ac_in_btn.classList.add('border-[--bg-error]')
@@ -333,6 +331,8 @@
                     active_inactive_dot_modal.classList.add('bg-[--border-error]')
                     active_inactive_dot_modal.classList.remove('bg-[--border-success]')
                 }
+            } else {
+                ac_in_modal.classList.add("hidden");
             }
 
             openModal()
