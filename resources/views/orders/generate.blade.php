@@ -116,29 +116,29 @@
             </div>
 
             <div class="flex w-full grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mt-5 text-nowrap">
-                <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="finalOrderedQuantity">0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Amount - Rs.</div>
                     <div id="finalOrderAmount">0.0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Discount - %</div>
                     <input type="text" name="discount" id="discount" value="0"
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
-                <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Previous Balance - Rs.</div>
                     <div id="finalPreviousBalance">0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Net Amount - Rs.</div>
                     <input type="text" name="netAmount" id="finalNetAmount" value="0.0" readonly
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Current Balance - Rs.</div>
                     <div id="finalCurrentBalance">0.0</div>
                 </div>
@@ -605,6 +605,7 @@
                             <div class="right w-50 my-auto pr-3 text-sm text-gray-500 space-y-2">
                                 <div class="order-date leading-none">Date: ${orderDate}</div>
                                 <div class="order-number leading-none">Order No.: ${orderNo}</div>
+                                <input type="hidden" name="order_no" value="${orderNo}" />
                                 <div class="order-copy leading-none">Order Copy: Customer</div>
                             </div>
                         </div>

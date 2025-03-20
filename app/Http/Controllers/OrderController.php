@@ -27,21 +27,41 @@ class OrderController extends Controller
         // Fetch all required articles in a single query
         $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
 
-        $orders->transform(function ($order) use ($articles) {
-            $order['ordered_articles'] = collect(json_decode($order['ordered_articles'], true))->map(function ($orderedArticle) use ($articles) {
-                if (isset($articles[$orderedArticle['id']])) {
-                    $orderedArticle['article'] = $articles[$orderedArticle['id']];
-                }
-                return $orderedArticle;
-            });
+        $orders = $orders->transform(function ($order) use ($articles) {
+            // Decode ordered_articles and ensure it's an array
+            $orderedArticles = json_decode($order->ordered_articles, true) ?? [];
+
+            // Map through each ordered article
+            $order->ordered_articles = collect($orderedArticles)
+                ->map(function ($orderedArticle) use ($articles) {
+                    // Attach article details if available
+                    if (isset($articles[$orderedArticle['id']])) {
+                        $orderedArticle['article'] = $articles[$orderedArticle['id']];
+                    }
+
+                    // Subtract invoice quantity (prevent negative values)
+                    $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
+
+                    return $orderedArticle;
+                })
+                // Keep only articles with ordered_quantity > 0
+                ->filter(function ($orderedArticle) {
+                    return $orderedArticle['ordered_quantity'] > 0;
+                });
+
             return $order;
+        })
+        // ✅ Filter orders: Only return orders with non-empty ordered_articles
+        ->filter(function ($order) {
+            return $order->ordered_articles->isNotEmpty();
         });
-        
-        foreach ($orders as $order) {
-            $order['date'] = date('d-M-Y, D', strtotime($order['date']));
-            $order['customer']['previous_balance'] = 0;
-            $order['customer']['current_balance'] = 0;
-        }
+
+        // Format the date and reset balances
+        $orders->each(function ($order) {
+            $order->date = date('d-M-Y, D', strtotime($order->date));
+            $order->customer->previous_balance = 0;
+            $order->customer->current_balance = 0;
+        });
 
         return view('orders.index', compact('orders'));
         // return $orders;
@@ -56,14 +76,23 @@ class OrderController extends Controller
         $articles = [];
 
         if ($request->date) {
-            $customers = Customer::where('date', '<=', $request->date)->get();
+            $customers = Customer::with('user', 'category', 'orders', 'payments')->where('date', '<=', $request->date)->get();
 
             foreach ($customers as $customer) {
                 $user = User::where('id', $customer->user_id)->first();
                 $customer['status'] = $user->status;
     
                 if ($customer->status == 'active') {
-                    $customer['balance'] = Order::where('customer_id', $customer->id)->sum('netAmount');
+                    foreach ($customer['orders'] as $order) {
+                        $customer['totalAmount'] += $order->netAmount;
+                    }
+                    
+                    foreach ($customer['payments'] as $payment) {
+                        $customer['totalPayment'] += $payment->amount;
+                    }
+    
+                    $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
+                    
                     $customers_options[(int)$customer->id] = [
                         'text' => $customer->customer_name . ' | ' . $customer->city,
                         'data_option' => $customer

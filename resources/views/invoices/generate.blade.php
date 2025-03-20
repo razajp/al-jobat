@@ -45,19 +45,19 @@
             </div>
 
             <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
-                <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="totalQuantityInForm">0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                     <div class="grow">Gross Amount - Rs.</div>
                     <div id="totalAmountInForm">0.0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                     <div class="grow">Discount - %</div>
                     <div id="dicountInForm">0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                     <div class="grow">Net Amount - Rs.</div>
                     <input type="text" name="netAmount" id="netAmountInForm" value="0.0" readonly
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
@@ -143,10 +143,8 @@
                     order_no: orderNoDom.value
                 },
                 success: function (response) {
-                    console.log(response);
-                    
                     orderedArticles = response.ordered_articles;
-                    discount = response.discount;
+                    discount = response.discount ?? 0;
                     customerData = response.customer;
                     
                     renderList();
@@ -185,8 +183,8 @@
                             <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                 <div class="w-[5%]">${index + 1}.</div>
                                 <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
-                                <div class="w-[11%]">
-                                    <input type="number" class="w-full bg-transparent focus:outline-none" value="${totalPhysicalStockPackets}" max="${totalPhysicalStockPackets}" onclick='this.select()' oninput="packetEdited(this)" />
+                                <div class="w-[11%] pr-3">
+                                    <input type="number" class="w-full border border-gray-600 bg-[--h-bg-color] py-1 px-2 rounded-md focus:outline-none" value="${totalPhysicalStockPackets}" max="${totalPhysicalStockPackets}" onclick='this.select()' oninput="packetEdited(this)" />
                                 </div>
                                 <div class="w-[10%]">${formatNumbersDigitLess(totalPhysicalStockPackets * selectedArticle.article.pcs_per_packet)}</div>
                                 <div class="grow">${selectedArticle.description}</div>

@@ -28,11 +28,10 @@ class PhysicalQuantityController extends Controller
      */
     public function create()
     {
-        $articles = Article::with('physicalQuantity')->get();
-        return $articles;
+        $articles = Article::withSum('physicalQuantity', 'packets')->where('sales_rate', '>', '0')->get();
         
         foreach ($articles as $article) {
-            $physical_quantity = array_sum(array_column($article['physical_quantity'], 'packets'));
+            $physical_quantity = $article['physical_quantity_sum_packets'];
 
             if ($physical_quantity) {
                 $article['physical_quantity'] = $physical_quantity * $article->pcs_per_packet;
@@ -43,6 +42,10 @@ class PhysicalQuantityController extends Controller
             $article['date'] = date('d-M-Y, D', strtotime($article['date']));
             $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
         }
+
+        $articles = $articles->filter(function ($article) {
+            return $article['physical_quantity'] < $article->quantity; // Keep articles with lesser physical quantity
+        });
 
         return view('physical-quantities.create', compact('articles'));
     }
