@@ -58,7 +58,7 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::resource('payments', PaymentController::class);
     
-    Route::resource('online-program', OnlineProgramController::class);
+    Route::resource('online-programs', OnlineProgramController::class);
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 
