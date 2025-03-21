@@ -38,4 +38,9 @@ class Customer extends Model
     {
         return $this->hasMany(Payment::class, 'customer_id');
     }
+
+    public function onlinePrograms()
+    {
+        return $this->hasMany(OnlineProgram::class, 'customer_id');
+    }
 }

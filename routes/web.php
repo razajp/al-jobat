@@ -11,6 +11,7 @@ use App\Http\Controllers\OnlineProgramController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\OnlineProgram;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -60,6 +61,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('payments', PaymentController::class);
     
     Route::resource('online-programs', OnlineProgramController::class);
+    Route::post('get-category-data', [OnlineProgramController::class, 'getCategoryData'])->name('get-category-data');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

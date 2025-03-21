@@ -4,8 +4,8 @@
 @php
     $categories_options = [
         'bank_acount' => ['text' => 'Bank Account'],
-        'supplier' => ['text' => 'Supplire'],
-        'wating' => ['text' => 'Wating'],
+        'supplier' => ['text' => 'Supplier'],
+        'waiting' => ['text' => 'Waiting'],
     ]
 @endphp
     <!-- Modal -->
@@ -26,7 +26,7 @@
 
         <div class="grid grid-cols-2 gap-4">
             {{-- date --}}
-            <x-input label="Date" name="date" id="date" type="date" required />
+            <x-input label="Date" name="date" id="date" type="date" oninput="trackCustomerState(this)" required />
             
             {{-- cusomer --}}
             <x-select 
@@ -44,25 +44,25 @@
                 name="category"
                 id="category"
                 :options="$categories_options"
+                onchange="getCategoryData(this.value)"
                 required
                 showDefault
             />
             
             {{-- cusomer --}}
             <x-select 
-                label="Category"
-                name="category"
-                id="category"
-                :options="$categories_options"
+                label="Disabled"
+                name="sub_category"
+                id="subCategory"
+                disabled
                 required
                 showDefault
             />
             
             {{-- amount --}}
-            <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
-            
-            {{-- order_no --}}
-            <x-input label="Order No." name="order_no" id="order_no" placeholder='Enter Order No.' required />
+            <div class="col-span-2">
+                <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
+            </div>
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
@@ -71,4 +71,63 @@
             </button>
         </div>
     </form>
+
+    <script>
+        let customerSelect = document.getElementById('customer_id');
+        customerSelect.disabled = true;
+        function trackCustomerState(dateInputElem) {
+            customerSelect.disabled = false;
+        }
+
+        let subCategoryLabelDom = document.querySelector('[for=sub_category]');
+        let subCategorySelectDom = document.getElementById('subCategory');
+        let subCategoryFirstOptDom = subCategorySelectDom.children[0];
+        function getCategoryData(value) {
+            if (value != "waiting") {
+                $.ajax({
+                    url: "/get-category-data",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        category: value,
+                    },
+                    success: function (response) {
+                        let clutter = '';
+                        switch (value) {
+                            case 'supplier':
+                                clutter += `
+                                    <option value=''>
+                                        -- Select Supplier --
+                                    </option>
+                                `;
+                                break;
+                        
+                            default:
+                                break;
+                        }
+                        
+                        response.forEach(subCat => {
+                            clutter += `
+                                <option value='${subCat.id}'>
+                                    ${subCat.supplier_name}
+                                </option>
+                            `;
+                        });
+                        subCategorySelectDom.innerHTML = clutter;
+
+                        switch (value) {
+                            case 'supplier':
+                                subCategoryLabelDom.textContent = 'Supplier';
+                                subCategoryFirstOptDom.textContent = '-- Select Supplier --';
+                                subCategorySelectDom.disabled = false;
+                                break;
+                        
+                            default:
+                                break;
+                        }
+                    }
+                });
+            }
+        }
+    </script>
 @endsection

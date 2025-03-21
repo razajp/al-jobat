@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('online_programs', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
+            $table->unsignedBigInteger('customer_id');
+            $table->string('category');
+            $table->morphs('sub_category');
+            $table->integer('amount');
+            $table->string('remarks');
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers');
         });
     }
 
