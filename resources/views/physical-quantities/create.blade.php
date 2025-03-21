@@ -47,20 +47,20 @@
 
             <div class="flex w-full gap-4 text-sm mt-5 items-start">
                 <div class="first w-full">
-                    <div class="current-phys-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                    <div class="current-phys-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
                         <div class="grow">Total Physical Stock - Pcs</div>
                         <div id="currentPhysicalQuantity">0</div>
                     </div>
                 </div>
                 <div class="second w-full">
-                    <div class="total-qty flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                    <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
                         <div class="grow">Total Quantity - Pcs</div>
                         <div id="finalOrderedQuantity">0</div>
                     </div>
                     <div id="total-qty-error" class="text-[--border-error] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
                 </div>
                 <div class="thered w-full">
-                    <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                    <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
                         <div class="grow">Total Amount - Rs.</div>
                         <div id="finalOrderAmount">0.0</div>
                     </div>
@@ -137,18 +137,6 @@
             `;
 
             openArticlesModal();
-
-            // if (selectedArticles.length > 0) {
-            //     selectedArticles.forEach(selectedArticle => {
-            //         let card = document.getElementById(selectedArticle.id);
-            //         card.innerHTML += `
-            //             <div
-            //                 class="quantity-label absolute text-xs text-[--border-success] top-1 right-2 h-[1rem]">
-            //                 ${selectedArticle.orderedQuantity} Pcs
-            //             </div>
-            //         `;
-            //     });
-            // }
         }
 
         function openArticlesModal() {
@@ -220,9 +208,15 @@
             
             if (selectedArticle.pcs_per_packet > 0) {
                 pcsPerPacketDom.readOnly = true;
+                pcsPerPacketDom.classList.remove('bg-[--h-bg-color]');
+                pcsPerPacketDom.classList.add('bg-transparent');
+                pcsPerPacketDom.classList.add('cursor-not-allowed');
                 pcsPerPacketDom.value = selectedArticle.pcs_per_packet;
             } else {
                 pcsPerPacketDom.readOnly = false;
+                pcsPerPacketDom.classList.add('bg-[--h-bg-color]');
+                pcsPerPacketDom.classList.remove('bg-transparent');
+                pcsPerPacketDom.classList.remove('cursor-not-allowed');
                 pcsPerPacketDom.value = '';
             }
         }

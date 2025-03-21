@@ -119,7 +119,7 @@
                             Details</button>
                     </li>
                     <li>
-                        <button id="show-details" type="button"
+                        <button id="print-order" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Print
                             Order</button>
                     </li>
@@ -188,7 +188,13 @@
 
             document.addEventListener('click', (e) => {
                 if (e.target.id === "show-details") {
-                    generateModal(item);
+                    generateModal(item, 'openModal');
+                };
+            });
+
+            document.addEventListener('click', (e) => {
+                if (e.target.id === "print-order") {
+                    generateModal(item, 'context');
                 };
             });
 
@@ -289,13 +295,13 @@
             card.forEach(item => {
                 item.addEventListener('click', () => {
                     if (!isContextMenuOpened) {
-                        generateModal(item);
+                        generateModal(item, 'openModal');
                     };
                 });
             });
         };
 
-        function generateModal(item) {
+        function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
@@ -319,9 +325,9 @@
                                             <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <h1 class="text-2xl font-medium text-[--primary-color] pr-2">Sales Order</h1>
+                                    <h1 class="text-2xl font-medium text-[--h-primary-color] pr-2">Sales Order</h1>
                                 </div>
-                                <hr class="w-100 my-3 border-gray-600">
+                                <hr class="w-100 my-3 border-black">
                                 <div id="order-header" class="order-header w-full flex justify-between px-5">
                                     <div class="left w-50 space-y-1">
                                         <div class="order-customer text-lg leading-none">M/s: ${data.customer.customer_name}</div>
@@ -329,16 +335,17 @@
                                         <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
                                         <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
                                     </div>
-                                    <div class="right w-50 my-auto pr-3 text-sm text-gray-500 space-y-2">
+                                    <div class="right w-50 my-auto pr-3 text-sm text-black space-y-1.5">
                                         <div class="order-date leading-none">Date: ${data.date}</div>
                                         <div class="order-number leading-none">Order No.: ${data.order_no}</div>
                                         <div class="order-copy leading-none">Order Copy: Customer</div>
+                                        <div class="order-copy leading-none">Document: Sales Order</div>
                                     </div>
                                 </div>
-                                <hr class="w-100 my-3 border-gray-600">
+                                <hr class="w-100 my-3 border-black">
                                 <div id="order-body" class="order-body w-[95%] grow mx-auto">
                                     <div class="order-table w-full">
-                                        <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
+                                        <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[--primary-color] text-white">
                                                     <div class="th text-sm font-medium w-[7%]">S.No</div>
@@ -364,7 +371,7 @@
 
                                                     return `
                                                         <div>
-                                                            <hr class="w-full ${hrClass} border-gray-600">
+                                                            <hr class="w-full ${hrClass} border-black">
                                                             <div class="tr flex justify-between w-full px-4">
                                                                 <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
@@ -386,50 +393,50 @@
                                         </div>
                                     </div>
                                 </div>
-                                <hr class="w-full my-3 border-gray-600">
+                                <hr class="w-full my-3 border-black">
                                 <div class="flex flex-col space-y-2">
                                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Total Quantity - Pcs</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
                                         </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Total Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
                                         </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Discount - %</div>
                                             <div class="w-1/4 text-right grow">${discount}</div>
                                         </div>
                                     </div>
                                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Previous Balance</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(previousBalance)}</div>
                                         </div>
                                         <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Net Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
                                         </div>
                                         <div
-                                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-1.5 px-4 w-full">
+                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Current Balance</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(currentBalance)}</div>
                                         </div>
                                     </div>
                                 </div>
-                                <hr class="w-full my-3 border-gray-600">
-                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                                <hr class="w-full my-3 border-black">
+                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
                                     <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
-                                    <p class="leading-none">&copy; Spark Pair 2025 | sparkpair.com</p>
+                                    <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button type="button"
+                        <button type="button" id="printOrder"
                             class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
                             Print Order
                         </button>
@@ -441,15 +448,20 @@
                     </x-slot>
                 </x-modal>
             `;
-
-            openModal();
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
+            
+            addListenerToPrintOrder();
+            if (context == 'context') {
+                document.getElementById('printOrder').click();
+            } else {
+                openModal();
+            }
         };
 
         addListenerToCards();
 
         function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
@@ -509,6 +521,85 @@
             });
 
             return filteredData;
+        }
+        
+        function addListenerToPrintOrder() {
+            document.getElementById('printOrder').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeAllDropdowns();
+                const preview = document.getElementById('preview-container'); // preview content
+
+                // Pehle se agar koi iframe hai to usko remove karein
+                let oldIframe = document.getElementById('printIframe');
+                if (oldIframe) {
+                    oldIframe.remove();
+                }
+
+                // Naya iframe banayein
+                let printIframe = document.createElement('iframe');
+                printIframe.id = "printIframe";
+                printIframe.style.position = "absolute";
+                printIframe.style.width = "0px";
+                printIframe.style.height = "0px";
+                printIframe.style.border = "none";
+                printIframe.style.display = "none"; // ✅ Hide iframe
+
+                // Iframe ko body me add karein
+                document.body.appendChild(printIframe);
+
+                let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+                printDocument.open();
+
+                // ✅ Current page ke CSS styles bhi iframe me inject karenge
+                const headContent = document.head.innerHTML;
+
+                printDocument.write(`
+                    <html>
+                        <head>
+                            <title>Print Order</title>
+                            ${headContent} <!-- Copy current styles -->
+                            <style>
+                                @media print {
+
+                                    body {
+                                        margin: 0;
+                                        padding: 0;
+                                        width: 210mm; /* A4 width */
+                                        height: 297mm; /* A4 height */
+                                    }
+
+                                    .preview-container, .preview-container * {
+                                        page-break-inside: avoid;
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                            <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        </body>
+                    </html>
+                `);
+
+                printDocument.close();
+
+                // Wait for iframe to load and print
+                printIframe.onload = () => {
+
+                    // Select the preview-copy div and update its text
+                    let orderCopy = printDocument.querySelector('#preview-container .order-copy');
+
+                    if (orderCopy) {
+                        orderCopy.textContent = "Order Copy: Office"; // Change text to "order Copy: Office"
+                    }
+
+                    setTimeout(() => {
+                        printIframe.contentWindow.focus();
+                        printIframe.contentWindow.print();
+                        document.body.removeChild(printIframe); // Remove iframe after printing
+                    }, 1000);
+                };
+            });
         }
     </script>
 @endsection

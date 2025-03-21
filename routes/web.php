@@ -48,6 +48,7 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::resource('articles', ArticleController::class);
     Route::post('add-image', [ArticleController::class, 'addImage'])->name('add-image');
+    Route::post('add-rate', [ArticleController::class, 'addRate'])->name('add-rate');
     
     Route::resource('orders', OrderController::class);
     

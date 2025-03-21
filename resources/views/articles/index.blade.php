@@ -10,6 +10,10 @@
     <div id="addImageModal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
+    {{-- add rate modal --}}
+    <div id="addRateModal"
+        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
+    </div>
     
     {{-- header --}}
     <div class="w-[80%] mx-auto">
@@ -80,7 +84,7 @@
                                                     'image' => $article->image == 'no_image_icon.png' 
                                                         ? asset('images/no_image_icon.png') 
                                                         : asset('storage/uploads/images/' . $article->image),
-                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'no_rate',
+                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [
@@ -142,6 +146,11 @@
                             class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Add
                             Image</button>
                     </li>
+                    <li id="add-rate-in-context" class="hidden">
+                        <button id="add-rate-in-context-btn"
+                            class="font-medium text-[--border-success] w-full px-4 py-2 text-left hover:bg-[--bg-success] hover:text-[--text-success] rounded-md transition-all 0.3s ease-in-out">Add
+                            Rate</button>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -150,6 +159,7 @@
     <script>
         let contextMenu = document.querySelector('.context-menu');
         let addImgInContext = document.getElementById('add-img-in-context');
+        let addRateInContext = document.getElementById('add-rate-in-context');
         let isContextMenuOpened = false;
 
         function closeContextMenu() {
@@ -179,6 +189,7 @@
 
         function generateContextMenu(e) {
             addImgInContext.classList.add('hidden');
+            addRateInContext.classList.add('hidden');
 
             let ac_in_btn_context = document.getElementById('ac_in_btn_context');
             let item = e.target.closest('.modalToggle');
@@ -220,8 +231,18 @@
                 };
             });
 
+            document.addEventListener('click', (e) => {
+                if (e.target.id === "add-rate-in-context-btn") {
+                    generateAddRateModal(item);
+                };
+            });
+
             if (data.image === "no_image_icon.png") {
                 addImgInContext.classList.remove('hidden');
+            };
+
+            if (data.sales_rate === "0.00") {
+                addRateInContext.classList.remove('hidden');
             };
 
             // Function to remove context menu
@@ -251,7 +272,7 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Article Details</h5>
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.sales_rate} - Rs." 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
                                 disabled
                             />
                             
@@ -287,56 +308,223 @@
             document.getElementById('addImageModal').classList.remove('hidden');
         };
 
+        // rate modal code start
+        let titleDom;
+        let rateDom;
+        let calcBottom;
+        let ratesArrayDom;
+        let rateCount = 0;
 
-        $('#article_no_search').on('input', function(e) {
-            e.preventDefault();
+        let totalRate = 0.00;
 
-            $(this).blur();
+        let ratesArray = [];
 
-            submitForm();
+        function generateAddRateModal(item) {
+            let modalDom = document.getElementById('addRateModal')
+            let article_details_in_modal = document.querySelector('#article_details_in_modal');
+            let data = JSON.parse(item.dataset.json);
 
-            setTimeout(() => {
-                $(this).focus();
-            }, 100);
-        });
+            modalDom.innerHTML = `
+                <x-modal id="addRateModalForm" classForBody="max-w-3xl p-3" closeAction="closeAddRateModal" action="{{ route('add-rate') }}">
+                    <!-- Modal Content Slot -->
+                    <div class="flex items-start relative">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 p-2">
+                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Article Details</h5>
+                            <x-input 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
+                                disabled
+                            />
+                            
+                            <hr class="border-gray-600 my-3">
+                
+                            <div class="flex justify-between gap-3">
+                                {{-- title --}}
+                                <div class="grow">
+                                    <x-input 
+                                        id="title" 
+                                        placeholder="Enter title" 
+                                    />
+                                </div>
+                                
+                                {{-- rate --}}
+                                <x-input 
+                                    id="rate" 
+                                    type="number"
+                                    placeholder="Enter rate" 
+                                />
 
-        $('#search-form').on('change', 'select', function(e) {
-            if (e.type === 'keydown' && e.key !== 'Enter')
-                return;
-            e.preventDefault();
-            submitForm();
-        });
+                                {{-- add rate button --}}
+                                <div class="form-group flex w-10 shrink-0">
+                                    <input type="button" value="+"
+                                        class="w-full bg-[--primary-color] text-[--text-color] rounded-lg cursor-pointer border border-[--primary-color]"
+                                        onclick="addRate()" />
+                                </div>
+                            </div>
+                            {{-- rate showing --}}
+                            <div id="rate-table" class="w-full text-left text-sm">
+                                <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 my-3">
+                                    <div class="grow ml-5">Title</div>
+                                    <div class="w-1/4">Rate</div>
+                                    <div class="w-[10%] text-center">Action</div>
+                                </div>
+                                <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
+                                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                                </div>
+                            </div>
+                            {{-- calc bottom --}}
+                            <div id="calc-bottom" class="flex w-full gap-3 text-sm">
+                                <div
+                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Total - Rs.</div>
+                                    <div class="text-right">0.00</div>
+                                </div>
+                                <div
+                                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
+                                    <input type="text" required name="sales_rate" id="sales_rate" value="0.00"
+                                        class="text-right bg-transparent outline-none border-none w-[50%]" />
+                                </div>
+                                <div
+                                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <label for="pcs_per_packet" class="text-nowrap grow">Pcs / Packet</label>
+                                    <input type="text" required name="pcs_per_packet" id="pcs_per_packet" value="0"
+                                        class="text-right bg-transparent outline-none border-none w-[50%]" />
+                                </div>
+                            </div>
+                            <input type="hidden" name="rates_array" id="rates_array" value="[]" />
+                        </div>
+                    </div>
+                
+                    <!-- Modal Action Slot -->
+                    <x-slot name="actions">
+                        <button onclick="closeAddRateModal()" type="button"
+                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
+                            Cancel
+                        </button>
+                        <input type="hidden" id="article_id" name="article_id">
+                        <button type="submit"
+                            class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                            Add Rate
+                        </button>
+                    </x-slot>
+                </x-modal>
+            `;
 
-        function submitForm() {
-            let formData = $('#search-form').serialize();
+            titleDom = document.getElementById('title');
+            rateDom = document.getElementById('rate');
+            calcBottom = document.querySelector('#calc-bottom');
+            ratesArrayDom = document.getElementById('rates_array');
+            
+            openAddRateModal();
+            addListenerToRateDom();
 
-            $.ajax({
-                url: $('#search-form').attr('action'),
-                method: 'GET',
-                data: formData,
-                success: function(response) {
-                    const articles = $(response).find('.details').html();
+            document.getElementById('article_id').value = data.id;
+            document.getElementById('addRateModal').classList.remove('hidden');
+        };
 
-                    if (articles === undefined || articles.trim() === "") {
-                        $('.details').html(
-                            '<div class="text-center text-[--border-error] pt-5 col-span-4">Article Not Found</div>'
-                        );
-                    } else {
-                        $('.details').html(articles);
-                        addListenerToCards();
-                        addContextMenuListenerToCards();
-                    };
-                },
-                error: function() {
-                    alert('Error submitting form');
+        function addRate() {
+            let title = titleDom.value;
+            let rate = rateDom.value;
+
+            if (title && rate && ratesArray.filter(rate => rate.title === title).length === 0) {
+                let rateList = document.querySelector('#rate-list');
+
+                if (rateCount === 0) {
+                    rateList.innerHTML = '';
+                }
+
+                rateCount++;
+                let rateRow = document.createElement('div');
+                rateRow.classList.add('flex', 'justify-between', 'items-center', 'bg-[--h-bg-color]', 'rounded-lg', 'py-2',
+                    'px-4');
+                rateRow.innerHTML = `
+                    <div class="grow ml-5">${title}</div>
+                    <div class="w-1/4">${parseFloat(rate).toFixed(2)}</div>
+                    <div class="w-[10%] text-center">
+                        <button onclick="deleteRate(this)" type="button" class="text-[--danger-color] text-xs px-2 py-1 rounded-lg hover:text-[--h-danger-color] transition-all duration-300 ease-in-out">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                rateList.insertBefore(rateRow, rateList.firstChild);
+
+                titleDom.value = '';
+                rateDom.value = '';
+
+                titleDom.focus();
+
+                totalRate += parseFloat(rate);
+
+                ratesArray.push({
+                    title: title,
+                    rate: rate
+                });
+
+                updateRates();
+            }
+        }
+
+        function deleteRate(element) {
+            element.parentElement.parentElement.remove();
+            rateCount--;
+            if (rateCount === 0) {
+                let rateList = document.querySelector('#rate-list');
+                rateList.innerHTML = `
+                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                `;
+            }
+
+            titleDom.focus();
+
+            let rate = parseFloat(element.parentElement.previousElementSibling.innerText);
+            totalRate -= rate;
+
+            let title = element.parentElement.previousElementSibling.previousElementSibling.innerText;
+            ratesArray = ratesArray.filter(rate => rate.title !== title);
+
+            updateRates();
+        }
+        
+        function updateRates() {
+            pcsPerPacket = document.getElementById('pcs_per_packet').value;
+            calcBottom.innerHTML = `
+                <div
+                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                    <div>Total - Rs.</div>
+                    <div class="text-right">${totalRate.toFixed(2)}</div>
+                </div>
+                <div
+                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
+                    <input type="text" required name="sales_rate" id="sales_rate" value="${totalRate.toFixed(2)}"
+                        class="text-right bg-transparent outline-none border-none w-[50%]" />
+                </div>
+                <div
+                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <label for="pcs_per_packet" class="text-nowrap grow">Pcs / Packet</label>
+                    <input type="text" required name="pcs_per_packet" id="pcs_per_packet" value="${pcsPerPacket}"
+                        class="text-right bg-transparent outline-none border-none w-[50%]" />
+                </div>
+            `;
+
+            ratesArrayDom.value = JSON.stringify(ratesArray);
+        }
+
+        function addListenerToRateDom() {
+            rateDom.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addRate();
                 }
             });
         }
+        // rate modal code end
 
         const close = document.querySelectorAll('#close');
 
         let isModalOpened = false;
         let isAddImageModalOpened = false;
+        let isAddRateModalOpened = false;
 
         close.forEach(function(btn) {
             btn.addEventListener("click", (e) => {
@@ -349,6 +537,10 @@
                     if (isAddImageModalOpened) {
                         closeAddImageModal();
                     }
+                } else if (targetedModal.id == 'addRateModal') {
+                    if (isAddRateModalOpened) {
+                        closeAddRateModal();
+                    }
                 }
             });
         });
@@ -359,6 +551,8 @@
                 closeModal();
             } else if (id === 'addImageModal') {
                 closeAddImageModal();
+            } else if (id === 'addRateModal') {
+                closeAddRateModal();
             }
         });
 
@@ -369,6 +563,9 @@
                 }
                 if (isAddImageModalOpened == true) {
                     closeAddImageModal();
+                };
+                if (isAddRateModalOpened == true) {
+                    closeAddRateModal();
                 };
                 closeContextMenu();
             };
@@ -393,10 +590,10 @@
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-5xl" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <!-- Modal Content Slot -->
-                    <div id="no_image_dot_modal"
-                        class="image_dot absolute top-4 left-4 w-[0.7rem] h-[0.7rem] bg-transparent rounded-full shadow-md">
-                    </div>
                     <div class="flex items-start relative h-[27rem]">
+                        <div id="no_image_dot_modal"
+                            class="image_dot absolute top-2 left-2 w-[0.7rem] h-[0.7rem] bg-transparent rounded-full">
+                        </div>
                         <div class="rounded-lg h-full aspect-square overflow-hidden">
                             <img id="imageInModal" src="{{ asset('images/no_image_icon.png') }}" alt=""
                                 class="w-full h-full object-cover">
@@ -432,10 +629,6 @@
                 
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <a id="track-article-in-modal" href="#"
-                            class="w-full px-5 py-2 text-nowrap text-center border border-gray-600 text-[--secondary-text] hover:bg-[--h-bg-color] rounded-lg transition-all 0.3s ease-in-out">Track
-                        Article</a>
-
                         <button type="button"
                             class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
                             Print Article
@@ -450,17 +643,21 @@
                             class="px-4 py-2 bg-[--bg-warning] border border-[--bg-warning] text-[--text-warning] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-warning] transition-all 0.3s ease-in-out">
                             Add Image
                         </button>
+
+                        <button id="add-rate-in-modal" type="button"
+                            class="px-4 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                            Add Rate
+                        </button>
                     </x-slot>
                 </x-modal>
             `;
 
             let imageInModal = document.getElementById('imageInModal');
             let addImageInModal = document.getElementById('add-image-in-modal');
+            let addRateInModal = document.getElementById('add-rate-in-modal');
             let no_image_dot_modal = document.getElementById('no_image_dot_modal');
 
             if (data.image == "no_image_icon.png") {
-                no_image_dot_modal.classList.add('bg-[--border-warning]');
-                no_image_dot_modal.classList.remove('bg-transparent');
                 imageInModal.src = `images/no_image_icon.png`;
                 imageInModal.parentElement.classList.add('scale-75');
                 addImageInModal.classList.remove('hidden');
@@ -469,9 +666,24 @@
                 })
             } else {
                 imageInModal.src = `storage/uploads/images/${data.image}`
-                no_image_dot_modal.classList.remove('bg-[--border-warning]');
-                no_image_dot_modal.classList.add('bg-transparent');
                 addImageInModal.classList.add('hidden');
+            }
+
+            if (data.sales_rate == "0.00") {
+                no_image_dot_modal.classList.add('bg-[--border-error]');
+                no_image_dot_modal.classList.add('shadow-md');
+                no_image_dot_modal.classList.remove('bg-transparent');
+
+                addRateInModal.classList.remove('hidden');
+                addRateInModal.addEventListener('click', function() {
+                    generateAddRateModal(item);
+                })
+            } else {
+                no_image_dot_modal.classList.remove('bg-[--border-error]');
+                no_image_dot_modal.classList.remove('shadow-md');
+                no_image_dot_modal.classList.add('bg-transparent');
+
+                addRateInModal.classList.add('hidden');
             }
 
             let articleRatesArray = data.rates_array;
@@ -507,6 +719,12 @@
             closeAllDropdowns();
             closeContextMenu();
         };
+
+        function openAddRateModal() {
+            isAddRateModalOpened = true;
+            closeAllDropdowns();
+            closeContextMenu();
+        };
         
         function closeModal() {
             isModalOpened = false;
@@ -524,6 +742,19 @@
         function closeAddImageModal() {
             isAddImageModalOpened = false;
             let modal = document.getElementById('addImageModal')
+            modal.classList.add('fade-out');
+
+            modal.addEventListener('animationend', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('fade-out');
+            }, {
+                once: true
+            });
+        }
+
+        function closeAddRateModal() {
+            isAddRateModalOpened = false;
+            let modal = document.getElementById('addRateModal')
             modal.classList.add('fade-out');
 
             modal.addEventListener('animationend', () => {

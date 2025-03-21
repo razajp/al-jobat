@@ -602,11 +602,12 @@
                                 <div class="order-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                 <div class="order-phone text-md leading-none">${customerData.phone_number}</div>
                             </div>
-                            <div class="right w-50 my-auto pr-3 text-sm text-gray-500 space-y-2">
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
                                 <div class="order-date leading-none">Date: ${orderDate}</div>
                                 <div class="order-number leading-none">Order No.: ${orderNo}</div>
                                 <input type="hidden" name="order_no" value="${orderNo}" />
                                 <div class="order-copy leading-none">Order Copy: Customer</div>
+                                <div class="order-copy leading-none">Document: Sales Order</div>
                             </div>
                         </div>
                         <hr class="w-100 my-3 border-gray-600">
@@ -708,9 +709,9 @@
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
-                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
                             <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
-                            <p class="leading-none">&copy; Spark Pair 2025 | sparkpair.com</p>
+                            <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>
                 `;

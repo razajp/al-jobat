@@ -155,15 +155,15 @@
                     {{-- calc bottom --}}
                     <div id="calc-bottom" class="flex w-full gap-4 text-sm">
                         <div
-                            class="total flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                            <div class="grow ml-5">Total - Rs.</div>
-                            <div class="w-1/4">0.00</div>
+                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                            <div>Total - Rs.</div>
+                            <div class="text-right">0.00</div>
                         </div>
                         <div
-                            class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                            <div class="text-nowrap grow">Sales Rate - Rs.</div>
-                            <input type="text" name="sales_rate" id="sales_rate" value="0.00"
-                                class="text-right bg-transparent outline-none border-none" />
+                            class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                            <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
+                            <input type="text" required name="sales_rate" id="sales_rate" value="0.00"
+                                class="text-right bg-transparent outline-none border-none w-[50%]" />
                         </div>
                     </div>
                     <input type="hidden" name="rates_array" id="rates_array" value="[]" />
@@ -386,13 +386,16 @@
 
         function updateRates() {
             calcBottom.innerHTML = `
-                <div class="total flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                    <div class="grow ml-5">Total - Rs.</div>
-                    <div class="w-1/4">${totalRate.toFixed(2)}</div>
+                <div
+                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                    <div>Total - Rs.</div>
+                    <div class="text-right">${totalRate.toFixed(2)}</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
-                    <div class="text-nowrap grow">Sales Rate - Rs.</div>
-                    <input type="text" name="sales_rate" id="sales_rate" value="${totalRate.toFixed(2)}" class="text-right bg-transparent outline-none border-none"/>
+                <div
+                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
+                    <input type="text" required name="sales_rate" id="sales_rate" value="${totalRate.toFixed(2)}"
+                        class="text-right bg-transparent outline-none border-none w-[50%]" />
                 </div>
             `;
 

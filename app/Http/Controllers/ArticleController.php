@@ -246,4 +246,23 @@ class ArticleController extends Controller
             return redirect()->back()->with('error', 'Please upload an image');
         }
     }
+    public function addRate(Request $request)
+    {
+        // Validate input first
+        $validator = Validator::make($request->all(), [
+            'article_id' => 'required|integer|exists:articles,id',
+            "sales_rate" => 'required|numeric|min:0',
+            "pcs_per_packet" => 'required|numeric|min:0',
+        ]);
+    
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+    
+        $data = $request->all();
+    
+        Article::where('id', $request->article_id)->update(['sales_rate' => $data['sales_rate'], 'rates_array' => $data['rates_array'], 'pcs_per_packet' => $data['pcs_per_packet']]);
+
+        return redirect()->route('articles.index')->with('success', 'Rate added successfully');
+    }
 }
