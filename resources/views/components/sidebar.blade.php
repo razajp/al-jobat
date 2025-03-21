@@ -122,7 +122,9 @@
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
+                        ['type' => 'link', 'href' => route('online-programs.index'), 'label' => 'Show Online Programs'],
                         ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
+                        ['type' => 'link', 'href' => route('online-programs.create'), 'label' => 'Add online Program'],
                     ]"
                 />
             </div>
@@ -159,18 +161,6 @@
                     :items="[
                         ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
                         ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
-                    ]"
-                />
-            </div>
-            
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Online Programs" 
-                    icon="fas fa-cash-register"
-                    includesDropdown="true"
-                    :items="[
-                        ['type' => 'link', 'href' => route('online-program.index'), 'label' => 'Show Online Programs'],
-                        ['type' => 'link', 'href' => route('online-program.create'), 'label' => 'Add online Program'],
                     ]"
                 />
             </div>
@@ -269,7 +259,9 @@
                     includesDropdown
                     :dropdown="[
                         ['href' => route('orders.index'), 'title' => 'Show Order'],
+                        ['href' => route('online-programs.index'), 'title' => 'Show Online Programs'],
                         ['href' => route('orders.create'), 'title' => 'Generate Order'],
+                        ['href' => route('online-programs.create'), 'title' => 'Add Online Program'],
                     ]"
                 />
 
@@ -297,15 +289,6 @@
                     :dropdown="[
                         ['href' => route('payments.index'), 'title' => 'Show Payments'],
                         ['href' => route('payments.create'), 'title' => 'Add Payment'],
-                    ]"
-                />
-
-                <x-mobile-menu-item 
-                    title="Online Programs" 
-                    includesDropdown
-                    :dropdown="[
-                        ['href' => route('online-program.index'), 'title' => 'Show Online Programs'],
-                        ['href' => route('online-program.create'), 'title' => 'Add Online Program'],
                     ]"
                 />
                 </div>

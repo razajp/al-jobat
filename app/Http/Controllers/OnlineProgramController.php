@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OnlineProgram;
+use App\Models\Customer;
 use Illuminate\Http\Request;
 
 class OnlineProgramController extends Controller
@@ -20,7 +21,32 @@ class OnlineProgramController extends Controller
      */
     public function create()
     {
-        return view('onlne-program.create');
+        $customers = Customer::with('user', 'category', 'orders', 'payments')->get();
+        $customers_options = [];
+
+        foreach ($customers as $customer) {
+            $user = $customer['user'];
+            $customer['status'] = $user->status;
+
+            if ($customer->status == 'active') {
+                foreach ($customer['orders'] as $order) {
+                    $customer['totalAmount'] += $order->netAmount;
+                }
+                
+                foreach ($customer['payments'] as $payment) {
+                    $customer['totalPayment'] += $payment->amount;
+                }
+
+                $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
+                
+                $customers_options[(int)$customer->id] = [
+                    'text' => $customer->customer_name . ' | ' . $customer->city,
+                    'data_option' => $customer
+                ];
+            }
+        }
+
+        return view('online-programs.create', compact('customers_options'));
     }
 
     /**
