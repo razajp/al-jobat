@@ -9,6 +9,7 @@
     'btnId' => '', 
     'id' => '', 
     'btnText' => '+', 
+    'onchange' => '',
 ])
 
 @php
@@ -31,6 +32,8 @@
             {{ $attributes->merge([
                 'class' => 'w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out'
             ]) }}
+
+            {{ $onchange ? 'onchange='.$onchange : '' }}
         >
             @if ($showDefault == "true" && $haveOptions)
                 <option value="">

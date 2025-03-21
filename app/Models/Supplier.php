@@ -21,4 +21,9 @@ class Supplier extends Model
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function onlinePrograms()
+    {
+        return $this->morphMany(OnlineProgram::class, 'sub_category');
+    }
 }
