@@ -8,11 +8,17 @@
     <div id="manageCategoryModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
-    <!-- Main Content -->
     <div>
-        <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
-            Show Suppliers
-        </h1>
+        <div class="w-[80%] mx-auto">
+            <x-search-header heading="Suppliers" :filter_items="[
+                'all' => 'All',
+                'supplier_name' => 'Supplier Name',
+                'urdu_title' => 'Urdu Title',
+                'person_name' => 'Person Name',
+                'username' => 'Username',
+            ]"/>
+        </div>
+        <!-- Main Content -->
 
         <section class="text-center mx-auto ">
             <div
@@ -34,24 +40,48 @@
                 </div>
 
                 @if (count($Suppliers) > 0)
-                    <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($Suppliers as $supplier)
-                            <div data-json='{{ $supplier }}'
-                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                <x-card :data="[
-                                    'image' =>
-                                        $supplier->user['profile_picture'] == 'default_avatar.png'
-                                            ? asset('images/default_avatar.png')
-                                            : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
-                                    'name' => $supplier->supplier_name,
-                                    'status' => $supplier->user->status,
-                                    'details' => [
-                                        'Person Name' => $supplier->person_name,
-                                        'Phone' => $supplier->phone_number,
-                                    ],
-                                ]" />
+                    <div class="card_container">
+                        @if ($authLayout == 'grid')
+                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                @foreach ($Suppliers as $supplier)
+                                    <div id="{{ $supplier->id }}" data-json='{{ $supplier }}'
+                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                        <x-card :data="[
+                                            'image' =>
+                                                $supplier->user['profile_picture'] == 'default_avatar.png'
+                                                    ? asset('images/default_avatar.png')
+                                                    : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
+                                            'name' => $supplier->supplier_name,
+                                            'status' => $supplier->user->status,
+                                            'details' => [
+                                                'Person Name' => $supplier->person_name,
+                                                'Phone' => $supplier->phone_number,
+                                                'Balance' => $supplier->balance,
+                                            ],
+                                        ]" />
+                                    </div>
+                                @endforeach
                             </div>
-                        @endforeach
+                        @else
+                            <div class="grid grid-cols-5 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                <div class="text-left pl-5">Supplier</div>
+                                <div class="text-center">Person Name</div>
+                                <div class="text-center">Phone</div>
+                                <div class="text-right">Balance</div>
+                                <div class="text-right pr-5">Status</div>
+                            </div>
+                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                @forEach ($Suppliers as $supplier)
+                                    <div id="{{ $supplier->id }}" data-json='{{ $supplier }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                        <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
+                                        <span class="text-center">{{ $supplier->person_name }}</span>
+                                        <span class="text-center">{{ $supplier->phone_number }}</span>
+                                        <span class="text-right">{{ $supplier->balance }}</span>
+                                        <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[--border-success]' : 'text-[--border-error]' }}">{{ $supplier->user->status }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
@@ -245,6 +275,7 @@
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${data.balance}</span></p>
                             
                             <hr class="border-gray-600 my-3">
                 
@@ -596,6 +627,58 @@
             }, {
                 once: true
             });
+        }
+
+        // Function for Search
+        function filterData(search) {
+            const filteredData = cardsDataArray.filter(item => {
+                switch (filterType) {
+                    case 'all':
+                        return (
+                            item.supplier_name.toLowerCase().includes(search) ||
+                            item.urdu_title.toLowerCase().includes(search) ||
+                            item.person_name.toLowerCase().includes(search) ||
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'supplier_name':
+                        return (
+                            item.supplier_name.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'urdu_title':
+                        return (
+                            item.urdu_title.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                        
+                    case 'person_name':
+                        return (
+                            item.person_name.toLowerCase().includes(search)
+                        );
+                        break;
+                        
+                    case 'username':
+                        return (
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                
+                    default:
+                        return (
+                            item.supplier_name.toLowerCase().includes(search) ||
+                            item.urdu_title.toLowerCase().includes(search) ||
+                            item.person_name.toLowerCase().includes(search) ||
+                            item.user.username.toLowerCase().includes(search)
+                        );
+                        break;
+                }
+            });
+
+            return filteredData;
         }
     </script>
 @endsection

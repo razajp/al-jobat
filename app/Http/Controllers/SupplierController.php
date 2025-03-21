@@ -17,6 +17,22 @@ class SupplierController extends Controller
     public function index()
     {
         $Suppliers = Supplier::with('user')->get();
+
+        foreach ($Suppliers as $supplier) {
+            // foreach ($supplier['orders'] as $order) {
+            //     $supplier['totalAmount'] += $order->netAmount;
+            // }
+            
+            // foreach ($supplier['payments'] as $payment) {
+            //     $supplier['totalPayment'] += $payment->amount;
+            // }
+
+            // $supplier['balance'] = $supplier['totalAmount'] - $supplier['totalPayment'];
+            $supplier['balance'] = 0;
+
+            $supplier['balance'] = number_format($supplier['balance'], 1, '.', ',');
+        }
+
         $supplier_categories = Setup::where('type','supplier_category')->get();
 
         $categories_options = [];
@@ -24,7 +40,6 @@ class SupplierController extends Controller
             $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
         
-
         foreach ($Suppliers as $supplier) {
             // Decode JSON array of category IDs
             $categoriesIdArray = json_decode($supplier->categories_array, true);
@@ -38,7 +53,7 @@ class SupplierController extends Controller
             $supplier["categories"] = $categories;
         }
     
-        // return $suppliers;
+        // return $Suppliers;
         return view("suppliers.index", compact('Suppliers', 'categories_options'));
     }
 
