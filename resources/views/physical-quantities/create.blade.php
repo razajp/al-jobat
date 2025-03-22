@@ -250,7 +250,7 @@
                 totalQuantity = pcsPerPacket * packets;
                 totalAmount = totalQuantity * parseInt(selectedArticle.sales_rate);
 
-                finalOrderedQuantityDom.innerText = new Intl.NumberFormat('en-US').format(totalQuantity);
+                finalOrderedQuantityDom.textContent = new Intl.NumberFormat('en-US').format(totalQuantity);
 
                 finalOrderAmountDom.innerText = new Intl.NumberFormat('en-US', {
                     minimumFractionDigits: 1,
@@ -264,11 +264,12 @@
 
         function trackArticleQuantity() {
             if (selectedArticle && (totalQuantity + parseInt(totalPhysicalQuantityDom.textContent)) > selectedArticle.quantity) {
-                totalQtyDom.classList.add('border', 'border-[--border-error]');
+                totalQtyDom.classList.add('border-[--border-error]');
                 totalQtyErrorDom.innerText = `Quantity exceeds the available stock (${selectedArticle.quantity} pcs)`;
                 totalQtyErrorDom.classList.remove('hidden');
             } else {
-                totalQtyDom.classList.remove('border', 'border-[--border-error]');
+                totalQtyDom.classList.remove('border-[--border-error]');
+                totalQtyDom.classList.add('border-gray-600');
                 totalQtyErrorDom.classList.add('hidden');
                 totalQtyErrorDom.innerText = '';
             }

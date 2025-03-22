@@ -155,21 +155,17 @@ class InvoiceController extends Controller
             $orderedArticle->article = $article;
         
             $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
-            $totalPhysicalStockPcs = $totalPhysicalStockPackets * $orderedArticle->article->pcs_per_packet;
-            $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
-        
-            $orderedArticle->total_physical_stock_packets = $totalPhysicalStockPcs / $orderedArticle->article->pcs_per_packet;
-        
-            if (isset($orderedArticle->invoice_quantity)) {
-                $orderedArticle->total_physical_stock_packets -= $orderedArticle->invoice_quantity / $orderedArticle->article->pcs_per_packet;
-            } else {
-                $totalSoldQuantity = $article->sold_quantity;
-                $orderedArticle->total_physical_stock_packets = ($totalPhysicalStockPcs - $totalSoldQuantity) / $orderedArticle->article->pcs_per_packet;
+            $orderedArticle->total_quantity_in_packets = 0;
+            
+            if ($totalPhysicalStockPackets > 0 && $article->pcs_per_packet > 0) {
+                $avalaibelPhysicalQuantity = $article->sold_quantity > 0 ? $totalPhysicalStockPackets - ($article->sold_quantity / $article->pcs_per_packet) : $totalPhysicalStockPackets;
+                $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
+                $pendingPackets = isset($orderedArticle->invoice_quantity) ? $orderedPackets - ($orderedArticle->invoice_quantity / $article->pcs_per_packet) : $orderedPackets;
+
+                $orderedArticle->total_quantity_in_packets = $avalaibelPhysicalQuantity > $pendingPackets ? $pendingPackets : $avalaibelPhysicalQuantity;
             }
         
-            $orderedArticle->total_physical_stock_packets = floor(($orderedArticle->total_physical_stock_packets > $orderedPackets ? $orderedPackets : $orderedArticle->total_physical_stock_packets) - (($orderedArticle->invoice_quantity ?? 0) / $article->pcs_per_packet));
-        
-            return $orderedArticle->total_physical_stock_packets > 0;
+            return $orderedArticle->total_quantity_in_packets;
         });
 
         $order->ordered_articles = $orderedArticles;

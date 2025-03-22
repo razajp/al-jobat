@@ -143,6 +143,8 @@
                     order_no: orderNoDom.value
                 },
                 success: function (response) {
+                    console.log(response);
+                    
                     orderedArticles = response.ordered_articles;
                     discount = response.discount ?? 0;
                     customerData = response.customer;
@@ -170,23 +172,23 @@
 
                 let clutter = "";
                 orderedArticles.forEach((selectedArticle, index) => {
-                    if (selectedArticle.total_physical_stock_packets > 0) {
-                        let orderedQuantity = selectedArticle.ordered_quantity;
-                        let totalPhysicalStockPackets = selectedArticle.total_physical_stock_packets;
-                        let totalPhysicalStockPcs = selectedArticle.total_physical_stock_packets * selectedArticle.article.pcs_per_packet;
+                    if (selectedArticle.total_quantity_in_packets > 0) {
+                        // let orderedQuantity = selectedArticle.ordered_quantity;
+                        let totalQuantityInPackets = selectedArticle.total_quantity_in_packets;
+                        // let totalPhysicalStockPcs = selectedArticle.total_quantity_in_packets * selectedArticle.article.pcs_per_packet;
                         
-                        totalQuantityPcs += totalPhysicalStockPackets * selectedArticle.article.pcs_per_packet;
+                        totalQuantityPcs += totalQuantityInPackets * selectedArticle.article.pcs_per_packet;
 
-                        let articleAmount = (selectedArticle.article.sales_rate * selectedArticle.article.pcs_per_packet) * totalPhysicalStockPackets;
+                        let articleAmount = (selectedArticle.article.sales_rate * selectedArticle.article.pcs_per_packet) * totalQuantityInPackets;
 
                         clutter += `
                             <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                 <div class="w-[5%]">${index + 1}.</div>
                                 <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
                                 <div class="w-[11%] pr-3">
-                                    <input type="number" class="w-full border border-gray-600 bg-[--h-bg-color] py-1 px-2 rounded-md focus:outline-none" value="${totalPhysicalStockPackets}" max="${totalPhysicalStockPackets}" onclick='this.select()' oninput="packetEdited(this)" />
+                                    <input type="number" class="w-full border border-gray-600 bg-[--h-bg-color] py-1 px-2 rounded-md focus:outline-none" value="${totalQuantityInPackets}" max="${totalQuantityInPackets}" onclick='this.select()' oninput="packetEdited(this)" />
                                 </div>
-                                <div class="w-[10%]">${formatNumbersDigitLess(totalPhysicalStockPackets * selectedArticle.article.pcs_per_packet)}</div>
+                                <div class="w-[10%]">${formatNumbersDigitLess(totalQuantityInPackets * selectedArticle.article.pcs_per_packet)}</div>
                                 <div class="grow">${selectedArticle.description}</div>
                                 <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                 <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
@@ -196,8 +198,8 @@
 
                         totalAmount += articleAmount;
 
-                        selectedArticle.packets = totalPhysicalStockPackets
-                        selectedArticle.ordered_quantity = totalPhysicalStockPackets * selectedArticle.article.pcs_per_packet
+                        selectedArticle.packets = totalQuantityInPackets
+                        selectedArticle.ordered_quantity = totalQuantityInPackets * selectedArticle.article.pcs_per_packet
                     }
                 });
 

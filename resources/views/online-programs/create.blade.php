@@ -3,8 +3,9 @@
 @section('content')
 @php
     $categories_options = [
-        'bank_acount' => ['text' => 'Bank Account'],
+        'bank_account' => ['text' => 'Bank Account'],
         'supplier' => ['text' => 'Supplier'],
+        'customer' => ['text' => 'Customer'],
         'waiting' => ['text' => 'Waiting'],
     ]
 @endphp
@@ -55,9 +56,11 @@
                 name="sub_category"
                 id="subCategory"
                 disabled
-                required
                 showDefault
             />
+
+            {{-- remarks --}}
+            <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
             
             {{-- amount --}}
             <div class="col-span-2">
@@ -82,8 +85,15 @@
         let subCategoryLabelDom = document.querySelector('[for=sub_category]');
         let subCategorySelectDom = document.getElementById('subCategory');
         let subCategoryFirstOptDom = subCategorySelectDom.children[0];
+
+        let remarksInputDom = document.getElementById('remarks');
+        remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
         function getCategoryData(value) {
             if (value != "waiting") {
+                subCategorySelectDom.parentElement.parentElement.classList.remove("hidden");
+                remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
                 $.ajax({
                     url: "/get-category-data",
                     type: "POST",
@@ -100,33 +110,68 @@
                                         -- Select Supplier --
                                     </option>
                                 `;
-                                break;
                         
-                            default:
-                                break;
-                        }
-                        
-                        response.forEach(subCat => {
-                            clutter += `
-                                <option value='${subCat.id}'>
-                                    ${subCat.supplier_name}
-                                </option>
-                            `;
-                        });
-                        subCategorySelectDom.innerHTML = clutter;
-
-                        switch (value) {
-                            case 'supplier':
+                                response.forEach(subCat => {
+                                    clutter += `
+                                        <option value='${subCat.id}'>
+                                            ${subCat.supplier_name}
+                                        </option>
+                                    `;
+                                });
+                                
                                 subCategoryLabelDom.textContent = 'Supplier';
                                 subCategoryFirstOptDom.textContent = '-- Select Supplier --';
-                                subCategorySelectDom.disabled = false;
                                 break;
+                                
+                            case 'bank_account':
+                                clutter += `
+                                    <option value=''>
+                                        -- Select Bank Account --
+                                    </option>
+                                `;
+                        
+                                response.forEach(subCat => {
+                                    clutter += `
+                                        <option value='${subCat.id}'>
+                                            ${subCat.sub_category.name}
+                                        </option>
+                                    `;
+                                });
+                                
+                                subCategoryLabelDom.textContent = 'Bank Account';
+                                subCategoryFirstOptDom.textContent = '-- Select Bank Account --';
+                                break;
+                                
+                                case 'customer':
+                                    clutter += `
+                                        <option value=''>
+                                            -- Select Customer --
+                                        </option>
+                                    `;
+                            
+                                    response.forEach(subCat => {
+                                        clutter += `
+                                            <option value='${subCat.id}'>
+                                                ${subCat.customer_name}
+                                            </option>
+                                        `;
+                                    });
+                                    
+                                    subCategoryLabelDom.textContent = 'Customer';
+                                    subCategoryFirstOptDom.textContent = '-- Select Customer --';
+                                    break;
                         
                             default:
                                 break;
                         }
+
+                        subCategorySelectDom.disabled = false;
+                        subCategorySelectDom.innerHTML = clutter;
                     }
                 });
+            } else {
+                subCategorySelectDom.parentElement.parentElement.classList.add("hidden");
+                remarksInputDom.parentElement.parentElement.classList.remove("hidden");
             }
         }
     </script>

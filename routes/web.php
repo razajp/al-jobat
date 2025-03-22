@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
@@ -61,7 +63,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('payments', PaymentController::class);
     
     Route::resource('online-programs', OnlineProgramController::class);
-    Route::post('get-category-data', [OnlineProgramController::class, 'getCategoryData'])->name('get-category-data');
+
+    Route::resource('bank-accounts', BankAccountController::class);
+    
+    Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

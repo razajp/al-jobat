@@ -15,9 +15,9 @@
                 <ul class="p-2">
                     @foreach ($filter_items as $key => $filter_item)
                         <li>
-                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("{{ $key }}")'>
+                            <label class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[--h-bg-color] grop rounded-md transition-all duration-200 ease-in-out" onclick='setFilter("{{ $key }}")'>
                                 <input type="radio" name="filter" value="{{ $key }}" class="hidden peer" {{ $key == 'all' ? 'checked' : '' }}/>
-                                <span class="text-[--text-color] transition-all peer-checked:text-[--primary-color] peer-checked:ml-1">{{ $filter_item }}</span>
+                                <span class="transition-all peer-checked:text-[--primary-color] peer-checked:ml-1 grop-hover:text-[--primary-color]">{{ $filter_item }}</span>
                                 <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[--primary-color]">
                                     <div class="w-2.5 h-2.5 bg-[--primary-color] rounded-full scale-0 peer-checked:scale-100 transition-transform"></div>
                                 </div>

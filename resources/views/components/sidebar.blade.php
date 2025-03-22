@@ -124,7 +124,7 @@
                         ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
                         ['type' => 'link', 'href' => route('online-programs.index'), 'label' => 'Show Online Programs'],
                         ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
-                        ['type' => 'link', 'href' => route('online-programs.create'), 'label' => 'Add online Program'],
+                        ['type' => 'link', 'href' => route('online-programs.create'), 'label' => 'Add Online Program'],
                     ]"
                 />
             </div>
@@ -161,6 +161,18 @@
                     :items="[
                         ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
                         ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Banks" 
+                    icon="fas fa-university"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Banks'],
+                        ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Bank'],
                     ]"
                 />
             </div>
@@ -289,6 +301,15 @@
                     :dropdown="[
                         ['href' => route('payments.index'), 'title' => 'Show Payments'],
                         ['href' => route('payments.create'), 'title' => 'Add Payment'],
+                    ]"
+                />
+
+                <x-mobile-menu-item 
+                    title="Banks" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('bank-accounts.index'), 'title' => 'Show Banks'],
+                        ['href' => route('bank-accounts.create'), 'title' => 'Add Bank'],
                     ]"
                 />
                 </div>

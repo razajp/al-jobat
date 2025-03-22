@@ -549,9 +549,9 @@
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();
-            } else if (id === 'addImageModal') {
+            } else if (id === 'addImageModalForm') {
                 closeAddImageModal();
-            } else if (id === 'addRateModal') {
+            } else if (id === 'addRateModalForm') {
                 closeAddRateModal();
             }
         });
@@ -690,16 +690,24 @@
             let modalRateList = document.getElementById('modal-rate-list');
             modalRateList.innerHTML = '';
 
-            articleRatesArray.forEach((rate, index) => {
-                let rateItem = `
+            if (articleRatesArray.length > 0) {
+                articleRatesArray.forEach((rate, index) => {
+                    let rateItem = `
+                        <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                            <div class="w-1/5">${index + 1}</div>
+                            <div class="grow ml-5">${rate.title}</div>
+                            <div class="w-1/4">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(rate.rate)}</div>
+                        </div>
+                    `;
+                    modalRateList.innerHTML += rateItem;
+                });
+            } else {
+                modalRateList.innerHTML = `
                     <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                        <div class="w-1/5">${index + 1}</div>
-                        <div class="grow ml-5">${rate.title}</div>
-                        <div class="w-1/4">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(rate.rate)}</div>
+                        <div class="grow text-center text-[--border-error]">No rates added yet.</div>
                     </div>
                 `;
-                modalRateList.innerHTML += rateItem;
-            });
+            }
 
             openModal();
             document.getElementById('modal').classList.remove('hidden');

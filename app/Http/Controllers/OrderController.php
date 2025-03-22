@@ -32,7 +32,7 @@ class OrderController extends Controller
             $orderedArticles = json_decode($order->ordered_articles, true) ?? [];
 
             // Map through each ordered article
-            $order->ordered_articles = collect($orderedArticles)
+            $order['ordered_articles'] = collect($orderedArticles)
                 ->map(function ($orderedArticle) use ($articles) {
                     // Attach article details if available
                     if (isset($articles[$orderedArticle['id']])) {
@@ -58,7 +58,7 @@ class OrderController extends Controller
 
         // Format the date and reset balances
         $orders->each(function ($order) {
-            $order->date = date('d-M-Y, D', strtotime($order->date));
+            $order['date'] = date('d-M-Y, D', strtotime($order->date));
             $order->customer->previous_balance = 0;
             $order->customer->current_balance = 0;
         });

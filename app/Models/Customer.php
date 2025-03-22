@@ -41,6 +41,11 @@ class Customer extends Model
 
     public function onlinePrograms()
     {
-        return $this->hasMany(OnlineProgram::class, 'customer_id');
+        return $this->morphMany(OnlineProgram::class, 'sub_category');
+    }
+
+    public function bankAccounts()
+    {
+        return $this->morphMany(BankAccount::class, 'sub_category');
     }
 }

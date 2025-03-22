@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OnlineProgram;
 use App\Models\Customer;
 use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -59,7 +60,7 @@ class OnlineProgramController extends Controller
         $validator = Validator::make($request->all(), [
             'date'=> 'required|date',
             'customer_id'=> 'required|integer|exists:customers,id',
-            'category'=> 'required|in:supplier,bank_account,waiting',
+            'category'=> 'required|in:supplier,bank_account,customer,waiting',
             'sub_category'=> 'nullable|integer',
             'amount'=> 'required|integer',
             'remarks'=> 'nullable|string',
@@ -80,7 +81,11 @@ class OnlineProgramController extends Controller
                 break;
             
             case 'bank_account':
-                // $subCategoryModel = BankAccount::find($data['sub_category']);
+                $subCategoryModel = User::find($data['sub_category']);
+                break;
+            
+            case 'customer':
+                $subCategoryModel = Customer::find($data['sub_category']);
                 break;
     
             case 'waiting':
@@ -94,7 +99,7 @@ class OnlineProgramController extends Controller
             'customer_id' => $data['customer_id'],
             'category' => $data['category'],
             'amount' => $data['amount'],
-            'remarks' => $data['remarks'] ?? "",
+            'remarks' => $data['remarks'],
         ]);
     
         if ($subCategoryModel) {
@@ -136,22 +141,5 @@ class OnlineProgramController extends Controller
     public function destroy(OnlineProgram $onlineProgram)
     {
         //
-    }
-
-    public function getCategoryData(Request $request)
-    {
-        switch ($request->category) {
-            case 'supplier':
-                $suppliers = Supplier::with('user')->whereHas('user', function ($query) {
-                    $query->where('status', 'active');
-                })->get();
-
-                return $suppliers;
-                break;
-            
-            default:
-                return "Not Found";
-                break;
-        }
     }
 }

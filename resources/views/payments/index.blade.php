@@ -65,7 +65,7 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar">
                         <div class="card_container p-5 pr-3">
                             @if ($authLayout == 'grid')
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                                     @foreach ($payments as $payment)
                                         <div id="{{ $payment->id }}" data-json='{{ $payment }}'
                                             class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">

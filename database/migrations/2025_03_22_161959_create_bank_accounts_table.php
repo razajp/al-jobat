@@ -11,17 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('online_programs', function (Blueprint $table) {
+        Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->unsignedBigInteger('customer_id');
             $table->string('category');
-            $table->nullableMorphs('sub_category');
-            $table->integer('amount');
-            $table->string('remarks')->nullable();;
+            $table->morphs('sub_category');
+            $table->string('bank');
+            $table->string('account_title');
+            $table->string('account_no');
+            $table->date('date');
             $table->timestamps();
-
-            $table->foreign('customer_id')->references('id')->on('customers');
         });
     }
 
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('online_programs');
+        Schema::dropIfExists('bank_accounts');
     }
 };

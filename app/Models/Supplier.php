@@ -26,4 +26,9 @@ class Supplier extends Model
     {
         return $this->morphMany(OnlineProgram::class, 'sub_category');
     }
+
+    public function bankAccounts()
+    {
+        return $this->morphMany(BankAccount::class, 'sub_category');
+    }
 }

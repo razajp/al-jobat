@@ -125,7 +125,7 @@
                     <div id="finalOrderAmount">0.0</div>
                 </div>
                 <div class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Discount - %</div>
+                    <label for="discount" class="grow">Discount - %</label>
                     <input type="text" name="discount" id="discount" value="0"
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
@@ -270,7 +270,7 @@
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Article Details</h5>
 
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.sales_rate} - Rs." 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
                                 disabled
                             />
 
@@ -278,15 +278,15 @@
 
                             <div class="w-2/3 mx-auto p-5 flex flex-col gap-4">
                                 <x-input 
-                                    label="Current Stock"
-                                    value="${data.quantity - data.ordered_quantity}" 
+                                    label="Current Stock - Pcs."
+                                    value="${formatNumbersDigitLess(data.quantity - data.ordered_quantity)}" 
                                     disabled
                                 />
                                 
                                 <x-input 
-                                    label="Physical Stock"
+                                    label="Physical Stock - Pcs."
                                     id="physical_quantity"
-                                    value="${data.physical_quantity}" 
+                                    value="${formatNumbersDigitLess(data.physical_quantity)}" 
                                     disabled
                                 />
                                 
@@ -637,8 +637,8 @@
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                             <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity * article.pcs_per_packet}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${Math.floor(article.orderedQuantity / article.pcs_per_packet)}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">
                                                                 ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                             </div>
@@ -662,7 +662,7 @@
                                                             <div class="td text-sm font-semibold w-[10%]">
                                                                 ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                             </div>
-                                                            <div class="td text-sm font-semibold w-1/6">
+                                                            <div class="td text-sm font-semibold w-[10%]">
                                                                 ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
                                                             </div>
                                                             <div class="td text-sm font-semibold w-[8%]"></div>
