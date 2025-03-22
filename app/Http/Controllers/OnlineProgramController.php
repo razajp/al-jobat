@@ -16,7 +16,9 @@ class OnlineProgramController extends Controller
      */
     public function index()
     {
-        //
+        $onlinePrograms = OnlineProgram::with('customer', 'subCategory')->get();
+        // return view("online-programs.index", compact('onlinePrograms'));
+        return $onlinePrograms;
     }
 
     /**

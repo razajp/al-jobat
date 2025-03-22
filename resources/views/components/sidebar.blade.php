@@ -167,12 +167,12 @@
             
             <div class="relative group">
                 <x-nav-link-item 
-                    label="Banks" 
+                    label="Bank-Accounts" 
                     icon="fas fa-university"
                     includesDropdown="true"
                     :items="[
-                        ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Banks'],
-                        ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Bank'],
+                        ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Accounts'],
+                        ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Account'],
                     ]"
                 />
             </div>
