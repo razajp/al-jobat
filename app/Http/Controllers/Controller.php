@@ -10,6 +10,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class Controller extends BaseController
 {
@@ -48,5 +49,43 @@ class Controller extends BaseController
                 return "Not Found";
                 break;
         }
+    }
+
+    public function changeDataLayout(Request $request)
+    {
+        $previousRoute = app('router')->getRoutes()->match(app('request')->create(url()->previous()))->getName();
+
+        $authUser = Auth::user();
+
+        $layout = [];
+    
+        if (!empty($authUser->layout)) {
+            // Parse the existing layout from JSON
+            $layout = json_decode($authUser->layout, true);
+        }
+
+        $newLayout = $request->layout == 'grid' ? 'table' : 'grid';
+    
+        // Update the layout for the specified page
+        $layout[$previousRoute] = $newLayout;
+    
+        // Save the updated layout back to the user
+        $authUser->layout = json_encode($layout);
+
+        $authUser->save();
+    
+        return redirect()->back()->with('success', 'Layout updated successfully.');
+    }
+
+    protected function getAuthLayout($routeName, $default = 'grid')
+    {
+        $layout = Auth::user()->layout ?? '';
+
+        if (!empty($layout)) {
+            $layout = json_decode($layout, true);
+            return $layout[$routeName] ?? $default;
+        }
+
+        return $default;
     }
 }

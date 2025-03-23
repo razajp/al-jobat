@@ -31,7 +31,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::share('authLayout', Auth::check() ? Auth::user()->layout : 'grid');
         // View::share('authLayout', 'table');
     }
 }

@@ -13,7 +13,7 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto @if ($authLayout == 'grid') pt-7 pr-2 @endif relative">
+                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto pt-7 pr-2 relative">
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
                     <h4>Show Users</h4>

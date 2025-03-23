@@ -13,7 +13,7 @@ class PaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $payments = Payment::with("customer")->get();
 
@@ -29,7 +29,9 @@ class PaymentController extends Controller
             }
         }
 
-        return view("payments.index", compact("payments"));
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view("payments.index", compact("payments", "authLayout"));
     }
 
     /**

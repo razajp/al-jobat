@@ -67,6 +67,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('bank-accounts', BankAccountController::class);
     
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
+    Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
 

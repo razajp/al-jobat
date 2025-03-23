@@ -14,11 +14,13 @@ class OnlineProgramController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $onlinePrograms = OnlineProgram::with('customer', 'subCategory')->get();
-        // return view("online-programs.index", compact('onlinePrograms'));
-        return $onlinePrograms;
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view("online-programs.index", compact('onlinePrograms', 'authLayout'));
     }
 
     /**

@@ -15,7 +15,7 @@ class CustomerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $customers = Customer::with('user', 'category', 'orders', 'payments')->get();
 
@@ -32,9 +32,11 @@ class CustomerController extends Controller
 
             $customer['balance'] = number_format($customer['balance'], 1, '.', ',');
         }
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
     
         // return $customers;
-        return view("customers.index", compact('customers'));
+        return view("customers.index", compact('customers', 'authLayout'));
     }
 
     /**

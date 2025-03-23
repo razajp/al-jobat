@@ -15,7 +15,7 @@ class OrderController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $orders = Order::with('customer')->get();
 
@@ -63,7 +63,9 @@ class OrderController extends Controller
             $order->customer->current_balance = 0;
         });
 
-        return view('orders.index', compact('orders'));
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view('orders.index', compact('orders', 'authLayout'));
         // return $orders;
     }
 

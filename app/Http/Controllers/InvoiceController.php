@@ -14,7 +14,7 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $invoices = Invoice::with(['order.customer'])->get();
     
@@ -35,8 +35,10 @@ class InvoiceController extends Controller
             $invoice['articles'] = $articles;
             $invoice['date'] = date('d-M-Y, D', strtotime($invoice['date']));
         }
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
         
-        return view('invoices.index', compact('invoices'));
+        return view('invoices.index', compact('invoices', 'authLayout'));
     }    
 
     /**

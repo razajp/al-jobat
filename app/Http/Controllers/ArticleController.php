@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Order;
 use App\Models\Setup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
@@ -15,39 +16,7 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
-        // Fetch filter parameters from the request
-        // $searchQuery = $request->input('search');
-        // $seasonId = $request->input('season', 'all');
-        // $sizeId = $request->input('size', 'all');
-        // $categoryId = $request->input('category', 'all');
-
-        // Fetch the setup data
-        // $seasons = Setups::where('type', 'pcs_season')->get();
-        // $sizes = Setups::where('type', 'pcs_size')->get();
-        // $categories = Setups::where('type', 'pcs_category')->get();
-
-        // Start querying articles
         $articles = Article::all();
-
-        // Apply filters based on the input parameters
-        // if ($searchQuery) {
-        //     $articles->where('article_no', 'like', "%$searchQuery%");
-        // }
-
-        // if ($seasonId !== 'all') {
-        //     $articles->where('season_id', $seasonId);
-        // }
-
-        // if ($sizeId !== 'all') {
-        //     $articles->where('size_id', $sizeId);
-        // }
-
-        // if ($categoryId !== 'all') {
-        //     $articles->where('category_id', $categoryId);
-        // }
-
-        // Execute the query and get the filtered articles
-        // $articles = $articles->get();
 
         foreach ($articles as $article) {
             $orders = Order::all();
@@ -63,14 +32,9 @@ class ArticleController extends Controller
             $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
         }
 
-        // Return the view with the filtered articles
-        // If it's an AJAX request, return just the updated content
-        // if ($request->ajax()) {
-        //     return view('article.index', compact('articles', 'seasons', 'sizes', 'categories'));
-        // }
+        $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        // Otherwise, return the full page with the filtered content
-        return view('articles.index', compact('articles'));
+        return view('articles.index', compact('articles', 'authLayout'));
     }
 
     /**

@@ -14,11 +14,13 @@ class BankAccountController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $bankAccounts = BankAccount::with('subCategory')->get();
 
-        return view("bank-accounts.index", compact("bankAccounts"));
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view("bank-accounts.index", compact("bankAccounts", "authLayout"));
     }
 
     /**

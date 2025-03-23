@@ -14,7 +14,7 @@ class SupplierController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $Suppliers = Supplier::with('user')->get();
 
@@ -52,9 +52,11 @@ class SupplierController extends Controller
             // Attach the categories to the supplier
             $supplier["categories"] = $categories;
         }
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
     
         // return $Suppliers;
-        return view("suppliers.index", compact('Suppliers', 'categories_options'));
+        return view("suppliers.index", compact('Suppliers', 'categories_options', 'authLayout'));
     }
 
     /**
