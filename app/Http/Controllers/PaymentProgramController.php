@@ -29,6 +29,13 @@ class PaymentProgramController extends Controller
      */
     public function create()
     {
+        $lastProgram = PaymentProgram::orderBy('id', 'DESC')->first();
+
+        if (!$lastProgram) {
+            $lastProgram = new PaymentProgram();
+            $lastProgram->prg_no = '0';
+        }
+
         $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
@@ -44,7 +51,7 @@ class PaymentProgramController extends Controller
             ];
         }
 
-        return view('payment-programs.create', compact('customers_options'));
+        return view('payment-programs.create', compact('customers_options', 'lastProgram'));
     }
 
     /**
@@ -53,6 +60,7 @@ class PaymentProgramController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
+            'prg_no'=> 'required|integer',
             'date'=> 'required|date',
             'order_no'=> 'nullable|string',
             'customer_id'=> 'required|integer|exists:customers,id',
@@ -93,6 +101,7 @@ class PaymentProgramController extends Controller
     
         // Create payment Program with morph relationship
         $program = new PaymentProgram([
+            'prg_no' => $data['prg_no'],
             'date' => $data['date'],
             'order_no' => $data['order_no'],
             'customer_id' => $data['customer_id'],

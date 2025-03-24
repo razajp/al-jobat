@@ -61,12 +61,13 @@
                 disabled
                 showDefault
             />
-
-            {{-- amount --}}
-            <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
             
             {{-- remarks --}}
             <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
+
+            {{-- amount --}}
+            <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
+            <x-input name="prg_no" id="prg_no" type="hidden" value="{{ $lastProgram->prg_no + 1 }}" />
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
@@ -116,14 +117,25 @@
                         category: value,
                     },
                     success: function (response) {
-                        let clutter = '';
+                        let clutter = `
+                            <option value=''>
+                                -- No option avalaible --
+                            </option>
+                        `;
                         switch (value) {   
                             case 'self_account':
-                                clutter += `
-                                    <option value=''>
-                                        -- Select Self Account --
-                                    </option>
-                                `;
+                                if (response.length > 0) {
+                                    clutter = '';
+                                    clutter += `
+                                        <option value=''>
+                                            -- Select Self Account --
+                                        </option>
+                                    `;
+                                    subCategorySelectDom.disabled = false;
+                                } else {
+                                    subCategorySelectDom.disabled = true;
+                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                }
                         
                                 response.forEach(subCat => {
                                     clutter += `
@@ -138,11 +150,18 @@
                                 break;
                                 
                             case 'supplier':
-                                clutter += `
-                                    <option value=''>
-                                        -- Select Supplier --
-                                    </option>
-                                `;
+                                if (response.length > 0) {
+                                    clutter = '';
+                                    clutter += `
+                                        <option value=''>
+                                            -- Select Supplier --
+                                        </option>
+                                    `;
+                                    subCategorySelectDom.disabled = false;
+                                } else {
+                                    subCategorySelectDom.disabled = true;
+                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                }
                         
                                 response.forEach(subCat => {
                                     clutter += `
@@ -157,6 +176,7 @@
                                 break;
                             
                             case 'customer':
+                                clutter = '';
                                 clutter += `
                                     <option value=''>
                                         -- Select Customer --
@@ -167,9 +187,10 @@
                                     if (subCat.id != customerSelect.value) {
                                         clutter += `
                                             <option value='${subCat.id}'>
-                                                ${subCat.customer_name} | ${subCat.city} 
+                                                ${subCat.customer_name} | ${subCat.city} | ${subCat.balance}
                                             </option>
                                         `;
+                                        subCategorySelectDom.disabled = false;
                                     }
                                 });
                                 
@@ -181,7 +202,6 @@
                                 break;
                         }
 
-                        subCategorySelectDom.disabled = false;
                         subCategorySelectDom.innerHTML = clutter;
                     }
                 });
@@ -220,9 +240,10 @@
                 },
                 success: function (response) {
                     let clutter = '';
-                    console.log('Response is:', response);
                     if (response && !response.error) {
                         orderNoInpBlurValue = `${response.order_no} | ${formatNumbersWithDigits(response.netAmount, 1, 1)}`
+
+                        categorySelectDom.disabled = false;
 
                         dateInpDom.value = response.date;
                         dateInpDom.readOnly = true;

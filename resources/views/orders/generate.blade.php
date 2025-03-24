@@ -533,7 +533,7 @@
         function renderFinals() {
             finalOrderedQuantity.textContent = totalOrderedQuantity;
             finalOrderAmount.textContent = totalOrderAmount;
-            finalPreviousBalance.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits:1, minimumFractionDigits:1}).format(customerData.balance); 
+            finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
             finalNetAmount.value = netAmount;
             finalCurrentBalance.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits:1, minimumFractionDigits:1}).format(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')));
         }

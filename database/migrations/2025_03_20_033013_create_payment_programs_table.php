@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('payment_programs', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('prg_no')->unique();
             $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->string('category');

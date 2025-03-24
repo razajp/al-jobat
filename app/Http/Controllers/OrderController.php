@@ -56,11 +56,14 @@ class OrderController extends Controller
             return $order->ordered_articles->isNotEmpty();
         });
 
+        foreach ($orders as $key => $order) {
+            $order['previous_balance'] = $order->customer->calculateBalance(null, $order->date, false, false);
+            $order['current_balance'] = $order['previous_balance'] + $order['netAmount'];
+        }
+
         // Format the date and reset balances
         $orders->each(function ($order) {
             $order['date'] = date('d-M-Y, D', strtotime($order->date));
-            $order->customer->previous_balance = 0;
-            $order->customer->current_balance = 0;
         });
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -93,7 +96,7 @@ class OrderController extends Controller
                         $customer['totalPayment'] += $payment->amount;
                     }
     
-                    $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
+                    $customer['balance'] = $customer['balance'];
                     
                     $customers_options[(int)$customer->id] = [
                         'text' => $customer->customer_name . ' | ' . $customer->city,

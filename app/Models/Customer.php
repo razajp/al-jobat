@@ -51,25 +51,48 @@ class Customer extends Model
         return $this->calculateBalance();
     }
 
-    public function calculateBalance($fromDate = null, $toDate = null)
+    public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $ordersQuery = $this->orders();
         $paymentsQuery = $this->payments();
 
-        // Apply date filters if provided
-        if ($fromDate || $toDate) {
-            $fromDate = $fromDate ?? '0000-01-01'; // Default to start of time
-            $toDate = $toDate ?? now(); // Default to today
-
+        // Handle different date scenarios
+        if ($fromDate && $toDate) {
+            // Between two dates
             $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
             $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
+
+            if (!$includeGivenDate) {
+                $ordersQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+            }
+        } elseif ($fromDate) {
+            // From a specific date onwards
+            $ordersQuery->where('date', '>=', $fromDate);
+            $paymentsQuery->where('date', '>=', $fromDate);
+
+            if (!$includeGivenDate) {
+                $ordersQuery->where('date', '>', $fromDate);
+                $paymentsQuery->where('date', '>', $fromDate);
+            }
+        } elseif ($toDate) {
+            // Up to a specific date
+            $ordersQuery->where('date', '<=', $toDate);
+            $paymentsQuery->where('date', '<=', $toDate);
+
+            if (!$includeGivenDate) {
+                $ordersQuery->where('date', '<', $toDate);
+                $paymentsQuery->where('date', '<', $toDate);
+            }
         }
 
-        $totalOrders = $ordersQuery->sum('netAmount');
-        $totalPayments = $paymentsQuery->sum('amount');
+        // Calculate totals
+        $totalOrders = $ordersQuery->sum('netAmount') ?? 0;
+        $totalPayments = $paymentsQuery->sum('amount') ?? 0;
 
         $balance = $totalOrders - $totalPayments;
 
-        return number_format($balance, 1); // Formatted balance
+        // Return balance (formatted or raw)
+        return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }
 }

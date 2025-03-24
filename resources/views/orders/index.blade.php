@@ -317,13 +317,15 @@
         function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
+            console.log(data);
+            
 
             let totalAmount = 0;
             let totalQuantity = 0;
             let discount = data.discount;
-            let previousBalance = data.customer.previous_balance;
+            let previousBalance = data.previous_balance;
             let netAmount = data.netAmount;
-            let currentBalance = data.customer.current_balance;
+            let currentBalance = data.current_balance;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
@@ -425,7 +427,7 @@
                                     <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                         <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Previous Balance</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(previousBalance)}</div>
+                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
                                         </div>
                                         <div
                                             class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
@@ -435,7 +437,7 @@
                                         <div
                                             class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Current Balance</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(currentBalance)}</div>
+                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
                                         </div>
                                     </div>
                                 </div>
