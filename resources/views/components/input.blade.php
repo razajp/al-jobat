@@ -59,7 +59,7 @@
             {{ $readonly ? 'readonly' : '' }}
             {{ $disabled ? 'disabled' : '' }}
             {{ $attributes->merge([
-                'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
+                'class' => $class . ' w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 ' . ($type == 'date' ? 'py-[7px]' : 'py-2') . ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out disabled:bg-transparent'
             ]) }}
             {{ $validateMax ? 'max='.$max : '' }}
             {{ $validateMin ? 'min='.$min : '' }}

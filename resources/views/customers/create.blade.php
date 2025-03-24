@@ -1,6 +1,14 @@
 @extends('app')
 @section('title', 'Add Customer | ' . app('company')->name)
 @section('content')
+@php
+    $categories_options = [
+        'cash' => ['text' => 'Cash'],
+        'regular' => ['text' => 'Regular'],
+        'site' => ['text' => 'Site'],
+        'other' => ['text' => 'Other'],
+    ]
+@endphp
     <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color] fade-in"> Add Customer </h1>
 
     <!-- Progress Bar -->
@@ -85,7 +93,6 @@
                     label="Phone Number" 
                     name="phone_number" 
                     id="phone_number" 
-                    type="text"
                     placeholder="Enter phone number"
                     required
                 />
@@ -102,8 +109,8 @@
                 {{-- customer_category --}}
                 <x-select 
                     label="Category"
-                    name="category_id"
-                    id="category_id"
+                    name="category"
+                    id="category"
                     :options="$categories_options"
                     required
                     showDefault

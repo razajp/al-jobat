@@ -17,6 +17,18 @@
         <!-- Step 1: Basic Information -->
         <div id="step1" class="space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
+                <!-- type -->
+                <x-select 
+                    label="Type" 
+                    name="type" 
+                    id="type" 
+                    :options="[
+                        'supplier_category' => ['text' => 'Supplier Category'],
+                        'bank_name' => ['text' => 'Bank Name'],
+                    ]"
+                    showDefault='true'
+                />
+
                 <!-- title -->
                 <x-input 
                     label="Title" 
@@ -35,18 +47,6 @@
                     type="text" 
                     placeholder="Enter Short Title"
                     uppercased
-                />
-
-                <!-- type -->
-                <x-select 
-                    label="Type" 
-                    name="type" 
-                    id="type" 
-                    :options="[
-                        'supplier_category' => ['text' => 'Supplier Category'],
-                        'customer_category' => ['text' => 'Customer Category']
-                    ]"
-                    showDefault='true'
                 />
 
                 <!-- login Button -->

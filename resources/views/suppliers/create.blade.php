@@ -30,6 +30,16 @@
                     placeholder="Enter supplire name" 
                     required 
                 />
+
+                <!-- urdu_title -->
+                <x-input 
+                    label="Urdu Title"
+                    name="urdu_title" 
+                    id="urdu_title" 
+                    placeholder="Enter urdu title" 
+                    required 
+                />
+                
                 {{-- person name --}}
                 <x-input 
                     label="Person Name"
@@ -37,6 +47,15 @@
                     id="person_name" 
                     placeholder="Enter person name" 
                     required 
+                />
+
+                {{-- supplier_phone_number --}}
+                <x-input 
+                    label="Phone Number" 
+                    name="phone_number" 
+                    id="phone_number" 
+                    placeholder="Enter phone number" 
+                    required
                 />
 
                 {{-- supplier_username --}}
@@ -59,38 +78,31 @@
                     required 
                 />
 
-                {{-- supplier_phone_number --}}
-                <x-input 
-                    label="Phone Number" 
-                    name="phone_number" 
-                    id="phone_number" 
-                    type="text"
-                    placeholder="Enter phone number" 
-                    required
-                />
-
                 {{-- supplier_registration_date --}}
                 <x-input 
                     label="Date" 
                     name="date" 
-                    id="date" 
+                    id="date"
+                    min="{{ now()->subMonth()->toDateString() }}"
+                    validateMin
+                    max="{{ now()->toDateString() }}"
+                    validateMax
+                    value="{{ now()->toDateString() }}"
                     type="date"
                     required
                 />
 
                 {{-- supplier_category --}}
-                <div class="col-span-2">
-                    <x-select 
-                        label="Category"
-                        id="category_select"
-                        :options="$categories_options"
-                        required
-                        showDefault
-                        class="grow"
-                        withButton
-                        btnId="addCategoryBtn"
-                    />
-                </div>
+                <x-select 
+                    label="Category"
+                    id="category_select"
+                    :options="$categories_options"
+                    required
+                    showDefault
+                    class="grow"
+                    withButton
+                    btnId="addCategoryBtn"
+                />
 
                 <input type="hidden" name="categories_array" id="categories_array" value="">
 

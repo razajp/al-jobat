@@ -84,6 +84,7 @@ class SupplierController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
+            'urdu_title' => 'nullable|string|max:255',
             'person_name' => 'required|string|max:255',
             'username' => 'required|string|max:255',
             'password' => 'required|string|min:3',
@@ -129,6 +130,7 @@ class SupplierController extends Controller
         $supplier = Supplier::create([
             'user_id' => $user->id,
             'supplier_name' => $user->name,
+            'urdu_title' => $data['urdu_title'],
             'person_name' => $data['person_name'],
             'phone_number' => $data['phone_number'],
             'date' => $data['date'],

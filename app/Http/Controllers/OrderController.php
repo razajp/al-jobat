@@ -78,7 +78,7 @@ class OrderController extends Controller
         $articles = [];
 
         if ($request->date) {
-            $customers = Customer::with('user', 'category', 'orders', 'payments')->where('date', '<=', $request->date)->get();
+            $customers = Customer::with('user', 'orders', 'payments')->where('date', '<=', $request->date)->get();
 
             foreach ($customers as $customer) {
                 $user = User::where('id', $customer->user_id)->first();

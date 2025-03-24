@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OnlineProgram extends Model
+class PaymentProgram extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
+    protected $fillable = ['prg_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
     function customer()
     {

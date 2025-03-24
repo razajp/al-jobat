@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Online Programs | ' . app('company')->name)
+@section('title', 'Show Payment Programs | ' . app('company')->name)
 @section('content')
     <!-- Modal -->
     <div id="modal"
@@ -7,7 +7,7 @@
     </div>
     <div>
         <div class="w-[80%] mx-auto">
-            <x-search-header heading="Online Programs" :filter_items="[
+            <x-search-header heading="Payment Programs" :filter_items="[
                 'all' => 'All',
                 'title' => 'Title',
                 'category' => 'Category',
@@ -21,7 +21,7 @@
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
-                    <h4>Show Online Programs</h4>
+                    <h4>Show Payment Programs</h4>
 
                     <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
                         <div class="relative group">
@@ -48,7 +48,7 @@
 
                 <div
                     class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('online-programs.create') }}"
+                    <a href="{{ route('payment-programs.create') }}"
                         class="bg-[--primary-color] text-[--text-color] px-3 py-2 rounded-full hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -57,41 +57,41 @@
                     </span>
                 </div>
 
-                @if (count($onlinePrograms) > 0)
+                @if (count($paymentPrograms) > 0)
                     <div class="card_container">
                         @if ($authLayout == 'grid')
                             <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($onlinePrograms as $onlineProgram)
-                                    <div id='{{ $onlineProgram->id }}' data-json='{{ $onlineProgram }}'
+                                @foreach ($paymentPrograms as $paymentProgram)
+                                    <div id='{{ $paymentProgram->id }}' data-json='{{ $paymentProgram }}'
                                         class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                         
                                         @php
                                             $details = [
-                                                'Category' => $onlineProgram->category,
+                                                'Category' => $paymentProgram->category,
                                             ];
                                         @endphp
                                 
-                                        @switch($onlineProgram->category)
+                                        @switch($paymentProgram->category)
                                             @case('customer')
-                                                @php $details['Name'] = $onlineProgram->subCategory->customer_name; @endphp
+                                                @php $details['Name'] = $paymentProgram->subCategory->customer_name; @endphp
                                                 @break
                                             @case('supplier')
-                                                @php $details['Name'] = $onlineProgram->subCategory->supplier_name; @endphp
+                                                @php $details['Name'] = $paymentProgram->subCategory->supplier_name; @endphp
                                                 @break
-                                            @case('bank_account')
-                                                @php $details['Name'] = $onlineProgram->subCategory->name; @endphp
+                                            @case('self_account')
+                                                @php $details['Name'] = $paymentProgram->subCategory->account_title; @endphp
                                                 @break
                                             @case('waiting')
-                                                @php $details['Remarks'] = $onlineProgram->remarks; @endphp
+                                                @php $details['Remarks'] = $paymentProgram->remarks; @endphp
                                                 @break
                                         @endswitch
 
                                         @php
-                                            $details['Date'] = $onlineProgram->date;
+                                            $details['Date'] = $paymentProgram->date;
                                         @endphp
 
                                         <x-card :data="[
-                                            'name' => $onlineProgram->customer->customer_name,
+                                            'name' => $paymentProgram->customer->customer_name,
                                             'details' => $details,
                                         ]" />
                                     </div>
@@ -107,28 +107,28 @@
                             </div>
                             
                             <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @foreach ($onlinePrograms as $onlineProgram)
+                                @foreach ($paymentPrograms as $paymentProgram)
                                     @php
                                         $owner = '';
-                                        switch ($onlineProgram->category) {
+                                        switch ($paymentProgram->category) {
                                             case 'self':
-                                                $owner = $onlineProgram->subCategory->name;
+                                                $owner = $paymentProgram->subCategory->name;
                                                 break;
                                             case 'customer':
-                                                $owner = $onlineProgram->subCategory->customer_name;
+                                                $owner = $paymentProgram->subCategory->customer_name;
                                                 break;
                                             case 'supplier':
-                                                $owner = $onlineProgram->subCategory->supplier_name;
+                                                $owner = $paymentProgram->subCategory->supplier_name;
                                                 break;
                                         }
                                     @endphp
                             
-                                    <div id="{{ $onlineProgram->id }}" data-json='{{ $onlineProgram }}' class="contextMenuToggle modalToggle relative group grid grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5">{{ $onlineProgram->account_title }}</span>
+                                    <div id="{{ $paymentProgram->id }}" data-json='{{ $paymentProgram }}' class="contextMenuToggle modalToggle relative group grid grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                        <span class="text-left pl-5">{{ $paymentProgram->account_title }}</span>
                                         <span class="text-left pl-5">{{ $owner }}</span>
-                                        <span class="text-center capitalize">{{ $onlineProgram->category }}</span>
-                                        <span class="text-right">{{ $onlineProgram->date }}</span>
-                                        <span class="text-right pr-5 capitalize">{{ $onlineProgram->status ?? 'N/A' }}</span>
+                                        <span class="text-center capitalize">{{ $paymentProgram->category }}</span>
+                                        <span class="text-right">{{ $paymentProgram->date }}</span>
+                                        <span class="text-right pr-5 capitalize">{{ $paymentProgram->status ?? 'N/A' }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -136,8 +136,8 @@
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                        <h1 class="text-md text-[--secondary-text] capitalize">No Bank Account yet</h1>
-                        <a href="{{ route('bank-accounts.create') }}"
+                        <h1 class="text-md text-[--secondary-text] capitalize">No Payment Programs yet</h1>
+                        <a href="{{ route('payment-programs.create') }}"
                             class="text-md bg-[--primary-color] text-[--text-color] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
                             New</a>
                     </div>

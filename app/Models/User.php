@@ -38,14 +38,4 @@ class User extends Authenticatable
     public function customer() {
         return $this->hasOne(Customer::class);
     }
-    
-    public function onlinePrograms()
-    {
-        return $this->morphMany(OnlineProgram::class, 'sub_category');
-    }
-
-    public function bankAccounts()
-    {
-        return $this->morphMany(BankAccount::class, 'sub_category');
-    }
 }

@@ -76,7 +76,7 @@
                                             'name' => $supplier->supplier_name,
                                             'status' => $supplier->user->status,
                                             'details' => [
-                                                'Person Name' => $supplier->person_name,
+                                                'Urdu Title' => $supplier->urdu_title,
                                                 'Phone' => $supplier->phone_number,
                                                 'Balance' => $supplier->balance,
                                             ],
@@ -87,7 +87,7 @@
                         @else
                             <div class="grid grid-cols-5 bg-[--h-bg-color] rounded-lg font-medium py-2">
                                 <div class="text-left pl-5">Supplier</div>
-                                <div class="text-center">Person Name</div>
+                                <div class="text-center">Urdu Title</div>
                                 <div class="text-center">Phone</div>
                                 <div class="text-right">Balance</div>
                                 <div class="text-right pr-5">Status</div>
@@ -96,7 +96,7 @@
                                 @forEach ($Suppliers as $supplier)
                                     <div id="{{ $supplier->id }}" data-json='{{ $supplier }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
                                         <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
-                                        <span class="text-center">{{ $supplier->person_name }}</span>
+                                        <span class="text-center">{{ $supplier->urdu_title }}</span>
                                         <span class="text-center">{{ $supplier->phone_number }}</span>
                                         <span class="text-right">{{ $supplier->balance }}</span>
                                         <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[--border-success]' : 'text-[--border-error]' }}">{{ $supplier->user->status }}</span>
@@ -294,6 +294,7 @@
                 
                         <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.supplier_name}</h5>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.urdu_title}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>

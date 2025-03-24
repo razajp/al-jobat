@@ -72,9 +72,6 @@
                                         @endphp
                                 
                                         @switch($bankAccount->category)
-                                            @case('self')
-                                                @php $details['Name'] = $bankAccount->subCategory->name; @endphp
-                                                @break
                                             @case('customer')
                                                 @php $details['Name'] = $bankAccount->subCategory->customer_name; @endphp
                                                 @break
@@ -106,9 +103,6 @@
                                     @php
                                         $owner = '';
                                         switch ($bankAccount->category) {
-                                            case 'self':
-                                                $owner = $bankAccount->subCategory->name;
-                                                break;
                                             case 'customer':
                                                 $owner = $bankAccount->subCategory->customer_name;
                                                 break;
@@ -257,10 +251,11 @@
                         <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">${data.account_title}</h5>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Name:</strong> <span>${data.category == 'supplier' ? data.sub_category.supplier_name : data.category == 'customer' ? data.sub_category.customer_name : data.category == 'self' ? data.sub_category.name : ''}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm ${data.category === 'self' ? 'hidden' : ''}"><strong>Name:</strong> <span>${data.category == 'supplier' ? data.sub_category.supplier_name : data.category == 'customer' ? data.sub_category.customer_name : ''}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank.replace(/_/g, ' ')}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Account No.:</strong> <span>${data.account_no}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank.title}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm ${data.category !== 'self' ? 'hidden' : ''}"><strong>Account No.:</strong> <span>${data.account_no}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm ${data.category !== 'self' ? 'hidden' : ''}"><strong>Cheque Book Serial:</strong> <span>Start: ${data.chqbk_serial_start}</span> | <span>End: ${data.chqbk_serial_end}</span></p>
                         </div>
                     </div>
                 

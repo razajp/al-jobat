@@ -13,6 +13,7 @@ class Supplier extends Model
         'user_id',
         'supplier_name',
         'person_name',
+        'urdu_title',
         'phone_number',
         'date',
         'categories_array',
@@ -22,9 +23,9 @@ class Supplier extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function onlinePrograms()
+    public function paymentPrograms()
     {
-        return $this->morphMany(OnlineProgram::class, 'sub_category');
+        return $this->morphMany(PaymentProgram::class, 'sub_category');
     }
 
     public function bankAccounts()

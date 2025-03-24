@@ -9,11 +9,10 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PhysicalQuantityController;
-use App\Http\Controllers\OnlineProgramController;
+use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
-use App\Models\OnlineProgram;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,14 +57,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('physical-quantities', PhysicalQuantityController::class);
     
     Route::resource('invoices', InvoiceController::class);
-    Route::post('get-order-details', [InvoiceController::class, 'getOrderDetails'])->name('get-order-details');
     
     Route::resource('payments', PaymentController::class);
     
-    Route::resource('online-programs', OnlineProgramController::class);
-
+    Route::resource('payment-programs', PaymentProgramController::class);
+    
     Route::resource('bank-accounts', BankAccountController::class);
     
+    Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
 

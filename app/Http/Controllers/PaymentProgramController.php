@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\OnlineProgram;
+use App\Models\BankAccount;
+use App\Models\PaymentProgram;
 use App\Models\Customer;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class OnlineProgramController extends Controller
+class PaymentProgramController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $onlinePrograms = OnlineProgram::with('customer', 'subCategory')->get();
+        $paymentPrograms = PaymentProgram::with('customer', 'subCategory')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        return view("online-programs.index", compact('onlinePrograms', 'authLayout'));
+        return view("payment-programs.index", compact('paymentPrograms', 'authLayout'));
     }
 
     /**
@@ -36,24 +37,14 @@ class OnlineProgramController extends Controller
         foreach ($customers as $customer) {
             $user = $customer['user'];
             $customer['status'] = $user->status;
-
-            foreach ($customer['orders'] as $order) {
-                $customer['totalAmount'] += $order->netAmount;
-            }
-            
-            foreach ($customer['payments'] as $payment) {
-                $customer['totalPayment'] += $payment->amount;
-            }
-
-            $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
             
             $customers_options[(int)$customer->id] = [
-                'text' => $customer->customer_name . ' | ' . $customer->city,
+                'text' => $customer->customer_name . ' | ' . $customer->city . ' | ' . $customer->balance,
                 'data_option' => $customer
             ];
         }
 
-        return view('online-programs.create', compact('customers_options'));
+        return view('payment-programs.create', compact('customers_options'));
     }
 
     /**
@@ -63,8 +54,9 @@ class OnlineProgramController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'date'=> 'required|date',
+            'order_no'=> 'nullable|string',
             'customer_id'=> 'required|integer|exists:customers,id',
-            'category'=> 'required|in:supplier,bank_account,customer,waiting',
+            'category'=> 'required|in:supplier,self_account,customer,waiting',
             'sub_category'=> 'nullable|integer',
             'amount'=> 'required|integer',
             'remarks'=> 'nullable|string',
@@ -84,8 +76,8 @@ class OnlineProgramController extends Controller
                 $subCategoryModel = Supplier::find($data['sub_category']);
                 break;
             
-            case 'bank_account':
-                $subCategoryModel = User::find($data['sub_category']);
+            case 'self_account':
+                $subCategoryModel = BankAccount::find($data['sub_category']);
                 break;
             
             case 'customer':
@@ -96,10 +88,13 @@ class OnlineProgramController extends Controller
                 $subCategoryModel = null; // No association for 'waiting'
                 break;
         }
+
+        $data['order_no'] = str_replace(' ', '', explode('|', $data['order_no'])[0]);
     
-        // Create Online Program with morph relationship
-        $program = new OnlineProgram([
+        // Create payment Program with morph relationship
+        $program = new PaymentProgram([
             'date' => $data['date'],
+            'order_no' => $data['order_no'],
             'customer_id' => $data['customer_id'],
             'category' => $data['category'],
             'amount' => $data['amount'],
@@ -107,18 +102,18 @@ class OnlineProgramController extends Controller
         ]);
     
         if ($subCategoryModel) {
-            $subCategoryModel->onlinePrograms()->save($program);
+            $subCategoryModel->paymentPrograms()->save($program);
         } else {
             $program->save();
         }
     
-        return redirect()->route('online-programs.create')->with('success', 'Online program added successfully!');
+        return redirect()->route('payment-programs.create')->with('success', 'Payment program added successfully!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(OnlineProgram $onlineProgram)
+    public function show(PaymentProgram $paymentProgram)
     {
         //
     }
@@ -126,7 +121,7 @@ class OnlineProgramController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(OnlineProgram $onlineProgram)
+    public function edit(PaymentProgram $paymentProgram)
     {
         //
     }
@@ -134,7 +129,7 @@ class OnlineProgramController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, OnlineProgram $onlineProgram)
+    public function update(Request $request, PaymentProgram $paymentProgram)
     {
         //
     }
@@ -142,7 +137,7 @@ class OnlineProgramController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(OnlineProgram $onlineProgram)
+    public function destroy(PaymentProgram $paymentProgram)
     {
         //
     }

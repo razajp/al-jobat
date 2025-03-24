@@ -8,9 +8,9 @@
         @endif
         <div class="flex justify-between items-center mx-auto px-8 py-3">
             <div class="md:flex hidden justify-between items-center mx-auto">
-                <p class="text-center text-sm text-[--secondary-text] mx-3">&copy; Spark Pair 2024. All rights reserved.</p>
+                <span class="text-center text-sm mx-3">Copyright  &copy; 2024-<span class="opacity-100" id="year">2025</span> Spark Pair All rights reserved.</span>
                 <div class="flex justify-center mx-3 ">
-                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[--primary-color] hover:underline">+923165825495</a>
+                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[--primary-color] hover:underline">+92 316 5825495</a>
                     <span class="mx-2">|</span>
                     <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[--primary-color] hover:underline">sparkpair15@gmail.com</a>
                 </div>
@@ -38,6 +38,8 @@
     </div>
     @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('customers/create') || request()->is('orders/create') || request()->is('invoices/create') || request()->is('payments/create'))
         <script>
+            document.getElementById('year').textContent = new Date().getFullYear();
+
             let currentStep = 1;
             let noOfSteps = document.querySelector(".progress-indicators").children.length;
 

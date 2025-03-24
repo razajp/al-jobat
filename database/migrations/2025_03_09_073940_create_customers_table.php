@@ -19,13 +19,12 @@ return new class extends Migration
             $table->string('urdu_title')->nullable();
             $table->string('phone_number');
             $table->date('date');
-            $table->unsignedBigInteger('category_id');
+            $table->string('category');
             $table->string('city');
             $table->string('address');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('category_id')->references('id')->on('setups')->onDelete('cascade');
         });
     }
 

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('status')->default('active');
             $table->string('profile_picture')->default('default_avatar.png');
             $table->string('theme')->default('light');
-            $table->string('layout');
+            $table->string('layout')->nullable();
             $table->timestamps();
         });
     }

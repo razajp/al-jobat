@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('bank_accounts', function (Blueprint $table) {
             $table->id();
+            $table->integer('prg_no')->autoIncrement();
             $table->string('category');
-            $table->morphs('sub_category');
-            $table->string('bank');
+            $table->nullableMorphs('sub_category');
+            $table->string('bank_id');
             $table->string('account_title');
-            $table->string('account_no');
             $table->date('date');
+            $table->string('remarks')->nullable();
+            $table->string('account_no')->nullable();
+            $table->string('chqbk_serial_start')->nullable();
+            $table->string('chqbk_serial_end')->nullable();
             $table->timestamps();
         });
     }

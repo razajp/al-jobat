@@ -94,6 +94,20 @@
                                         </div>
                                     @endforeach
                                 </div>
+                                {{-- <div class="grid grid-cols-3 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                    <div class="text-center">Order No.</div>
+                                    <div class="text-center">Customer</div>
+                                    <div class="text-center">Date</div>
+                                </div>
+                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                    @forEach ($orders as $order)
+                                        <div id="{{ $order->id }}" data-json='{{ $order }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $order->order_no }}</span>
+                                            <span class="text-center">{{ $order->customer->customer_name }}</span>
+                                            <span class="text-center">{{ $order->date }}</span>
+                                        </div>
+                                    @endforeach
+                                </div> --}}
                             @endif
                         </div>
                     </div>
@@ -565,6 +579,7 @@
                                         padding: 0;
                                         width: 210mm; /* A4 width */
                                         height: 297mm; /* A4 height */
+                                        
                                     }
 
                                     .preview-container, .preview-container * {

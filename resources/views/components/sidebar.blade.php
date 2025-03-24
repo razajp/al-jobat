@@ -117,14 +117,15 @@
             
             <div class="relative group">
                 <x-nav-link-item 
-                    label="Orders" 
+                    label="Orders"
+                    :activatorTags="['payment-programs']"
                     icon="fas fa-cart-shopping"
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
-                        ['type' => 'link', 'href' => route('online-programs.index'), 'label' => 'Show Online Programs'],
+                        ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Payment Prg.'],
                         ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
-                        ['type' => 'link', 'href' => route('online-programs.create'), 'label' => 'Add Online Program'],
+                        ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Payment Prg.'],
                     ]"
                 />
             </div>
@@ -271,9 +272,9 @@
                     includesDropdown
                     :dropdown="[
                         ['href' => route('orders.index'), 'title' => 'Show Order'],
-                        ['href' => route('online-programs.index'), 'title' => 'Show Online Programs'],
+                        ['href' => route('payment-programs.index'), 'title' => 'Show Payment Prg.'],
                         ['href' => route('orders.create'), 'title' => 'Generate Order'],
-                        ['href' => route('online-programs.create'), 'title' => 'Add Online Program'],
+                        ['href' => route('payment-programs.create'), 'title' => 'Add Payment Prg.'],
                     ]"
                 />
 

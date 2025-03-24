@@ -37,7 +37,22 @@
 @endif
 
 <script>
-    if (url.includes("{{ strtolower($label) }}")) {
-        document.querySelector(".nav-link.{{ strtolower($label) }}").classList.add("active");
-    }
+    document.addEventListener("DOMContentLoaded", function() {
+        const url = window.location.href.toLowerCase();
+        const label = "{{ strtolower($label) }}";
+        
+        // Check if the label is present in the URL
+        if (url.includes(label)) {
+            document.querySelector(".nav-link." + label)?.classList.add("active");
+        }
+
+        // Check activatorTags if passed
+        @if(isset($activatorTags) && is_array($activatorTags))
+            @foreach($activatorTags as $tag)
+                if (url.includes("{{ strtolower($tag) }}")) {
+                    document.querySelector(".nav-link.{{ strtolower($label) }}")?.classList.add("active");
+                }
+            @endforeach
+        @endif
+    });
 </script>

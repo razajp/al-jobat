@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\Customer;
+use App\Models\Setup;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class BankAccountController extends Controller
      */
     public function index(Request $request)
     {
-        $bankAccounts = BankAccount::with('subCategory')->get();
+        $bankAccounts = BankAccount::with('subCategory', 'bank')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
@@ -28,7 +29,15 @@ class BankAccountController extends Controller
      */
     public function create()
     {
-        return view("bank-accounts.create");
+        $bank_options = [];
+        $banks = Setup::where('type', 'bank_name')->get();
+
+        if ($banks->count() > 0) {
+            foreach ($banks as $bank) {
+                $bank_options[(int)$bank->id] = ['text' => $bank->title];
+            }
+        }
+        return view("bank-accounts.create", compact('bank_options'));
     }
 
     /**
@@ -38,11 +47,15 @@ class BankAccountController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:self,supplier,customer',
-            'sub_category' => 'required|integer',
-            'bank' => 'required|string',
+            'sub_category' => 'nullable|integer',
+            'bank_id' => 'required|string',
             'account_title' => 'required|string',
-            'account_no' => 'required|string',
             'date' => 'required|date',
+            'remarks' => 'nullable|string',
+            'account_no' => 'nullable|string',
+            'cheque_book_serial' => 'nullable|array',
+            'cheque_book_serial.start' => 'nullable|numeric',
+            'cheque_book_serial.end' => 'nullable|numeric|gte:cheque_book_serial.start',
         ]);
 
         if ($validator->fails()) {
@@ -52,32 +65,37 @@ class BankAccountController extends Controller
         $data = $request->all();
 
         $subCategoryModel = null;
-    
-        // Dynamically associate sub_category based on category
-        switch ($data['category']) {
-            case 'self':
-                $subCategoryModel = User::find($data['sub_category']);
-                break;
 
-            case 'supplier':
-                $subCategoryModel = Supplier::find($data['sub_category']);
-                break;
-            
-            case 'customer':
-                $subCategoryModel = Customer::find($data['sub_category']);
-                break;
+        // Dynamically associate sub_category based on category
+        if ($data['category'] === 'supplier') {
+            $subCategoryModel = Supplier::find($data['sub_category']);
+        } elseif ($data['category'] === 'customer') {
+            $subCategoryModel = Customer::find($data['sub_category']);
         }
+
+        // Ensure subCategoryModel is not null
+        if ($data['category'] !== 'self' && !$subCategoryModel) {
+            return redirect()->back()->withErrors(['sub_category' => 'Invalid sub category'])->withInput();
+        }
+
+        $chqbk_serial_start = $request->input('cheque_book_serial.start');
+        $chqbk_serial_end = $request->input('cheque_book_serial.end');
     
-        // Create Online Program with morph relationship
         $bankAccount = new BankAccount([
             'category' => $data['category'],
-            'bank' => $data['bank'],
+            'bank_id' => $data['bank_id'],
             'account_title' => $data['account_title'],
-            'account_no' => $data['account_no'],
             'date' => $data['date'],
+            'account_no' => $data['account_no'],
+            'chqbk_serial_start' => $chqbk_serial_start,
+            'chqbk_serial_end' => $chqbk_serial_end,
         ]);
-    
-        $subCategoryModel->bankAccounts()->save($bankAccount);
+        
+        if ($subCategoryModel) {
+            $subCategoryModel->bankAccounts()->save($bankAccount);
+        } else {
+            $bankAccount->save(); // Self category ke liye direct save
+        }
     
         return redirect()->route('bank-accounts.create')->with('success', 'Bank account added successfully!');
     }

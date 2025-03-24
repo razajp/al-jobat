@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('online_programs', function (Blueprint $table) {
+        Schema::create('payment_programs', function (Blueprint $table) {
             $table->id();
             $table->date('date');
             $table->unsignedBigInteger('customer_id');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('online_programs');
+        Schema::dropIfExists('payment_programs');
     }
 };

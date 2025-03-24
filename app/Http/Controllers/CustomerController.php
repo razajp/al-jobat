@@ -17,21 +17,7 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        $customers = Customer::with('user', 'category', 'orders', 'payments')->get();
-
-        foreach ($customers as $customer) {
-            foreach ($customer['orders'] as $order) {
-                $customer['totalAmount'] += $order->netAmount;
-            }
-            
-            foreach ($customer['payments'] as $payment) {
-                $customer['totalPayment'] += $payment->amount;
-            }
-
-            $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
-
-            $customer['balance'] = number_format($customer['balance'], 1, '.', ',');
-        }
+        $customers = Customer::with('user', 'orders', 'payments')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
     
@@ -44,19 +30,7 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        // $suppliers = Supplier::with('user')->get();
-        $supplier_categories = Setup::where('type','customer_category')->get();
-
-        $categories_options = [];
-        foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = [
-                'text' => $supplier_category->title,
-            ];
-        }
-
-        // return $categories_options;
-
-        return view('customers.create', compact('categories_options'));
+        return view('customers.create');
     }
 
     /**
@@ -73,7 +47,7 @@ class CustomerController extends Controller
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'date' => 'required|string',
-            'category_id' => 'required|string|max:255|exists:setups,id',
+            'category' => 'required|string|max:255',
             'city' => 'required|string|max:255',
             'address' => 'required|string|max:255',
         ]);
@@ -118,7 +92,7 @@ class CustomerController extends Controller
             'phone_number' => $data['phone_number'],
             'urdu_title' => $data['urdu_title'],
             'date' => $data['date'],
-            'category_id' => $data['category_id'],
+            'category' => $data['category'],
             'city' => $data['city'],
             'address' => $data['address'],
         ]);

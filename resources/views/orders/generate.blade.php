@@ -40,6 +40,8 @@
                                 @endforeach
                             </div>
                         </div>
+                    @else
+                        <div class="text-[--border-error] text-center h-full">Article Not Found</div>
                     @endif
                     
                     <div class="flex w-full gap-4 text-sm mt-5">
