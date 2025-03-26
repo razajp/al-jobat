@@ -160,7 +160,11 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        //
+        if ($article->ordered_quantity != 0) {
+            return redirect()->back()->with("error", "This article can't be edited.");
+        }
+
+        return "EID AANE WALI HAI";
     }
 
     /**

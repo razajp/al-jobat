@@ -237,7 +237,7 @@
             isModalOpened = true;
             closeAllDropdowns();
             document.getElementById('articleModal').classList.remove('hidden');
-        };
+        }
 
         function closeArticlesModal() {
             generateDecription();
@@ -341,7 +341,7 @@
             isQuantityModalOpened = true;
             closeAllDropdowns();
             document.getElementById('quantityModal').classList.remove('hidden');
-        };
+        }
 
         function closeQuantityModal() {
             isQuantityModalOpened = false;

@@ -353,10 +353,10 @@
                     placeholderIcon.src = e.target.result;
                     placeholderIcon.classList.add("rounded-md", "w-full", "h-auto");
                     uploadText.textContent = "Preview";
-                };
+                }
                 reader.readAsDataURL(file);
             }
-        };
+        }
 
         function formatNumbersDigitLess(number) {
             return new Intl.NumberFormat('en-US').format(number);

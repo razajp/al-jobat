@@ -150,14 +150,14 @@
             contextMenu.classList.remove('fade-in');
             contextMenu.style.display = 'none';
             isContextMenuOpened = false;
-        };
+        }
 
         function openContextMenu() {
             closeAllDropdowns()
             contextMenu.classList.add('fade-in');
             contextMenu.style.display = 'block';
             isContextMenuOpened = true;
-        };
+        }
 
         function addContextMenuListenerToCards() {
             let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
@@ -167,7 +167,7 @@
                     generateContextMenu(e);
                 });
             });
-        };
+        }
 
         addContextMenuListenerToCards();
 
@@ -202,13 +202,13 @@
             document.addEventListener('click', (e) => {
                 if (e.target.id === "show-details") {
                     generateModal(item, 'openModal');
-                };
+                }
             });
 
             document.addEventListener('click', (e) => {
                 if (e.target.id === "print-order") {
                     generateModal(item, 'context');
-                };
+                }
             });
 
             // Function to remove context menu
@@ -217,14 +217,14 @@
                     closeContextMenu();
                     document.removeEventListener('click', removeContextMenu);
                     document.removeEventListener('contextmenu', removeContextMenu);
-                };
-            };
+                }
+            }
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
             setTimeout(() => {
                 document.addEventListener('click', removeContextMenu);
             }, 10);
-        };
+        }
 
         $('#article_no_search').on('input', function(e) {
             e.preventDefault();
@@ -263,13 +263,13 @@
                         $('.details').html(articles);
                         addListenerToCards();
                         addContextMenuListenerToCards();
-                    };
+                    }
                 },
                 error: function() {
                     alert('Error submitting form');
                 }
             });
-        };
+        }
 
         const close = document.querySelectorAll('#close');
 
@@ -299,7 +299,7 @@
                     closeModal();
                 }
                 closeContextMenu();
-            };
+            }
         });
 
         function addListenerToCards() {
@@ -309,10 +309,10 @@
                 item.addEventListener('click', () => {
                     if (!isContextMenuOpened) {
                         generateModal(item, 'openModal');
-                    };
+                    }
                 });
             });
-        };
+        }
 
         function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
@@ -470,7 +470,7 @@
             } else {
                 openModal();
             }
-        };
+        }
 
         addListenerToCards();
 
@@ -480,7 +480,7 @@
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
-        };
+        }
         
         function closeModal() {
             isModalOpened = false;
@@ -614,7 +614,7 @@
                         printIframe.contentWindow.print();
                         document.body.removeChild(printIframe); // Remove iframe after printing
                     }, 1000);
-                };
+                }
             });
         }
     </script>

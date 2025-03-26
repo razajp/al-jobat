@@ -145,6 +145,11 @@
                             class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Add
                             Image</button>
                     </li>
+                    <li id="edit-article-in-context" class="hidden">
+                        <button id="edit-article-in-context-btn"
+                            class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Edit
+                            Article</button>
+                    </li>
                     <li id="add-rate-in-context" class="hidden">
                         <button id="add-rate-in-context-btn"
                             class="font-medium text-[--border-success] w-full px-4 py-2 text-left hover:bg-[--bg-success] hover:text-[--text-success] rounded-md transition-all 0.3s ease-in-out">Add
@@ -159,20 +164,21 @@
         let contextMenu = document.querySelector('.context-menu');
         let addImgInContext = document.getElementById('add-img-in-context');
         let addRateInContext = document.getElementById('add-rate-in-context');
+        let editArticleInContext = document.getElementById('edit-article-in-context');
         let isContextMenuOpened = false;
 
         function closeContextMenu() {
             contextMenu.classList.remove('fade-in');
             contextMenu.style.display = 'none';
             isContextMenuOpened = false;
-        };
+        }
 
         function openContextMenu() {
             closeAllDropdowns()
             contextMenu.classList.add('fade-in');
             contextMenu.style.display = 'block';
             isContextMenuOpened = true;
-        };
+        }
 
         function addContextMenuListenerToCards() {
             let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
@@ -182,13 +188,14 @@
                     generateContextMenu(e);
                 });
             });
-        };
+        }
 
         addContextMenuListenerToCards();
 
         function generateContextMenu(e) {
             addImgInContext.classList.add('hidden');
             addRateInContext.classList.add('hidden');
+            editArticleInContext.classList.add('hidden');
 
             let ac_in_btn_context = document.getElementById('ac_in_btn_context');
             let item = e.target.closest('.modalToggle');
@@ -221,28 +228,38 @@
             document.addEventListener('click', (e) => {
                 if (e.target.id === "show-details") {
                     generateModal(item);
-                };
+                }
             });
 
             document.addEventListener('click', (e) => {
                 if (e.target.id === "add-img-in-context-btn") {
                     generateAddImageModal(item);
-                };
+                }
             });
 
             document.addEventListener('click', (e) => {
                 if (e.target.id === "add-rate-in-context-btn") {
                     generateAddRateModal(item);
-                };
+                }
             });
 
             if (data.image === "no_image_icon.png") {
                 addImgInContext.classList.remove('hidden');
-            };
+            }
 
             if (data.sales_rate === "0.00") {
                 addRateInContext.classList.remove('hidden');
-            };
+            }
+
+            if (data.ordered_quantity == 0) {
+                editArticleInContext.classList.remove('hidden');
+            }
+
+            document.addEventListener('click', (e) => {
+                if (e.target.id === "edit-article-in-context-btn") {
+                    gotoEditArticlePage(item.id);
+                }
+            });
 
             // Function to remove context menu
             const removeContextMenu = (event) => {
@@ -250,14 +267,18 @@
                     closeContextMenu();
                     document.removeEventListener('click', removeContextMenu);
                     document.removeEventListener('contextmenu', removeContextMenu);
-                };
-            };
+                }
+            }
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
             setTimeout(() => {
                 document.addEventListener('click', removeContextMenu);
             }, 10);
-        };
+        }
+
+        function gotoEditArticlePage(articleId) {
+            window.location.href = "{{ route('articles.edit', ':id') }}".replace(':id', articleId);
+        }
 
         function generateAddImageModal(item) {
             let modalDom = document.getElementById('addImageModal')
@@ -305,7 +326,7 @@
 
             document.getElementById('article_id').value = data.id;
             document.getElementById('addImageModal').classList.remove('hidden');
-        };
+        }
 
         // rate modal code start
         let titleDom;
@@ -419,7 +440,7 @@
 
             document.getElementById('article_id').value = data.id;
             document.getElementById('addRateModal').classList.remove('hidden');
-        };
+        }
 
         function addRate() {
             let title = titleDom.value;
@@ -562,12 +583,12 @@
                 }
                 if (isAddImageModalOpened == true) {
                     closeAddImageModal();
-                };
+                }
                 if (isAddRateModalOpened == true) {
                     closeAddRateModal();
-                };
+                }
                 closeContextMenu();
-            };
+            }
         });
 
         function addListenerToCards() {
@@ -577,10 +598,10 @@
                 item.addEventListener('click', () => {
                     if (!isContextMenuOpened) {
                         generateModal(item);
-                    };
+                    }
                 });
             });
-        };
+        }
 
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
@@ -632,10 +653,10 @@
                             class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
                             Print Article
                         </button>
-
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
-                            Cancel
+                        
+                        <button onclick="" type="button" id="edit-btn-in-modal"
+                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
+                            Edit Article
                         </button>
 
                         <button id="add-image-in-modal" type="button"
@@ -646,6 +667,11 @@
                         <button id="add-rate-in-modal" type="button"
                             class="px-4 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
                             Add Rate
+                        </button>
+
+                        <button onclick="closeModal()" type="button"
+                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                            Cancel
                         </button>
                     </x-slot>
                 </x-modal>
@@ -711,7 +737,7 @@
             openModal();
             document.getElementById('modal').classList.remove('hidden');
             document.getElementById('modal').classList.add('flex');
-        };
+        }
 
         addListenerToCards();
 
@@ -719,19 +745,19 @@
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
-        };
+        }
 
         function openAddImageModal() {
             isAddImageModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
-        };
+        }
 
         function openAddRateModal() {
             isAddRateModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
-        };
+        }
         
         function closeModal() {
             isModalOpened = false;

@@ -92,14 +92,14 @@
             contextMenu.classList.remove('fade-in');
             contextMenu.style.display = 'none';
             isContextMenuOpened = false;
-        };
+        }
 
         function openContextMenu() {
             closeAllDropdowns()
             contextMenu.classList.add('fade-in');
             contextMenu.style.display = 'block';
             isContextMenuOpened = true;
-        };
+        }
 
         let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
 
@@ -174,7 +174,7 @@
             document.addEventListener('click', (e) => {
                 if (e.target.id === "show-details") {
                     generateModal(item)
-                };
+                }
             });
 
             document.addEventListener('click', (e) => {
@@ -184,7 +184,7 @@
                     user_id_context.value = user.id;
                     user_status_context.value = user.status;
                     ac_in_btn_context.click();
-                };
+                }
             });
 
             // Function to remove context menu
@@ -193,14 +193,14 @@
                     closeContextMenu();
                     document.removeEventListener('click', removeContextMenu);
                     document.removeEventListener('contextmenu', removeContextMenu);
-                };
-            };
+                }
+            }
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
             setTimeout(() => {
                 document.addEventListener('click', removeContextMenu);
             }, 10);
-        };
+        }
 
         let isModalOpened = false;
         let card = document.querySelectorAll('.modalToggle')

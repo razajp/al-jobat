@@ -245,7 +245,7 @@
 
                         categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
                     }, 300);
-                };
+                }
 
                 if (chipsDom) {
                     chipsDom.appendChild(chip);

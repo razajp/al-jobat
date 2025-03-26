@@ -472,13 +472,13 @@
     document.getElementById('logoutModal').addEventListener('click', (e) => {
         if (e.target.id === 'logoutModal') {
             closeLogoutModal();
-        };
+        }
     });
 
     document.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
             closeLogoutModal();
-        };
+        }
     });
 
     // Close any open dropdown when clicking anywhere else on the document

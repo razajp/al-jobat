@@ -72,7 +72,7 @@
                     document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[--h-primary-color]');
                     document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[--h-bg-color]');
                     document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[--secondary-bg-color]');
-                };
+                }
                 document.getElementById('progress-bar').style.width = `${(step + 1) * (100/noOfSteps)}%`;
 
                 currentStep = step + 1;
@@ -154,7 +154,7 @@
             
             function setTheme(theme) {
                 document.documentElement.setAttribute('data-theme', theme);
-                document.cookie = `theme=${theme}; path=/; max-age=31536000`;  // Save for 1 year
+                document.cookie = `theme=${theme} path=/; max-age=31536000`;  // Save for 1 year
             }
             
             const userTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
