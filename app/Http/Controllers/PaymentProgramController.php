@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankAccount;
 use App\Models\PaymentProgram;
 use App\Models\Customer;
+use App\Models\Order;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -17,13 +18,33 @@ class PaymentProgramController extends Controller
      */
     public function index(Request $request)
     {
-        $paymentPrograms = PaymentProgram::with('customer', 'subCategory')->get();
+        // Fetch and sort orders by date and created_at
+        $orders = Order::with('customer')->orderBy('date', 'asc')->orderBy('created_at', 'asc')->get();
 
-        $authLayout = $this->getAuthLayout($request->route()->getName());
+        // Fetch and sort payment programs by date and created_at
+        $paymentPrograms = PaymentProgram::with('customer', 'subCategory')
+            ->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get();
 
-        return view("payment-programs.index", compact('paymentPrograms', 'authLayout'));
+        // Convert collections to arrays
+        $ordersArray = $orders->toArray();
+        $paymentProgramsArray = $paymentPrograms->toArray();
+
+        // Combine both arrays manually
+        $finalData = array_merge($ordersArray, $paymentProgramsArray);
+
+        // Sort the final combined array by date and created_at
+        usort($finalData, function ($a, $b) {
+            if ($a['date'] == $b['date']) {
+                return strtotime($a['created_at']) - strtotime($b['created_at']);
+            }
+            return strtotime($a['date']) - strtotime($b['date']);
+        });
+
+        // return $finalData;
+        return view("payment-programs.index", compact('finalData'));
     }
-
     /**
      * Show the form for creating a new resource.
      */

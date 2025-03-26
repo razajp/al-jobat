@@ -22,28 +22,6 @@
                 <div
                     class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold">
                     <h4>Show Payment Programs</h4>
-
-                    <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                        <div class="relative group">
-                            <form method="POST" action="{{ route('change-data-layout') }}">
-                                @csrf
-                                <input type="hidden" name="layout" value="{{ $authLayout }}">
-                                @if ($authLayout == 'grid')
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-list-ul text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[--h-secondary-bg-color] text-[--text-color] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                    </button>
-                                @else
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-grip text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[--h-secondary-bg-color] text-[--text-color] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                    </button>
-                                @endif
-                            </form>
-                        </div>
-                    </div>
                 </div>
 
                 <div
@@ -57,79 +35,49 @@
                     </span>
                 </div>
 
-                @if (count($paymentPrograms) > 0)
-                    <div class="card_container">
-                        @if ($authLayout == 'grid')
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($paymentPrograms as $paymentProgram)
-                                    <div id='{{ $paymentProgram->id }}' data-json='{{ $paymentProgram }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                        
+                @if (count($finalData) > 0)
+                    <div class="data_container">
+                        <div class="grid grid-cols-9 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                            <div class="text-center">Date</div>
+                            <div class="text-center">Customer</div>
+                            <div class="text-center">O/P No.</div>
+                            <div class="text-center">Category</div>
+                            <div class="text-center">Beneficiary</div>
+                            <div class="text-center">Amount</div>
+                            <div class="text-center">Account Title</div>
+                            <div class="text-center">Refrence</div>
+                            <div class="text-center">Payment</div>
+                        </div>
+                        
+                        <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                            @foreach ($finalData as $data)
+                                <div id="{{ $data['id'] }}" class="contextMenuToggle modalToggle relative group grid grid-cols-9 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                    <span class="text-center">{{ $data['date'] }}</span>
+                                    <span class="text-center">{{ $data['customer']['customer_name'] }}</span>
+                                    <span class="text-center">{{ $data['order_no'] ?? $data['prg_no'] }}</span>
+                                    <span class="text-center">{{ $data['category'] ?? '-' }}</span>
+                                    <span class="text-center">
                                         @php
-                                            $details = [
-                                                'Customer' => $paymentProgram->customer->customer_name,
-                                                'Category' => $paymentProgram->category,
-                                            ];
+                                            $beneficiary = '-';
+                                            if (isset($data['category'])) {
+                                                if ($data['category'] == 'supplier' && isset($data['sub_category']['supplier_name'])) {
+                                                    $beneficiary = $data['sub_category']['supplier_name'];
+                                                } elseif ($data['category'] == 'customer' && isset($data['sub_category']['customer_name'])) {
+                                                    $beneficiary = $data['sub_category']['customer_name'];
+                                                } elseif ($data['category'] == 'waiting' && isset($data['remarks'])) {
+                                                    $beneficiary = $data['remarks'];
+                                                }
+                                            }
                                         @endphp
-                                
-                                        @switch($paymentProgram->category)
-                                            @case('customer')
-                                                @php $details['Name'] = $paymentProgram->subCategory->customer_name; @endphp
-                                                @break
-                                            @case('supplier')
-                                                @php $details['Name'] = $paymentProgram->subCategory->supplier_name; @endphp
-                                                @break
-                                            @case('self_account')
-                                                @php $details['Name'] = $paymentProgram->subCategory->account_title; @endphp
-                                                @break
-                                            @case('waiting')
-                                                @php $details['Remarks'] = $paymentProgram->remarks; @endphp
-                                                @break
-                                        @endswitch
-
-                                        <x-card :data="[
-                                            'name' => 'Prg No. ' . $paymentProgram->prg_no,
-                                            'details' => $details,
-                                        ]" />
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="grid grid-cols-5 bg-[--h-bg-color] rounded-lg font-medium py-2">
-                                <div class="text-left pl-5">Account Title</div>
-                                <div class="text-left pl-5">Name</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-right">Date</div>
-                                <div class="text-right pr-5">Status</div>
-                            </div>
-                            
-                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @foreach ($paymentPrograms as $paymentProgram)
-                                    @php
-                                        $owner = '';
-                                        switch ($paymentProgram->category) {
-                                            case 'self':
-                                                $owner = $paymentProgram->subCategory->name;
-                                                break;
-                                            case 'customer':
-                                                $owner = $paymentProgram->subCategory->customer_name;
-                                                break;
-                                            case 'supplier':
-                                                $owner = $paymentProgram->subCategory->supplier_name;
-                                                break;
-                                        }
-                                    @endphp
-                            
-                                    <div id="{{ $paymentProgram->id }}" data-json='{{ $paymentProgram }}' class="contextMenuToggle modalToggle relative group grid grid-cols-5 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5">{{ $paymentProgram->account_title }}</span>
-                                        <span class="text-left pl-5">{{ $owner }}</span>
-                                        <span class="text-center capitalize">{{ $paymentProgram->category }}</span>
-                                        <span class="text-right">{{ $paymentProgram->date }}</span>
-                                        <span class="text-right pr-5 capitalize">{{ $paymentProgram->status ?? 'N/A' }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
+                                        {{ $beneficiary }}
+                                    </span>
+                                    <span class="text-center">{{ $data['amount'] ?? $data['netAmount'] }}</span>
+                                    <span class="text-center">{{ $data['account_title'] ?? '-' }}</span>
+                                    <span class="text-center">{{ $data['refrence'] ?? '-' }}</span>
+                                    <span class="text-center">{{ $data['payment'] ?? '-' }}</span>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">

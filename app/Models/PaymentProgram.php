@@ -9,11 +9,15 @@ class PaymentProgram extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['prg_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
+    protected $fillable = ['prg_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
     function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
+    }
+
+    public function order() {
+        return $this->belongsTo(Order::class, 'order_no', 'order_no');
     }
 
     public function subCategory()

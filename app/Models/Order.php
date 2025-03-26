@@ -23,6 +23,11 @@ class Order extends Model
         return $this->hasMany(Invoice::class, 'order_no', 'order_no');
     }
 
+    public function paymentProgram()
+    {
+        return $this->hasMany(Invoice::class, 'order_no', 'order_no');
+    }
+
     public function customer() {
         return $this->belongsTo(Customer::class, 'customer_id');
     }

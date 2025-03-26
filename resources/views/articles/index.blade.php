@@ -140,15 +140,15 @@
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Print
                             Article</button>
                     </li>
-                    <li id="add-img-in-context" class="hidden">
-                        <button id="add-img-in-context-btn"
-                            class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Add
-                            Image</button>
-                    </li>
                     <li id="edit-article-in-context" class="hidden">
                         <button id="edit-article-in-context-btn"
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Edit
                             Article</button>
+                    </li>
+                    <li id="add-img-in-context" class="hidden">
+                        <button id="add-img-in-context-btn"
+                            class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Add
+                            Image</button>
                     </li>
                     <li id="add-rate-in-context" class="hidden">
                         <button id="add-rate-in-context-btn"
