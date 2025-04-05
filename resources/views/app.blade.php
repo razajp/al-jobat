@@ -207,7 +207,7 @@
 
         span {
             color: var(--secondary-text) !important;
-            opacity: 0.7;
+            opacity: 0.9;
         }
     </style>
 </head>

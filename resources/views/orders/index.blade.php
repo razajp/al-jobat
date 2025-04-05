@@ -159,19 +159,16 @@
             isContextMenuOpened = true;
         }
 
-        function addContextMenuListenerToCards() {
-            let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
+        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
 
-            contextMenuToggle.forEach(toggle => {
-                toggle.addEventListener('contextmenu', (e) => {
-                    generateContextMenu(e);
-                });
+        contextMenuToggle.forEach(toggle => {
+            toggle.addEventListener('contextmenu', (e) => {
+                generateContextMenu(e);
             });
-        }
-
-        addContextMenuListenerToCards();
+        });
 
         function generateContextMenu(e) {
+            contextMenu.classList.remove('fade-in');
             let item = e.target.closest('.modalToggle');
             let data = JSON.parse(item.dataset.json);
 
@@ -225,52 +222,7 @@
                 document.addEventListener('click', removeContextMenu);
             }, 10);
         }
-
-        $('#article_no_search').on('input', function(e) {
-            e.preventDefault();
-
-            $(this).blur();
-
-            submitForm();
-
-            setTimeout(() => {
-                $(this).focus();
-            }, 100);
-        });
-
-        $('#search-form').on('change', 'select', function(e) {
-            if (e.type === 'keydown' && e.key !== 'Enter')
-                return;
-            e.preventDefault();
-            submitForm();
-        });
-
-        function submitForm() {
-            let formData = $('#search-form').serialize();
-
-            $.ajax({
-                url: $('#search-form').attr('action'),
-                method: 'GET',
-                data: formData,
-                success: function(response) {
-                    const articles = $(response).find('.details').html();
-
-                    if (articles === undefined || articles.trim() === "") {
-                        $('.details').html(
-                            '<div class="text-center text-[--border-error] pt-5 col-span-4">Article Not Found</div>'
-                        );
-                    } else {
-                        $('.details').html(articles);
-                        addListenerToCards();
-                        addContextMenuListenerToCards();
-                    }
-                },
-                error: function() {
-                    alert('Error submitting form');
-                }
-            });
-        }
-
+        
         const close = document.querySelectorAll('#close');
 
         let isModalOpened = false;

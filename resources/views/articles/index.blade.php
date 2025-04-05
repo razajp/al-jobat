@@ -180,19 +180,16 @@
             isContextMenuOpened = true;
         }
 
-        function addContextMenuListenerToCards() {
-            let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
+        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
 
-            contextMenuToggle.forEach(toggle => {
-                toggle.addEventListener('contextmenu', (e) => {
-                    generateContextMenu(e);
-                });
+        contextMenuToggle.forEach(toggle => {
+            toggle.addEventListener('contextmenu', (e) => {
+                generateContextMenu(e);
             });
-        }
-
-        addContextMenuListenerToCards();
+        });
 
         function generateContextMenu(e) {
+            contextMenu.classList.remove('fade-in');
             addImgInContext.classList.add('hidden');
             addRateInContext.classList.add('hidden');
             editArticleInContext.classList.add('hidden');

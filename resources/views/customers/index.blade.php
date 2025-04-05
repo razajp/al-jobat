@@ -401,7 +401,7 @@
                             item.customer_name.toLowerCase().includes(search) ||
                             item.urdu_title.toLowerCase().includes(search) ||
                             item.person_name.toLowerCase().includes(search) ||
-                            item.category.title.toLowerCase().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
                             item.user.username.toLowerCase().includes(search)
                         );
                         break;
@@ -427,7 +427,7 @@
                         
                     case 'category':
                         return (
-                            item.category.title.toLowerCase().includes(search)
+                            item.category.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -442,7 +442,7 @@
                             item.customer_name.toLowerCase().includes(search) ||
                             item.urdu_title.toLowerCase().includes(search) ||
                             item.person_name.toLowerCase().includes(search) ||
-                            item.category.title.toLowerCase().includes(search) ||
+                            item.category.toLowerCase().includes(search) ||
                             item.user.username.toLowerCase().includes(search)
                         );
                         break;
