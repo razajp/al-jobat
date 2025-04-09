@@ -16,6 +16,11 @@ class ArticleController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+
         $articles = Article::all();
 
         foreach ($articles as $article) {
@@ -42,6 +47,11 @@ class ArticleController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
         $lastRecord = Article::orderBy('id', 'desc')->first();
 
         if ($lastRecord) {
@@ -74,6 +84,11 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
         // return $request;
 
         $validator = Validator::make($request->all(), [
@@ -160,11 +175,16 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         if ($article->ordered_quantity != 0) {
             return redirect()->back()->with("error", "This article can't be edited.");
         }
 
-        return "EID AANE WALI HAI";
+        return "EID JAA CHUKI HAI";
     }
 
     /**
@@ -184,6 +204,11 @@ class ArticleController extends Controller
     }
     public function addImage(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         // Validate input first
         $validator = Validator::make($request->all(), [
             'article_id' => 'integer|required|exists:articles,id',
@@ -216,6 +241,11 @@ class ArticleController extends Controller
     }
     public function addRate(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         // Validate input first
         $validator = Validator::make($request->all(), [
             'article_id' => 'required|integer|exists:articles,id',

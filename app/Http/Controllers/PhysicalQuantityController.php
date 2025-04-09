@@ -14,6 +14,11 @@ class PhysicalQuantityController extends Controller
      */
     public function index()
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
         $physicalQuantities = PhysicalQuantity::with('article')->get();
         
         foreach ($physicalQuantities as $physicalQuantity) {
@@ -28,6 +33,11 @@ class PhysicalQuantityController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $articles = Article::withSum('physicalQuantity', 'packets')->where('sales_rate', '>', '0')->get();
         
         foreach ($articles as $article) {
@@ -55,6 +65,11 @@ class PhysicalQuantityController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'article_id' => 'required|integer|exists:articles,id',

@@ -16,6 +16,11 @@ class InvoiceController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
         $invoices = Invoice::with(['order.customer'])->get();
     
         foreach ($invoices as $invoice) {
@@ -46,6 +51,11 @@ class InvoiceController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $last_Invoice = invoice::orderby('id', 'desc')->first();
 
         if (!$last_Invoice) {
@@ -61,6 +71,11 @@ class InvoiceController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             "invoice_no" => "required|string|unique:invoices,invoice_no",
             "order_no" => "required|string|exists:orders,order_no",

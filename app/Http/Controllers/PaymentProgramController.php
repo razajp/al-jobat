@@ -18,6 +18,11 @@ class PaymentProgramController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
         // Fetch and sort orders by date and created_at
         $orders = Order::with('customer')->orderBy('date', 'asc')->orderBy('created_at', 'asc')->get();
 
@@ -50,6 +55,11 @@ class PaymentProgramController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $lastProgram = PaymentProgram::orderBy('id', 'DESC')->first();
 
         if (!$lastProgram) {
@@ -80,6 +90,11 @@ class PaymentProgramController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'prg_no'=> 'required|integer',
             'date'=> 'required|date',

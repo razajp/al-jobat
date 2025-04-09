@@ -17,6 +17,11 @@ class BankAccountController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
         $bankAccounts = BankAccount::with('subCategory', 'bank')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -29,6 +34,11 @@ class BankAccountController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $bank_options = [];
         $banks = Setup::where('type', 'bank_name')->get();
 
@@ -45,6 +55,11 @@ class BankAccountController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:self,supplier,customer',
             'sub_category' => 'nullable|integer',

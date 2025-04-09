@@ -677,6 +677,7 @@
             let imageInModal = document.getElementById('imageInModal');
             let addImageInModal = document.getElementById('add-image-in-modal');
             let addRateInModal = document.getElementById('add-rate-in-modal');
+            let editArticleInModal = document.getElementById('edit-btn-in-modal');
             let no_image_dot_modal = document.getElementById('no_image_dot_modal');
 
             if (data.image == "no_image_icon.png") {
@@ -706,6 +707,15 @@
                 no_image_dot_modal.classList.add('bg-transparent');
 
                 addRateInModal.classList.add('hidden');
+            }
+
+            if (data.ordered_quantity == 0) {
+                editArticleInModal.classList.remove('hidden');
+                editArticleInModal.addEventListener('click', function() {
+                    gotoEditArticlePage(item.id);
+                })
+            } else {
+                editArticleInModal.classList.add('hidden');
             }
 
             let articleRatesArray = data.rates_array;

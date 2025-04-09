@@ -17,6 +17,11 @@ class OrderController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+
         $orders = Order::with('customer')->get();
 
         // Collect all article IDs from ordered articles
@@ -28,32 +33,30 @@ class OrderController extends Controller
         $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
 
         $orders = $orders->transform(function ($order) use ($articles) {
-            // Decode ordered_articles and ensure it's an array
-            $orderedArticles = json_decode($order->ordered_articles, true) ?? [];
-
-            // Map through each ordered article
-            $order['ordered_articles'] = collect($orderedArticles)
-                ->map(function ($orderedArticle) use ($articles) {
-                    // Attach article details if available
-                    if (isset($articles[$orderedArticle['id']])) {
-                        $orderedArticle['article'] = $articles[$orderedArticle['id']];
-                    }
-
-                    // Subtract invoice quantity (prevent negative values)
-                    $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
-
-                    return $orderedArticle;
-                })
-                // Keep only articles with ordered_quantity > 0
-                ->filter(function ($orderedArticle) {
-                    return $orderedArticle['ordered_quantity'] > 0;
-                });
-
+            // Step 1: Decode and normalize ordered_articles to indexed array
+            $orderedArticlesRaw = json_decode($order->ordered_articles, true) ?? [];
+            $orderedArticlesArray = array_values($orderedArticlesRaw); // Normalize to indexed array
+        
+            // Step 2: Map through each ordered article
+            $orderedArticles = collect($orderedArticlesArray)->map(function ($orderedArticle) use ($articles) {
+                if (isset($articles[$orderedArticle['id']])) {
+                    $orderedArticle['article'] = $articles[$orderedArticle['id']];
+                }
+        
+                $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
+        
+                return $orderedArticle;
+            })->filter(function ($orderedArticle) {
+                return $orderedArticle['ordered_quantity'] > 0;
+            })->values(); // 👈 ensures final collection is indexed (not associative)
+        
+            // Step 3: Put it back into the order
+            $order['ordered_articles'] = $orderedArticles;
+        
             return $order;
         })
-        // ✅ Filter orders: Only return orders with non-empty ordered_articles
         ->filter(function ($order) {
-            return $order->ordered_articles->isNotEmpty();
+            return $order['ordered_articles']->isNotEmpty();
         });
 
         foreach ($orders as $key => $order) {
@@ -77,6 +80,11 @@ class OrderController extends Controller
      */
     public function create(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $customers_options = [];
         $articles = [];
 
@@ -88,16 +96,6 @@ class OrderController extends Controller
                 $customer['status'] = $user->status;
     
                 if ($customer->status == 'active') {
-                    foreach ($customer['orders'] as $order) {
-                        $customer['totalAmount'] += $order->netAmount;
-                    }
-                    
-                    foreach ($customer['payments'] as $payment) {
-                        $customer['totalPayment'] += $payment->amount;
-                    }
-    
-                    $customer['balance'] = $customer['balance'];
-                    
                     $customers_options[(int)$customer->id] = [
                         'text' => $customer->customer_name . ' | ' . $customer->city,
                         'data_option' => $customer
@@ -133,6 +131,11 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'customer_id' => 'required|integer|exists:customers,id',

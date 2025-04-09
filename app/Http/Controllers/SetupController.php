@@ -10,10 +10,20 @@ class SetupController extends Controller
 {
     public function addSetup()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         return view('setups.add');
     }
     public function addSetupPost(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         // Validation rules
         $validator = Validator::make($request->all(), [
             'title' => 'required|string|max:255|unique:setups,title',

@@ -100,7 +100,6 @@
                             name="cheque_book_serial[start]" 
                             placeholder="Start" 
                             class="w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
-                            required
                         />
                 
                         <!-- End Serial Input -->
@@ -110,7 +109,6 @@
                             name="cheque_book_serial[end]" 
                             placeholder="End" 
                             class="w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
-                            required
                         />
                     </div>
                 

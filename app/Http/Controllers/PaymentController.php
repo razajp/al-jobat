@@ -15,6 +15,11 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
         $payments = Payment::with("customer")->get();
 
         foreach ($payments as $payment) {
@@ -39,6 +44,11 @@ class PaymentController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
@@ -69,6 +79,11 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             "customer_id" => "required|integer|exists:customers,id",
             "date" => "required|date",

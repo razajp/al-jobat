@@ -15,6 +15,11 @@ class UserController extends Controller
      */
     public function index()
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        }
+        
         $users = User::whereNotIn('role', ['supplier', 'customer'])->get();
         return view("user.index", compact('users'));
     }
@@ -24,6 +29,11 @@ class UserController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+        
         $users = User::all();
         return view('user.create', compact('users'));
     }
@@ -33,6 +43,11 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -97,6 +112,11 @@ class UserController extends Controller
 
     public function updateStatus(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $user = User::find($request->user_id);
 
         if ($request->status == 'active') {

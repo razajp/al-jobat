@@ -16,6 +16,11 @@ class SupplierController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+
         $Suppliers = Supplier::with('user')->get();
 
         foreach ($Suppliers as $supplier) {
@@ -64,6 +69,11 @@ class SupplierController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $suppliers = Supplier::with('user')->get();
         $supplier_categories = Setup::where('type','supplier_category')->get();
 
@@ -82,6 +92,11 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
             'urdu_title' => 'nullable|string|max:255',
@@ -173,6 +188,11 @@ class SupplierController extends Controller
     }
     public function updateSupplierCategory(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         // Validate input first
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'integer|required|exists:suppliers,id',

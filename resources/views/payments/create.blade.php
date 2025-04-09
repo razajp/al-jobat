@@ -145,6 +145,9 @@
                 `;
             } else if (elem.value == 'online') {
                 paymentDetailsDom.innerHTML = `
+                    {{-- prg_no --}}
+                    <x-input label="Program No." type="number" placeholder="Enter program no." name="prg_no" id="prg_no" required/>
+                    
                     {{-- amount --}}
                     <x-input label="A/C Title" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
                     

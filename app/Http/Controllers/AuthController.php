@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            return redirect()->back()->with('error', 'Oops! You’re already loged in. Please logut first!');
+            return redirect()->back()->with('error', 'Oops! You’re already loged in. Please logout first!');
         }
         return view('auth.login');
     }
@@ -21,7 +21,7 @@ class AuthController extends Controller
     public function loginPost(Request $request)
     {
         if (Auth::check()) {
-            return redirect(route('home'))->with('warning', 'Oops! You’re already loged in. Please logut first!');
+            return redirect(route('home'))->with('warning', 'Oops! You’re already loged in. Please logout first!');
         } else {
             // Validate the input
             $request->validate([

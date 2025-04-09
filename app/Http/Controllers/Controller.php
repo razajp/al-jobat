@@ -92,6 +92,16 @@ class Controller extends BaseController
 
         return $default;
     }
+    
+    protected function checkRole($roles)
+    {
+        if (!in_array(Auth::user()->role, $roles)) {
+            return false;
+        }
+        
+        return true;
+    }
+
     public function getOrderDetails(Request $request)
     {
         $validator = Validator::make($request->all(), [

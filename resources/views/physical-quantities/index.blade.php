@@ -42,7 +42,7 @@
                                     <div>Article No.</div>
                                     <div>Date</div>
                                     <div>Pc/Pkt</div>
-                                    <div>Pakets</div>
+                                    <div>Packets</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @forEach ($physicalQuantities as $physicalQuantity)

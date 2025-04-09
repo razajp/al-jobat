@@ -129,12 +129,17 @@
                 document.getElementById('form').submit();
             });
 
+            let saveBtn = document.getElementById('saveBtn');
             document.addEventListener("keydown", (e) => {
                 // check if control ke is pressed
                 if (e.ctrlKey && e.key === "ArrowRight") {
                     nextStep(currentStep);
                 } else if ((e.ctrlKey && e.key === "ArrowLeft")) {
                     prevStep(currentStep);
+                } else if (e.ctrlKey && e.key === "Enter") {
+                    if (!saveBtn.classList.contains('hidden')) {
+                        saveBtn.click();
+                    }
                 }
             })
         </script>

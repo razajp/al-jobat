@@ -494,6 +494,10 @@
 
         discountDOM.addEventListener('input', calculateNetAmount);
 
+        discountDOM.addEventListener('focus', (e) => {
+            e.target.select();
+        });
+
         function renderTotals() {
             totalQuantityDOM.textContent = totalOrderedQuantity;
             totalAmountDOM.textContent = totalOrderAmount;
@@ -535,7 +539,7 @@
             finalOrderAmount.textContent = totalOrderAmount;
             finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
             finalNetAmount.value = netAmount;
-            finalCurrentBalance.textContent = new Intl.NumberFormat('en-US', { maximumFractionDigits:1, minimumFractionDigits:1}).format(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')));
+            finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')), 1, 1);
         }
 
         function updateInputOrderedArticles() {

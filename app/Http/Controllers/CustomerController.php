@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Order;
-use App\Models\Setup;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +15,11 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+
         $customers = Customer::with('user', 'orders', 'payments')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -30,6 +33,11 @@ class CustomerController extends Controller
      */
     public function create()
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         return view('customers.create');
     }
 
@@ -38,6 +46,11 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required|string|max:255|unique:customers,customer_name',
             'person_name' => 'required|string|max:255',

@@ -76,7 +76,7 @@
                                             'details' => [
                                                 'Urdu Title' => $customer->urdu_title,
                                                 'Category' => $customer->category,
-                                                'Balance' => $customer->balance,
+                                                'Balance' => number_format($customer->balance, 1),
                                             ],
                                         ]" />
                                     </div>
@@ -96,7 +96,7 @@
                                         <span class="text-left pl-5">{{ $customer->customer_name }}</span>
                                         <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
                                         <span class="text-center">{{ $customer->category }}</span>
-                                        <span class="text-right">{{ $customer->balance }}</span>
+                                        <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
                                         <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[--border-success]' : 'text-[--border-error]' }}">{{ $customer->user->status }}</span>
                                     </div>
                                 @endforeach
@@ -286,7 +286,7 @@
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${data.balance}</span></p>
+                            <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
                             <p class="text-[--secondary-text] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
                         </div>
                     </div>
