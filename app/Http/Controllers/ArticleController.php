@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Setup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
@@ -100,6 +101,7 @@ class ArticleController extends Controller
             'quantity' => 'required|integer|min:1',
             'extra_pcs' => 'required|integer|min:0',
             'fabric_type' => 'required|string',
+            'rates_array' => 'nullable|string',
             "sales_rate" => 'required|numeric|min:0',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
@@ -122,39 +124,11 @@ class ArticleController extends Controller
 
         Article::create($data);
 
-        $category = $data['category'];
-        $size = $data['size'];
-        $season = $data['season'];
-
-        if ($category) {
-            $existsCategory = Setup::where('type', 'article_category')->where('title', $category)->first();
-
-            if (!$existsCategory) {
-                Setup::create([
-                    'type' => 'article_category',
-                    'title' => $category,
-                ]);
-            }
-        }
-
-        if ($size) {
-            $existsSize = Setup::where('type', 'article_size')->where('title', $size)->first();
-
-            if (!$existsSize) {
-                Setup::create([
-                    'type' => 'article_size',
-                    'title' => $size,
-                ]);
-            }
-        }
-
-        if ($season) {
-            $existsSeason = Setup::where('type', 'article_seasons')->where('title', $season)->first();
-
-            if (!$existsSeason) {
-                Setup::create([
-                    'type' => 'article_seasons',
-                    'title' => $season,
+        foreach (['category' => 'article_category', 'size' => 'article_size', 'season' => 'article_seasons'] as $field => $type) {
+            if (!empty($data[$field])) {
+                Setup::firstOrCreate([
+                    'type' => $type,
+                    'title' => $data[$field],
                 ]);
             }
         }
@@ -184,7 +158,23 @@ class ArticleController extends Controller
             return redirect()->back()->with("error", "This article can't be edited.");
         }
 
-        return "EID JAA CHUKI HAI";
+        $categories = Setup::where('type', 'article_category')->pluck('title');
+        if ($categories->isEmpty()) {
+            $categories = collect();
+        }
+        $sizes = Setup::where('type', 'article_size')->pluck('title');
+        if ($sizes->isEmpty()) {
+            $sizes = collect();
+        }
+        $seasons = Setup::where('type', 'article_seasons')->pluck('title');
+        if ($seasons->isEmpty()) {
+            $seasons = collect();
+        }
+
+        $article->rates_array = json_decode($article->rates_array, true);
+
+        return view('articles.edit', compact('article' , 'categories', 'sizes', 'seasons'));
+        // return $article;
     }
 
     /**
@@ -192,7 +182,57 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'article_no' => 'required|integer|unique:articles,article_no,' . $article->id,
+            'date' => 'required|date',
+            'category' => 'required|string',
+            'size' => 'required|string',
+            'season' => 'required|string',
+            'quantity' => 'required|integer|min:1',
+            'extra_pcs' => 'required|integer|min:0',
+            'fabric_type' => 'required|string',
+            'rates_array' => 'nullable|string',
+            "sales_rate" => 'required|numeric|min:0',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        // Prepare data for saving
+        $data = $request->all();
+
+        // Handle the image upload if present
+        if ($request->hasFile('image_upload')) {
+            if ($article->image && Storage::disk('public')->exists('uploads/images/' . $article->image)) {
+                Storage::disk('public')->delete('uploads/images/' . $article->image);
+            }
+
+            $file = $request->file('image_upload');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
+
+            $data['image'] = $fileName; // Save the file path in the database
+        }
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $article->update($data);
+
+        foreach (['category' => 'article_category', 'size' => 'article_size', 'season' => 'article_seasons'] as $field => $type) {
+            if (!empty($data[$field])) {
+                Setup::firstOrCreate([
+                    'type' => $type,
+                    'title' => $data[$field],
+                ]);
+            }
+        }
+
+        return redirect()->route('articles.index')->with('success', 'Article edit successfully');
     }
 
     /**
