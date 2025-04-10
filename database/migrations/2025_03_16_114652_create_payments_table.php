@@ -25,9 +25,13 @@ return new class extends Migration
             $table->date('clear_date')->nullable();
             $table->string('bank')->nullable();
             $table->string('remarks')->nullable();
-            $table->timestamps();
+            $table->string('program_no')->nullable();
 
+            // Define foreign key constraint
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('program_no')->references('program_no')->on('payment_programs')->onDelete('set null');
+
+            $table->timestamps();
         });
     }
 

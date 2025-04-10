@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\PaymentProgram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -79,22 +80,22 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
-        
+        }
+
         $validator = Validator::make($request->all(), [
             "customer_id" => "required|integer|exists:customers,id",
             "date" => "required|date",
             "type" => "required|string",
-            "amount" => "required|string",
+            "amount" => "required|numeric", 
+            "program_no" => "required|string", 
             "cheque_no" => "nullable|string",
             "slip_no" => "nullable|string",
             "transition_id" => "nullable|string",
-            "cheque_date" => "nullable|string",
-            "slip_date" => "nullable|string",
-            "clear_date" => "nullable|string",
+            "cheque_date" => "nullable|date", 
+            "slip_date" => "nullable|date",
+            "clear_date" => "nullable|date",
             "bank" => "nullable|string",
             "remarks" => "nullable|string",
         ]);
@@ -104,13 +105,13 @@ class PaymentController extends Controller
         }
 
         $data = $request->all();
-
-        $data["amount"] = (int) str_replace(',', '', $data["amount"]);
+        $data["amount"] = (int)str_replace(',', '', $data["amount"]);
 
         Payment::create($data);
 
         return redirect()->route('payments.create')->with('success', 'Payment Added successfully.');
     }
+
 
     /**
      * Display the specified resource.

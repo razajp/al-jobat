@@ -157,6 +157,10 @@ class Controller extends BaseController
 
         $paymentProgram = PaymentProgram::with('customer', 'subCategory', 'order')->where("program_no", $request->program_no)->where('customer_id', $request->customer_id)->first();
 
+        if ($paymentProgram->sub_category_type == "App\Models\BankAccount") {
+            $paymentProgram->load('subCategory.bank');
+        }
+
         $bankAccount = BankAccount::with('bank', 'subCategory')->where('sub_category_type', $paymentProgram->sub_category_type)->where('sub_category_id', $paymentProgram->sub_category_id)->get();
 
         if (count($bankAccount) > 0) {

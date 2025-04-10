@@ -191,18 +191,13 @@
                     <x-input label="Program Amount" type="number" placeholder="Program amount" name="program_amount" id="program_amount" required/>
 
                     {{-- payment_amount --}}
-                    <x-input label="Payment Amount" type="number" placeholder="Enter payment amount" name="payment_amount" id="payment_amount" required/>
+                    <x-input label="Payment Amount" type="number" placeholder="Enter payment amount" name="amount" id="payment_amount" required/>
 
                     {{-- transition_id --}}
                     <x-input label="Transition Id" placeholder="Enter cheque no" name="transition_id" id="transition_id" required/>
 
-                    {{-- bank --}}
-                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
-
-                    <div class="col-span-full">
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    </div>
+                    {{-- remarks --}}
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
                 `;
                 addListnerToProgramNo();
             } else if (elem.value == 'adjustment') {
@@ -267,7 +262,7 @@
 
                                             const option = document.createElement('option');
                                             option.value = response.data.sub_category.id;
-                                            option.textContent = response.data.sub_category.account_title;
+                                            option.textContent = response.data.sub_category.account_title + ' | ' + response.data.sub_category.bank.short_title;
 
                                             bankAccountsSelectDom.appendChild(option);
                                             bankAccountsSelectDom.disabled = false;
@@ -282,7 +277,7 @@
                                                 response.data.bank_accounts.forEach(function(account) {
                                                     const option = document.createElement('option');
                                                     option.value = account.id;
-                                                    option.textContent = account.account_title;
+                                                    option.textContent = account.account_title + ' | ' + account.bank.short_title;
                                                     bankAccountsSelectDom.appendChild(option);
                                                 });
                                                 bankAccountsSelectDom.disabled = false;
@@ -305,7 +300,7 @@
                                                 response.data.bank_accounts.forEach(function(account) {
                                                     const option = document.createElement('option');
                                                     option.value = account.id;
-                                                    option.textContent = account.account_title;
+                                                    option.textContent = account.account_title + ' | ' + account.bank.short_title;
                                                     bankAccountsSelectDom.appendChild(option);
                                                 });
                                                 bankAccountsSelectDom.disabled = false;

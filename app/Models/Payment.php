@@ -22,9 +22,12 @@ class Payment extends Model
         "clear_date",
         "bank",
         "remarks",
+        "program_no",
     ];
 
-    public function customer() {
+    // Relationship with the Customer model
+    public function customer()
+    {
         return $this->belongsTo(Customer::class, "customer_id");
     }
 }
