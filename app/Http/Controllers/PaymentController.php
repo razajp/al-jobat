@@ -97,6 +97,7 @@ class PaymentController extends Controller
             "slip_date" => "nullable|date",
             "clear_date" => "nullable|date",
             "bank" => "nullable|string",
+            "bank_account_id" => "nullable|string",
             "remarks" => "nullable|string",
         ]);
 

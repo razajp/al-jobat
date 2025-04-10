@@ -181,7 +181,7 @@
                     {{-- bank_accounts --}}
                     <x-select 
                         label="Bank Accounts"
-                        name="bank_accounts"
+                        name="bank_account_id"
                         id="bank_accounts"
                         required
                         disabled
