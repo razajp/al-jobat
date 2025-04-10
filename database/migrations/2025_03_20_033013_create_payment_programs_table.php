@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payment_programs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('prg_no')->unique();
-            $table->string('order_no')->nullable();
+            $table->string('order_no')->default(null); // Make sure it's nullable
             $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->string('category');
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers');
-            $table->foreign('order_no')->references('order_no')->on('orders')->onDelete('cascade');
+            $table->foreign('order_no')->references('order_no')->on('orders')->onDelete('set null');
         });
     }
 
@@ -35,4 +35,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('payment_programs');
     }
-}
+};

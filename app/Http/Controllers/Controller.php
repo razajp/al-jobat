@@ -45,7 +45,7 @@ class Controller extends BaseController
                 break;
             
             case 'self_account':
-                $selfAccount = BankAccount::with('subCategory')->where('category', 'self')->get();
+                $selfAccount = BankAccount::with('subCategory', 'bank')->where('category', 'self')->get();
                 return $selfAccount;
                 break;
             

@@ -24,17 +24,36 @@ class PaymentProgramController extends Controller
         };
         
         // Fetch and sort orders by date and created_at
-        $orders = Order::with('customer')->orderBy('date', 'asc')->orderBy('created_at', 'asc')->get();
+        $orders = Order::with('customer')
+            ->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
+            ->get()
+            ->map(function ($order) {
+                $order['document'] = 'Order';
+                return $order;
+            });
 
         // Fetch and sort payment programs by date and created_at
         $paymentPrograms = PaymentProgram::with('customer', 'subCategory')
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($paymentProgram) {
+                $paymentProgram['document'] = 'Program';
+                return $paymentProgram;
+            });
 
         // Convert collections to arrays
         $ordersArray = $orders->toArray();
         $paymentProgramsArray = $paymentPrograms->toArray();
+
+        foreach ($ordersArray as $order) {
+            $order['document'] = 'Order';
+        }
+
+        foreach ($paymentProgramsArray as $paymentProgram) {
+            $paymentProgram['document'] = 'Payment Program';
+        }
 
         // Combine both arrays manually
         $finalData = array_merge($ordersArray, $paymentProgramsArray);
@@ -77,7 +96,7 @@ class PaymentProgramController extends Controller
             $customer['status'] = $user->status;
             
             $customers_options[(int)$customer->id] = [
-                'text' => $customer->customer_name . ' | ' . $customer->city . ' | ' . $customer->balance,
+                'text' => $customer->customer_name . ' | ' . $customer->city . ' | Balance: ' . number_format($customer->balance, 1),
                 'data_option' => $customer
             ];
         }

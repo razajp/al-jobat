@@ -82,6 +82,7 @@
         let dateInpDom = document.getElementById('date');
         let customerSelect = document.getElementById('customer_id');
         let categorySelectDom = document.getElementById('category');
+        let amountInpDom = document.getElementById('amount');
         customerSelect.disabled = true;
         categorySelectDom.disabled = true;
         
@@ -140,7 +141,7 @@
                                 response.forEach(subCat => {
                                     clutter += `
                                         <option value='${subCat.id}'>
-                                            ${subCat.account_title}
+                                            ${subCat.account_title} | ${subCat.bank.short_title}
                                         </option>
                                     `;
                                 });
@@ -166,7 +167,7 @@
                                 response.forEach(subCat => {
                                     clutter += `
                                         <option value='${subCat.id}'>
-                                            ${subCat.supplier_name} | Balance: ${subCat.balance}
+                                            ${subCat.supplier_name} | Balance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
                                         </option>
                                     `;
                                 });
@@ -187,7 +188,7 @@
                                     if (subCat.id != customerSelect.value) {
                                         clutter += `
                                             <option value='${subCat.id}'>
-                                                ${subCat.customer_name} | ${subCat.city} | ${subCat.balance}
+                                                ${subCat.customer_name} | ${subCat.city} | Baalance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
                                             </option>
                                         `;
                                         subCategorySelectDom.disabled = false;
@@ -248,14 +249,19 @@
                         dateInpDom.value = response.date;
                         dateInpDom.readOnly = true;
 
+                        console.log('hello');
+                        
                         clutter += `
                             <option value='${response.customer.id}'>
-                                ${response.customer.customer_name} | ${response.customer.city} | Balance: ${response.customer.balance}
+                                ${response.customer.customer_name} | ${response.customer.city} | Balance: ${formatNumbersWithDigits(response.customer.balance, 1, 1)}
                             </option>
                         `;
                         customerSelect.innerHTML = clutter;
                         customerSelect.disabled = false;
                         customerSelect.readOnly = true;
+
+                        amountInpDom.readOnly = true;
+                        amountInpDom.value = response.netAmount;
 
                         orderNoInpDom.blur();
                     } else {
@@ -266,6 +272,9 @@
                         customerSelect.innerHTML = clutter;
                         customerSelect.disabled = true;
                         customerSelect.readOnly = false;
+                        
+                        amountInpDom.readOnly = false;
+                        amountInpDom.value = 0;
                     }
                 }
             });
