@@ -7,6 +7,7 @@
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
             'online' => ['text' => 'Online'],
+            'payment_program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
     @endphp
@@ -80,6 +81,10 @@
         function trackCustomerState() {
             dateDom.value = '';
             balanceDom.value = '';
+            typeSelectDom.value = '';
+            paymentDetailsDom.innerHTML = `
+                <div class="col-span-full text-center text-[--border-error]">Select Payment Type.</div>
+            `;
 
             if (customerSelectDom.value != '') {
                 selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
@@ -145,11 +150,8 @@
                 `;
             } else if (elem.value == 'online') {
                 paymentDetailsDom.innerHTML = `
-                    {{-- prg_no --}}
-                    <x-input label="Program No." type="number" placeholder="Enter program no." name="prg_no" id="prg_no" required/>
-                    
-                    {{-- amount --}}
-                    <x-input label="A/C Title" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    {{-- account_title --}}
+                    <x-input label="A/C Title" type="number" placeholder="Enter account title" name="account_title" id="account_title" required/>
                     
                     {{-- amount --}}
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
@@ -160,9 +162,49 @@
                     {{-- bank --}}
                     <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
 
-                    {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                    <div class="col-span-full">
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                    </div>
                 `;
+            }  else if (elem.value == 'payment_program') {
+                paymentDetailsDom.innerHTML = `
+                    {{-- program_no --}}
+                    <x-input label="Program No." type="number" placeholder="Enter program no." name="program_no" id="program_no" required/>
+                    
+                    {{-- category --}}
+                    <x-input label="Category" placeholder="category" name="category" id="category" required/>
+                    
+                    {{-- sub_category --}}
+                    <x-input label="Sub Category" placeholder="Sub category" name="sub_category" id="sub_category" required/>
+                    
+                    {{-- bank_accounts --}}
+                    <x-select 
+                        label="Bank Accounts"
+                        name="bank_accounts"
+                        id="bank_accounts"
+                        required
+                        disabled
+                    />
+
+                    {{-- program_amount --}}
+                    <x-input label="Program Amount" type="number" placeholder="Program amount" name="program_amount" id="program_amount" required/>
+
+                    {{-- payment_amount --}}
+                    <x-input label="Payment Amount" type="number" placeholder="Enter payment amount" name="payment_amount" id="payment_amount" required/>
+
+                    {{-- transition_id --}}
+                    <x-input label="Transition Id" placeholder="Enter cheque no" name="transition_id" id="transition_id" required/>
+
+                    {{-- bank --}}
+                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
+
+                    <div class="col-span-full">
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                    </div>
+                `;
+                addListnerToProgramNo();
             } else if (elem.value == 'adjustment') {
                 paymentDetailsDom.innerHTML = `
                     {{-- amount --}}
@@ -180,6 +222,142 @@
             if (elem.value != '') {
                 gotoStep(2)
             }
+        }
+
+        
+        let programNoDom;
+        let categoryDom;
+        let subCategoryDom;
+        let bankAccountsSelectDom;
+        let programAmountDom;
+
+        function addListnerToProgramNo() {
+            programNoDom = document.getElementById('program_no');
+            categoryDom = document.getElementById('category');
+            subCategoryDom = document.getElementById('sub_category');
+            bankAccountsSelectDom = document.getElementById('bank_accounts');
+            programAmountDom = document.getElementById('program_amount');
+
+            programNoDom.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    let programNo = programNoDom.value;
+                    let customerId = customerSelectDom.value;
+                    if (programNo != '') {
+                        $.ajax({
+                            url: "{{ route('get-program-details') }}",
+                            type: 'POST',
+                            data: {
+                                program_no: programNo,
+                                customer_id: customerId,
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                console.log(response);
+                                if (response.status === 'success') {
+                                    categoryDom.value = response.data.category;
+                                    categoryDom.disabled = true;
+
+                                    switch (response.data.category) {
+                                        case 'self_account':
+                                            subCategoryDom.value = 'Self Account';
+                                            subCategoryDom.disabled = true;
+
+                                            bankAccountsSelectDom.innerHTML = '';
+
+                                            const option = document.createElement('option');
+                                            option.value = response.data.sub_category.id;
+                                            option.textContent = response.data.sub_category.account_title;
+
+                                            bankAccountsSelectDom.appendChild(option);
+                                            bankAccountsSelectDom.disabled = false;
+                                            break;
+                                        case 'supplier':
+                                            subCategoryDom.value = response.data.sub_category.supplier_name;
+                                            subCategoryDom.disabled = true;
+
+                                            bankAccountsSelectDom.innerHTML = '';
+
+                                            if (response.data.bank_accounts.length > 0) {
+                                                response.data.bank_accounts.forEach(function(account) {
+                                                    const option = document.createElement('option');
+                                                    option.value = account.id;
+                                                    option.textContent = account.account_title;
+                                                    bankAccountsSelectDom.appendChild(option);
+                                                });
+                                                bankAccountsSelectDom.disabled = false;
+                                            } else {
+                                                const option = document.createElement('option');
+                                                option.value = '';
+                                                option.textContent = 'No Bank Accounts';
+                                                bankAccountsSelectDom.appendChild(option);
+                                                bankAccountsSelectDom.disabled = true;
+                                            }
+                                            
+                                            break;
+                                        case 'customer':
+                                            subCategoryDom.value = response.data.sub_category.customer_name;
+                                            subCategoryDom.disabled = true;
+
+                                            bankAccountsSelectDom.innerHTML = '';
+
+                                            if (response.data.bank_accounts.length > 0) {
+                                                response.data.bank_accounts.forEach(function(account) {
+                                                    const option = document.createElement('option');
+                                                    option.value = account.id;
+                                                    option.textContent = account.account_title;
+                                                    bankAccountsSelectDom.appendChild(option);
+                                                });
+                                                bankAccountsSelectDom.disabled = false;
+                                            } else {
+                                                const option = document.createElement('option');
+                                                option.value = '';
+                                                option.textContent = 'No Bank Accounts';
+                                                bankAccountsSelectDom.appendChild(option);
+                                                bankAccountsSelectDom.disabled = true;
+                                            }
+                                            
+                                            break;
+                                        case 'wating':
+                                            subCategoryDom.value = 'wating';
+                                            subCategoryDom.disabled = true;
+                                            break;
+                                        default:
+                                            subCategoryDom.value = '';
+                                            subCategoryDom.disabled = false;
+                                            bankAccountsSelectDom.value = '';
+                                    }
+                                    
+                                    programAmountDom.value = response.data.amount;
+                                    programAmountDom.disabled = true;
+                                } else {
+                                    setDefaultValues();
+                                }
+                            },
+                            error: function() {
+                                setDefaultValues();
+                            }
+                        });
+                    } else {
+                        setDefaultValues();
+                    }
+                }
+            });
+        }
+
+        function setDefaultValues() {
+            categoryDom.value = '';
+            categoryDom.disabled = false;
+            subCategoryDom.value = '';
+            subCategoryDom.disabled = false;
+            bankAccountsSelectDom.innerHTML = '';
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = '-- No options available --';
+            bankAccountsSelectDom.appendChild(option);
+            bankAccountsSelectDom.disabled = true;
+            programAmountDom.value = '';
+            programAmountDom.disabled = false;
         }
 
         function validateForNextStep() {

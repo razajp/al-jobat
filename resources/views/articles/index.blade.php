@@ -7,7 +7,7 @@
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     {{-- add image modal --}}
-    <div id="addImageModal"
+    <div id="updateImageModal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
     </div>
     {{-- add rate modal --}}
@@ -145,9 +145,9 @@
                             class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Edit
                             Article</button>
                     </li>
-                    <li id="add-img-in-context" class="hidden">
-                        <button id="add-img-in-context-btn"
-                            class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Add
+                    <li id="update-img-in-context">
+                        <button id="update-img-in-context-btn"
+                            class="font-medium text-[--border-warning] w-full px-4 py-2 text-left hover:bg-[--bg-warning] hover:text-[--text-warning] rounded-md transition-all 0.3s ease-in-out">Update
                             Image</button>
                     </li>
                     <li id="add-rate-in-context" class="hidden">
@@ -162,7 +162,7 @@
 
     <script>
         let contextMenu = document.querySelector('.context-menu');
-        let addImgInContext = document.getElementById('add-img-in-context');
+        let updateImgInContext = document.getElementById('update-img-in-context');
         let addRateInContext = document.getElementById('add-rate-in-context');
         let editArticleInContext = document.getElementById('edit-article-in-context');
         let isContextMenuOpened = false;
@@ -190,7 +190,6 @@
 
         function generateContextMenu(e) {
             contextMenu.classList.remove('fade-in');
-            addImgInContext.classList.add('hidden');
             addRateInContext.classList.add('hidden');
             editArticleInContext.classList.add('hidden');
 
@@ -229,8 +228,8 @@
             });
 
             document.addEventListener('click', (e) => {
-                if (e.target.id === "add-img-in-context-btn") {
-                    generateAddImageModal(item);
+                if (e.target.id === "update-img-in-context-btn") {
+                    generateUpdateImageModal(item);
                 }
             });
 
@@ -239,10 +238,6 @@
                     generateAddRateModal(item);
                 }
             });
-
-            if (data.image === "no_image_icon.png") {
-                addImgInContext.classList.remove('hidden');
-            }
 
             if (data.sales_rate === "0.00") {
                 addRateInContext.classList.remove('hidden');
@@ -277,13 +272,14 @@
             window.location.href = "{{ route('articles.edit', ':id') }}".replace(':id', articleId);
         }
 
-        function generateAddImageModal(item) {
-            let modalDom = document.getElementById('addImageModal')
+        function generateUpdateImageModal(item) {
+            let modalDom = document.getElementById('updateImageModal')
             let article_details_in_modal = document.querySelector('#article_details_in_modal');
             let data = JSON.parse(item.dataset.json);
+            let placeholder = data.image == "no_image_icon.png" ? 'images/no_image_icon.png' : `storage/uploads/images/${data.image}`;
 
             modalDom.innerHTML = `
-                <x-modal id="addImageModalForm" classForBody="p-5" closeAction="closeAddImageModal" action="{{ route('add-image') }}">
+                <x-modal id="updateImageModalForm" classForBody="p-5" closeAction="closeUpdateImageModal" action="{{ route('update-image') }}">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative">
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
@@ -298,7 +294,7 @@
                             <x-image-upload 
                                 id="image_upload"
                                 name="image_upload"
-                                placeholder="{{ asset('images/image_icon.png') }}"
+                                placeholder="${ placeholder }"
                                 uploadText="Upload article image"
                             />
                         </div>
@@ -306,23 +302,29 @@
                 
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button onclick="closeAddImageModal()" type="button"
+                        <button onclick="closeUpdateImageModal()" type="button"
                             class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all duration-300 ease-in-out">
                             Cancel
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
                             class="px-5 py-2 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
-                            Add Image
+                            Update Image
                         </button>
                     </x-slot>
                 </x-modal>
             `;
 
-            openAddImageModal();
+            openUpdateImageModal();
+
+            if (data.image != "no_image_icon.png") {
+                const placeholderIcon = document.querySelector(".placeholder_icon");
+                placeholderIcon.classList.remove("w-16", "h-16");
+                placeholderIcon.classList.add("rounded-md", "w-full", "h-auto");
+            }
 
             document.getElementById('article_id').value = data.id;
-            document.getElementById('addImageModal').classList.remove('hidden');
+            document.getElementById('updateImageModal').classList.remove('hidden');
         }
 
         // rate modal code start
@@ -540,7 +542,7 @@
         const close = document.querySelectorAll('#close');
 
         let isModalOpened = false;
-        let isAddImageModalOpened = false;
+        let isUpdateImageModalOpened = false;
         let isAddRateModalOpened = false;
 
         close.forEach(function(btn) {
@@ -550,9 +552,9 @@
                     if (isModalOpened) {
                         closeModal();
                     }
-                } else if (targetedModal.id == 'addImageModal') {
-                    if (isAddImageModalOpened) {
-                        closeAddImageModal();
+                } else if (targetedModal.id == 'updateImageModal') {
+                    if (isUpdateImageModalOpened) {
+                        closeUpdateImageModal();
                     }
                 } else if (targetedModal.id == 'addRateModal') {
                     if (isAddRateModalOpened) {
@@ -566,8 +568,8 @@
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();
-            } else if (id === 'addImageModalForm') {
-                closeAddImageModal();
+            } else if (id === 'updateImageModalForm') {
+                closeUpdateImageModal();
             } else if (id === 'addRateModalForm') {
                 closeAddRateModal();
             }
@@ -578,8 +580,8 @@
                 if (isModalOpened == true) {
                     closeModal();
                 }
-                if (isAddImageModalOpened == true) {
-                    closeAddImageModal();
+                if (isUpdateImageModalOpened == true) {
+                    closeUpdateImageModal();
                 }
                 if (isAddRateModalOpened == true) {
                     closeAddRateModal();
@@ -656,9 +658,9 @@
                             Edit Article
                         </button>
 
-                        <button id="add-image-in-modal" type="button"
+                        <button id="update-image-in-modal" type="button"
                             class="px-4 py-2 bg-[--bg-warning] border border-[--bg-warning] text-[--text-warning] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-warning] transition-all 0.3s ease-in-out">
-                            Add Image
+                            Update Image
                         </button>
 
                         <button id="add-rate-in-modal" type="button"
@@ -675,7 +677,7 @@
             `;
 
             let imageInModal = document.getElementById('imageInModal');
-            let addImageInModal = document.getElementById('add-image-in-modal');
+            let updateImageInModal = document.getElementById('update-image-in-modal');
             let addRateInModal = document.getElementById('add-rate-in-modal');
             let editArticleInModal = document.getElementById('edit-btn-in-modal');
             let no_image_dot_modal = document.getElementById('no_image_dot_modal');
@@ -683,14 +685,13 @@
             if (data.image == "no_image_icon.png") {
                 imageInModal.src = `images/no_image_icon.png`;
                 imageInModal.parentElement.classList.add('scale-75');
-                addImageInModal.classList.remove('hidden');
-                addImageInModal.addEventListener('click', function() {
-                    generateAddImageModal(item);
-                })
             } else {
                 imageInModal.src = `storage/uploads/images/${data.image}`
-                addImageInModal.classList.add('hidden');
             }
+            
+            updateImageInModal.addEventListener('click', function() {
+                generateUpdateImageModal(item);
+            })
 
             if (data.sales_rate == "0.00") {
                 no_image_dot_modal.classList.add('bg-[--border-error]');
@@ -754,8 +755,8 @@
             closeContextMenu();
         }
 
-        function openAddImageModal() {
-            isAddImageModalOpened = true;
+        function openUpdateImageModal() {
+            isUpdateImageModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
         }
@@ -779,9 +780,9 @@
             });
         }
 
-        function closeAddImageModal() {
-            isAddImageModalOpened = false;
-            let modal = document.getElementById('addImageModal')
+        function closeUpdateImageModal() {
+            isUpdateImageModalOpened = false;
+            let modal = document.getElementById('updateImageModal')
             modal.classList.add('fade-out');
 
             modal.addEventListener('animationend', () => {

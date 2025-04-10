@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'loginPost'])->name('loginPost');
 
-Route::group(['middleware' => 'auth'], function () {
+Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::get('', function () {
         return redirect(route('home'));
     });
@@ -49,7 +49,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('customers', CustomerController::class);
     
     Route::resource('articles', ArticleController::class);
-    Route::post('add-image', [ArticleController::class, 'addImage'])->name('add-image');
+    Route::post('update-image', [ArticleController::class, 'updateImage'])->name('update-image');
     Route::post('add-rate', [ArticleController::class, 'addRate'])->name('add-rate');
     
     Route::resource('orders', OrderController::class);
@@ -67,8 +67,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
+    Route::post('get-program-details', [Controller::class, 'getProgramDetails'])->name('get-program-details');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
 
     Route::resource('users', UserController::class);
     Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');

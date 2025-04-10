@@ -53,7 +53,7 @@
                                 <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-8 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
                                     <span class="text-center">{{ $data['date'] }}</span>
                                     <span class="text-center">{{ $data['customer']['customer_name'] }}</span>
-                                    <span class="text-center">{{ $data['order_no'] ?? $data['prg_no'] }}</span>
+                                    <span class="text-center">{{ $data['order_no'] ?? $data['program_no'] }}</span>
                                     <span class="text-center">{{ $data['category'] ?? '-' }}</span>
                                     <span class="text-center">
                                         @php

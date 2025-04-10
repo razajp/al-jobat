@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\UserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -34,9 +35,27 @@ class AuthController extends Controller
 
             // Check if user exists and if the password matches the hash
             if ($user && Hash::check($request->password, $user->password)) {
+
+                $existingSession = UserSession::where('user_id', $user->id)
+                    ->where('is_active', true)
+                    ->where('last_activity', '>=', now()->subMinutes(60)) // optional timeout
+                    ->first();
+                
+                if ($existingSession) {
+                    // return back with error message
+                    return redirect('/login')->with('error', 'Already logged in on another device.');
+                }
+
                 if ($user->status == 'active') {
                     // Password is correct, login the user
                     Auth::login($user);
+
+                    UserSession::create([
+                        'user_id' => $user->id,
+                        'session_token' => session()->getId(),
+                        'last_activity' => now(),
+                    ]);
+
                     return redirect(route('home'))->with('success', 'Welcome back! You have successfully logged in.'); // Redirect to home
                 } else {
                     return redirect('/login')->with('error', 'Your account is currently inactive. Please reach out to the administrator for assistance.')
@@ -57,6 +76,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        UserSession::where('session_token', session()->getId())->update(['is_active' => false]);
         Auth::logout(); // Log the user out
         return redirect('/login')->with('success', 'Logout successful! You’ve been logged out. See you soon!'); // Redirect to login page
     }
@@ -74,5 +94,17 @@ class AuthController extends Controller
             'success' => true, 
             'message' => 'Theme updated successfully! Your preferences have been saved.'
         ]);
+    }
+
+    public function updateLastActivity(Request $request)
+    {
+        if (auth()->check()) {
+            UserSession::where('user_id', auth()->id())
+                ->where('session_token', session()->getId())
+                ->update(['last_activity' => now()]);
+            return response()->json(['status' => 'updated']);
+        }
+    
+        return response()->json(['status' => 'unauthorized'], 401);
     }
 }

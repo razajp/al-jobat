@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
 use App\Models\Supplier;
 use App\Models\User;
@@ -130,13 +131,13 @@ class Controller extends BaseController
                     $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
                     $pendingPackets = isset($orderedArticle->invoice_quantity) ? $orderedPackets - ($orderedArticle->invoice_quantity / $article->pcs_per_packet) : $orderedPackets;
 
-                    $orderedArticle->total_quantity_in_packets = $avalaibelPhysicalQuantity > $pendingPackets ? $pendingPackets : $avalaibelPhysicalQuantity;
+                    $orderedArticle->total_quantity_in_packets = floor(min($pendingPackets, $avalaibelPhysicalQuantity));
                 }
             
                 return $orderedArticle->total_quantity_in_packets;
             });
 
-            $order->ordered_articles = $orderedArticles;
+            $order->ordered_articles = array_values($orderedArticles);
         }
 
         if (count($order->ordered_articles) == 0) {
@@ -144,5 +145,27 @@ class Controller extends BaseController
         }
 
         return response()->json($order);
+    }
+    public function getProgramDetails(Request $request) {
+        $validator = Validator::make($request->all(), [
+            "program_no" => "required|exists:payment_programs,program_no",
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $paymentProgram = PaymentProgram::with('customer', 'subCategory', 'order')->where("program_no", $request->program_no)->where('customer_id', $request->customer_id)->first();
+
+        $bankAccount = BankAccount::with('bank', 'subCategory')->where('sub_category_type', $paymentProgram->sub_category_type)->where('sub_category_id', $paymentProgram->sub_category_id)->get();
+
+        if (count($bankAccount) > 0) {
+            $paymentProgram->bank_accounts = $bankAccount;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $paymentProgram,
+        ]);
     }
 }

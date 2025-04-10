@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('physical_quantities', function (Blueprint $table) {
+        Schema::create('user_sessions', function (Blueprint $table) {
             $table->id();
-            $table->date('date');
-            $table->unsignedBigInteger('article_id');
-            $table->integer('packets');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('session_token')->unique(); // UUID or Laravel session ID
+            $table->timestamp('last_activity')->nullable();
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
-
-            $table->foreign('article_id')->references('id')->on('articles')->onDelete('cascade');
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('physical_quantities');
+        Schema::dropIfExists('user_sessions');
     }
 };

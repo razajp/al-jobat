@@ -293,11 +293,11 @@
                                 />
                                 
                                 <x-input 
-                                    label="Quantity"
+                                    label="Quantity - Pcs."
                                     name="quantity" 
                                     id="quantity" 
                                     type="text" 
-                                    placeholder="Enter quantity" 
+                                    placeholder="Enter quantity in pcs." 
                                     required
                                     
                                     validateMax

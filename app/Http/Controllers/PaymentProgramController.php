@@ -83,7 +83,7 @@ class PaymentProgramController extends Controller
 
         if (!$lastProgram) {
             $lastProgram = new PaymentProgram();
-            $lastProgram->prg_no = '0';
+            $lastProgram->program_no = '0';
         }
 
         $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
@@ -115,7 +115,7 @@ class PaymentProgramController extends Controller
         };
         
         $validator = Validator::make($request->all(), [
-            'prg_no'=> 'required|integer',
+            'program_no'=> 'required|integer',
             'date'=> 'required|date',
             'order_no'=> 'nullable|string',
             'customer_id'=> 'required|integer|exists:customers,id',
@@ -151,12 +151,10 @@ class PaymentProgramController extends Controller
                 $subCategoryModel = null; // No association for 'waiting'
                 break;
         }
-
-        $data['order_no'] = str_replace(' ', '', explode('|', $data['order_no'])[0]);
     
         // Create payment Program with morph relationship
         $program = new PaymentProgram([
-            'prg_no' => $data['prg_no'],
+            'program_no' => $data['program_no'],
             'date' => $data['date'],
             'order_no' => $data['order_no'],
             'customer_id' => $data['customer_id'],

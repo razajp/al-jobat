@@ -9,7 +9,7 @@ class PaymentProgram extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['prg_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
+    protected $fillable = ['program_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
     function customer()
     {

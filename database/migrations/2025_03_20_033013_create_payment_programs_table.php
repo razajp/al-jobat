@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('payment_programs', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('prg_no')->unique();
-            $table->string('order_no')->default(null); // Make sure it's nullable
+            $table->unsignedBigInteger('program_no')->unique();
+            $table->string('order_no')->nullable(); // Make sure it's nullable
             $table->date('date');
             $table->unsignedBigInteger('customer_id');
             $table->string('category');

@@ -412,6 +412,32 @@
                 }
             }
         @endif
+
+        // Function to send AJAX request to update last_activity
+        function updateLastActivity() {
+            $.ajax({
+                url: '/update-last-activity',
+                type: 'POST',
+                data: {}, // Optional if you want to send any data, can be left empty
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status === 'updated') {
+                        console.log("Last activity updated successfully.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to update last activity", error);
+                }
+            });
+        }
+
+        // Call the function immediately once
+        updateLastActivity();
+
+        // Then every 60 minutes (3600000 milliseconds)
+        setInterval(updateLastActivity, 60 * 60 * 1000);
     </script>
 </body>
 

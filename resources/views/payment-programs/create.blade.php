@@ -67,7 +67,7 @@
 
             {{-- amount --}}
             <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
-            <x-input name="prg_no" id="prg_no" type="hidden" value="{{ $lastProgram->prg_no + 1 }}" />
+            <x-input name="program_no" id="program_no" type="hidden" value="{{ $lastProgram->program_no + 1 }}" />
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
@@ -242,7 +242,7 @@
                 success: function (response) {
                     let clutter = '';
                     if (response && !response.error) {
-                        orderNoInpBlurValue = `${response.order_no} | ${formatNumbersWithDigits(response.netAmount, 1, 1)}`
+                        orderNoInpBlurValue = `${response.order_no}`
 
                         categorySelectDom.disabled = false;
 

@@ -155,7 +155,7 @@ class ArticleController extends Controller
         };
         
         if ($article->ordered_quantity != 0) {
-            return redirect()->back()->with("error", "This article can't be edited.");
+            return redirect(route('articles.index'))->with("error", "This article can't be edited.");
         }
 
         $categories = Setup::where('type', 'article_category')->pluck('title');
@@ -242,8 +242,10 @@ class ArticleController extends Controller
     {
         //
     }
-    public function addImage(Request $request)
+    public function updateImage(Request $request)
     {
+        $article = Article::where('id', $request->article_id)->first();
+
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
@@ -264,6 +266,10 @@ class ArticleController extends Controller
     
         // Handle the image upload if present
         if ($request->hasFile('image_upload')) {
+            if ($article->image && Storage::disk('public')->exists('uploads/images/' . $article->image)) {
+                Storage::disk('public')->delete('uploads/images/' . $article->image);
+            }
+
             $file = $request->file('image_upload');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
@@ -273,7 +279,7 @@ class ArticleController extends Controller
     
         // Update only if image is set
         if (!empty($data['image'])) {
-            Article::where('id', $request->article_id)->update(['image' => $data['image']]);
+            $article->update(['image' => $data['image']]);
             return redirect()->route('articles.index')->with('success', 'Image added successfully');
         } else {
             return redirect()->back()->with('error', 'Please upload an image');
