@@ -5,7 +5,7 @@
     @csrf
 
     <!-- Modal Box -->
-    <div class="{{ $classForBody }} bg-[--secondary-bg-color] rounded-xl shadow-lg w-full max-w-2xl p-6 relative flex">
+    <div class="{{ $classForBody }} bg-[var(--secondary-bg-color)] rounded-xl shadow-lg w-full max-w-2xl p-6 relative flex">
         <!-- Close Button -->
         <button onclick="{{ $closeAction }}()" type="button"
             class="absolute top-3 right-3 z-10 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out">
@@ -25,7 +25,7 @@
 
     <!-- Modal Actions -->
     <div id="modal-action"
-        class="bg-[--secondary-bg-color] rounded-2xl shadow-lg max-w-3xl w-auto p-3 relative text-sm">
+        class="bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg max-w-3xl w-auto p-3 relative text-sm">
         <div class="flex gap-4">
             {{ $actions ?? '' }}
         </div>

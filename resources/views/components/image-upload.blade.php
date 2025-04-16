@@ -10,7 +10,7 @@
             <p id="upload_text_{{ $id }}" class="upload_text text-md text-gray-500">{{ $uploadText }}</p>
         </div>
         @error($name)
-            <div class="text-[--border-error] mt-1">{{ $message }}</div>
+            <div class="text-[var(--border-error)] mt-1">{{ $message }}</div>
         @enderror
     </label>
 </div>

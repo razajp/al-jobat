@@ -19,7 +19,7 @@
 @extends('app')
 @section('title', 'Add User | ' . app('company')->name)
 @section('content')
-    <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
+    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)]">
         Add User
     </h1>
 
@@ -30,10 +30,10 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('users.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-2xl mx-auto relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-2xl mx-auto relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add New User</h4>
         </div>
         <!-- Step 1: Basic Information -->
@@ -72,12 +72,12 @@
         function validateName() {
             // Validate Name
             if (nameDom.value.trim() === "") {
-                nameDom.classList.add("border-[--border-error]");
+                nameDom.classList.add("border-[var(--border-error)]");
                 nameError.classList.remove("hidden");
                 nameError.textContent = "Name field is required.";
                 return false;
             } else {
-                nameDom.classList.remove("border-[--border-error]");
+                nameDom.classList.remove("border-[var(--border-error)]");
                 nameError.classList.add("hidden");
                 return true;
             }
@@ -86,17 +86,17 @@
         function validateUsername() {
             // Validate Username
             if (usernameDom.value.trim() === "") {
-                usernameDom.classList.add("border-[--border-error]");
+                usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
                 return false;
             } else if (users.some(user => user.username === usernameDom.value.trim())) {
-                usernameDom.classList.add("border-[--border-error]");
+                usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username is already taken.";
                 return false;
             } else {
-                usernameDom.classList.remove("border-[--border-error]");
+                usernameDom.classList.remove("border-[var(--border-error)]");
                 usernameError.classList.add("hidden");
                 return true;
             }
@@ -105,17 +105,17 @@
         function validatePassword() {
             // Validate Password
             if (passwordDom.value.trim() === "") {
-                passwordDom.classList.add("border-[--border-error]");
+                passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password field is required.";
                 return false;
             } else if (passwordDom.value.length < 4) {
-                passwordDom.classList.add("border-[--border-error]");
+                passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password must be at least 4 characters.";
                 return false;
             } else {
-                passwordDom.classList.remove("border-[--border-error]");
+                passwordDom.classList.remove("border-[var(--border-error)]");
                 passwordError.classList.add("hidden");
                 return true;
             }

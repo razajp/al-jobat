@@ -9,7 +9,7 @@
         'other' => ['text' => 'Other'],
     ]
 @endphp
-    <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color] fade-in"> Add Customer </h1>
+    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)] fade-in"> Add Customer </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-2xl mx-auto">
@@ -21,10 +21,10 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('customers.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add New Customer</h4>
         </div>
         <!-- Step 1: Basic Information -->
@@ -198,9 +198,9 @@
                         <x-alert type="error" :messages="'This category already exists.'" />
                     `;
                     messageBoxAnimation();
-                    existingChip.classList.add('bg-[--bg-error]', 'transition', 'duration-300');
+                    existingChip.classList.add('bg-[var(--bg-error)]', 'transition', 'duration-300');
                     setTimeout(() => {
-                        existingChip.classList.remove('bg-[--bg-error]');
+                        existingChip.classList.remove('bg-[var(--bg-error)]');
                     }, 5000);  // Remove highlight after 5 seconds
                     categorySelectDom.value = '';  // Clear selection
                     addCategoryBtnDom.disabled = true;  // Disable button
@@ -285,17 +285,17 @@
         //     let isDuplicate = suppliers.some(s => s.supplier_name === supplierNameValue);
 
         //     if (!supplierNameValue) {
-        //         supplierNameDom.classList.add("border-[--border-error]");
+        //         supplierNameDom.classList.add("border-[var(--border-error)]");
         //         supplierNameError.classList.remove("hidden");
         //         supplierNameError.textContent = "Supplier field is required.";
         //         return false;
         //     } else if (isDuplicate) {
-        //         supplierNameDom.classList.add("border-[--border-error]");
+        //         supplierNameDom.classList.add("border-[var(--border-error)]");
         //         supplierNameError.classList.remove("hidden");
         //         supplierNameError.textContent = "This supplier already exists.";
         //         return false;
         //     } else {
-        //         supplierNameDom.classList.remove("border-[--border-error]");
+        //         supplierNameDom.classList.remove("border-[var(--border-error)]");
         //         supplierNameError.classList.add("hidden");
         //         return true;
         //     }
@@ -304,12 +304,12 @@
         // function validatePersonName() {
         //     let personNameValue = personNameDom.value
         //     if (personNameValue == "") {
-        //         personNameDom.classList.add("border-[--border-error]");
+        //         personNameDom.classList.add("border-[var(--border-error)]");
         //         personNameError.classList.remove("hidden");
         //         personNameError.textContent = "Person name field is required.";
         //         return false;
         //     } else {
-        //         personNameDom.classList.remove("border-[--border-error]");
+        //         personNameDom.classList.remove("border-[var(--border-error)]");
         //         personNameError.classList.add("hidden");
         //         return true;
         //     }
@@ -321,22 +321,22 @@
         //     let hasSpaces = /\s/.test(usernameValue); // Check for spaces using regex
             
         //     if (hasSpaces) {
-        //         usernameDom.classList.add("border-[--border-error]");
+        //         usernameDom.classList.add("border-[var(--border-error)]");
         //         usernameError.classList.remove("hidden");
         //         usernameError.textContent = "Username should not contain spaces.";
         //         return false;
         //     } else if (!usernameValue) {
-        //         usernameDom.classList.add("border-[--border-error]");
+        //         usernameDom.classList.add("border-[var(--border-error)]");
         //         usernameError.classList.remove("hidden");
         //         usernameError.textContent = "Username field is required.";
         //         return false;
         //     } else if (isDuplicate) {
-        //         usernameDom.classList.add("border-[--border-error]");
+        //         usernameDom.classList.add("border-[var(--border-error)]");
         //         usernameError.classList.remove("hidden");
         //         usernameError.textContent = "This username already exists.";
         //         return false;
         //     } else {
-        //         usernameDom.classList.remove("border-[--border-error]");
+        //         usernameDom.classList.remove("border-[var(--border-error)]");
         //         usernameError.classList.add("hidden");
         //         return true;
         //     }
@@ -345,17 +345,17 @@
         // function validatePassword() {
         //     let PasswordValue = passwordDom.value
         //     if (PasswordValue == "") {
-        //         passwordDom.classList.add("border-[--border-error]");
+        //         passwordDom.classList.add("border-[var(--border-error)]");
         //         passwordError.classList.remove("hidden");
         //         passwordError.textContent = "Password field is required.";
         //         return false;
         //     } else if (PasswordValue.length < 4) {
-        //         passwordDom.classList.add("border-[--border-error]");
+        //         passwordDom.classList.add("border-[var(--border-error)]");
         //         passwordError.classList.remove("hidden");
         //         passwordError.textContent = "Password must be at least 4 characters.";
         //         return false;
         //     } else {
-        //         passwordDom.classList.remove("border-[--border-error]");
+        //         passwordDom.classList.remove("border-[var(--border-error)]");
         //         passwordError.classList.add("hidden");
         //         return true;
         //     }
@@ -366,17 +366,17 @@
         //     let isDuplicate = suppliers.some(s => s.phone_number.replace(/\D/g, '') === phoneNo);
             
         //     if (!phoneNo) {
-        //         phoneNumberDom.classList.add("border-[--border-error]");
+        //         phoneNumberDom.classList.add("border-[var(--border-error)]");
         //         phoneNumberError.classList.remove("hidden");
         //         phoneNumberError.textContent = "Phone number field is required.";
         //         return false;
         //     } else if (isDuplicate) {
-        //         phoneNumberDom.classList.add("border-[--border-error]");
+        //         phoneNumberDom.classList.add("border-[var(--border-error)]");
         //         phoneNumberError.classList.remove("hidden");
         //         phoneNumberError.textContent = "This phone number already exists.";
         //         return false;
         //     } else {
-        //         phoneNumberDom.classList.remove("border-[--border-error]");
+        //         phoneNumberDom.classList.remove("border-[var(--border-error)]");
         //         phoneNumberError.classList.add("hidden");
         //         return true;
         //     }
@@ -386,12 +386,12 @@
         //     let dateValue = dateDom.value;
             
         //     if (!dateValue) {
-        //         dateDom.classList.add("border-[--border-error]");
+        //         dateDom.classList.add("border-[var(--border-error)]");
         //         dateError.classList.remove("hidden");
         //         dateError.textContent = "Date field is required.";
         //         return false;
         //     } else {
-        //         dateDom.classList.remove("border-[--border-error]");
+        //         dateDom.classList.remove("border-[var(--border-error)]");
         //         dateError.classList.add("hidden");
         //         return true;
         //     }
@@ -401,17 +401,17 @@
         //     const categoriesLength = categoriesArray.length;
             
         //     if (categorySelectorDom.value == '' && categoriesLength <= 0) {
-        //         categorySelectorDom.classList.add("border-[--border-error]");
+        //         categorySelectorDom.classList.add("border-[var(--border-error)]");
         //         categoryError.classList.remove("hidden");
         //         categoryError.textContent = "Please select or add a category.";
         //         return false;
         //     } else if (categoriesLength <= 0) {
-        //         categorySelectorDom.classList.add("border-[--border-error]");
+        //         categorySelectorDom.classList.add("border-[var(--border-error)]");
         //         categoryError.classList.remove("hidden");
         //         categoryError.textContent = "Please add a category.";
         //         return false;
         //     } else {
-        //         categorySelectorDom.classList.remove("border-[--border-error]");
+        //         categorySelectorDom.classList.remove("border-[var(--border-error)]");
         //         categoryError.classList.add("hidden");
         //         return true;
         //     }

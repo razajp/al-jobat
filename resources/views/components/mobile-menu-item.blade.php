@@ -27,7 +27,7 @@
         {{-- Dropdown Menu --}}
         @if (count($dropdown) > 0)
             <button class="dropdown-toggle w-full text-left px-4 py-2 
-                {{ $isDropdownActive ? 'text-[--text-color] bg-[--h-secondary-bg-color] font-semibold' : 'text-[--secondary-text] hover:text-[--text-color]' }} 
+                {{ $isDropdownActive ? 'text-[var(--text-color)] bg-[var(--h-secondary-bg-color)] font-semibold' : 'text-[var(--secondary-text)] hover:text-[var(--text-color)]' }} 
                 rounded-lg transition-all duration-300 ease-in-out flex items-center justify-between">
                 {{ $title }}
                 <i class="fas fa-chevron-down transition-transform duration-300"></i>
@@ -38,7 +38,7 @@
                         $itemActive = request()->url() === $item['href'];
                     @endphp
                     <a href="{{ $item['href'] }}" class="px-4 py-2 block 
-                        {{ $itemActive ? 'text-[--text-color] bg-[--h-secondary-bg-color] font-semibold' : 'text-[--secondary-text] hover:text-[--text-color]' }} 
+                        {{ $itemActive ? 'text-[var(--text-color)] bg-[var(--h-secondary-bg-color)] font-semibold' : 'text-[var(--secondary-text)] hover:text-[var(--text-color)]' }} 
                         rounded-lg transition-all duration-300 ease-in-out">
                         {{ $item['title'] }}
                     </a>
@@ -49,14 +49,14 @@
         {{-- Main Menu Item --}}
         @if($asButton)
             {{-- Button Version --}}
-            <button id="{{ $id }}" onclick="{{ $onclick }}" class="px-4 py-2 block w-full text-left text-[--secondary-text] hover:text-[--text-color]
+            <button id="{{ $id }}" onclick="{{ $onclick }}" class="px-4 py-2 block w-full text-left text-[var(--secondary-text)] hover:text-[var(--text-color)]
                 transition-all duration-300 ease-in-out rounded-lg">
                 {{ $title }}
             </button>
         @else
             {{-- Link Version --}}
             <a href="{{ $href }}" class="px-4 py-2 block 
-                {{ $active ? 'text-[--text-color] bg-[--h-secondary-bg-color] font-semibold' : 'text-[--secondary-text] hover:text-[--text-color]' }} 
+                {{ $active ? 'text-[var(--text-color)] bg-[var(--h-secondary-bg-color)] font-semibold' : 'text-[var(--secondary-text)] hover:text-[var(--text-color)]' }} 
                 transition-all duration-300 ease-in-out rounded-lg">
                 {{ $title }}
             </a>

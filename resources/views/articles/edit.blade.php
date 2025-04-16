@@ -2,7 +2,7 @@
 @section('title', 'Edit Article | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Edit Article </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Edit Article </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
@@ -15,11 +15,11 @@
     <div class="row max-w-3xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('articles.update', ['article' => $article->id]) }}" method="POST" enctype="multipart/form-data"
-            class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 grow relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
             @csrf
             @method('PUT')
             <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
                 <h4>Edit Article</h4>
             </div>
             <!-- Step 1: Basic Information -->
@@ -137,13 +137,13 @@
                         {{-- add rate button --}}
                         <div class="form-group flex w-10 shrink-0">
                             <input type="button" value="+"
-                                class="w-full bg-[--primary-color] text-[--text-color] rounded-lg cursor-pointer border border-[--primary-color]"
+                                class="w-full bg-[var(--primary-color)] text-[var(--text-color)] rounded-lg cursor-pointer border border-[var(--primary-color)]"
                                 onclick="addRate()" />
                         </div>
                     </div>
                     {{-- rate showing --}}
                     <div id="rate-table" class="w-full text-left text-sm">
-                        <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
+                        <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                             <div class="grow ml-5">Title</div>
                             <div class="w-1/4">Rate</div>
                             <div class="w-[10%] text-center">Action</div>
@@ -157,12 +157,12 @@
                                     @php
                                         $article->totalRate += number_format($rate['rate'], 2);
                                     @endphp
-                                    <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                                    <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">
                                         <div class="grow ml-5">{{ $rate['title'] }}</div>
                                         <div class="w-1/4">{{ number_format($rate['rate'], 2) }}</div>
                                         <div class="w-[10%] text-center">
                                             <button onclick="deleteRate(this)" type="button"
-                                                class="text-[--danger-color] text-xs px-2 py-1 rounded-lg hover:text-[--h-danger-color] transition-all duration-300 ease-in-out">
+                                                class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -171,7 +171,7 @@
                             </div>
                         @else
                             <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
-                                <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                                <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added</div>
                             </div>
                         @endif
                     </div>
@@ -183,7 +183,7 @@
                             <div class="text-right">{{ number_format($article->totalRate, 2) }}</div>
                         </div>
                         <div
-                            class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                            class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                             <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
                             <input type="text" required name="sales_rate" id="sales_rate" value="{{ number_format($article->sales_rate, 2) }}"
                                 class="text-right bg-transparent outline-none border-none w-[50%]" />
@@ -253,13 +253,13 @@
 
                 rateCount++;
                 let rateRow = document.createElement('div');
-                rateRow.classList.add('flex', 'justify-between', 'items-center', 'bg-[--h-bg-color]', 'rounded-lg', 'py-2',
+                rateRow.classList.add('flex', 'justify-between', 'items-center', 'bg-[var(--h-bg-color)]', 'rounded-lg', 'py-2',
                     'px-4');
                 rateRow.innerHTML = `
                     <div class="grow ml-5">${title}</div>
                     <div class="w-1/4">${parseFloat(rate).toFixed(2)}</div>
                     <div class="w-[10%] text-center">
-                        <button onclick="deleteRate(this)" type="button" class="text-[--danger-color] text-xs px-2 py-1 rounded-lg hover:text-[--h-danger-color] transition-all duration-300 ease-in-out">
+                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -288,7 +288,7 @@
             if (rateCount === 0) {
                 let rateList = document.querySelector('#rate-list');
                 rateList.innerHTML = `
-                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added</div>
                 `;
             }
 
@@ -311,7 +311,7 @@
                     <div class="text-right">${totalRate.toFixed(2)}</div>
                 </div>
                 <div
-                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
                     <input type="text" required name="sales_rate" id="sales_rate" value="${totalRate.toFixed(2)}"
                         class="text-right bg-transparent outline-none border-none w-[50%]" />

@@ -11,17 +11,17 @@
 @endphp
     <!-- Modal -->
     <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Payment Program </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment Program </h1>
 
     <!-- Form -->
     <form id="form" action="{{ route('payment-programs.store') }}" method="post"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add Payment Program</h4>
         </div>
 
@@ -71,7 +71,7 @@
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
-                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
                 <i class='fas fa-save mr-1'></i> Save
             </button>
         </div>

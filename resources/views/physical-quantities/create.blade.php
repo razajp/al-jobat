@@ -3,17 +3,17 @@
 @section('content')
     <!-- Modal -->
     <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Physical Quantity </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Physical Quantity </h1>
 
     <!-- Form -->
     <form id="form" action="{{ route('physical-quantities.store') }}" method="post"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add Physical Quantity</h4>
         </div>
 
@@ -57,7 +57,7 @@
                         <div class="grow">Total Quantity - Pcs</div>
                         <div id="finalOrderedQuantity">0</div>
                     </div>
-                    <div id="total-qty-error" class="text-[--border-error] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
+                    <div id="total-qty-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
                 </div>
                 <div class="thered w-full">
                     <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
@@ -69,7 +69,7 @@
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
-                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
                 <i class='fas fa-save mr-1'></i> Save
             </button>
         </div>
@@ -103,7 +103,7 @@
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                            <h5 id="name" class="text-2xl my-1 text-[--text-color] capitalize font-semibold">Articles</h5>
+                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Articles</h5>
                             
                             <hr class="border-gray-600 my-3">
                 
@@ -208,13 +208,13 @@
             
             if (selectedArticle.pcs_per_packet > 0) {
                 pcsPerPacketDom.readOnly = true;
-                pcsPerPacketDom.classList.remove('bg-[--h-bg-color]');
+                pcsPerPacketDom.classList.remove('bg-[var(--h-bg-color)]');
                 pcsPerPacketDom.classList.add('bg-transparent');
                 pcsPerPacketDom.classList.add('cursor-not-allowed');
                 pcsPerPacketDom.value = selectedArticle.pcs_per_packet;
             } else {
                 pcsPerPacketDom.readOnly = false;
-                pcsPerPacketDom.classList.add('bg-[--h-bg-color]');
+                pcsPerPacketDom.classList.add('bg-[var(--h-bg-color)]');
                 pcsPerPacketDom.classList.remove('bg-transparent');
                 pcsPerPacketDom.classList.remove('cursor-not-allowed');
                 pcsPerPacketDom.value = '';
@@ -264,11 +264,11 @@
 
         function trackArticleQuantity() {
             if (selectedArticle && (totalQuantity + parseInt(totalPhysicalQuantityDom.textContent)) > selectedArticle.quantity) {
-                totalQtyDom.classList.add('border-[--border-error]');
+                totalQtyDom.classList.add('border-[var(--border-error)]');
                 totalQtyErrorDom.innerText = `Quantity exceeds the available stock (${selectedArticle.quantity} pcs)`;
                 totalQtyErrorDom.classList.remove('hidden');
             } else {
-                totalQtyDom.classList.remove('border-[--border-error]');
+                totalQtyDom.classList.remove('border-[var(--border-error)]');
                 totalQtyDom.classList.add('border-gray-600');
                 totalQtyErrorDom.classList.add('hidden');
                 totalQtyErrorDom.innerText = '';

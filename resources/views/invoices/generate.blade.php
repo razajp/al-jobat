@@ -2,7 +2,7 @@
 @section('title', 'Generate Invoice | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Generate Invoice </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Invoice </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
@@ -11,10 +11,10 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('invoices.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Generate New Invoice</h4>
         </div>
 
@@ -29,7 +29,7 @@
             </div>
             {{-- rate showing --}}
             <div id="article-table" class="w-full text-left text-sm">
-                <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                     <div class="w-[5%]">#</div>
                     <div class="w-[11%]">Article</div>
                     <div class="w-[11%]">Packets</div>
@@ -40,7 +40,7 @@
                     <div class="w-[15%] text-right">Amount</div>
                 </div>
                 <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
-                    <div class="text-center bg-[--h-bg-color] rounded-lg py-3 px-4">No Rates Added</div>
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
 
@@ -70,7 +70,7 @@
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
-                    <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
+                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
                 </div>
             </div>
         </div>
@@ -186,7 +186,7 @@
                                 <div class="w-[5%]">${index + 1}.</div>
                                 <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
                                 <div class="w-[11%] pr-3">
-                                    <input type="number" class="w-full border border-gray-600 bg-[--h-bg-color] py-1 px-2 rounded-md focus:outline-none" value="${totalQuantityInPackets}" max="${totalQuantityInPackets}" onclick='this.select()' oninput="packetEdited(this)" />
+                                    <input type="number" class="w-full border border-gray-600 bg-[var(--h-bg-color)] py-1 px-2 rounded-md focus:outline-none" value="${totalQuantityInPackets}" max="${totalQuantityInPackets}" onclick='this.select()' oninput="packetEdited(this)" />
                                 </div>
                                 <div class="w-[10%]">${formatNumbersDigitLess(totalQuantityInPackets * selectedArticle.article.pcs_per_packet)}</div>
                                 <div class="grow">${selectedArticle.description}</div>
@@ -206,7 +206,7 @@
                 articleListDOM.innerHTML = clutter;
             } else {
                 articleListDOM.innerHTML =
-                    `<div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Orders Yet</div>`;
+                    `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Orders Yet</div>`;
             }
         }
         renderList();
@@ -331,7 +331,7 @@
                                 <div class="d">Document: Invoice</div>
                             </div>
                         </div>
-                        <hr class="w-100 my-5 border-gray-600">
+                        <hr class="w-full my-5 border-gray-600">
                         <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
                             <div class="left w-50">
                                 <div class="invoice-to text-sm text-gray-500">Invoice to:</div>
@@ -348,12 +348,12 @@
                                 <div class="invoice-phone text-md">${companyData.phone_number}</div>
                             </div>
                         </div>
-                        <hr class="w-100 mt-5 mb-5 border-gray-600">
+                        <hr class="w-full mt-5 mb-5 border-gray-600">
                         <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
                             <div class="invoice-table w-full">
                                 <div class="table w-full border border-gray-600 rounded-lg pb-4 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[--primary-color] text-white">
+                                        <div class="tr flex justify-between w-full px-4 py-2 bg-[var(--primary-color)] text-white">
                                             <div class="th text-sm font-medium w-[5%]">#</div>
                                             <div class="th text-sm font-medium w-[11%]">Article</div>
                                             <div class="th text-sm font-medium w-[11%]">Packets</div>
@@ -435,7 +435,7 @@
                 `;
             } else {
                 previewDom.innerHTML = `
-                    <h1 class="text-[--border-error] font-medium text-center mt-5">No Preview avalaible.</h1>
+                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
                 `;
             }
         }

@@ -8,14 +8,14 @@
         'customer' => ['text' => 'Customer'],
     ];
 @endphp
-    <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color] fade-in"> Add Bank </h1>
+    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)] fade-in"> Add Bank </h1>
 
     <!-- Form -->
     <form id="form" action="{{ route('bank-accounts.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add New Bank</h4>
         </div>
         <!-- Step 1: Basic Information -->
@@ -88,7 +88,7 @@
 
                 <!-- Cheque Book Serial Input -->
                 <div id="cheque_book_serial" class="form-group">
-                    <label for="cheque_book_serial_start" class="block font-medium text-[--secondary-text] mb-2">
+                    <label for="cheque_book_serial_start" class="block font-medium text-[var(--secondary-text)] mb-2">
                         Cheque Book Serial (Start - End)
                     </label>
                 
@@ -99,7 +99,7 @@
                             id="cheque_book_serial_start" 
                             name="cheque_book_serial[start]" 
                             placeholder="Start" 
-                            class="w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                            class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                         />
                 
                         <!-- End Serial Input -->
@@ -108,19 +108,19 @@
                             id="cheque_book_serial_end" 
                             name="cheque_book_serial[end]" 
                             placeholder="End" 
-                            class="w-full rounded-lg bg-[--h-bg-color] border-gray-600 text-[--text-color] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                            class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                         />
                     </div>
                 
                     <!-- Error Message -->
-                    <div id="cheque_book_serial_error" class="text-[--border-error] text-xs mt-1 hidden"></div>
+                    <div id="cheque_book_serial_error" class="text-[var(--border-error)] text-xs mt-1 hidden"></div>
                 </div>
             </div>
         </div>
         
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
-                class="px-6 py-1 bg-[--bg-success] border border-[--bg-success] text-[--text-success] font-medium text-nowrap rounded-lg hover:bg-[--h-bg-success] transition-all 0.3s ease-in-out">
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
                 <i class='fas fa-save mr-1'></i> Save
             </button>
         </div>

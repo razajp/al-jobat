@@ -1,8 +1,8 @@
 <!-- Footer Component Start -->
-<footer class="w-full bg-[--secondary-bg-color] px-3 py-1 shadow-lg z-30 text-sm fade-in">
+<footer class="w-full bg-[var(--secondary-bg-color)] px-3 py-1 shadow-lg z-30 text-sm fade-in">
     <div class="container mx-auto flex justify-between items-center">
-        @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('invoices/create') || request()->is('payments/create'))
-            <button id="prevBtn" class="bg-[--h-bg-color] text-[--text-color] px-5 py-1 rounded-md hover:scale-95 transition-all 0.3s ease-in-out flex items-center disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+        @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('payments/create'))
+            <button id="prevBtn" class="bg-[var(--h-bg-color)] text-[var(--text-color)] px-5 py-1 rounded-md hover:scale-95 transition-all 0.3s ease-in-out flex items-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
                 <i class='fas fa-angles-left mr-1'></i> Previous
             </button>
         @endif
@@ -10,33 +10,33 @@
             <div class="md:flex hidden justify-between items-center mx-auto">
                 <span class="text-center text-sm mx-3">Copyright  &copy; 2024-<span class="opacity-100" id="year">2025</span> Spark Pair All rights reserved.</span>
                 <div class="flex justify-center mx-3 ">
-                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[--primary-color] hover:underline">+92 316 5825495</a>
+                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[var(--primary-color)] hover:underline">+92 316 5825495</a>
                     <span class="mx-2">|</span>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[--primary-color] hover:underline">sparkpair15@gmail.com</a>
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[var(--primary-color)] hover:underline">sparkpair15@gmail.com</a>
                 </div>
             </div>
             @if (request()->is('login'))
                 <div class="flex justify-center mx-5 fixed right-0">
-                    <button id="themeToggle" onclick="changeTheme()" class="text-sm text-[--secondary-text] hover:text-[--primary-color]">
+                    <button id="themeToggle" onclick="changeTheme()" class="text-sm text-[var(--secondary-text)] hover:text-[var(--primary-color)]">
                         <i class="fas fa-moon"></i>
                     </button>
                 </div>
             @endif
         </div>
         <div>
-            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('invoices/create') || request()->is('payments/create'))
-                <button id="saveBtn" class="bg-[--success-color] text-[#e2e8f0] px-5 py-1 rounded-md hover:bg-[--h-success-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center gap-1 hidden">
+            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('payments/create'))
+                <button id="saveBtn" class="bg-[var(--success-color)] text-[#e2e8f0] px-5 py-1 rounded-md hover:bg-[var(--h-success-color)] hover:scale-95 transition-all 0.3s ease-in-out flex items-center gap-1 hidden cursor-pointer">
                     <i class='fas fa-save mr-1'></i> Save
                 </button>
             @endif
-            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('invoices/create') || request()->is('payments/create'))
-                <button id="nextBtn" class="bg-[--primary-color] text-[--text-color] px-5 py-1 rounded-md hover:bg-[--h-primary-color] hover:scale-95 transition-all 0.3s ease-in-out flex items-center">
+            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('payments/create'))
+                <button id="nextBtn" class="bg-[var(--primary-color)] text-[var(--text-color)] px-5 py-1 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-95 transition-all 0.3s ease-in-out flex items-center cursor-pointer">
                     Next <i class='fas fa-angles-right ml-1'></i>
                 </button>
             @endif
         </div>
     </div>
-    @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('invoices/create') || request()->is('payments/create'))
+    @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('payments/create'))
         <script>
             document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -63,15 +63,15 @@
                     step2Doms.forEach((dom) => dom.classList.remove('hidden'));
                 }
 
-                document.getElementById(`step${step + 1}-indicator`).classList.remove('bg-[--h-bg-color]');
-                document.getElementById(`step${step + 1}-indicator`).classList.remove('hover:bg-[--secondary-bg-color]');
-                document.getElementById(`step${step + 1}-indicator`).classList.add('bg-[--primary-color]');
-                document.getElementById(`step${step + 1}-indicator`).classList.add('hover:bg-[--h-primary-color]');
+                document.getElementById(`step${step + 1}-indicator`).classList.remove('bg-[var(--h-bg-color)]');
+                document.getElementById(`step${step + 1}-indicator`).classList.remove('hover:bg-[var(--secondary-bg-color)]');
+                document.getElementById(`step${step + 1}-indicator`).classList.add('bg-[var(--primary-color)]');
+                document.getElementById(`step${step + 1}-indicator`).classList.add('hover:bg-[var(--h-primary-color)]');
                 if (currentStep <= step) {
-                    document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[--primary-color]');
-                    document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[--h-primary-color]');
-                    document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[--h-bg-color]');
-                    document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[--secondary-bg-color]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[var(--primary-color)]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[var(--h-primary-color)]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[var(--h-bg-color)]');
+                    document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[var(--secondary-bg-color)]');
                 }
                 document.getElementById('progress-bar').style.width = `${(step + 1) * (100/noOfSteps)}%`;
 
@@ -94,14 +94,14 @@
                     step2Doms.forEach((dom) => dom.classList.add('hidden'));
                 }
 
-                document.getElementById(`step${step - 1}-indicator`).classList.add('bg-[--primary-color]');
-                document.getElementById(`step${step - 1}-indicator`).classList.add('hover:bg-[--h-primary-color]');
-                document.getElementById(`step${step - 1}-indicator`).classList.remove('bg-[--h-bg-color]');
-                document.getElementById(`step${step - 1}-indicator`).classList.remove('hover:bg-[--secondary-bg-color]');
-                document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[--primary-color]');
-                document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[--h-primary-color]');
-                document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[--h-bg-color]');
-                document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[--secondary-bg-color]');
+                document.getElementById(`step${step - 1}-indicator`).classList.add('bg-[var(--primary-color)]');
+                document.getElementById(`step${step - 1}-indicator`).classList.add('hover:bg-[var(--h-primary-color)]');
+                document.getElementById(`step${step - 1}-indicator`).classList.remove('bg-[var(--h-bg-color)]');
+                document.getElementById(`step${step - 1}-indicator`).classList.remove('hover:bg-[var(--secondary-bg-color)]');
+                document.getElementById(`step${currentStep}-indicator`).classList.remove('bg-[var(--primary-color)]');
+                document.getElementById(`step${currentStep}-indicator`).classList.remove('hover:bg-[var(--h-primary-color)]');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('bg-[var(--h-bg-color)]');
+                document.getElementById(`step${currentStep}-indicator`).classList.add('hover:bg-[var(--secondary-bg-color)]');
                 document.getElementById('progress-bar').style.width = `${(step - 1) * (100/noOfSteps)}%`;
                 currentStep = step - 1;
                 updateButtons();

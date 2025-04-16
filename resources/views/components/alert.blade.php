@@ -6,21 +6,21 @@
 @php
     $config = [
         'success' => [
-            'bg' => 'bg-[--bg-success]',
-            'text' => 'text-[--text-success]',
-            'border' => 'border-[--border-success]',
+            'bg' => 'bg-[var(--bg-success)]',
+            'text' => 'text-[var(--text-success)]',
+            'border' => 'border-[var(--border-success)]',
             'icon' => 'fa-circle-check',
         ],
         'warning' => [
-            'bg' => 'bg-[--bg-warning]',
-            'text' => 'text-[--text-warning]',
-            'border' => 'border-[--border-warning]',
+            'bg' => 'bg-[var(--bg-warning)]',
+            'text' => 'text-[var(--text-warning)]',
+            'border' => 'border-[var(--border-warning)]',
             'icon' => 'fa-triangle-exclamation',
         ],
         'error' => [
-            'bg' => 'bg-[--bg-error]',
-            'text' => 'text-[--text-error]',
-            'border' => 'border-[--border-error]',
+            'bg' => 'bg-[var(--bg-error)]',
+            'text' => 'text-[var(--text-error)]',
+            'border' => 'border-[var(--border-error)]',
             'icon' => 'fa-circle-exclamation',
         ],
     ];

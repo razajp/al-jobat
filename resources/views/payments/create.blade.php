@@ -11,7 +11,7 @@
         ];
     @endphp
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Payment </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
@@ -20,10 +20,10 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('payments.store') }}" method="post"
-        class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
             <h4>Add Payment</h4>
         </div>
 
@@ -62,7 +62,7 @@
 
         <div class="step2 space-y-4 hidden">
             <div id="paymentDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full text-center text-[--border-error]">Select Payment Type.</div>
+                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
             </div>
         </div>
     </form>
@@ -82,7 +82,7 @@
             balanceDom.value = '';
             typeSelectDom.value = '';
             paymentDetailsDom.innerHTML = `
-                <div class="col-span-full text-center text-[--border-error]">Select Payment Type.</div>
+                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
             `;
 
             if (customerSelectDom.value != '') {
@@ -176,7 +176,7 @@
                 `;
             } else {
                 paymentDetailsDom.innerHTML = `
-                    <div class="col-span-full text-center text-[--border-error]">Select Payment Type.</div>
+                    <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
                 `;
             }
             

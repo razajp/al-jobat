@@ -1,9 +1,9 @@
 @extends('app')
-@section('title', 'Generate Order | ' . app('company')->name)
+@section('title', 'Generate Shipment | ' . app('company')->name)
 @section('content')
     <!-- Modal -->
     <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color))] fade-in">
         <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
             <!-- Modal Content Slot -->
             <div class="flex items-start relative h-full">
@@ -15,19 +15,21 @@
                             'category' => 'Category',
                             'season' => 'Season',
                             'size' => 'Size',
-                        ]"/>
+                        ]" />
                     </div>
-        
+
                     @if (count($articles) > 0)
                         <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
                             <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                                 @foreach ($articles as $article)
-                                    <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='generateQuantityModal(this)'
+                                    <div data-json='{{ $article }}' id='{{ $article->id }}'
+                                        onclick='generateQuantityModal(this)'
                                         class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
                                         <x-card :data="[
-                                            'image' => $article->image == 'no_image_icon.png' 
-                                                ? asset('images/no_image_icon.png') 
-                                                : asset('storage/uploads/images/' . $article->image),
+                                            'image' =>
+                                                $article->image == 'no_image_icon.png'
+                                                    ? asset('images/no_image_icon.png')
+                                                    : asset('storage/uploads/images/' . $article->image),
                                             'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                             'name' => '#' . $article->article_no,
                                             'details' => [
@@ -43,7 +45,7 @@
                     @else
                         <div class="text-[var(--border-error)] text-center h-full">Article Not Found</div>
                     @endif
-                    
+
                     <div class="flex w-full gap-4 text-sm mt-5">
                         <div
                             class="total-qty flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
@@ -72,38 +74,37 @@
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Order </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Shipment </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
-        <x-progress-bar :steps="['Generate Order', 'Preview']" :currentStep="1" />
+        <x-progress-bar :steps="['Generate Shipment', 'Preview']" :currentStep="1" />
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('orders.store') }}" method="post" enctype="multipart/form-data"
+    <form id="form" action="{{ route('shipments.store') }}" method="post" enctype="multipart/form-data"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Generate New Order</h4>
+            <h4>Generate New Shipment</h4>
         </div>
 
-        <!-- Step 1: Generate order -->
+        <!-- Step 1: Generate shipment -->
         <div class="step1 space-y-4 ">
-            <div class="flex justify-between gap-4">
-                {{-- order date --}}
-                <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
+            <div class="flex justify-between items-end gap-4">
+                {{-- shipment date --}}
+                <div class="grow">
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)"
+                        validateMax max='{{ now()->toDateString() }}' validateMin
+                        min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
 
-                {{-- title --}}
-                <div class="grow">
-                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" required showDefault
-                        class="grow" withButton btnId="generateOrderBtn" btnText="Select Articles" />
-                </div>
+                <button id="generateShipmentBtn" type="button"
+                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
             </div>
             {{-- rate showing --}}
-            <div id="order-table" class="w-full text-left text-sm">
+            <div id="shipment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                     <div class="w-[10%]">#</div>
                     <div class="w-1/6">Qty.</div>
@@ -112,12 +113,12 @@
                     <div class="w-1/5">Amount</div>
                     <div class="w-[10%] text-center">Action</div>
                 </div>
-                <div id="order-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                <div id="shipment-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
                 </div>
             </div>
 
-            <div class="flex w-full grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mt-5 text-nowrap">
+            <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
                 <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="finalOrderedQuantity">0</div>
@@ -126,29 +127,22 @@
                     <div class="grow">Total Amount - Rs.</div>
                     <div id="finalOrderAmount">0.0</div>
                 </div>
-                <div class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                <div
+                    class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <label for="discount" class="grow">Discount - %</label>
-                    <input type="text" name="discount" id="discount" value="0"
-                        class="text-right bg-transparent outline-none w-1/2 border-none" />
-                </div>
-                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Previous Balance - Rs.</div>
-                    <div id="finalPreviousBalance">0</div>
+                    <input type="text" name="discount" id="discount" value="10"
+                        class="text-right bg-transparent outline-none w-1/2 border-none" readonly />
                 </div>
                 <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Net Amount - Rs.</div>
                     <input type="text" name="netAmount" id="finalNetAmount" value="0.0" readonly
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
-                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Current Balance - Rs.</div>
-                    <div id="finalCurrentBalance">0.0</div>
-                </div>
             </div>
             <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
         </div>
 
-        <!-- Step 2: view order -->
+        <!-- Step 2: view shipment -->
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
@@ -164,13 +158,19 @@
         let totalOrderAmount = 0;
         let netAmount = 0;
 
-        const lastOrder = @json($last_order);
-        let customerData;
+        const lastShipment = @json($last_shipment);
         const articleModalDom = document.getElementById("articleModal");
         const quantityModalDom = document.getElementById("quantityModal");
-        const customerSelectDom = document.getElementById("customer_id");
-        const generateOrderBtn = document.getElementById("generateOrderBtn");
-        generateOrderBtn.disabled = true;
+        const generateShipmentBtn = document.getElementById("generateShipmentBtn");
+        generateShipmentBtn.disabled = true;
+
+        function trackStateOfgenerateBtn(value) {
+            if (value != "") {
+                generateShipmentBtn.disabled = false;
+            } else {
+                generateShipmentBtn.disabled = true;
+            }
+        }
 
         let totalQuantityDOM;
         let totalAmountDOM;
@@ -178,27 +178,7 @@
         let isModalOpened = false;
         let isQuantityModalOpened = false;
 
-        customerSelectDom.addEventListener("change", (e) => {
-            let customerDataDom = customerSelectDom.options[customerSelectDom.selectedIndex].getAttribute('data-option');
-            customerData = JSON.parse(customerDataDom);
-            selectedArticles = [];
-            totalOrderedQuantity = 0;
-            totalOrderAmount = 0;
-            renderList();
-            generateOrder();
-            renderFinals();
-            trackStateOfCategoryBtn(e.target.value);
-        })
-
-        function trackStateOfCategoryBtn(value) {
-            if (value != "") {
-                generateOrderBtn.disabled = false;
-            } else {
-                generateOrderBtn.disabled = true;
-            }
-        }
-
-        generateOrderBtn.addEventListener('click', () => {
+        generateShipmentBtn.addEventListener('click', () => {
             generateArticlesModal();
         })
 
@@ -418,7 +398,7 @@
             closeQuantityModal();
 
             console.log(selectedArticles);
-            
+
         }
 
         function deselectArticleAtIndex(index) {
@@ -431,7 +411,7 @@
             deselectArticleAtIndex(index);
 
             console.log(selectedArticles);
-            
+
 
             renderList();
             generateOrder();
@@ -447,9 +427,7 @@
         const finalOrderedQuantity = document.getElementById('finalOrderedQuantity');
         const finalOrderAmount = document.getElementById('finalOrderAmount');
         const discountDOM = document.getElementById('discount');
-        const finalPreviousBalance = document.getElementById('finalPreviousBalance');
         const finalNetAmount = document.getElementById('finalNetAmount');
-        const finalCurrentBalance = document.getElementById('finalCurrentBalance');
 
         function calculateTotalOrderedQuantity() {
             totalOrderedQuantity = 0;
@@ -476,7 +454,8 @@
 
         function generateDecription() {
             selectedArticles.forEach((selectedArticle, index) => {
-                selectedArticle.description = `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
+                selectedArticle.description =
+                    `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
             });
         }
 
@@ -503,7 +482,7 @@
             totalAmountDOM.textContent = totalOrderAmount;
         }
 
-        const orderListDOM = document.getElementById('order-list');
+        const orderListDOM = document.getElementById('shipment-list');
 
         function renderList() {
             if (selectedArticles.length > 0) {
@@ -537,9 +516,7 @@
         function renderFinals() {
             finalOrderedQuantity.textContent = totalOrderedQuantity;
             finalOrderAmount.textContent = totalOrderAmount;
-            finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
             finalNetAmount.value = netAmount;
-            finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')), 1, 1);
         }
 
         function updateInputOrderedArticles() {
@@ -560,9 +537,9 @@
         const previewDom = document.getElementById('preview');
 
         function generateOrderNo() {
-            let lastOrderNo = lastOrder.order_no.replace("2025-", "")
+            let lastShipmentNo = lastShipment.order_no.replace("2025-", "")
             const todayYear = new Date().getFullYear();
-            const nextOrderNo = String(parseInt(lastOrderNo, 10) + 1).padStart(4, '0');
+            const nextOrderNo = String(parseInt(lastShipmentNo, 10) + 1).padStart(4, '0');
             return todayYear + '-' + nextOrderNo;
         }
 
@@ -586,13 +563,13 @@
         function generateOrder() {
             orderNo = generateOrderNo();
             orderDate = getOrderDate();
-            
+
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
-                    <div id="order" class="order flex flex-col h-full">
-                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                    <div id="shipment" class="shipment flex flex-col h-full">
+                        <div id="shipment-banner" class="shipment-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                             <div class="left">
-                                <div class="order-logo">
+                                <div class="shipment-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
                                         class="w-[12rem]" />
                                     <div class='mt-1'>${ companyData.phone_number }</div>
@@ -601,24 +578,18 @@
                             <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Sales Order</h1>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
-                        <div id="order-header" class="order-header w-full flex justify-between px-5">
-                            <div class="left w-50 space-y-1">
-                                <div class="order-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
-                                <div class="order-person text-md text-lg leading-none">${customerData.urdu_title}</div>
-                                <div class="order-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
-                                <div class="order-phone text-md leading-none">${customerData.phone_number}</div>
-                            </div>
+                        <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
                             <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                <div class="order-date leading-none">Date: ${orderDate}</div>
-                                <div class="order-number leading-none">Order No.: ${orderNo}</div>
+                                <div class="shipment-date leading-none">Date: ${orderDate}</div>
+                                <div class="shipment-number leading-none">Order No.: ${orderNo}</div>
                                 <input type="hidden" name="order_no" value="${orderNo}" />
-                                <div class="order-copy leading-none">Order Copy: Customer</div>
-                                <div class="order-copy leading-none">Document: Sales Order</div>
+                                <div class="shipment-copy leading-none">Order Copy: Customer</div>
+                                <div class="shipment-copy leading-none">Document: Sales Order</div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
-                        <div id="order-body" class="order-body w-[95%] grow mx-auto">
-                            <div class="order-table w-full">
+                        <div id="shipment-body" class="shipment-body w-[95%] grow mx-auto">
+                            <div class="shipment-table w-full">
                                 <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
                                         <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
@@ -637,44 +608,67 @@
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             if (index == 0) {
                                                 return `
-                                                    <div>
-                                                        <hr class="w-full ${hrClass} border-gray-600">
-                                                        <div class="tr flex justify-between w-full px-4">
-                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                            <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
+                                                        <div>
+                                                            <hr class="w-full ${hrClass} border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">
+                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
+                                                                </div>
+                                                                <div class="td text-sm font-semibold w-[10%]">
+                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
+                                                                </div>
+                                                                <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
-                                                            </div>
-                                                            <div class="td text-sm font-semibold w-[8%]"></div>
                                                         </div>
-                                                    </div>
-                                                    `;
+                                                        `;
                                             } else {
-                                                return `
-                                                    <div>
-                                                        <hr class="w-full ${hrClass} border-gray-600">
-                                                        <div class="tr flex justify-between w-full px-4">
-                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                            <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${Math.floor(article.orderedQuantity / article.pcs_per_packet)}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
-                                                            </div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
-                                                            </div>
-                                                            <div class="td text-sm font-semibold w-[8%]"></div>
-                                                        </div>
-                                                    </div>
-                                                    `;
+                                                return ` <
+                    div >
+                    <
+                    hr class = "w-full ${hrClass} border-gray-600" >
+                    <
+                    div class = "tr flex justify-between w-full px-4" >
+                    <
+                    div class = "td text-sm font-semibold w-[7%]" > $ {
+                        index + 1
+                    }. < /div> <
+                    div class = "td text-sm font-semibold w-[10%]" > #$ {
+                        article.article_no
+                    } < /div> <
+                    div class = "td text-sm font-semibold grow" > $ {
+                        article.description
+                    } < /div> <
+                    div class = "td text-sm font-semibold w-[10%]" > $ {
+                        article.orderedQuantity
+                    } < /div> <
+                    div class = "td text-sm font-semibold w-[10%]" > $ {
+                        Math.floor(article.orderedQuantity / article.pcs_per_packet)
+                    } < /div> <
+                    div class = "td text-sm font-semibold w-[10%]" >
+                    $ {
+                        new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2
+                        }).format(article.sales_rate)
+                    } <
+                    /div> <
+                    div class = "td text-sm font-semibold w-[10%]" >
+                    $ {
+                        new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 1,
+                            maximumFractionDigits: 1
+                        }).format(parseInt(article.sales_rate) * article.orderedQuantity)
+                    } <
+                    /div> <
+                    div class = "td text-sm font-semibold w-[8%]" > < /div> <
+                    /div> <
+                    /div>
+                `;
                                             }
                                         }).join('')}
                                     </div>
@@ -683,7 +677,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="flex flex-col space-y-2">
-                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                            <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Quantity - Pcs</div>
                                     <div class="w-1/4 text-right grow">${totalQuantityDOM.textContent}</div>
@@ -692,25 +686,16 @@
                                     <div class="text-nowrap">Total Amount</div>
                                     <div class="w-1/4 text-right grow">${totalAmountDOM.textContent}</div>
                                 </div>
+                            </div>
+                            <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Discount - %</div>
                                     <div class="w-1/4 text-right grow">${discountDOM.value}</div>
-                                </div>
-                            </div>
-                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Previous Balance</div>
-                                    <div class="w-1/4 text-right grow">${finalPreviousBalance.textContent}</div>
                                 </div>
                                 <div
                                     class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Net Amount</div>
                                     <div class="w-1/4 text-right grow">${finalNetAmount.value}</div>
-                                </div>
-                                <div
-                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Current Balance</div>
-                                    <div class="w-1/4 text-right grow">${finalCurrentBalance.textContent}</div>
                                 </div>
                             </div>
                         </div>
@@ -727,30 +712,19 @@
                 `;
             }
         }
-        
+
         let cardsDom;
         let cardsDataArray = [];
 
         function getDataByDate(inputElem) {
+            trackStateOfgenerateBtn(inputElem.value);
             $.ajax({
-                url: '{{ route('orders.create') }}',
+                url: '{{ route('shipments.create') }}',
                 method: 'GET',
                 data: {
                     date: inputElem.value,
                 },
                 success: function(response) {
-                    const customersOptions = $(response).find('#customer_id').html();
-                    const customerSelectDom = document.getElementById('customer_id');
-                    
-                    if (customersOptions !== undefined && customersOptions.trim() !== "") {
-                        customerSelectDom.innerHTML = customersOptions;
-                        customerSelectDom.disabled = false;
-                        // addListenerToCards();
-                        // addContextMenuListenerToCards();
-                    } else {
-                        customerSelectDom.disabled = true;
-                    }
-
                     const articleModal = $(response).find('#articleModal').html();
                     const articleModalDom = document.getElementById('articleModal');
 
@@ -795,31 +769,31 @@
                             item.size.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case '#':
                         return (
                             item.article_no.toString().includes(search)
                         );
                         break;
-                        
+
                     case 'category':
                         return (
                             item.category.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'season':
                         return (
                             item.season.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'size':
                         return (
                             item.size.toLowerCase().includes(search)
                         );
                         break;
-                
+
                     default:
                         return (
                             item.article_no.toString().includes(search) ||
@@ -836,7 +810,8 @@
 
             if (filteredData.length === 0) {
                 // Show "No articles found" message if no results
-                const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No articles found</p>"
+                const noResultMessage =
+                    "<p class='text-center col-span-full text-[var(--border-error)]'>No articles found</p>"
                 cardContainerDom.innerHTML = noResultMessage;
             } else {
                 filteredData.forEach(item => {

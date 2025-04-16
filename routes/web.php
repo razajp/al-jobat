@@ -11,6 +11,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\SetupController;
+use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -53,6 +54,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('add-rate', [ArticleController::class, 'addRate'])->name('add-rate');
     
     Route::resource('orders', OrderController::class);
+    
+    Route::resource('shipments', ShipmentController::class);
     
     Route::resource('physical-quantities', PhysicalQuantityController::class);
     

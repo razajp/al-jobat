@@ -2,16 +2,16 @@
 @section('title', 'Add Setups | ' . app('company')->name)
 @section('content')
 <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-5 text-center text-[--primary-color]">
+    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)]">
         Add Setups
     </h1>
 
     <!-- Form -->
     <form id="add-setups-form" action="{{route('addSetup')}}" method="post"
-        class="bg-[--secondary-bg-color] rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 max-w-lg mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-lg mx-auto  relative overflow-hidden">
         @csrf
         <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 uppercase font-semibold text-sm">
+            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 uppercase font-semibold text-sm">
             <h4>Add New Setups</h4>
         </div>
         <!-- Step 1: Basic Information -->
@@ -51,7 +51,7 @@
 
                 <!-- login Button -->
                 <button type="submit"
-                    class="w-full bg-[--primary-color] text-[--text-color] px-4 py-2 mt-2 rounded-lg hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out font-medium uppercase">
+                    class="w-full bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 mt-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out font-medium uppercase">
                     Add
                 </button>
             </div>

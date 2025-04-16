@@ -3,7 +3,7 @@
 @section('content')
     <!-- Modals -->
     <div id="modal"
-        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-black bg-opacity-50 fade-in">
+        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
@@ -19,9 +19,9 @@
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[--secondary-bg-color] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
             <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold text-sm">
+                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
                 <h4>Show Invoices</h4>
 
                 <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
@@ -33,13 +33,13 @@
                                 <button type="submit" class="group cursor-pointer">
                                     <i class='fas fa-list-ul text-white'></i>
                                     <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[--h-secondary-bg-color] text-[--text-color] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
                                 </button>
                             @else
                                 <button type="submit" class="group cursor-pointer">
                                     <i class='fas fa-grip text-white'></i>
                                     <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[--h-secondary-bg-color] text-[--text-color] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
                                 </button>
                             @endif
                         </form>
@@ -51,10 +51,10 @@
                 <div
                     class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
                     <a href="{{ route('invoices.create') }}"
-                        class="bg-[--primary-color] text-[--text-color] px-3 py-2 rounded-full hover:bg-[--h-primary-color] transition-all duration-300 ease-in-out"><i
+                        class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
-                        class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[--secondary-bg-color] text-[--text-color] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                        class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         Add
                     </span>
                 </div>
@@ -81,7 +81,7 @@
                                     @endforeach
                                 </div>
                             @else
-                                <div class="grid grid-cols-4 bg-[--h-bg-color] rounded-lg font-medium py-2">
+                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div class="text-center">Invoice No.</div>
                                     <div class="text-center">Order No.</div>
                                     <div class="text-center">Customer</div>
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @forEach ($invoices as $invoice)
-                                        <div id="{{ $invoice->id }}" data-json='{{ $invoice }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[--h-bg-color] items-center py-2 cursor-pointer hover:bg-[--h-secondary-bg-color] transition-all fade-in ease-in-out">
+                                        <div id="{{ $invoice->id }}" data-json='{{ $invoice }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span class="text-center">{{ $invoice->invoice_no }}</span>
                                             <span class="text-center">{{ $invoice->order_no }}</span>
                                             <span class="text-center">{{ $invoice->order->customer->customer_name }}</span>
@@ -103,9 +103,9 @@
                 </div>
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                    <h1 class="text-sm text-[--secondary-text] capitalize">No Invoice Found</h1>
+                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Invoice Found</h1>
                     <a href="{{ route('invoices.create') }}"
-                        class="text-sm bg-[--primary-color] text-[--text-color] px-4 py-2 rounded-md hover:bg-[--h-primary-color] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
                         New</a>
                 </div>
             @endif
@@ -113,16 +113,16 @@
 
         <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[--secondary-bg-color] text-[--text-color] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="print-invoice" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all 0.3s ease-in-out">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
                             Invoice</button>
                     </li>
                 </ul>
@@ -282,9 +282,9 @@
                                             <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <h1 class="text-2xl font-medium text-[--h-primary-color] pr-2">Sales Invoice</h1>
+                                    <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
                                 </div>
-                                <hr class="w-100 my-3 border-black">
+                                <hr class="w-full my-3 border-black">
                                 <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
                                     <div class="left w-50 space-y-1">
                                         <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
@@ -299,12 +299,12 @@
                                         <div class="invoice-copy leading-none">Document: Sales Invoice</div>
                                     </div>
                                 </div>
-                                <hr class="w-100 my-3 border-black">
+                                <hr class="w-full my-3 border-black">
                                 <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
                                     <div class="invoice-table w-full">
                                         <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[--primary-color] text-white">
+                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                                     <div class="th text-sm font-medium w-[7%]">S.No</div>
                                                     <div class="th text-sm font-medium w-[10%]">Article</div>
                                                     <div class="th text-sm font-medium w-[10%]">Packets</div>
@@ -376,12 +376,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button" id="printInvoice"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-nowrap text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
                             Print Invoice
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[--secondary-bg-color] border border-gray-600 text-[--secondary-text] rounded-lg hover:bg-[--h-bg-color] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
                             Cancel
                         </button>
                     </x-slot>

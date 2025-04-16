@@ -5,9 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script src="{{ asset('tailwind.js') }}"></script>
     <script src="{{ asset('jquery.js') }}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>@yield('title', app('company')->name)</title>
     <style>
         @font-face {
@@ -207,12 +205,13 @@
 
         span {
             color: var(--secondary-text) !important;
-            opacity: 0.9;
         }
     </style>
+    
+    @vite('resources/css/app.css')
 </head>
 
-<body class="bg-[--bg-color] text-[--text-color] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
+<body class="bg-[var(--bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
     {{-- side bar --}}
     @if (Auth::check())
         <script>
@@ -368,8 +367,7 @@
 
         document.addEventListener("contextmenu", e => e.preventDefault());
 
-
-        @if(!request()->is('orders/create'))
+        @if(!request()->is('orders/create') && !request()->is('shipments/create'))
             // Search Script
             let filterType;
             let cardsDataArray = [];
@@ -400,7 +398,7 @@
                 cardContainerDom.innerHTML = "";
 
                 if (filteredData.length === 0) {
-                    const noResultMessage = "<p class='text-center col-span-full text-[--border-error]'>No data found</p>"
+                    const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No data found</p>"
                     cardContainerDom.innerHTML = noResultMessage;
                 } else {
                     filteredData.forEach(item => {

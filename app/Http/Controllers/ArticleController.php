@@ -149,7 +149,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
@@ -182,7 +182,7 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };

@@ -2,7 +2,7 @@
 @section('title', 'Add Article | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[--primary-color] fade-in"> Add Article </h1>
+    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Article </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
@@ -15,10 +15,10 @@
     <div class="row max-w-5xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data"
-            class="bg-[--secondary-bg-color] text-sm rounded-xl shadow-lg p-8 border border-[--h-bg-color] pt-12 grow relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
             @csrf
             <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 capitalize tracking-wide font-medium text-sm">
+                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
                 <h4>Add New Article</h4>
             </div>
             <!-- Step 1: Basic Information -->
@@ -137,19 +137,19 @@
                         {{-- add rate button --}}
                         <div class="form-group flex w-10 shrink-0">
                             <input type="button" value="+"
-                                class="w-full bg-[--primary-color] text-[--text-color] rounded-lg cursor-pointer border border-[--primary-color]"
+                                class="w-full bg-[var(--primary-color)] text-[var(--text-color)] rounded-lg cursor-pointer border border-[var(--primary-color)]"
                                 onclick="addRate()" />
                         </div>
                     </div>
                     {{-- rate showing --}}
                     <div id="rate-table" class="w-full text-left text-sm">
-                        <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
+                        <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                             <div class="grow ml-5">Title</div>
                             <div class="w-1/4">Rate</div>
                             <div class="w-[10%] text-center">Action</div>
                         </div>
                         <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
-                            <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                            <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added</div>
                         </div>
                     </div>
                     {{-- calc bottom --}}
@@ -160,7 +160,7 @@
                             <div class="text-right">0.00</div>
                         </div>
                         <div
-                            class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                            class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                             <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
                             <input type="text" required name="sales_rate" id="sales_rate" value="0.00"
                                 class="text-right bg-transparent outline-none border-none w-[50%]" />
@@ -182,9 +182,9 @@
         </form>
 
         <div
-            class="bg-[--secondary-bg-color] rounded-xl shadow-xl p-8 border border-[--h-bg-color] w-[35%] pt-12 relative overflow-hidden fade-in">
+            class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--h-bg-color)] w-[35%] pt-12 relative overflow-hidden fade-in">
             <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[--primary-color] py-1 shadow-lg uppercase font-semibold">
+                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold">
                 <h4>Last Record</h4>
             </div>
 
@@ -234,7 +234,7 @@
                         />
                     </div>
                 @else
-                    <div class="text-center text-xs text-[--border-error]">No records found</div>
+                    <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
                 @endif
             </div>
 
@@ -242,13 +242,13 @@
             <div class="step2 hidden space-y-6  h-full flex flex-col">
                 @if ($lastRecord)
                     <div class="w-full text-left grow">
-                        <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
+                        <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                             <div class="grow ml-5">Title</div>
                             <div class="w-1/4">Rate</div>
                         </div>
                         <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
                             @if (count($lastRecord->rates_array) === 0)
-                                <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added
+                                <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added
                                 </div>
                             @else
                                 @foreach ($lastRecord->rates_array as $rate)
@@ -256,7 +256,7 @@
                                         $lastRecord->total_rate += $rate['rate'];
                                     @endphp
                                     <div
-                                        class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                                        class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">
                                         <div class="grow ml-5">{{ $rate['title'] }}</div>
                                         <div class="w-1/4">{{ number_format($rate['rate'], 2, '.', '') }}</div>
                                     </div>
@@ -266,20 +266,20 @@
                     </div>
                     <div class="flex flex-col w-full gap-4">
                         <div
-                            class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                            class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                             <div class="grow">Total - Rs.</div>
                             <div class="w-1/4 text-right">{{ number_format($lastRecord->total_rate, 2, '.', '') }}
                             </div>
                         </div>
                         <div
-                            class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                            class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                             <div class="text-nowrap grow">Sales Rate - Rs.</div>
                             <div class="w-1/4 text-right">{{ number_format($lastRecord->sales_rate, 2, '.', '') }}
                             </div>
                         </div>
                     </div>
                 @else
-                    <div class="text-center text-xs text-[--border-error]">No records found</div>
+                    <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
                 @endif
             </div>
 
@@ -304,7 +304,7 @@
                         @endif
                     </div>
                 @else
-                    <div class="text-center text-xs text-[--border-error]">No records found</div>
+                    <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
                 @endif
             </div>
         </div>
@@ -334,13 +334,13 @@
 
                 rateCount++;
                 let rateRow = document.createElement('div');
-                rateRow.classList.add('flex', 'justify-between', 'items-center', 'bg-[--h-bg-color]', 'rounded-lg', 'py-2',
+                rateRow.classList.add('flex', 'justify-between', 'items-center', 'bg-[var(--h-bg-color)]', 'rounded-lg', 'py-2',
                     'px-4');
                 rateRow.innerHTML = `
                     <div class="grow ml-5">${title}</div>
                     <div class="w-1/4">${parseFloat(rate).toFixed(2)}</div>
                     <div class="w-[10%] text-center">
-                        <button onclick="deleteRate(this)" type="button" class="text-[--danger-color] text-xs px-2 py-1 rounded-lg hover:text-[--h-danger-color] transition-all duration-300 ease-in-out">
+                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -369,7 +369,7 @@
             if (rateCount === 0) {
                 let rateList = document.querySelector('#rate-list');
                 rateList.innerHTML = `
-                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added</div>
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added</div>
                 `;
             }
 
@@ -392,7 +392,7 @@
                     <div class="text-right">${totalRate.toFixed(2)}</div>
                 </div>
                 <div
-                    class="final flex justify-between items-center bg-[--h-bg-color] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
                     <input type="text" required name="sales_rate" id="sales_rate" value="${totalRate.toFixed(2)}"
                         class="text-right bg-transparent outline-none border-none w-[50%]" />
@@ -431,17 +431,17 @@
             let existingArticle = articles.some(a => a.article_no === articleNoValue)
 
             if (!articleNoValue) {
-                articleNoDom.classList.add("border-[--border-error]");
+                articleNoDom.classList.add("border-[var(--border-error)]");
                 articleNoError.classList.remove("hidden");
                 articleNoError.textContent = "Article No field is required.";
                 return false;
             } else if (existingArticle) {
-                articleNoDom.classList.add("border-[--border-error]");
+                articleNoDom.classList.add("border-[var(--border-error)]");
                 articleNoError.classList.remove("hidden");
                 articleNoError.textContent = "Article No is already exist.";
                 return false;
             } else {
-                articleNoDom.classList.remove("border-[--border-error]");
+                articleNoDom.classList.remove("border-[var(--border-error)]");
                 articleNoError.classList.add("hidden");
                 return true;
             }
@@ -449,12 +449,12 @@
 
         function validateDate() {
             if (dateDom.value === "") {
-                dateDom.classList.add("border-[--border-error]");
+                dateDom.classList.add("border-[var(--border-error)]");
                 dateError.classList.remove("hidden");
                 dateError.textContent = "Date field is required.";
                 return false;
             } else {
-                dateDom.classList.remove("border-[--border-error]");
+                dateDom.classList.remove("border-[var(--border-error)]");
                 dateError.classList.add("hidden");
                 return true;
             }
@@ -462,12 +462,12 @@
 
         function validateCategory() {
             if (categoryDom.value === "") {
-                categoryDom.classList.add("border-[--border-error]");
+                categoryDom.classList.add("border-[var(--border-error)]");
                 categoryError.classList.remove("hidden");
                 categoryError.textContent = "Category field is required.";
                 return false;
             } else {
-                categoryDom.classList.remove("border-[--border-error]");
+                categoryDom.classList.remove("border-[var(--border-error)]");
                 categoryError.classList.add("hidden");
                 return true;
             }
@@ -475,12 +475,12 @@
 
         function validateSize() {
             if (sizeDom.value === "") {
-                sizeDom.classList.add("border-[--border-error]");
+                sizeDom.classList.add("border-[var(--border-error)]");
                 sizeError.classList.remove("hidden");
                 sizeError.textContent = "Size field is required.";
                 return false;
             } else {
-                sizeDom.classList.remove("border-[--border-error]");
+                sizeDom.classList.remove("border-[var(--border-error)]");
                 sizeError.classList.add("hidden");
                 return true;
             }
@@ -488,12 +488,12 @@
 
         function validateSeason() {
             if (seasonDom.value === "") {
-                seasonDom.classList.add("border-[--border-error]");
+                seasonDom.classList.add("border-[var(--border-error)]");
                 seasonError.classList.remove("hidden");
                 seasonError.textContent = "Season field is required.";
                 return false;
             } else {
-                seasonDom.classList.remove("border-[--border-error]");
+                seasonDom.classList.remove("border-[var(--border-error)]");
                 seasonError.classList.add("hidden");
                 return true;
             }
@@ -501,17 +501,17 @@
 
         function validateQuantity() {
             if (quantityDom.value === "") {
-                quantityDom.classList.add("border-[--border-error]");
+                quantityDom.classList.add("border-[var(--border-error)]");
                 quantityError.classList.remove("hidden");
                 quantityError.textContent = "Quantity field is required.";
                 return false;
             } else if (quantityDom.value < 0) {
-                quantityDom.classList.add("border-[--border-error]");
+                quantityDom.classList.add("border-[var(--border-error)]");
                 quantityError.classList.remove("hidden");
                 quantityError.textContent = "Quantity is lessthen 0.";
                 return false;
             } else {
-                quantityDom.classList.remove("border-[--border-error]");
+                quantityDom.classList.remove("border-[var(--border-error)]");
                 quantityError.classList.add("hidden");
                 return true;
             }
@@ -519,12 +519,12 @@
 
         function validateExtraPcs() {
             if (extraPcsDom.value === "") {
-                extraPcsDom.classList.add("border-[--border-error]");
+                extraPcsDom.classList.add("border-[var(--border-error)]");
                 extraPcsError.classList.remove("hidden");
                 extraPcsError.textContent = "Extra Pcs field is required.";
                 return false;
             } else {
-                extraPcsDom.classList.remove("border-[--border-error]");
+                extraPcsDom.classList.remove("border-[var(--border-error)]");
                 extraPcsError.classList.add("hidden");
                 return true;
             }
@@ -532,12 +532,12 @@
 
         function validateFabricType() {
             if (fabricTyprDom.value === "") {
-                fabricTyprDom.classList.add("border-[--border-error]");
+                fabricTyprDom.classList.add("border-[var(--border-error)]");
                 fabricTyprError.classList.remove("hidden");
                 fabricTyprError.textContent = "Quantity field is required.";
                 return false;
             } else {
-                fabricTyprDom.classList.remove("border-[--border-error]");
+                fabricTyprDom.classList.remove("border-[var(--border-error)]");
                 fabricTyprError.classList.add("hidden");
                 return true;
             }
@@ -583,56 +583,56 @@
     @if ($lastRecord)
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Article No</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Article No</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->article_no }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Date</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Date</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->date }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Category</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Category</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->category->title }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Size</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Size</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->size->title }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Season</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Season</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->season->title }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Quantity-Dz</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Quantity-Dz</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->quantity }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Extra Pcs</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Extra Pcs</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                     value="{{ $lastRecord->extra_pcs }}" />
             </div>
             <div class="form-group">
-                <h3 class="block text-xs font-medium text-[--secondary-text] mb-1">Fabric Type</h3>
+                <h3 class="block text-xs font-medium text-[var(--secondary-text)] mb-1">Fabric Type</h3>
                 <input disabled
-                    class="w-full bg-transparent rounded-lg border-gray-600 text-[--text-color] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out text-nowrap overflow-x-auto"
+                    class="w-full bg-transparent rounded-lg border-gray-600 text-[var(--text-color)] text-sm px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out text-nowrap overflow-x-auto"
                     value="{{ $lastRecord->fabric_type }}" />
             </div>
         </div>
     @else
-        <div class="text-center text-xs text-[--border-error]">No records found</div>
+        <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
     @endif
 </div>
 
@@ -640,13 +640,13 @@
 <div class="step2 hidden space-y-6  h-full text-sm flex flex-col">
     @if ($lastRecord)
         <div class="w-full text-left grow">
-            <div class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 mb-4">
+            <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                 <div class="grow ml-5">Title</div>
                 <div class="w-1/4">Rate</div>
             </div>
             <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
                 @if (count($lastRecord->rates_array) === 0)
-                    <div class="text-center bg-[--h-bg-color] rounded-lg py-2 px-4">No Rates Added
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added
                     </div>
                 @else
                     @foreach ($lastRecord->rates_array as $rate)
@@ -654,7 +654,7 @@
                             $lastRecord->total_rate += $rate['rate'];
                         @endphp
                         <div
-                            class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4">
+                            class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">
                             <div class="grow ml-5">{{ $rate['title'] }}</div>
                             <div class="w-1/4">{{ number_format($rate['rate'], 2, '.', '') }}</div>
                         </div>
@@ -664,20 +664,20 @@
         </div>
         <div class="flex flex-col w-full gap-4">
             <div
-                class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                 <div class="grow">Total - Rs.</div>
                 <div class="w-1/4 text-right">{{ number_format($lastRecord->total_rate, 2, '.', '') }}
                 </div>
             </div>
             <div
-                class="flex justify-between items-center bg-[--h-bg-color] rounded-lg py-2 px-4 w-full">
+                class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                 <div class="text-nowrap grow">Sales Rate - Rs.</div>
                 <div class="w-1/4 text-right">{{ number_format($lastRecord->sales_rate, 2, '.', '') }}
                 </div>
             </div>
         </div>
     @else
-        <div class="text-center text-xs text-[--border-error]">No records found</div>
+        <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
     @endif
 </div>
 
@@ -697,6 +697,6 @@
             </div>
         </div>
     @else
-        <div class="text-center text-xs text-[--border-error]">No records found</div>
+        <div class="text-center text-xs text-[var(--border-error)]">No records found</div>
     @endif
 </div> --}}

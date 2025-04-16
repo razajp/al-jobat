@@ -1,7 +1,7 @@
 <!-- Logout Modal -->
-<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 text-xs md:text-sm fade-in">
+<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay-color)] text-xs md:text-sm fade-in">
     <!-- Modal Content -->
-    <div class="bg-[--secondary-bg-color] rounded-xl shadow-lg w-80 md:w-full md:max-w-lg p-6 relative">
+    <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg w-80 md:w-full md:max-w-lg p-6 relative">
         <!-- Close Button -->
         <button onclick="closeLogoutModal()"
             class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out">
@@ -18,8 +18,8 @@
                     class="w-full h-full object-cover">
             </div>
             <div class="content ml-5">
-                <h2 class="text-lg md:text-xl font-semibold text-[--text-color]">Logout Account</h2>
-                <p class="text-[--secondary-text] mt-1 mb-4 md:mt-2 md:mb-6">Are you sure you want to logout? All of your data
+                <h2 class="text-lg md:text-xl font-semibold text-[var(--text-color)]">Logout Account</h2>
+                <p class="text-[var(--secondary-text)] mt-1 mb-4 md:mt-2 md:mb-6">Are you sure you want to logout? All of your data
                     will be permanently removed. This action cannot be undone.</p>
             </div>
         </div>
@@ -28,31 +28,31 @@
         <div class="flex justify-end space-x-3">
             <!-- Cancel Button -->
             <button onclick="closeLogoutModal()"
-                class="px-4 py-2 bg-[--secondary-bg-color] border text-[--secondary-text] rounded-md hover:bg-[--bg-color] transition-all 0.3s ease-in-out">Cancel</button>
+                class="px-4 py-2 bg-[var(--secondary-bg-color)] border text-[var(--secondary-text)] rounded-md hover:bg-[var(--bg-color)] transition-all 0.3s ease-in-out">Cancel</button>
 
             <!-- Logout Form -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
-                    class="px-4 py-2 bg-[--danger-color] text-white rounded-md hover:bg-[--h-danger-color] transition-all 0.3s ease-in-out">Logout</button>
+                    class="px-4 py-2 bg-[var(--danger-color)] text-white rounded-md hover:bg-[var(--h-danger-color)] transition-all 0.3s ease-in-out">Logout</button>
             </form>
         </div>
     </div>
 </div>
 <div class="relative w-full md:w-auto md:z-40">
-    <aside class="bg-[--secondary-bg-color] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg transition-all 0.3s ease-in-out fade-in relative z-40">
+    <aside class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg transition-all 0.3s ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
-            class="md:mb-6 text-[--text-color] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
-            <h1 class="font-bold text-2xl text-[--primary-color] m-0">AJ</h1>
+            class="md:mb-6 text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
+            <h1 class="font-bold text-2xl text-[var(--primary-color)] m-0">AJ</h1>
             <span
-                class="absolute text-nowrap shadow-xl left-20 top-1/2 transform -translate-y-1/2 bg-[--secondary-bg-color] text-[--text-color] hidden md:block md:text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s ease-in-out pointer-events-none">
+                class="absolute text-nowrap shadow-xl left-20 top-1/2 transform -translate-y-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] hidden md:block md:text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s ease-in-out pointer-events-none">
                 Al Jobat
             </span>
         </a>
     
         <!-- Mobile Menu Toggle Button -->
-        <button id="menuToggle" type="button" class="md:hidden flex items-center p-2 text-[--text-color]">
+        <button id="menuToggle" type="button" class="md:hidden flex items-center p-2 text-[var(--text-color)]">
             <i class="fas fa-bars text-xl transition-all 0.5s ease-in-out"></i>
         </button>
 
@@ -122,10 +122,22 @@
                     icon="fas fa-cart-shopping"
                     includesDropdown="true"
                     :items="[
-                        ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Order'],
+                        ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
                         ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Payment Prg.'],
                         ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
                         ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Payment Prg.'],
+                    ]"
+                />
+            </div>
+            
+            <div class="relative group">
+                <x-nav-link-item 
+                    label="Shipments"
+                    icon="fas fa-box-open"
+                    includesDropdown="true"
+                    :items="[
+                        ['type' => 'link', 'href' => route('shipments.index'), 'label' => 'Show Shipments'],
+                        ['type' => 'link', 'href' => route('shipments.create'), 'label' => 'Generate Shipment'],
                     ]"
                 />
             </div>
@@ -181,41 +193,41 @@
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
             <!-- User Avatar -->
-            <button type="button" class="w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all 0.3s ease-in-out text-[--text-color] font-semibold text-lg overflow-hidden">
+            <button type="button" class="w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all 0.3s ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
                 @if (Auth::user()->profile_picture == 'default_avatar.png')
                     <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover" alt="Avatar">
                 @else
                     <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" class="w-full h-full object-cover" alt="Avatar">
                 @endif
                 <span
-                    class="absolute shadow-xl capitalize left-16 bottom-1 bg-[--h-secondary-bg-color] text-[--text-color] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
+                    class="absolute shadow-xl capitalize left-16 bottom-1 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
                     {{ Auth::user()->name }}
                 </span>
             </button>
     
             <!-- Dropdown Menu -->
-            <div class="dropdownMenu text-sm absolute bottom-0 left-16 hidden border border-gray-600 w-48 bg-[--h-secondary-bg-color] text-[--text-color] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
+            <div class="dropdownMenu text-sm absolute bottom-0 left-16 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
                 <ul class="p-2">
                     <!-- Add Setups -->
                     <li>
                         <a href="{{route('addSetup')}}"
-                            class="block px-4 py-2 hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                            <i class="fas fa-cog text-[--secondary-color] mr-3"></i>
+                            class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-200 ease-in-out">
+                            <i class="fas fa-cog text-[var(--secondary-color)] mr-3"></i>
                             Setups
                         </a>
                     </li>
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[--h-bg-color] rounded-md transition-all duration-200 ease-in-out">
-                            <i class="fas fa-moon text-[--secondary-color] mr-3"></i>
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-200 ease-in-out">
+                            <i class="fas fa-moon text-[var(--secondary-color)] mr-3"></i>
                             Theme
                         </button>
                     </li>
                     <!-- Logout Button -->
                     <li>
                         <button onclick="openLogoutModal()"
-                            class="block w-full text-left px-4 py-2 text-[--border-error] hover:bg-[--bg-error] hover:text-[--text-error] rounded-md transition-all duration-200 ease-in-out">
+                            class="block w-full text-left px-4 py-2 text-[var(--border-error)] hover:bg-[var(--bg-error)] hover:text-[var(--text-error)] rounded-md transition-all duration-200 ease-in-out">
                             <i class="fas fa-sign-out-alt mr-3"></i>
                             Logout
                         </button>
@@ -225,8 +237,8 @@
         </div>
     </aside>
     {{-- mobile menu --}}
-    <div id="mobileMenuOverlay" class="mobileMenuOverlay w-screen h-screen bg-[--overlay-color] opacity-zero opacity-transition pointer-events-none fixed z-30">
-        <div id="mobileMenu" class="fixed md:hidden w-full bg-[--secondary-bg-color] z-30 flex flex-col items-start justify-start p-4 space-y-4 transform -translate-y-full transition-all 0.5s ease-in-out">
+    <div id="mobileMenuOverlay" class="mobileMenuOverlay w-screen h-screen bg-[var(--overlay-color)] opacity-zero opacity-transition pointer-events-none fixed z-30">
+        <div id="mobileMenu" class="fixed md:hidden w-full bg-[var(--secondary-bg-color)] z-30 flex flex-col items-start justify-start p-4 space-y-4 transform -translate-y-full transition-all 0.5s ease-in-out">
             <!-- Main Menu Items -->
             <div class="flex flex-col space-y-2 w-full">
                 <x-mobile-menu-item href="/" title="Home" active="{{ request()->is('home') }}" />
@@ -271,10 +283,19 @@
                     title="Orders" 
                     includesDropdown
                     :dropdown="[
-                        ['href' => route('orders.index'), 'title' => 'Show Order'],
+                        ['href' => route('orders.index'), 'title' => 'Show Orders'],
                         ['href' => route('payment-programs.index'), 'title' => 'Show Payment Prg.'],
                         ['href' => route('orders.create'), 'title' => 'Generate Order'],
                         ['href' => route('payment-programs.create'), 'title' => 'Add Payment Prg.'],
+                    ]"
+                />
+
+                <x-mobile-menu-item
+                    title="Shipments" 
+                    includesDropdown
+                    :dropdown="[
+                        ['href' => route('shipments.index'), 'title' => 'Show Shipments'],
+                        ['href' => route('shipments.create'), 'title' => 'Generate Shipment'],
                     ]"
                 />
 
@@ -326,7 +347,7 @@
                             <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
                         @endif
                     <div>
-                        <div class="text-[--text-color] font-semibold capitalize">{{ Auth::user()->name }}</div>
+                        <div class="text-[var(--text-color)] font-semibold capitalize">{{ Auth::user()->name }}</div>
                         <div class="text-gray-400 text-sm">username: {{ Auth::user()->username }}</div>
                     </div>
                 </div>
