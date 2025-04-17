@@ -321,6 +321,7 @@
             isQuantityModalOpened = true;
             closeAllDropdowns();
             document.getElementById('quantityModal').classList.remove('hidden');
+            document.getElementById("quantity").focus()
         }
 
         function closeQuantityModal() {
@@ -537,10 +538,9 @@
         const previewDom = document.getElementById('preview');
 
         function generateShipmentNo() {
-            let lastShipmentNo = lastShipment.shipment_no.replace("2025-", "")
-            const todayYear = new Date().getFullYear();
-            const nextShipmentNo = String(parseInt(lastShipmentNo, 10) + 1).padStart(4, '0');
-            return todayYear + '-' + nextShipmentNo;
+            let lastShipmentNo = lastShipment.shipment_no
+            const nextShipmentNo = String(parseInt(lastShipmentNo) + 1).padStart(4, '0');
+            return nextShipmentNo;
         }
 
         function getShipmentDate() {
@@ -572,17 +572,23 @@
                                 <div class="shipment-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
                                         class="w-[12rem]" />
+                                </div>
+                            </div>
+                            <div class="right">
+                                <div>
+                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Shipment</h1>
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
-                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Shipment</h1>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
-                            <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                            <div class="left w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-date leading-none">Date: ${shipmentDate}</div>
                                 <div class="shipment-number leading-none">Shipment No.: ${shipmentNo}</div>
                                 <input type="hidden" name="shipment_no" value="${shipmentNo}" />
+                            </div>
+                            <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-copy leading-none">Shipment Copy: Customer</div>
                                 <div class="shipment-copy leading-none">Document: Shipment</div>
                             </div>
@@ -600,7 +606,6 @@
                                             <div class="th text-sm font-medium w-[10%]">Packets</div>
                                             <div class="th text-sm font-medium w-[10%]">Rate</div>
                                             <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                            <div class="th text-sm font-medium w-[8%]">Dispatch</div>
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
@@ -622,7 +627,6 @@
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
                                                                 </div>
-                                                                <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
                                                         </div>
                                                         `;
@@ -642,7 +646,6 @@
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
                                                                 </div>
-                                                                <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
                                                         </div>
                                                     `;

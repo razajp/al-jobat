@@ -65,7 +65,7 @@ class ShipmentController extends Controller
 
         if (!$last_shipment) {
             $last_shipment = new Shipment();
-            $last_shipment->shipment_no = '0000-0000';
+            $last_shipment->shipment_no = '0000';
         }
 
         return view('shipments.generate', compact('customers_options', 'articles', 'last_shipment'));
