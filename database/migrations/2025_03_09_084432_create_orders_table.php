@@ -18,7 +18,7 @@ return new class extends Migration
             $table->integer('discount');
             $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
-            $table->json('ordered_articles');
+            $table->json('articles');
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');

@@ -26,15 +26,15 @@ class OrderController extends Controller
 
         // Collect all article IDs from ordered articles
         $articleIds = $orders->flatMap(function ($order) {
-            return collect(json_decode($order->ordered_articles, true))->pluck('id');
+            return collect(json_decode($order->articles, true))->pluck('id');
         })->unique();
 
         // Fetch all required articles in a single query
         $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
 
         $orders = $orders->transform(function ($order) use ($articles) {
-            // Step 1: Decode and normalize ordered_articles to indexed array
-            $orderedArticlesRaw = json_decode($order->ordered_articles, true) ?? [];
+            // Step 1: Decode and normalize articles to indexed array
+            $orderedArticlesRaw = json_decode($order->articles, true) ?? [];
             $orderedArticlesArray = array_values($orderedArticlesRaw); // Normalize to indexed array
         
             // Step 2: Map through each ordered article
@@ -51,12 +51,12 @@ class OrderController extends Controller
             })->values(); // 👈 ensures final collection is indexed (not associative)
         
             // Step 3: Put it back into the order
-            $order['ordered_articles'] = $orderedArticles;
+            $order['articles'] = $orderedArticles;
         
             return $order;
         })
         ->filter(function ($order) {
-            return $order['ordered_articles']->isNotEmpty();
+            return $order['articles']->isNotEmpty();
         });
 
         foreach ($orders as $key => $order) {
@@ -141,7 +141,7 @@ class OrderController extends Controller
             'customer_id' => 'required|integer|exists:customers,id',
             'discount' => 'required|integer',
             'netAmount' => 'required|string',
-            'ordered_articles' => 'required|json',
+            'articles' => 'required|json',
             'order_no' => 'required|string',
         ]);
 
@@ -155,8 +155,8 @@ class OrderController extends Controller
 
         $order = Order::create($data);
 
-        $data['ordered_articles'] = json_decode($data['ordered_articles'], true);
-        foreach ($data['ordered_articles'] as $articleData) {
+        $data['articles'] = json_decode($data['articles'], true);
+        foreach ($data['articles'] as $articleData) {
             $article = Article::where('id', $articleData['id'])->first();
             if ($article) {
                 $article->ordered_quantity += $articleData['ordered_quantity'];

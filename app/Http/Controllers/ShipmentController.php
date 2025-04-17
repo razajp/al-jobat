@@ -9,6 +9,7 @@ use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ShipmentController extends Controller
 {
@@ -17,7 +18,62 @@ class ShipmentController extends Controller
      */
     public function index()
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+
+        $orders = Order::with('customer')->get();
+
+        // Collect all article IDs from ordered articles
+        $articleIds = $orders->flatMap(function ($order) {
+            return collect(json_decode($order->articles, true))->pluck('id');
+        })->unique();
+
+        // Fetch all required articles in a single query
+        $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
+
+        $orders = $orders->transform(function ($order) use ($articles) {
+            // Step 1: Decode and normalize articles to indexed array
+            $orderedArticlesRaw = json_decode($order->articles, true) ?? [];
+            $orderedArticlesArray = array_values($orderedArticlesRaw); // Normalize to indexed array
+        
+            // Step 2: Map through each ordered article
+            $orderedArticles = collect($orderedArticlesArray)->map(function ($orderedArticle) use ($articles) {
+                if (isset($articles[$orderedArticle['id']])) {
+                    $orderedArticle['article'] = $articles[$orderedArticle['id']];
+                }
+        
+                $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
+        
+                return $orderedArticle;
+            })->filter(function ($orderedArticle) {
+                return $orderedArticle['ordered_quantity'] > 0;
+            })->values(); // 👈 ensures final collection is indexed (not associative)
+        
+            // Step 3: Put it back into the order
+            $order['articles'] = $orderedArticles;
+        
+            return $order;
+        })
+        ->filter(function ($order) {
+            return $order['articles']->isNotEmpty();
+        });
+
+        foreach ($orders as $key => $order) {
+            $order['previous_balance'] = $order->customer->calculateBalance(null, $order->date, false, false);
+            $order['current_balance'] = $order['previous_balance'] + $order['netAmount'];
+        }
+
+        // Format the date and reset balances
+        $orders->each(function ($order) {
+            $order['date'] = date('d-M-Y, D', strtotime($order->date));
+        });
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view('shipments.index', compact('orders', 'authLayout'));
+        // return $orders;
     }
 
     /**
@@ -60,8 +116,7 @@ class ShipmentController extends Controller
             }
         }
 
-        // $last_shipment = Shipment::orderby('id', 'desc')->first();
-        $last_shipment = [];
+        $last_shipment = Shipment::orderby('id', 'desc')->first();
 
         if (!$last_shipment) {
             $last_shipment = new Shipment();
@@ -77,7 +132,30 @@ class ShipmentController extends Controller
      */
     public function store(Request $request)
     {
-        return $request->all();
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'discount' => 'required|integer',
+            'netAmount' => 'required|string',
+            'articles' => 'required|json',
+            'shipment_no' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+        
+        $data['netAmount'] = str_replace(',', '', $data['netAmount']);
+
+        $shipment = Shipment::create($data);
+        
+        return redirect()->route('shipments.create')->with('success', 'Shipment generated successfully.');
     }
 
     /**

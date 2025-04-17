@@ -145,7 +145,7 @@
                     <div id="finalCurrentBalance">0.0</div>
                 </div>
             </div>
-            <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
+            <input type="hidden" name="articles" id="articles" value="">
         </div>
 
         <!-- Step 2: view order -->
@@ -543,7 +543,7 @@
         }
 
         function updateInputOrderedArticles() {
-            let inputOrderedArticles = document.getElementById('ordered_articles');
+            let inputOrderedArticles = document.getElementById('articles');
             let finalArticlesArray = selectedArticles.map(article => {
                 return {
                     id: article.id,

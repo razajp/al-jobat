@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('shipments', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
+            $table->string('shipment_no')->unique();
+            $table->integer('discount');
+            $table->integer('netAmount');
+            $table->json('articles');
             $table->timestamps();
         });
     }

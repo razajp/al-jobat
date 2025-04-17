@@ -326,7 +326,7 @@
                                                 </div>
                                             </div>
                                             <div id="tbody" class="tbody w-full">
-                                                ${data.ordered_articles.map((orderedArticle, index) => {
+                                                ${data.articles.map((orderedArticle, index) => {
                                                     const article = orderedArticle.article;
                                                     const salesRate = article.sales_rate;
                                                     const orderedQuantity = orderedArticle.ordered_quantity;

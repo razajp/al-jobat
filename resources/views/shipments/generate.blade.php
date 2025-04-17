@@ -139,7 +139,7 @@
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
             </div>
-            <input type="hidden" name="shipment_articles" id="shipment_articles" value="">
+            <input type="hidden" name="articles" id="articles" value="">
         </div>
 
         <!-- Step 2: view shipment -->
@@ -521,7 +521,7 @@
         }
 
         function updateInputShipmentedArticles() {
-            let inputShipmentedArticles = document.getElementById('shipment_articles');
+            let inputShipmentedArticles = document.getElementById('articles');
             let finalArticlesArray = selectedArticles.map(article => {
                 return {
                     id: article.id,
@@ -589,7 +589,7 @@
                                 <input type="hidden" name="shipment_no" value="${shipmentNo}" />
                             </div>
                             <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                <div class="shipment-copy leading-none">Shipment Copy: Customer</div>
+                                <div class="shipment-copy leading-none">Shipment Copy: Office</div>
                                 <div class="shipment-copy leading-none">Document: Shipment</div>
                             </div>
                         </div>
