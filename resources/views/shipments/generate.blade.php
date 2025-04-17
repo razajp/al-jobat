@@ -50,12 +50,12 @@
                         <div
                             class="total-qty flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                             <div class="grow">Total Quantity - Pcs</div>
-                            <div id="totalOrderedQty">0</div>
+                            <div id="totalShipmentedQty">0</div>
                         </div>
                         <div
                             class="final flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
                             <div class="grow">Total Amount - Rs.</div>
-                            <div id="totalOrderAmount">0.0</div>
+                            <div id="totalShipmentAmount">0.0</div>
                         </div>
                     </div>
                 </div>
@@ -121,11 +121,11 @@
             <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
                 <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
-                    <div id="finalOrderedQuantity">0</div>
+                    <div id="finalShipmentQuantity">0</div>
                 </div>
                 <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Amount - Rs.</div>
-                    <div id="finalOrderAmount">0.0</div>
+                    <div id="finalShipmentAmount">0.0</div>
                 </div>
                 <div
                     class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
@@ -139,7 +139,7 @@
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
             </div>
-            <input type="hidden" name="ordered_articles" id="ordered_articles" value="">
+            <input type="hidden" name="shipment_articles" id="shipment_articles" value="">
         </div>
 
         <!-- Step 2: view shipment -->
@@ -154,8 +154,8 @@
 
     <script>
         let selectedArticles = [];
-        let totalOrderedQuantity = 0;
-        let totalOrderAmount = 0;
+        let totalShipmentQuantity = 0;
+        let totalShipmentAmount = 0;
         let netAmount = 0;
 
         const lastShipment = @json($last_shipment);
@@ -198,17 +198,17 @@
                         card.innerHTML += `
                             <div
                                 class="quantity-label absolute text-xs text-[var(--border-success)] top-1 right-2 h-[1rem]">
-                                ${selectedArticle.orderedQuantity} Pcs
+                                ${selectedArticle.shipmentQuantity} Pcs
                             </div>
                         `;
                     } else {
-                        quantityLabelDom.textContent = `${selectedArticle.orderedQuantity} Pcs`;
+                        quantityLabelDom.textContent = `${selectedArticle.shipmentQuantity} Pcs`;
                     }
                 });
             }
 
-            totalQuantityDOM = document.getElementById('totalOrderedQty');
-            totalAmountDOM = document.getElementById('totalOrderAmount');
+            totalQuantityDOM = document.getElementById('totalShipmentedQty');
+            totalAmountDOM = document.getElementById('totalShipmentAmount');
 
             renderTotals();
         }
@@ -222,7 +222,7 @@
         function closeArticlesModal() {
             generateDecription();
             renderList();
-            generateOrder();
+            generateShipment();
             renderFinals();
 
             isModalOpened = false;
@@ -383,16 +383,16 @@
                 }
             }
 
-            cardData.orderedQuantity = parseInt(quantity);
+            cardData.shipmentQuantity = parseInt(quantity);
 
             if (alreadySelectedArticle.length > 0) {
-                alreadySelectedArticle[0].orderedQuantity = parseInt(quantity);
+                alreadySelectedArticle[0].shipmentQuantity = parseInt(quantity);
             } else {
                 selectedArticles.push(cardData);
             }
 
-            calculateTotalOrderedQuantity();
-            calculateTotalOrderAmount();
+            calculateTotalShipmentQuantity();
+            calculateTotalShipmentAmount();
             calculateNetAmount();
             renderTotals();
             closeQuantityModal();
@@ -414,42 +414,42 @@
 
 
             renderList();
-            generateOrder();
+            generateShipment();
 
-            calculateTotalOrderedQuantity();
-            calculateTotalOrderAmount();
+            calculateTotalShipmentQuantity();
+            calculateTotalShipmentAmount();
             calculateNetAmount();
 
             renderFinals();
             renderTotals();
         }
 
-        const finalOrderedQuantity = document.getElementById('finalOrderedQuantity');
-        const finalOrderAmount = document.getElementById('finalOrderAmount');
+        const finalShipmentQuantity = document.getElementById('finalShipmentQuantity');
+        const finalShipmentAmount = document.getElementById('finalShipmentAmount');
         const discountDOM = document.getElementById('discount');
         const finalNetAmount = document.getElementById('finalNetAmount');
 
-        function calculateTotalOrderedQuantity() {
-            totalOrderedQuantity = 0;
+        function calculateTotalShipmentQuantity() {
+            totalShipmentQuantity = 0;
 
             selectedArticles.forEach(selectedArticle => {
-                totalOrderedQuantity += selectedArticle.orderedQuantity;
+                totalShipmentQuantity += selectedArticle.shipmentQuantity;
             });
 
-            totalOrderedQuantity = new Intl.NumberFormat('en-US').format(totalOrderedQuantity);
+            totalShipmentQuantity = new Intl.NumberFormat('en-US').format(totalShipmentQuantity);
         }
 
-        function calculateTotalOrderAmount() {
-            totalOrderAmount = 0;
+        function calculateTotalShipmentAmount() {
+            totalShipmentAmount = 0;
 
             selectedArticles.forEach(selectedArticle => {
-                totalOrderAmount += selectedArticle.orderedQuantity * selectedArticle.sales_rate;
+                totalShipmentAmount += selectedArticle.shipmentQuantity * selectedArticle.sales_rate;
             });
 
-            totalOrderAmount = new Intl.NumberFormat('en-US', {
+            totalShipmentAmount = new Intl.NumberFormat('en-US', {
                 minimumFractionDigits: 1,
                 maximumFractionDigits: 1
-            }).format(totalOrderAmount);
+            }).format(totalShipmentAmount);
         }
 
         function generateDecription() {
@@ -460,7 +460,7 @@
         }
 
         function calculateNetAmount() {
-            let totalAmount = parseFloat(totalOrderAmount.replace(/,/g, ''));
+            let totalAmount = parseFloat(totalShipmentAmount.replace(/,/g, ''));
             let discount = document.getElementById('discount').value;
             let discountAmount = totalAmount - (totalAmount * (discount / 100));
             netAmount = discountAmount;
@@ -478,8 +478,8 @@
         });
 
         function renderTotals() {
-            totalQuantityDOM.textContent = totalOrderedQuantity;
-            totalAmountDOM.textContent = totalOrderAmount;
+            totalQuantityDOM.textContent = totalShipmentQuantity;
+            totalAmountDOM.textContent = totalShipmentAmount;
         }
 
         const orderListDOM = document.getElementById('shipment-list');
@@ -491,10 +491,10 @@
                     clutter += `
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[10%]">${selectedArticle.article_no}</div>
-                            <div class="w-1/6">${selectedArticle.orderedQuantity} pcs</div>
+                            <div class="w-1/6">${selectedArticle.shipmentQuantity} pcs</div>
                             <div class="grow">${selectedArticle.description}</div>
                             <div class="w-1/6">${selectedArticle.sales_rate}</div>
-                            <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.orderedQuantity}</div>
+                            <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.shipmentQuantity}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisArticle(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>
@@ -509,41 +509,41 @@
                 orderListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Articles Yet</div>`;
             }
-            updateInputOrderedArticles();
+            updateInputShipmentedArticles();
         }
         renderList();
 
         function renderFinals() {
-            finalOrderedQuantity.textContent = totalOrderedQuantity;
-            finalOrderAmount.textContent = totalOrderAmount;
+            finalShipmentQuantity.textContent = totalShipmentQuantity;
+            finalShipmentAmount.textContent = totalShipmentAmount;
             finalNetAmount.value = netAmount;
         }
 
-        function updateInputOrderedArticles() {
-            let inputOrderedArticles = document.getElementById('ordered_articles');
+        function updateInputShipmentedArticles() {
+            let inputShipmentedArticles = document.getElementById('shipment_articles');
             let finalArticlesArray = selectedArticles.map(article => {
                 return {
                     id: article.id,
                     description: article.description,
-                    ordered_quantity: article.orderedQuantity
+                    shipment_quantity: article.shipmentQuantity
                 }
             });
-            inputOrderedArticles.value = JSON.stringify(finalArticlesArray);
+            inputShipmentedArticles.value = JSON.stringify(finalArticlesArray);
         }
 
         let companyData = @json(app('company'));
-        let orderNo;
-        let orderDate;
+        let shipmentNo;
+        let shipmentDate;
         const previewDom = document.getElementById('preview');
 
-        function generateOrderNo() {
-            let lastShipmentNo = lastShipment.order_no.replace("2025-", "")
+        function generateShipmentNo() {
+            let lastShipmentNo = lastShipment.shipment_no.replace("2025-", "")
             const todayYear = new Date().getFullYear();
-            const nextOrderNo = String(parseInt(lastShipmentNo, 10) + 1).padStart(4, '0');
-            return todayYear + '-' + nextOrderNo;
+            const nextShipmentNo = String(parseInt(lastShipmentNo, 10) + 1).padStart(4, '0');
+            return todayYear + '-' + nextShipmentNo;
         }
 
-        function getOrderDate() {
+        function getShipmentDate() {
             const dateDom = document.getElementById('date').value;
             const date = new Date(dateDom);
 
@@ -560,9 +560,9 @@
             return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
         }
 
-        function generateOrder() {
-            orderNo = generateOrderNo();
-            orderDate = getOrderDate();
+        function generateShipment() {
+            shipmentNo = generateShipmentNo();
+            shipmentDate = getShipmentDate();
 
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
@@ -575,16 +575,16 @@
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
-                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Sales Order</h1>
+                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Shipment</h1>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
                             <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                <div class="shipment-date leading-none">Date: ${orderDate}</div>
-                                <div class="shipment-number leading-none">Order No.: ${orderNo}</div>
-                                <input type="hidden" name="order_no" value="${orderNo}" />
-                                <div class="shipment-copy leading-none">Order Copy: Customer</div>
-                                <div class="shipment-copy leading-none">Document: Sales Order</div>
+                                <div class="shipment-date leading-none">Date: ${shipmentDate}</div>
+                                <div class="shipment-number leading-none">Shipment No.: ${shipmentNo}</div>
+                                <input type="hidden" name="shipment_no" value="${shipmentNo}" />
+                                <div class="shipment-copy leading-none">Shipment Copy: Customer</div>
+                                <div class="shipment-copy leading-none">Document: Shipment</div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
@@ -614,61 +614,38 @@
                                                                 <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                                 <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                                 </div>
                                                                 <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
+                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
                                                                 </div>
                                                                 <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
                                                         </div>
                                                         `;
                                             } else {
-                                                return ` <
-                    div >
-                    <
-                    hr class = "w-full ${hrClass} border-gray-600" >
-                    <
-                    div class = "tr flex justify-between w-full px-4" >
-                    <
-                    div class = "td text-sm font-semibold w-[7%]" > $ {
-                        index + 1
-                    }. < /div> <
-                    div class = "td text-sm font-semibold w-[10%]" > #$ {
-                        article.article_no
-                    } < /div> <
-                    div class = "td text-sm font-semibold grow" > $ {
-                        article.description
-                    } < /div> <
-                    div class = "td text-sm font-semibold w-[10%]" > $ {
-                        article.orderedQuantity
-                    } < /div> <
-                    div class = "td text-sm font-semibold w-[10%]" > $ {
-                        Math.floor(article.orderedQuantity / article.pcs_per_packet)
-                    } < /div> <
-                    div class = "td text-sm font-semibold w-[10%]" >
-                    $ {
-                        new Intl.NumberFormat('en-US', {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2
-                        }).format(article.sales_rate)
-                    } <
-                    /div> <
-                    div class = "td text-sm font-semibold w-[10%]" >
-                    $ {
-                        new Intl.NumberFormat('en-US', {
-                            minimumFractionDigits: 1,
-                            maximumFractionDigits: 1
-                        }).format(parseInt(article.sales_rate) * article.orderedQuantity)
-                    } <
-                    /div> <
-                    div class = "td text-sm font-semibold w-[8%]" > < /div> <
-                    /div> <
-                    /div>
-                `;
+                                                return `
+                                                        <div>
+                                                            <hr class="w-full ${hrClass} border-gray-600">
+                                                            <div class="tr flex justify-between w-full px-4">
+                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">
+                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
+                                                                </div>
+                                                                <div class="td text-sm font-semibold w-[10%]">
+                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
+                                                                </div>
+                                                                <div class="td text-sm font-semibold w-[8%]"></div>
+                                                            </div>
+                                                        </div>
+                                                    `;
                                             }
                                         }).join('')}
                                     </div>
@@ -824,7 +801,7 @@
         }
 
         function validateForNextStep() {
-            generateOrder()
+            generateShipment()
             return true;
         }
     </script>
