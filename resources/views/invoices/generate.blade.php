@@ -145,7 +145,7 @@
                 success: function (response) {
                     console.log(response);
                     
-                    orderedArticles = response.ordered_articles;
+                    orderedArticles = response.articles;
                     discount = response.discount ?? 0;
                     customerData = response.customer;
                     

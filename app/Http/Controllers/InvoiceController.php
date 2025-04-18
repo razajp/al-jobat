@@ -98,7 +98,7 @@ class InvoiceController extends Controller
 
         foreach ($articles as $article) {
             $orderDb = Order::where("order_no", $data["order_no"])->first();
-            $orderedArticleDb = json_decode($orderDb["ordered_articles"], true);
+            $orderedArticleDb = json_decode($orderDb["articles"], true);
 
             // Update all matching articles
             foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference to modify in place
@@ -108,8 +108,8 @@ class InvoiceController extends Controller
                 }
             }
 
-            // Save updated ordered_articles back to the database
-            $orderDb->ordered_articles = json_encode($orderedArticleDb);
+            // Save updated articles back to the database
+            $orderDb->articles = json_encode($orderedArticleDb);
             $orderDb->save();
         }
 

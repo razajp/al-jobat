@@ -21,4 +21,26 @@ class Shipment extends Model
     {
         return $this->hasMany(Invoice::class, 'shipment_no', 'shipment_no');
     }
+    public function getArticles()
+    {
+        $rawArticles = json_decode($this->articles, true); // decode the JSON field
+    
+        if (!is_array($rawArticles)) return [];
+    
+        $articles = [];
+    
+        foreach ($rawArticles as $rawArticle) {
+            $article = Article::where('id', $rawArticle['id'])->first();
+    
+            if ($article) {
+                $articles[] = [
+                    'shipment_quantity' => $rawArticle['shipment_quantity'],
+                    'description' => $rawArticle['description'],
+                    'article' => $article // contains all columns of the article
+                ];
+            }
+        }
+    
+        return $articles;
+    }
 }

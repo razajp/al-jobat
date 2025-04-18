@@ -611,45 +611,24 @@
                                     <div id="tbody" class="tbody w-full">
                                         ${selectedArticles.map((article, index) => {
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-                                            if (index == 0) {
-                                                return `
-                                                        <div>
-                                                            <hr class="w-full ${hrClass} border-gray-600">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
-                                                                </div>
-                                                            </div>
+                                            return `
+                                                <div>
+                                                    <hr class="w-full ${hrClass} border-gray-600">
+                                                    <div class="tr flex justify-between w-full px-4">
+                                                        <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                        <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                        <div class="td text-sm font-semibold grow">${article.description}</div>
+                                                        <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
+                                                        <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>
+                                                        <div class="td text-sm font-semibold w-[10%]">
+                                                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                         </div>
-                                                        `;
-                                            } else {
-                                                return `
-                                                        <div>
-                                                            <hr class="w-full ${hrClass} border-gray-600">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
-                                                                </div>
-                                                            </div>
+                                                        <div class="td text-sm font-semibold w-[10%]">
+                                                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.shipmentQuantity)}
                                                         </div>
-                                                    `;
-                                            }
+                                                    </div>
+                                                </div>
+                                            `;
                                         }).join('')}
                                     </div>
                                 </div>

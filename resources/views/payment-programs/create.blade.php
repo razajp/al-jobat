@@ -248,8 +248,6 @@
 
                         dateInpDom.value = response.date;
                         dateInpDom.readOnly = true;
-
-                        console.log('hello');
                         
                         clutter += `
                             <option value='${response.customer.id}'>

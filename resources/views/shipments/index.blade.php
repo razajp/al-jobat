@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Orders | ' . app('company')->name)
+@section('title', 'Show Shipments | ' . app('company')->name)
 @section('content')
     <!-- Modals -->
     {{-- article details modal --}}
@@ -8,9 +8,9 @@
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Orders" :filter_items="[
+        <x-search-header heading="Shipments" :filter_items="[
             'all' => 'All',
-            'order_no' => 'Order No.',
+            'shipment_no' => 'Shipment No.',
             'customer_name' => 'Customer Name',
             'date' => 'Date',
         ]"/>
@@ -22,7 +22,7 @@
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
             <div
                 class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show Orders</h4>
+                <h4>Show Shipments</h4>
 
                 <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
                     <div class="relative group">
@@ -47,10 +47,10 @@
                 </div>
             </div>
 
-            @if (count($orders) > 0)
+            @if (count($shipments) > 0)
                 <div
                     class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('orders.create') }}"
+                    <a href="{{ route('shipments.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -60,20 +60,20 @@
                 </div>
             @endif
 
-            @if (count($orders) > 0)
+            @if (count($shipments) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar">
                         <div class="card_container p-5 pr-3">
                             @if ($authLayout == 'grid')
                                 <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                    @foreach ($orders as $order)
-                                        <div id="{{ $order->id }}" data-json='{{ $order }}'
+                                    @foreach ($shipments as $shipment)
+                                        <div id="{{ $shipment->id }}" data-json='{{ $shipment }}'
                                             class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
                                             <x-card :data="[
-                                                'name' => 'Order No: ' . $order->order_no,
+                                                'name' => 'Shipment No: ' . $shipment->shipment_no,
                                                 'details' => [
-                                                    'Customer' => $order->customer->customer_name,
-                                                    'Date' => $order->date,
+                                                    'Date' => date('d-M-Y, D', strtotime($shipment->date)),
+                                                    'Amount' => number_format($shipment->netAmount, 1),
                                                 ],
                                             ]" />
                                         </div>
@@ -81,30 +81,29 @@
                                 </div>
                             @else
                                 <div class="grid grid-cols-3 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Order No.</div>
+                                    <div class="text-center">Shipment No.</div>
                                     <div class="text-center">Customer</div>
                                     <div class="text-center">Date</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($orders as $order)
-                                        <div id="{{ $order->id }}" data-json='{{ $order }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $order->order_no }}</span>
-                                            <span class="text-center">{{ $order->customer->customer_name }}</span>
-                                            <span class="text-center">{{ $order->date }}</span>
+                                    @forEach ($shipments as $shipment)
+                                        <div id="{{ $shipment->id }}" data-json='{{ $shipment }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $shipment->shipment_no }}</span>
+                                            <span class="text-center">{{ $shipment->date }}</span>
                                         </div>
                                     @endforeach
                                 </div>
                                 {{-- <div class="grid grid-cols-3 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Order No.</div>
+                                    <div class="text-center">Shipment No.</div>
                                     <div class="text-center">Customer</div>
                                     <div class="text-center">Date</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($orders as $order)
-                                        <div id="{{ $order->id }}" data-json='{{ $order }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $order->order_no }}</span>
-                                            <span class="text-center">{{ $order->customer->customer_name }}</span>
-                                            <span class="text-center">{{ $order->date }}</span>
+                                    @forEach ($shipments as $shipment)
+                                        <div id="{{ $shipment->id }}" data-json='{{ $shipment }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $shipment->shipment_no }}</span>
+                                            <span class="text-center">{{ $shipment->customer->customer_name }}</span>
+                                            <span class="text-center">{{ $shipment->date }}</span>
                                         </div>
                                     @endforeach
                                 </div> --}}
@@ -114,8 +113,8 @@
                 </div>
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Order Found</h1>
-                    <a href="{{ route('orders.create') }}"
+                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Shipment Found</h1>
+                    <a href="{{ route('shipments.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
                         New</a>
                 </div>
@@ -132,9 +131,9 @@
                             Details</button>
                     </li>
                     <li>
-                        <button id="print-order" type="button"
+                        <button id="print-shipment" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
-                            Order</button>
+                            Shipment</button>
                     </li>
                 </ul>
             </div>
@@ -203,7 +202,7 @@
             });
 
             document.addEventListener('click', (e) => {
-                if (e.target.id === "print-order") {
+                if (e.target.id === "print-shipment") {
                     generateModal(item, 'context');
                 }
             });
@@ -275,43 +274,41 @@
             let totalAmount = 0;
             let totalQuantity = 0;
             let discount = data.discount;
-            let previousBalance = data.previous_balance;
             let netAmount = data.netAmount;
-            let currentBalance = data.current_balance;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
-                            <div id="order" class="order flex flex-col h-full">
-                                <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                            <div id="shipment" class="shipment flex flex-col h-full">
+                                <div id="shipment-banner" class="shipment-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                                     <div class="left">
-                                        <div class="order-logo">
+                                        <div class="shipment-logo">
                                             <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
                                                 class="w-[12rem]" />
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div>
+                                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Shipment</h1>
                                             <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Order</h1>
                                 </div>
                                 <hr class="w-full my-3 border-black">
-                                <div id="order-header" class="order-header w-full flex justify-between px-5">
+                                <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
                                     <div class="left w-50 space-y-1">
-                                        <div class="order-customer text-lg leading-none">M/s: ${data.customer.customer_name}</div>
-                                        <div class="order-person text-md text-lg leading-none">${data.customer.urdu_title}</div>
-                                        <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
-                                        <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
+                                        <div class="shipment-date leading-none">Date: ${data.date}</div>
+                                        <div class="shipment-number leading-none">Shipment No.: ${data.shipment_no}</div>
                                     </div>
                                     <div class="right w-50 my-auto pr-3 text-sm text-black space-y-1.5">
-                                        <div class="order-date leading-none">Date: ${data.date}</div>
-                                        <div class="order-number leading-none">Order No.: ${data.order_no}</div>
-                                        <div class="order-copy leading-none">Order Copy: Customer</div>
-                                        <div class="order-copy leading-none">Document: Sales Order</div>
+                                        <div class="shipment-copy leading-none">Shipment Copy: Office</div>
+                                        <div class="shipment-copy leading-none">Document: Sales Shipment</div>
                                     </div>
                                 </div>
                                 <hr class="w-full my-3 border-black">
-                                <div id="order-body" class="order-body w-[95%] grow mx-auto">
-                                    <div class="order-table w-full">
+                                <div id="shipment-body" class="shipment-body w-[95%] grow mx-auto">
+                                    <div class="shipment-table w-full">
                                         <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
@@ -322,19 +319,18 @@
                                                     <div class="th text-sm font-medium w-[10%]">Packets</div>
                                                     <div class="th text-sm font-medium w-[10%]">Rate</div>
                                                     <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                                    <div class="th text-sm font-medium w-[8%]">Dispatch</div>
                                                 </div>
                                             </div>
                                             <div id="tbody" class="tbody w-full">
-                                                ${data.ordered_articles.map((orderedArticle, index) => {
+                                                ${data.articles.map((orderedArticle, index) => {
                                                     const article = orderedArticle.article;
                                                     const salesRate = article.sales_rate;
-                                                    const orderedQuantity = orderedArticle.ordered_quantity;
-                                                    const total = parseInt(salesRate) * orderedQuantity;
+                                                    const shipmentQuantity = orderedArticle.shipment_quantity;
+                                                    const total = parseInt(salesRate) * shipmentQuantity;
                                                     const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                                                     totalAmount += total;
-                                                    totalQuantity += orderedQuantity;
+                                                    totalQuantity += shipmentQuantity;
 
                                                     return `
                                                         <div>
@@ -343,15 +339,14 @@
                                                                 <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                                 <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet)}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${shipmentQuantity}</div>
+                                                                <div class="td text-sm font-semibold w-[10%]">${Math.floor(orderedArticle.shipment_quantity / article.pcs_per_packet)}</div>
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
                                                                 </div>
                                                                 <div class="td text-sm font-semibold w-[10%]">
                                                                     ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
                                                                 </div>
-                                                                <div class="td text-sm font-semibold w-[8%]"></div>
                                                             </div>
                                                         </div>
                                                     `;
@@ -362,7 +357,7 @@
                                 </div>
                                 <hr class="w-full my-3 border-black">
                                 <div class="flex flex-col space-y-2">
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                    <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                         <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Total Quantity - Pcs</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
@@ -371,25 +366,16 @@
                                             <div class="text-nowrap">Total Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
                                         </div>
+                                    </div>
+                                    <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                         <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Discount - %</div>
                                             <div class="w-1/4 text-right grow">${discount}</div>
-                                        </div>
-                                    </div>
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Previous Balance</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
                                         </div>
                                         <div
                                             class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                             <div class="text-nowrap">Net Amount</div>
                                             <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Current Balance</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -403,9 +389,9 @@
                     </div>
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button type="button" id="printOrder"
+                        <button type="button" id="printShipment"
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
-                            Print Order
+                            Print Shipment
                         </button>
 
                         <button onclick="closeModal()" type="button"
@@ -416,9 +402,9 @@
                 </x-modal>
             `;
             
-            addListenerToPrintOrder();
+            addListenerToPrintShipment();
             if (context == 'context') {
-                document.getElementById('printOrder').click();
+                document.getElementById('printShipment').click();
             } else {
                 openModal();
             }
@@ -453,15 +439,15 @@
                 switch (filterType) {
                     case 'all':
                         return (
-                            item.order_no.toString().includes(search) ||
+                            item.shipment_no.toString().includes(search) ||
                             item.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;
                         
-                    case 'order_no':
+                    case 'shipment_no':
                         return (
-                            item.order_no.toLowerCase().includes(search)
+                            item.shipment_no.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -479,7 +465,7 @@
                 
                     default:
                         return (
-                            item.order_no.toString().includes(search) ||
+                            item.shipment_no.toString().includes(search) ||
                             item.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
@@ -490,8 +476,8 @@
             return filteredData;
         }
         
-        function addListenerToPrintOrder() {
-            document.getElementById('printOrder').addEventListener('click', (e) => {
+        function addListenerToPrintShipment() {
+            document.getElementById('printShipment').addEventListener('click', (e) => {
                 e.preventDefault();
                 closeAllDropdowns();
                 const preview = document.getElementById('preview-container'); // preview content
@@ -523,7 +509,7 @@
                 printDocument.write(`
                     <html>
                         <head>
-                            <title>Print Order</title>
+                            <title>Print Shipment</title>
                             ${headContent} <!-- Copy current styles -->
                             <style>
                                 @media print {
@@ -555,10 +541,10 @@
                 printIframe.onload = () => {
 
                     // Select the preview-copy div and update its text
-                    let orderCopy = printDocument.querySelector('#preview-container .order-copy');
+                    let orderCopy = printDocument.querySelector('#preview-container .shipment-copy');
 
                     if (orderCopy) {
-                        orderCopy.textContent = "Order Copy: Office"; // Change text to "order Copy: Office"
+                        orderCopy.textContent = "Shipment Copy: Office"; // Change text to "shipment Copy: Office"
                     }
 
                     setTimeout(() => {

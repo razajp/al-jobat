@@ -114,10 +114,10 @@ class Controller extends BaseController
         }
 
         $order = Order::with('customer')->where("order_no", $request->order_no)->first();
-        $order->ordered_articles = json_decode($order->ordered_articles);
+        $order->articles = json_decode($order->articles);
 
         if (!$request->boolean('only_order')) {
-            $orderedArticles = $order->ordered_articles;
+            $orderedArticles = $order->articles;
 
             $orderedArticles = array_filter($orderedArticles, function ($orderedArticle) {
                 $article = Article::find($orderedArticle->id);
@@ -137,10 +137,10 @@ class Controller extends BaseController
                 return $orderedArticle->total_quantity_in_packets;
             });
 
-            $order->ordered_articles = array_values($orderedArticles);
+            $order->articles = array_values($orderedArticles);
         }
 
-        if (count($order->ordered_articles) == 0) {
+        if (count($order->articles) == 0) {
             $order = ['error' => 'data not found'];
         }
 
