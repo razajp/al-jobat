@@ -7,9 +7,14 @@
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
             'online' => ['text' => 'Online'],
+            'payment_program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
     @endphp
+    <!-- Modal -->
+    <div id="modal"
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+    </div>
     <!-- Main Content -->
     <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment </h1>
 
@@ -39,6 +44,10 @@
                     showDefault
                     onchange="trackCustomerState()" 
                 />
+
+                {{-- payment_program --}}
+                <x-input label="Payment Program" id="payment_program" placeholder='Select Payment Program' class="cursor-pointer" readonly/>
+                <input type="hidden" name="program_id" id="program_id" value="" />
                 
                 {{-- balance --}}
                 <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
@@ -68,11 +77,130 @@
     </form>
 
     <script>
+        const modalDom = document.getElementById("modal");
+        const paymentProgramSelectInputDOM = document.getElementById("payment_program");
+        const programIdInputDOM = document.getElementById("program_id");
         let customerSelectDom = document.getElementById('customer_id');
         let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
         let balanceDom = document.getElementById('balance');
         let paymentDetailsDom = document.getElementById('paymentDetails');
+
+        selectedCustomerData = null;
+        
+        let isModalOpened = false;
+        paymentProgramSelectInputDOM.disabled = true;
+
+        paymentProgramSelectInputDOM.addEventListener('click', () => {
+            generateArticlesModal();
+        })
+
+        function generateArticlesModal() {
+            if (selectedCustomerData != null) {
+                console.log(selectedCustomerData.payment_programs);
+                
+                let programHTML = '';
+
+                if (selectedCustomerData.payment_programs.length > 0) {
+                    programHTML = `
+                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
+                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                ${selectedCustomerData.payment_programs.map((program) => {
+                                    let beneficiary = '-';
+                                    if (program.category) {
+                                        if (program.category === 'supplier' && program.sub_category?.supplier_name) {
+                                            beneficiary = program.sub_category.supplier_name;
+                                        } else if (program.category === 'customer' && program.sub_category?.customer_name) {
+                                            beneficiary = program.sub_category.customer_name;
+                                        } else if (program.category === 'self_account' && program.sub_category?.account_title) {
+                                            beneficiary = program.sub_category.account_title;
+                                        } else if (program.category === 'waiting' && program.remarks) {
+                                            beneficiary = program.remarks;
+                                        }
+                                    }
+                                    return `
+                                        <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(this)'
+                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
+                                            <div>
+                                                <h3 class="text-xl font-bold text-white">${program.order_no ?? program.program_no ?? '-'}</h3>
+                                                <ul class="text-sm">
+                                                    <li class="capitalize"><strong>Category:</strong> ${program.category}</li>
+                                                    <li><strong>Beneficiary:</strong> ${beneficiary}</li>
+                                                    <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                modalDom.innerHTML = `
+                    <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeModal">
+                        <div class="flex items-start relative h-full">
+                            <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
+                                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Articles</h5>
+                                <hr class="border-gray-600 my-3">
+                                ${programHTML}
+                            </div>
+                        </div>
+                    </x-modal>
+                `;
+
+                openModal();
+            }
+        }
+
+        let selectedProgram = null;
+        
+        function selectThisProgram(articleElem) {
+            selectedProgram = JSON.parse(articleElem.getAttribute('data-json'));
+
+            programIdInputDOM.value = selectedProgram.id;
+            let value = `${selectedProgram.amount}`;
+            paymentProgramSelectInputDOM.value = value;
+
+            dateDom.min = selectedProgram.date;
+            
+            closeModal();
+        }
+
+        function openModal() {
+            isModalOpened = true;
+            closeAllDropdowns();
+            document.getElementById('modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            isModalOpened = false;
+            let modal = document.getElementById('modal');
+            modal.classList.add('fade-out');
+
+            modal.addEventListener('animationend', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('fade-out');
+            }, {
+                once: true
+            });
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            const {
+                id
+            } = e.target;
+            if (id === 'articlesModalForm') {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isModalOpened) {
+                closeModal();
+            }
+        });
+        
         let selectedCustomer;
 
         const today = new Date().toISOString().split('T')[0];
@@ -81,6 +209,8 @@
             dateDom.value = '';
             balanceDom.value = '';
             typeSelectDom.value = '';
+            paymentProgramSelectInputDOM.value = '';
+            paymentProgramSelectInputDOM.disabled = true;
             paymentDetailsDom.innerHTML = `
                 <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
             `;
@@ -92,6 +222,8 @@
                 dateDom.min = selectedCustomer.date;
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
+                paymentProgramSelectInputDOM.disabled = false;
+                selectedCustomerData = selectedCustomer;
             } else {
                 dateDom.disabled = true;
                 typeSelectDom.disabled = true;
@@ -166,6 +298,20 @@
                         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
                     </div>
                 `;
+            } else if (elem.value == 'payment_program') {
+                if (selectedProgram != null) {
+                    paymentDetailsDom.innerHTML = `
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                    `;
+                } else {
+                    paymentDetailsDom.innerHTML = `
+                        <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Program.</div>
+                    `;
+                }
             } else if (elem.value == 'adjustment') {
                 paymentDetailsDom.innerHTML = `
                     {{-- amount --}}

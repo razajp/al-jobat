@@ -50,9 +50,21 @@ class PaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
         
-        $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
+        $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory')->whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
+
+        foreach ($customers as $customer) {
+            foreach ($customer->paymentPrograms as $program) {
+                $subCategory = $program->subCategory;
+        
+                if ($subCategory->type === 'self account') {
+                    $subCategory = $subCategory;
+                } else {
+                    $subCategory = $subCategory->bankAccounts;
+                }
+            }
+        }
 
         $customers_options = [];
         foreach ($customers as $customer) {
@@ -73,6 +85,7 @@ class PaymentController extends Controller
         }
 
         return view("payments.create", compact("customers", "customers_options"));
+        // return $customers;
     }
 
     /**

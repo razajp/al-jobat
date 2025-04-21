@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewNotificationEvent;
 use App\Models\Article;
 use App\Models\Order;
 use App\Models\Setup;
@@ -123,6 +124,7 @@ class ArticleController extends Controller
         }
 
         Article::create($data);
+        event(new NewNotificationEvent(['message' => 'New Article Added']));
 
         foreach (['category' => 'article_category', 'size' => 'article_size', 'season' => 'article_seasons'] as $field => $type) {
             if (!empty($data[$field])) {
@@ -240,7 +242,7 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        //
+        // 
     }
     public function updateImage(Request $request)
     {

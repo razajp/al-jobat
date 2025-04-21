@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewNotificationEvent;
 use App\Models\Article;
 use App\Models\PhysicalQuantity;
 use Illuminate\Http\Request;
@@ -100,9 +101,11 @@ class PhysicalQuantityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(PhysicalQuantity $physicalQuantity)
+    public function show()
     {
-        //
+        event(new NewNotificationEvent(['message' => 'New Article Added']));
+
+        return "hello";
     }
 
     /**

@@ -184,6 +184,7 @@
             selectedArticles = [];
             totalOrderedQuantity = 0;
             totalOrderAmount = 0;
+            netAmount = 0;
             renderList();
             generateOrder();
             renderFinals();
@@ -418,7 +419,6 @@
             closeQuantityModal();
 
             console.log(selectedArticles);
-            
         }
 
         function deselectArticleAtIndex(index) {
@@ -739,39 +739,51 @@
                     date: inputElem.value,
                 },
                 success: function(response) {
-                    const customersOptions = $(response).find('#customer_id').html();
                     const customerSelectDom = document.getElementById('customer_id');
-                    
-                    if (customersOptions !== undefined && customersOptions.trim() !== "") {
-                        customerSelectDom.innerHTML = customersOptions;
-                        customerSelectDom.disabled = false;
-                        // addListenerToCards();
-                        // addContextMenuListenerToCards();
-                    } else {
-                        customerSelectDom.disabled = true;
+                    if (customerSelectDom.value == "") {
+                        populateOptions(response);
                     }
 
-                    const articleModal = $(response).find('#articleModal').html();
-                    const articleModalDom = document.getElementById('articleModal');
-
-                    if (articleModal !== undefined && articleModal.trim() !== "") {
-                        articleModalDom.innerHTML = articleModal;
-                        // addListenerToCards();
-                        // addContextMenuListenerToCards();
-
-                        cardsDom = $(articleModal).find('.card_container').children().toArray();
-
-                        cardsDom.forEach((card) => {
-                            cardsDataArray.push(JSON.parse(card.dataset.json));
-                        })
-
-                        setFilter('all');
-                    }
+                    populateCards(response);
                 },
                 error: function() {
                     alert('Error submitting form');
                 }
             });
+        }
+
+        function populateOptions(response){
+            const customersOptions = $(response).find('#customer_id').html();
+            const customerSelectDom = document.getElementById('customer_id');
+            
+            if (customersOptions !== undefined && customersOptions.trim() !== "") {
+                customerSelectDom.innerHTML = customersOptions;
+                customerSelectDom.disabled = false;
+            } else {
+                customerSelectDom.disabled = true;
+            }
+        }
+
+        function populateCards(response) {
+            const articleModal = $(response).find('#articleModal').html();
+            const articleModalDom = document.getElementById('articleModal');
+
+            if (articleModal !== undefined && articleModal.trim() !== "") {
+                articleModalDom.innerHTML = articleModal;
+
+                cardsDom = $(articleModal).find('.card_container').children().toArray();
+
+                cardsDom.forEach((card) => {
+                    cardsDataArray.push(JSON.parse(card.dataset.json));
+                })
+
+                setFilter('all');
+            }
+
+            if (selectedArticles.length > 0) {
+                reRenderSelectedState();
+                reRenderSelectedStateTotal();
+            }
         }
 
         let filterType;
@@ -852,5 +864,35 @@
             generateOrder()
             return true;
         }
+
+        function reRenderSelectedState() {
+            const selectedIds = selectedArticles.map(card => card.id);
+
+            // Loop through all rendered cards
+            document.querySelectorAll('.card_container .card').forEach(card => {
+                const cardData = JSON.parse(card.getAttribute('data-json'));
+
+                if (selectedIds.includes(cardData.id)) {
+                    // Find the corresponding selected article
+                    const selectedCard = selectedArticles.find(item => item.id === cardData.id);
+
+                    // Add new label with ordered quantity
+                    card.innerHTML += `
+                        <div class="quantity-label absolute text-xs text-[var(--border-success)] top-1 right-2 h-[1rem]">
+                            ${selectedCard.orderedQuantity} Pcs
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        function reRenderSelectedStateTotal() {
+            console.log(totalOrderedQuantity);
+            
+            totalQuantityDOM = document.getElementById('totalOrderedQty');
+            totalAmountDOM = document.getElementById('totalOrderAmount');
+            renderTotals();
+        }
+
     </script>
 @endsection

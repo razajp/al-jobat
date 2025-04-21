@@ -57,7 +57,7 @@
         }
 
         [data-theme='light'] {
-            --bg-color: #f3f4f6;
+            --bg-color: #eef0f2;
             --h-bg-color:#e4e7ee;
             --secondary-bg-color: #ffffff;
             --h-secondary-bg-color: hsl(0, 0%, 96%);
@@ -209,6 +209,9 @@
     </style>
     
     @vite('resources/css/app.css')
+    
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 
 <body class="bg-[var(--bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
@@ -224,7 +227,11 @@
 
     <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full">
         {{-- alert --}}
-        <div id="messageBox" class="absolute top-5 mx-auto flex items-center flex-col space-y-3 z-50 text-sm w-full select-none pointer-events-none">
+        <div id="messageBox" class="absolute top-5 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
+            @if (session('info'))
+                <x-alert type="info" :messages="session('info')" />
+            @endif
+        
             @if (session('success'))
                 <x-alert type="success" :messages="session('success')" />
             @endif
@@ -236,6 +243,21 @@
             @if (session('error'))
                 <x-alert type="error" :messages="session('error')" />
             @endif
+        </div>
+        <!-- Notification Box -->
+        <div
+             id="notificationBox"
+             class="absolute top-5 right-5 flex flex-col space-y-3 z-[100] text-sm mx-auto items-end w-full select-none">
+            {{-- <x-notification
+                title="Payment Method Expiring"
+                message="Your card ending in 1122 is expiring soon. Please update your billing info."
+                actionLabel="Update Card"
+                actionUrl="/billing"
+            /> --}}
+            {{-- <x-notification
+                title="Payment Method Expiring"
+                message="Your card ending in 1122 is expiring soon. Please update your billing info."
+            /> --}}
         </div>
 
         {{-- main content --}}
@@ -271,7 +293,7 @@
                 }
             }
         }
-        
+
         // Message box animation
         function messageBoxAnimation() {
             setTimeout(function() {
@@ -289,6 +311,16 @@
             }, 5000); // Trigger fade-out after 5 seconds
         }
         messageBoxAnimation();
+
+        // notification box animation
+        function hideNotification(notificationElem) {
+            notificationElem.classList.add('fade-out');
+
+            notificationElem.addEventListener('animationend', () => {
+                notificationElem.style.display = 'none';
+                notificationElem.remove();
+            });
+        }
         
         let dropdownMenus, dropdownTriggers;
 
@@ -436,6 +468,53 @@
 
         // Then every 60 minutes (3600000 milliseconds)
         setInterval(updateLastActivity, 60 * 60 * 1000);
+    </script>
+
+    <script>
+        var pusher = new Pusher('c99f4e2f9df04cc306f4', {
+            cluster: 'ap2',
+            forceTLS: true
+        });
+
+        var channel = pusher.subscribe('notifications');
+
+        channel.bind('App\\Events\\NewNotificationEvent', function(data) {
+            console.log('📢 Notification received:', data);
+
+            let dataObject = data.data;
+
+            @if(request()->is('orders/create'))
+                if (dataObject.message == "New Article Added") {
+                    let dateDom = document.querySelector("#date");
+
+                    if (dateDom.value != "") {
+                        getDataByDate(dateDom);
+
+                        let notificationBox = document.getElementById("notificationBox");
+
+                        // Create a wrapper element to track the notification
+                        let notificationWrapper = document.createElement("div");
+                        notificationWrapper.innerHTML = `
+                            <x-notification
+                                title="New Article Added"
+                                message="Your articles feed has been updated. Please check."
+                            />
+                        `;
+                        let notificationElement = notificationWrapper.firstElementChild;
+                        notificationBox.prepend(notificationElement);
+
+                        // Auto-hide after 5 seconds
+                        setTimeout(() => {
+                            hideNotification(notificationElement);
+                        }, 5000);
+                    }
+                }
+            @endif
+        });
+
+        pusher.connection.bind('connected', function() {
+            console.log('✅ Pusher connected');
+        });
     </script>
 </body>
 
