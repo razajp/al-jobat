@@ -1,6 +1,67 @@
 @extends('app')
 @section('title', 'Generate Invoice | ' . app('company')->name)
 @section('content')
+
+    <div class="switch-btn-container flex absolute top-3 md:top-7 left-3 md:left-8">
+        <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
+            <!-- Highlight rectangle -->
+            <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
+            
+            <!-- Buttons -->
+            <button
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setInvoiceType(this, 'order')"
+            >
+                <div class="hidden md:block">Order</div>
+                <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
+            </button>
+            <button
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setInvoiceType(this, 'shipment')"
+            >
+                <div class="hidden md:block">Shipment</div>
+                <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function setInvoiceType(btn, btnType) {
+            $.ajax({
+                url: "/set-invoice-type",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    invoice_type: btnType
+                },
+                success: function (response) {
+                    console.log(response);
+                }
+            });
+
+            moveHighlight(btn, btnType);
+        }
+
+        function moveHighlight(btn, btnType) {
+            const highlight = document.getElementById("highlight");
+            const rect = btn.getBoundingClientRect();
+            
+            const parentRect = btn.parentElement.getBoundingClientRect();
+        
+            // Move and resize the highlight
+            highlight.style.width = `${rect.width}px`;
+            highlight.style.left = `${rect.left - parentRect.left - 3}px`;
+        }
+    
+        // Initialize highlight on load
+        window.onload = () => {
+            const activeBtn = document.querySelector(".switch-btn button");
+            moveHighlight(activeBtn, "order");
+        };
+    </script>
+
     <!-- Main Content -->
     <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Invoice </h1>
 
@@ -20,6 +81,13 @@
 
         <!-- Step 1: Generate Invoice -->
         <div class="step1 space-y-4 ">
+            {{-- <div class="switch-btn-container flex justify-center">
+                <div class="switch-btn flex border-3 border-[var(--h-bg-color)] bg-[var(--h-bg-color)] rounded-2xl overflow-hidden">
+                    <button type="button" class="px-5 py-2 cursor-pointer rounded-xl bg-[var(--secondary-bg-color)]">Order</button>
+                    <button type="button" class="px-5 py-2 cursor-pointer">Shipment</button>
+                </div>
+            </div> --}}
+
             <div class="flex justify-between gap-4">
                 <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
                 {{-- order_no --}}

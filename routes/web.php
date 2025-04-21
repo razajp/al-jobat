@@ -71,6 +71,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
     Route::post('get-program-details', [Controller::class, 'getProgramDetails'])->name('get-program-details');
+    Route::post('set-invoice-type', [Controller::class, 'setInvoiceType'])->name('set-invoice-type');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');

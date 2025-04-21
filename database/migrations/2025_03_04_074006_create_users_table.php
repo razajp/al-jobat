@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('profile_picture')->default('default_avatar.png');
             $table->string('theme')->default('light');
             $table->string('layout')->nullable();
+            $table->string('invoice_type')->default('order');
             $table->timestamps();
         });
     }

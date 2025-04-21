@@ -24,6 +24,7 @@ class User extends Authenticatable
         'profile_picture',
         'theme',
         'layout',
+        'invoice_type',
     ];
 
     /**

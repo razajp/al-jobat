@@ -40,15 +40,11 @@
     </div>
 </div>
 <div class="relative w-full md:w-auto md:z-40">
-    <aside class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen shadow-none md:shadow-lg transition-all 0.3s ease-in-out fade-in relative z-40">
+    <aside class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen transition-all 0.3s ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
             class="md:mb-6 text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
             <h1 class="font-bold text-2xl text-[var(--primary-color)] m-0">AJ</h1>
-            <span
-                class="absolute text-nowrap shadow-xl left-20 top-1/2 transform -translate-y-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] hidden md:block md:text-sm rounded-md px-2 py-1 opacity-0 group-hover:opacity-100 transition-all 0.3s ease-in-out pointer-events-none">
-                Al Jobat
-            </span>
         </a>
     
         <!-- Mobile Menu Toggle Button -->

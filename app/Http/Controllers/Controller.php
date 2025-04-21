@@ -172,4 +172,26 @@ class Controller extends BaseController
             'data' => $paymentProgram,
         ]);
     }
+
+    public function setInvoiceType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "invoice_type" => "required|in:order,shipment",
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        return $request->invoice_type;
+
+        // $user = Auth::user();
+        // $user->invoice_type = $request->invoice_type;
+        // $user->save();
+
+        // return response()->json([
+        //     'status' => 'success',
+        //     'message' => 'Invoice type updated successfully.',
+        // ]);
+    }
 }

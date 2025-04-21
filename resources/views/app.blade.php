@@ -81,7 +81,7 @@
             filter: invert(1);
         }
 
-        .bg-\[--primary-color\]{
+        .bg-\[var\(--primary-color\)\]{
             color: #e2e8f0 !important;
         }
         
@@ -214,7 +214,7 @@
     <script src="https://unpkg.com/alpinejs" defer></script>
 </head>
 
-<body class="bg-[var(--bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
+<body class="bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
     {{-- side bar --}}
     @if (Auth::check())
         <script>
@@ -227,7 +227,7 @@
 
     <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full">
         {{-- alert --}}
-        <div id="messageBox" class="absolute top-5 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
+        <div id="messageBox" class="absolute top-7 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
             @if (session('info'))
                 <x-alert type="info" :messages="session('info')" />
             @endif
@@ -261,7 +261,7 @@
         </div>
 
         {{-- main content --}}
-        <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center">
+        <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-3 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-3.5 relative">
             <div class="main-child grow">
                 @yield('content')
             </div>
