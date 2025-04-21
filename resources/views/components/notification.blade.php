@@ -5,8 +5,8 @@
     'actionLabel' => null,
     'actionUrl' => null,
 ])
-{{-- <div class="notification-card bg-[var(--glass-border-color)]/5 backdrop-blur-md text-[var(--secondary-text)] px-5 py-4 border border-[var(--glass-border-color)]/20 rounded-2xl shadow-xl flex items-start gap-4 fade-in relative"> --}}
-<div class="notification-card bg-[var(--secondary-bg-color)] text-[var(--secondary-text)] px-5 py-4 border border-[var(--h-bg-color)] rounded-2xl shadow-xl flex items-start gap-4 fade-in relative">
+<div class="notification-card bg-[var(--glass-border-color)]/5 backdrop-blur-md text-[var(--secondary-text)] px-5 py-4 border border-[var(--glass-border-color)]/20 rounded-2xl shadow-xl flex items-start gap-4 fade-in relative">
+{{-- <div class="notification-card bg-[var(--secondary-bg-color)] text-[var(--secondary-text)] px-5 py-4 border border-[var(--h-bg-color)] rounded-2xl shadow-xl flex items-start gap-4 fade-in relative"> --}}
     <div class="flex-1">
         @if($title)
             <p class="font-semibold">{{ $title }}</p>

@@ -3,11 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PhysicalQuantity;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+
+use function PHPSTORM_META\type;
 
 class InvoiceController extends Controller
 {
@@ -54,7 +59,7 @@ class InvoiceController extends Controller
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
+        }
         
         $last_Invoice = invoice::orderby('id', 'desc')->first();
 
@@ -63,7 +68,11 @@ class InvoiceController extends Controller
             $last_Invoice->invoice_no = '0000-0000';
         }
 
-        return view("invoices.generate", compact("last_Invoice"));
+        $customers = Customer::with('user')->whereIn('category', ['regular', 'site'])->whereHas('user', function ($query) {
+            $query->where('status', 'active');
+        })->get();
+        
+        return view("invoices.generate", compact("last_Invoice", 'customers'));
     }
 
     /**

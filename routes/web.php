@@ -67,11 +67,12 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     
     Route::resource('bank-accounts', BankAccountController::class);
     
-    Route::post('get-details-for-invoice', [Controller::class, 'getDetailsForInvoice'])->name('get-details-for-invoice');
+    Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
     Route::post('get-program-details', [Controller::class, 'getProgramDetails'])->name('get-program-details');
     Route::post('set-invoice-type', [Controller::class, 'setInvoiceType'])->name('set-invoice-type');
+    Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('/update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');

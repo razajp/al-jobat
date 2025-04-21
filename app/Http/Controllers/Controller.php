@@ -8,6 +8,7 @@ use App\Models\Customer;
 use App\Models\Order;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
+use App\Models\Shipment;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -103,7 +104,7 @@ class Controller extends BaseController
         return true;
     }
 
-    public function getDetailsForInvoice(Request $request)
+    public function getOrderDetails(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "order_no" => "required|exists:orders,order_no",
@@ -193,5 +194,65 @@ class Controller extends BaseController
             'status' => 'success',
             'message' => 'Invoice type set as default.',
         ]);
+    }
+    public function getShipmentDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "shipment_no" => "required|exists:shipments,shipment_no",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        // Get shipment by number
+        $shipment = Shipment::where('shipment_no', $request->shipment_no)->first();
+
+        if (!$shipment) {
+            return response()->json(['error' => 'Shipment not found']);
+        }
+        
+        // Get articles associated with shipment
+        $shipment->articles = $shipment->getArticles();
+        
+        // Only continue if not filtering by only_order
+        $validArticles = [];
+
+        foreach ($shipment->articles as $articleData) {
+            $article = $articleData['article'];
+
+            if (!$article) continue;
+
+            // Total stock from PhysicalQuantity
+            $totalPackets = PhysicalQuantity::where("article_id", $article->id)->sum("packets");
+
+            // Available quantity calculation
+            $availablePackets = $article->sold_quantity > 0
+                ? $totalPackets - ($article->sold_quantity / $article->pcs_per_packet)
+                : $totalPackets;
+
+            $availableStock = max(0, floor($availablePackets * $article->pcs_per_packet)); // convert packets to pcs
+            $articleData['article'] = $article;
+            $articleData['available_stock'] = $availableStock;
+
+            // Required shipment quantity (in pcs)
+            $requiredShipmentQty = $articleData['shipment_quantity'];
+
+            // Check if available stock is enough
+            if ($availableStock < $requiredShipmentQty) {
+                return response()->json(['error' => 'Stock is less than shipment quantity for article: ' . $article->name]);
+            }
+
+            $validArticles[] = $articleData;
+        }
+
+        // Replace articles with valid filtered ones
+        $shipment->articles = $validArticles;
+
+        if (count($shipment->articles) === 0) {
+            return response()->json(['error' => 'No articles found for this shipment']);
+        }
+
+        return response()->json($shipment);
     }
 }

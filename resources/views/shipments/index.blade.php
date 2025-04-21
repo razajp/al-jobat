@@ -2,7 +2,6 @@
 @section('title', 'Show Shipments | ' . app('company')->name)
 @section('content')
     <!-- Modals -->
-    {{-- article details modal --}}
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>

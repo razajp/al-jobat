@@ -232,7 +232,7 @@
 
         function getOrderDetails(value) {
             $.ajax({
-                url: "/get-order-details",
+                url: "/gget-order-details",
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}",
