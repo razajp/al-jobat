@@ -44,7 +44,9 @@
                 </div>
             </div>
 
-            <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
+            <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
+
+            <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
                 <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="totalQuantityInForm">0</div>
@@ -63,7 +65,6 @@
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
             </div>
-            <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
         </div>
 
         <!-- Step 2: view order -->
