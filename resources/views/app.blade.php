@@ -54,6 +54,7 @@
             --h-success-color: hsl(142, 65%, 26%);
 
             --overlay-color: rgba(0, 0, 0, 0.3);
+            --glass-border-color: #ffffff;
         }
 
         [data-theme='light'] {
@@ -75,6 +76,7 @@
             --text-warning: hsl(45, 75%, 40%);
             --text-success: hsl(130, 75%, 40%);
             --text-error: hsl(360, 75%, 40%);
+            --glass-border-color: #000000;
         }
 
         [data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
@@ -226,42 +228,40 @@
     @endif
 
     <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full">
-        {{-- alert --}}
-        <div id="messageBox" class="absolute top-7 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
-            @if (session('info'))
-                <x-alert type="info" :messages="session('info')" />
-            @endif
-        
-            @if (session('success'))
-                <x-alert type="success" :messages="session('success')" />
-            @endif
-        
-            @if (session('warning'))
-                <x-alert type="warning" :messages="session('warning')" />
-            @endif
-        
-            @if (session('error'))
-                <x-alert type="error" :messages="session('error')" />
-            @endif
-        </div>
-        <!-- Notification Box -->
-        <div
-             id="notificationBox"
-             class="absolute top-5 right-5 flex flex-col space-y-3 z-[100] text-sm mx-auto items-end w-full select-none">
-            {{-- <x-notification
-                title="Payment Method Expiring"
-                message="Your card ending in 1122 is expiring soon. Please update your billing info."
-                actionLabel="Update Card"
-                actionUrl="/billing"
-            /> --}}
-            {{-- <x-notification
-                title="Payment Method Expiring"
-                message="Your card ending in 1122 is expiring soon. Please update your billing info."
-            /> --}}
-        </div>
-
         {{-- main content --}}
         <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-3 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-3.5 relative">
+            {{-- alert --}}
+            <div id="messageBox" class="absolute top-3 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
+                @if (session('info'))
+                    <x-alert type="info" :messages="session('info')" />
+                @endif
+            
+                @if (session('success'))
+                    <x-alert type="success" :messages="session('success')" />
+                @endif
+            
+                @if (session('warning'))
+                    <x-alert type="warning" :messages="session('warning')" />
+                @endif
+            
+                @if (session('error'))
+                    <x-alert type="error" :messages="session('error')" />
+                @endif
+            </div>
+            <!-- Notification Box -->
+            <div id="notificationBox" class="absolute top-3 right-3 flex flex-col space-y-3 z-[100] text-sm mx-auto items-end w-full select-none">
+                {{-- <x-notification
+                    title="Payment Method Expiring"
+                    message="Your card ending in 1122 is expiring soon. Please update your billing info."
+                    actionLabel="Update Card"
+                    actionUrl="/billing"
+                />
+                <x-notification
+                    title="Payment Method Expiring"
+                    message="Your card ending in 1122 is expiring soon. Please update your billing info."
+                /> --}}
+            </div>
+
             <div class="main-child grow">
                 @yield('content')
             </div>

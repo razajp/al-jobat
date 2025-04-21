@@ -11,7 +11,7 @@
 <div class="flex justify-between mb-2 progress-indicators">
     @foreach ($steps as $index => $step)
         <p
-            class="text-xs inline-block font-medium tracking-wide py-1 px-3 capitalize rounded-md text-[var(--text-color)] transition-all 0.3s ease-in-out cursor-pointer
+            class="text-xs inline-block font-medium tracking-wide py-1 px-3 capitalize rounded-lg text-[var(--text-color)] transition-all 0.3s ease-in-out cursor-pointer
             {{ $currentStep === $index + 1 ? 'bg-[' . $primaryColor . '] hover:bg-[' . $hPrimaryColor . ']' : 'bg-[' . $bgColor . '] hover:bg-[' . $hBgColor . ']' }}"
             id="step{{ $index + 1 }}-indicator"
             onclick="gotoStep({{ $index + 1 }})">

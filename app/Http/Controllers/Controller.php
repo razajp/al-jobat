@@ -103,7 +103,7 @@ class Controller extends BaseController
         return true;
     }
 
-    public function getOrderDetails(Request $request)
+    public function getDetailsForInvoice(Request $request)
     {
         $validator = Validator::make($request->all(), [
             "order_no" => "required|exists:orders,order_no",
@@ -183,15 +183,15 @@ class Controller extends BaseController
             return response()->json(["error" => $validator->errors()->first()]);
         }
 
-        return $request->invoice_type;
+        $user = Auth::user();
+        $user->invoice_type = $request->invoice_type;
+        $user->save();
 
-        // $user = Auth::user();
-        // $user->invoice_type = $request->invoice_type;
-        // $user->save();
+        session()->flash('success', 'Invoice type updated.');
 
-        // return response()->json([
-        //     'status' => 'success',
-        //     'message' => 'Invoice type updated successfully.',
-        // ]);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Invoice type set as default.',
+        ]);
     }
 }

@@ -2,6 +2,10 @@
 @section('title', 'Generate Invoice | ' . app('company')->name)
 @section('content')
 
+@php
+    $invoiceType = Auth::user()->invoice_type;
+@endphp
+
     <div class="switch-btn-container flex absolute top-3 md:top-7 left-3 md:left-8">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
@@ -9,6 +13,7 @@
             
             <!-- Buttons -->
             <button
+                id="orderBtn"
                 type="button"
                 class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
                 onclick="setInvoiceType(this, 'order')"
@@ -17,6 +22,7 @@
                 <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
             </button>
             <button
+                id="shipmentBtn"
                 type="button"
                 class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
                 onclick="setInvoiceType(this, 'shipment')"
@@ -28,7 +34,14 @@
     </div>
 
     <script>
+        let btnTypeGlobal = "order";
+
         function setInvoiceType(btn, btnType) {
+            // check if its already selected
+            if (btnTypeGlobal == btnType) {
+                return;
+            }
+
             $.ajax({
                 url: "/set-invoice-type",
                 type: "POST",
@@ -37,7 +50,7 @@
                     invoice_type: btnType
                 },
                 success: function (response) {
-                    console.log(response);
+                    location.reload();
                 }
             });
 
@@ -53,12 +66,19 @@
             // Move and resize the highlight
             highlight.style.width = `${rect.width}px`;
             highlight.style.left = `${rect.left - parentRect.left - 3}px`;
+
+            btnTypeGlobal = btnType; 
         }
     
         // Initialize highlight on load
         window.onload = () => {
-            const activeBtn = document.querySelector(".switch-btn button");
-            moveHighlight(activeBtn, "order");
+            @if($invoiceType == 'order')
+                const activeBtn = document.querySelector("#orderBtn");
+                moveHighlight(activeBtn, "order");
+            @else
+                const activeBtn = document.querySelector("#shipmentBtn");
+                moveHighlight(activeBtn, "shipment");
+            @endif
         };
     </script>
 
@@ -80,60 +100,103 @@
         </div>
 
         <!-- Step 1: Generate Invoice -->
-        <div class="step1 space-y-4 ">
-            {{-- <div class="switch-btn-container flex justify-center">
-                <div class="switch-btn flex border-3 border-[var(--h-bg-color)] bg-[var(--h-bg-color)] rounded-2xl overflow-hidden">
-                    <button type="button" class="px-5 py-2 cursor-pointer rounded-xl bg-[var(--secondary-bg-color)]">Order</button>
-                    <button type="button" class="px-5 py-2 cursor-pointer">Shipment</button>
+        @if($invoiceType == 'order')
+            <div class="step1 space-y-4 ">
+                <div class="flex justify-between gap-4">
+                    <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
+                    {{-- order_no --}}
+                    <div class="grow">
+                        <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
+                    </div>
                 </div>
-            </div> --}}
+                {{-- rate showing --}}
+                <div id="article-table" class="w-full text-left text-sm">
+                    <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                        <div class="w-[5%]">#</div>
+                        <div class="w-[11%]">Article</div>
+                        <div class="w-[11%]">Packets</div>
+                        <div class="w-[10%]">Pcs</div>
+                        <div class="grow">Decs.</div>
+                        <div class="w-[8%]">Pcs/Pkt.</div>
+                        <div class="w-[12%] text-right">Rate/Pc</div>
+                        <div class="w-[15%] text-right">Amount</div>
+                    </div>
+                    <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                        <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
+                    </div>
+                </div>
 
-            <div class="flex justify-between gap-4">
-                <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
-                {{-- order_no --}}
-                <div class="grow">
-                    <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
+                <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
+
+                <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
+                    <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Total Quantity - Pcs</div>
+                        <div id="totalQuantityInForm">0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Gross Amount - Rs.</div>
+                        <div id="totalAmountInForm">0.0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Discount - %</div>
+                        <div id="dicountInForm">0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Net Amount - Rs.</div>
+                        <input type="text" name="netAmount" id="netAmountInForm" value="0.0" readonly
+                            class="text-right bg-transparent outline-none w-1/2 border-none" />
+                    </div>
                 </div>
             </div>
-            {{-- rate showing --}}
-            <div id="article-table" class="w-full text-left text-sm">
-                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
-                    <div class="w-[5%]">#</div>
-                    <div class="w-[11%]">Article</div>
-                    <div class="w-[11%]">Packets</div>
-                    <div class="w-[10%]">Pcs</div>
-                    <div class="grow">Decs.</div>
-                    <div class="w-[8%]">Pcs/Pkt.</div>
-                    <div class="w-[12%] text-right">Rate/Pc</div>
-                    <div class="w-[15%] text-right">Amount</div>
+        @else
+            <div class="step1 space-y-4 ">
+                <div class="flex justify-between gap-4">
+                    <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
+                    {{-- shipment_no --}}
+                    <div class="grow">
+                        <x-input label="Shipment Number" name="shipment_no" id="shipment_no" placeholder="Enter shipment number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value=""/>
+                    </div>
                 </div>
-                <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
-                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
+                {{-- rate showing --}}
+                <div id="article-table" class="w-full text-left text-sm">
+                    <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                        <div class="w-[5%]">#</div>
+                        <div class="w-[11%]">Article</div>
+                        <div class="w-[11%]">Packets</div>
+                        <div class="w-[10%]">Pcs</div>
+                        <div class="grow">Decs.</div>
+                        <div class="w-[8%]">Pcs/Pkt.</div>
+                        <div class="w-[12%] text-right">Rate/Pc</div>
+                        <div class="w-[15%] text-right">Amount</div>
+                    </div>
+                    <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                        <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
+                    </div>
+                </div>
+
+                <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
+
+                <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
+                    <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Total Quantity - Pcs</div>
+                        <div id="totalQuantityInForm">0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Gross Amount - Rs.</div>
+                        <div id="totalAmountInForm">0.0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Discount - %</div>
+                        <div id="dicountInForm">0</div>
+                    </div>
+                    <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
+                        <div class="grow">Net Amount - Rs.</div>
+                        <input type="text" name="netAmount" id="netAmountInForm" value="0.0" readonly
+                            class="text-right bg-transparent outline-none w-1/2 border-none" />
+                    </div>
                 </div>
             </div>
-
-            <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
-
-            <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
-                <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Quantity - Pcs</div>
-                    <div id="totalQuantityInForm">0</div>
-                </div>
-                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Gross Amount - Rs.</div>
-                    <div id="totalAmountInForm">0.0</div>
-                </div>
-                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Discount - %</div>
-                    <div id="dicountInForm">0</div>
-                </div>
-                <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Net Amount - Rs.</div>
-                    <input type="text" name="netAmount" id="netAmountInForm" value="0.0" readonly
-                        class="text-right bg-transparent outline-none w-1/2 border-none" />
-                </div>
-            </div>
-        </div>
+        @endif
 
         <!-- Step 2: view order -->
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
@@ -200,12 +263,12 @@
         });
 
         generateInvoiceBtn.addEventListener('click', function () {
-            getOrderDetails();
+            getDetailsForInvoice();
         });
 
-        function getOrderDetails() {
+        function getDetailsForInvoice() {
             $.ajax({
-                url: "/get-order-details",
+                url: "/get-details-for-invoice",
                 type: "POST",
                 data: {
                     _token: "{{ csrf_token() }}",

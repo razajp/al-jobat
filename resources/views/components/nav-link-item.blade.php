@@ -9,16 +9,16 @@
     </button>
 
     <!-- Dropdown Menu -->
-    <div class="dropdownMenu text-sm absolute top-0 left-16 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
+    <div class="dropdownMenu text-sm absolute top-0 left-16 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all 0.3s ease-in-out z-50">
         <ul class="p-2">
             @foreach ($items as $item)
                 <li>
                     @if ($item['type'] === 'link')
-                        <a href="{{ $item['href'] }}" class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-200 ease-in-out">
+                        <a href="{{ $item['href'] }}" class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out">
                             {{ $item['label'] }}
                         </a>
                     @elseif ($item['type'] === 'button')
-                        <button onclick="{{ $item['onclick'] ?? '' }}" class="block w-full text-left px-4 py-2 {{ $item['class'] ?? '' }} rounded-md transition-all duration-200 ease-in-out">
+                        <button onclick="{{ $item['onclick'] ?? '' }}" class="block w-full text-left px-4 py-2 {{ $item['class'] ?? '' }} rounded-lg transition-all duration-200 ease-in-out">
                             {{ $item['label'] }}
                         </button>
                     @endif
