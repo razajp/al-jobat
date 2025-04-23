@@ -7,6 +7,13 @@
 @endphp
 
     @if ($invoiceType == 'shipment')
+        <style>
+            .checkbox-container:has(.row-checkbox:checked) input[type="number"] {
+                pointer-events: all;
+                opacity: 1;
+            }
+        </style>
+    
         <!-- Modals -->
         <div id="modal"
             class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
@@ -30,16 +37,13 @@
                                     Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
                                     <span id="total-count">{{ $customers->count() }}</span> customers
                                 </div>
-                                <div>
-                                    <!-- You can add bulk actions here later -->
-                                    <button class="text-xs text-[var(--primary-color)] hover:underline focus:outline-none">Bulk Actions</button>
+                                <div class="text-sm font-medium">
+                                    Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
                                 </div>
                             </div>
                             <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'><!-- HEADER BAR -->
                                 <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
-                                    <div class="text-left pl-5 flex items-center">
-                                        <input type="checkbox" id="select-all" class="w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
-                                    </div>
+                                    <div class="text-left pl-5 flex items-center">Select</div>
                                     <div class="text-left">Customer</div>
                                     <div class="text-left">Urdu Title</div>
                                     <div class="text-center">Category</div>
@@ -49,12 +53,14 @@
                             
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @foreach ($customers as $customer)
-                                        <div id="{{ $customer->id }}" data-json='{{ $customer }}'
+                                        <div id="customer-{{ $customer->id }}" data-json='{{ $customer }}'
                                             class="contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
                                         >
-                                            <span class="text-left pl-5 flex items-center">
+                                            <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
                                                 <input type="checkbox" name="selected_customers[]" value="{{ $customer->id }}"
-                                                    class="row-checkbox w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                                                    class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                                                
+                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" />
                                             </span>
                                             <span class="text-left">{{ $customer->customer_name }}</span>
                                             <span class="text-left">{{ $customer->urdu_title }}</span>
@@ -299,7 +305,6 @@
     </form>
 
     <script>
-        let orderedArticles = [];
         let articlesInInvoice = [];
         let totalQuantityPcs = 0;
         let totalAmount = 0;
@@ -311,14 +316,23 @@
 
     @if ($invoiceType == 'shipment')
         <script>
+            let shipmentArticles = [];
             const shipmentNoDom = document.getElementById("shipment_no");
             const selectCustomersBtn = document.getElementById("selectCustomersBtn");
             selectCustomersBtn.disabled = true;
+
+            let selectedCustomersArray = [];
+
+            let maxCottonCount = 0;
 
             shipmentNoDom.addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') {
                     getShipmentDetails();
                 }
+            });
+
+            selectCustomersBtn.addEventListener("click", (e)=>{
+                getShipmentDetails();
             });
 
             function getShipmentDetails() {
@@ -330,10 +344,31 @@
                         shipment_no: shipmentNoDom.value
                     },
                     success: function (response) {
-                        console.log(response);
-                        openModal();
+                        if (!response.error) {
+                            openModal();
+
+                            shipmentArticles = response.articles;
+                            discount = response.discount ?? 0;
+
+                            renderList();
+                            renderCalcBottom();
+
+                            calculateNoOfSelectableCustomers(response.articles);
+                        }
                     }
                 });
+            }
+
+            function calculateNoOfSelectableCustomers(articlesArray) {
+                let countOfCottonsOfArticles = [];
+
+                articlesArray.forEach((article) => {
+                    countOfCottonsOfArticles.push(Math.floor(article.available_stock / article.shipment_quantity));
+                });
+
+                maxCottonCount = Math.min(...countOfCottonsOfArticles);
+
+                document.getElementById('max-cottons-count').textContent = maxCottonCount;
             }
 
             function openModal() {
@@ -370,7 +405,6 @@
                     }
                 }
             });
-
             
             shipmentNoDom.addEventListener('input', (e) => {
                 let value = e.target.value;
@@ -390,29 +424,68 @@
                 }
             }
 
+            const articleListDOM = document.getElementById('article-list');
+            function renderList() {
+                if (shipmentArticles && shipmentArticles.length > 0) {
+                    totalAmount = 0;
+                    totalQuantityPcs = 0;
+
+                    let clutter = "";
+                    shipmentArticles.forEach((selectedArticle, index) => {
+                        if (selectedArticle.available_stock > selectedArticle.shipment_quantity) {
+                            totalQuantityPcs += selectedArticle.available_stock;
+
+                            let articleAmount = selectedArticle.article.sales_rate * selectedArticle.available_stock;
+
+                            clutter += `
+                                <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
+                                    <div class="w-[5%]">${index + 1}.</div>
+                                    <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
+                                    <div class="w-[11%] pr-3">${formatNumbersDigitLess(selectedArticle.shipment_quantity / selectedArticle.article.pcs_per_packet)}</div>
+                                    <div class="w-[10%]">${formatNumbersDigitLess(selectedArticle.shipment_quantity)}</div>
+                                    <div class="grow">${selectedArticle.description}</div>
+                                    <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
+                                    <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
+                                    <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
+                                </div>
+                            `;
+
+                            totalAmount += articleAmount;
+
+                            selectedArticle.packets = selectedArticle.available_stock / selectedArticle.article.pcs_per_packet
+                        }
+                    });
+
+                    articleListDOM.innerHTML = clutter;
+                } else {
+                    articleListDOM.innerHTML =
+                        `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Orders Yet</div>`;
+                }
+            }
+            renderList();
+
+            // Calc Bottom
+            let totalQuantityInFormDom = document.getElementById('totalQuantityInForm');
+            let totalAmountInFormDom = document.getElementById('totalAmountInForm');
+            let dicountInFormDom = document.getElementById('dicountInForm');
+            let netAmountInFormDom = document.getElementById('netAmountInForm');
+            
+            function renderCalcBottom() {
+                netAmount = totalAmount - (totalAmount * (discount / 100));
+                totalQuantityInFormDom.textContent = formatNumbersDigitLess(totalQuantityPcs);
+                totalAmountInFormDom.textContent = formatNumbersWithDigits(totalAmount, 1, 1);
+                dicountInFormDom.textContent = discount;
+                netAmountInFormDom.value = formatNumbersWithDigits(netAmount, 1, 1);
+            }
+
             // 
 
             function updateSelectedCount() {
                 const checkboxes = document.querySelectorAll('.row-checkbox');
                 const selected = document.querySelectorAll('.row-checkbox:checked').length;
-                const selectAll = document.getElementById('select-all');
 
                 document.getElementById('selected-count').textContent = selected;
-
-                // Automatically update "Select All" checkbox
-                if (selected === checkboxes.length) {
-                    selectAll.checked = true;
-                } else {
-                    selectAll.checked = false;
-                }
             }
-
-            // Select all checkbox
-            document.getElementById('select-all').addEventListener('change', function () {
-                const checkboxes = document.querySelectorAll('.row-checkbox');
-                checkboxes.forEach(cb => cb.checked = this.checked);
-                updateSelectedCount();
-            });
 
             // Individual checkbox
             document.querySelectorAll('.row-checkbox').forEach(cb => {
@@ -429,9 +502,42 @@
                     checkbox.dispatchEvent(new Event('change')); // trigger count + update
                 });
             });
+
+            // apply event listeners to all checkboxes
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.addEventListener('change', function () {
+                    const customerRowDOM = this.closest('.row-toggle');
+                    selectCustomer(customerRowDOM);
+                });
+            });
+
+            function selectCustomer(customerRowDOM) {
+                const checkbox = customerRowDOM.querySelector('.row-checkbox');
+                const customerData = JSON.parse(customerRowDOM.dataset.json);
+                const customerId = customerData.id;
+
+                let cottonCount = customerRowDOM.querySelector('input.cottonCount').value;
+
+                if (checkbox.checked) {
+                    selectedCustomersArray.push(customerData);
+
+                    maxCottonCount -= parseInt(cottonCount);
+                } else {
+                    const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
+                    if (index > -1) {
+                        selectedCustomersArray.splice(index, 1);
+                    }
+
+                    maxCottonCount += parseInt(cottonCount);
+                }
+
+                console.log(maxCottonCount);
+                
+            }
         </script>
     @else
         <script>
+            let orderedArticles = [];
             let customerData;
             const articleModalDom = document.getElementById("articleModal");
             const quantityModalDom = document.getElementById("quantityModal");
