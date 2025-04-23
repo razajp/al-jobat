@@ -60,7 +60,7 @@
                                                 <input type="checkbox" name="selected_customers[]"
                                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
                                                 
-                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" />
+                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1"/>
                                             </span>
                                             <span class="text-left">{{ $customer->customer_name }}</span>
                                             <span class="text-left">{{ $customer->urdu_title }}</span>
@@ -320,6 +320,7 @@
             const shipmentNoDom = document.getElementById("shipment_no");
             const selectCustomersBtn = document.getElementById("selectCustomersBtn");
             selectCustomersBtn.disabled = true;
+            let allCottonCountInputs = document.querySelectorAll('.cottonCount');
 
             let selectedCustomersArray = [];
 
@@ -517,9 +518,9 @@
                 const customerId = customerData.id;
 
                 let cottonCountInput = customerRowDOM.querySelector('input.cottonCount');
+                let cottonCount = cottonCountInput.value;
                 cottonCountInput.value = 1;
 
-                let cottonCount = cottonCountInput.value;
 
                 if (checkbox.checked) {
                     if (maxCottonCount > 0) {   
@@ -534,17 +535,26 @@
                         selectedCustomersArray.splice(index, 1);
                     }
 
+                    cottonCountInput.dataset.previousValue = 1;
+                    setMaxOnCottonINP();
+
                     maxCottonCount += parseInt(cottonCount);
                 }
-
                 updateCustomerRowsState();
 
                 console.log(maxCottonCount);
             }
 
-            let allCottonCountInputs = document.querySelectorAll('.cottonCount');
             allCottonCountInputs.forEach(input => {
                 input.addEventListener('input', function () {
+                    if (!this.dataset.previousValue) {
+                        this.dataset.previousValue = 1;
+                    }
+                    console.log(this.dataset.previousValue);
+                    const previousValue = this.dataset.previousValue || '';
+
+                    setMaxOnCottonINP();
+                    let maxCotton = parseInt(document.getElementById('max-cottons-count').textContent)
                     const cottonCount = parseInt(this.value);
                     
                     // if we input, then it is already in selectedCustomersArray. So, just find that custome object
@@ -552,15 +562,22 @@
                     const customerData = JSON.parse(customerRowDOM.dataset.json);
                     const customerId = customerData.id;
                     const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
-                    if (index > -1) {
+                    if (index >= 0) {
                         selectedCustomersArray[index]['cotton_count'] = cottonCount;
+                        console.log('farq : '+(this.value - parseInt(previousValue)));
+                        console.log('farq2 : '+parseInt(previousValue));
                         
-                        // update maxCount
-                        if (cottonCount > 1) {
-                            maxCottonCount -= cottonCount - 1;
+                        if ((this.value - parseInt(previousValue)) > 0) {
+                            // update maxCount
+                            if (cottonCount > 1 && maxCottonCount > 0) {
+                                maxCottonCount -= (this.value - parseInt(previousValue));
+                            }
+                        } else {
+                            maxCottonCount += Math.abs(this.value - parseInt(previousValue));
                         }
                     }
 
+                    this.dataset.previousValue = this.value;
                     updateCustomerRowsState();
                 });
             });
@@ -585,6 +602,12 @@
                 });
 
                 // document.getElementById('total-count').textContent = selectedCustomersArray.length;
+            }
+
+            function setMaxOnCottonINP() {
+                allCottonCountInputs.forEach((input)=>{
+                    input.max = maxCottonCount + 1;
+                })
             }
         </script>
     @else
