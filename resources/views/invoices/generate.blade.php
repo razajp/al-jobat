@@ -54,10 +54,10 @@
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @foreach ($customers as $customer)
                                         <div id="customer-{{ $customer->id }}" data-json='{{ $customer }}'
-                                            class="contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
+                                            class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
                                         >
                                             <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
-                                                <input type="checkbox" name="selected_customers[]" value="{{ $customer->id }}"
+                                                <input type="checkbox" name="selected_customers[]"
                                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
                                                 
                                                 <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" />
@@ -516,12 +516,18 @@
                 const customerData = JSON.parse(customerRowDOM.dataset.json);
                 const customerId = customerData.id;
 
-                let cottonCount = customerRowDOM.querySelector('input.cottonCount').value;
+                let cottonCountInput = customerRowDOM.querySelector('input.cottonCount');
+                cottonCountInput.value = 1;
+
+                let cottonCount = cottonCountInput.value;
 
                 if (checkbox.checked) {
-                    selectedCustomersArray.push(customerData);
+                    if (maxCottonCount > 0) {   
+                        customerData['cotton_count'] = cottonCount;
+                        selectedCustomersArray.push(customerData);
 
-                    maxCottonCount -= parseInt(cottonCount);
+                        maxCottonCount -= parseInt(cottonCount);
+                    }
                 } else {
                     const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
                     if (index > -1) {
@@ -531,8 +537,54 @@
                     maxCottonCount += parseInt(cottonCount);
                 }
 
+                updateCustomerRowsState();
+
                 console.log(maxCottonCount);
-                
+            }
+
+            let allCottonCountInputs = document.querySelectorAll('.cottonCount');
+            allCottonCountInputs.forEach(input => {
+                input.addEventListener('input', function () {
+                    const cottonCount = parseInt(this.value);
+                    
+                    // if we input, then it is already in selectedCustomersArray. So, just find that custome object
+                    const customerRowDOM = this.closest('.row-toggle');
+                    const customerData = JSON.parse(customerRowDOM.dataset.json);
+                    const customerId = customerData.id;
+                    const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
+                    if (index > -1) {
+                        selectedCustomersArray[index]['cotton_count'] = cottonCount;
+                        
+                        // update maxCount
+                        if (cottonCount > 1) {
+                            maxCottonCount -= cottonCount - 1;
+                        }
+                    }
+
+                    updateCustomerRowsState();
+                });
+            });
+
+            function updateCustomerRowsState() {
+                const customerRows = document.querySelectorAll('.customer-row');
+                const cottonCountInputs = document.querySelectorAll('.cottonCount');
+
+                customerRows.forEach((customerRow, index) => {
+                    if (maxCottonCount > 0) {
+                        customerRow.style.pointerEvents = 'all';
+                        customerRow.style.opacity = '1';
+                        customerRow.style.cursor = 'pointer';
+                    } else {
+                        const checkbox = customerRow.querySelector('.row-checkbox');
+                        if (!checkbox.checked) {
+                            customerRow.style.pointerEvents = 'none';
+                            customerRow.style.opacity = '0.5';
+                            customerRow.style.cursor = 'not-allowed';
+                        }
+                    }
+                });
+
+                // document.getElementById('total-count').textContent = selectedCustomersArray.length;
             }
         </script>
     @else
