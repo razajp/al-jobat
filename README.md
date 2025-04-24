@@ -144,9 +144,10 @@ This project is hosted in a **private GitHub repository** for confidentiality.
 
 ## 👨‍💻 Developer
 
-**Hasan Raza**  
+**Hasan Raza**    **Hassan Raza**
 Full-Stack Developer – Laravel & Web Apps  
 GitHub: [@razajp](https://github.com/razajp)  
+GitHub: [@Hassan-Ng](https://github.com/hassan-ng)  
 🌐 Portfolio: *[Add your link here]*
 
 ---
