@@ -84,49 +84,54 @@ class InvoiceController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-
-        return $request->all();
         
-        $validator = Validator::make($request->all(), [
-            "invoice_no" => "required|string|unique:invoices,invoice_no",
-            "order_no" => "required|string|exists:orders,order_no",
-            "date" => "required|date",
-            "netAmount" => "required|string",
-            "articles_in_invoice" => "required|string",
-        ]);
-        
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
-        
-        $data = $request->all();
+        // check request has shipment no
+        if ($request->has('shipment_no')) {
+            $customers_array = json_decode($request->customers_array, true);
 
-        $articles = json_decode($data["articles_in_invoice"], true);
-
-        foreach ($articles as $article) {
-            $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
-        }
-
-        foreach ($articles as $article) {
-            $orderDb = Order::where("order_no", $data["order_no"])->first();
-            $orderedArticleDb = json_decode($orderDb["articles"], true);
-
-            // Update all matching articles
-            foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference to modify in place
-                if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
-                    // Update invoice_quantity without overwriting existing value
-                    $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
-                }
+            return $customers_array;
+        } else if ($request->has('order_no')) {
+            $validator = Validator::make($request->all(), [
+                "invoice_no" => "required|string|unique:invoices,invoice_no",
+                "order_no" => "required|string|exists:orders,order_no",
+                "date" => "required|date",
+                "netAmount" => "required|string",
+                "articles_in_invoice" => "required|string",
+            ]);
+            
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
             }
-
-            // Save updated articles back to the database
-            $orderDb->articles = json_encode($orderedArticleDb);
-            $orderDb->save();
+            
+            $data = $request->all();
+    
+            $articles = json_decode($data["articles_in_invoice"], true);
+    
+            foreach ($articles as $article) {
+                $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
+            }
+    
+            foreach ($articles as $article) {
+                $orderDb = Order::where("order_no", $data["order_no"])->first();
+                $orderedArticleDb = json_decode($orderDb["articles"], true);
+    
+                // Update all matching articles
+                foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference to modify in place
+                    if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
+                        // Update invoice_quantity without overwriting existing value
+                        $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
+                    }
+                }
+    
+                // Save updated articles back to the database
+                $orderDb->articles = json_encode($orderedArticleDb);
+                $orderDb->save();
+            }
+    
+            $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
+            
+            Invoice::create($data);
         }
-
-        $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
-        
-        Invoice::create($data);
 
         return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
     }
