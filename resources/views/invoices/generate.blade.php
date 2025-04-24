@@ -60,7 +60,7 @@
                                                 <input type="checkbox" name="selected_customers[]"
                                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
                                                 
-                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1"/>
+                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()"/>
                                             </span>
                                             <span class="text-left">{{ $customer->customer_name }}</span>
                                             <span class="text-left">{{ $customer->urdu_title }}</span>
@@ -270,7 +270,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="articles_in_invoice" id="articles_in_invoice" value="">
+                <input type="hidden" name="customers_array" id="customers_array" value="">
 
                 <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
                     <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
@@ -287,7 +287,7 @@
                     </div>
                     <div class="final flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                         <div class="grow">Net Amount - Rs.</div>
-                        <input type="text" name="netAmount" id="netAmountInForm" value="0.0" readonly
+                        <input type="text" id="netAmountInForm" value="0.0" readonly
                             class="text-right bg-transparent outline-none w-1/2 border-none" />
                     </div>
                 </div>
@@ -324,6 +324,7 @@
 
             let selectedCustomersArray = [];
 
+            let ogMaxCottonCount = 0;
             let maxCottonCount = 0;
 
             shipmentNoDom.addEventListener('keydown', (e) => {
@@ -368,6 +369,7 @@
                 });
 
                 maxCottonCount = Math.min(...countOfCottonsOfArticles);
+                ogMaxCottonCount = maxCottonCount;
 
                 document.getElementById('max-cottons-count').textContent = maxCottonCount;
             }
@@ -390,6 +392,19 @@
                 }, {
                     once: true
                 });
+
+                setArrayToCustomersArrayInput();
+            }
+
+            function setArrayToCustomersArrayInput() {
+                const customersArrayInput = document.getElementById("customers_array");
+                let finalCustomersArray = selectedCustomersArray.map(customer => {
+                    return {
+                        id: customer.id,
+                        cotton_count: customer.cotton_count,
+                    }
+                })
+                customersArrayInput.value = JSON.stringify(finalCustomersArray);
             }
             
             document.addEventListener('click', (e) => {
@@ -521,13 +536,14 @@
                 let cottonCount = cottonCountInput.value;
                 cottonCountInput.value = 1;
 
+                const availableCottonCount = getAvailableCottonCount(cottonCountInput);
 
                 if (checkbox.checked) {
-                    if (maxCottonCount > 0) {   
+                    if (availableCottonCount > 0) {   
                         customerData['cotton_count'] = cottonCount;
                         selectedCustomersArray.push(customerData);
 
-                        maxCottonCount -= parseInt(cottonCount);
+                        // maxCottonCount -= parseInt(cottonCount);
                     }
                 } else {
                     const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
@@ -536,58 +552,116 @@
                     }
 
                     cottonCountInput.dataset.previousValue = 1;
-                    setMaxOnCottonINP();
 
-                    maxCottonCount += parseInt(cottonCount);
+                    // maxCottonCount += parseInt(cottonCount);
                 }
                 updateCustomerRowsState();
-
-                console.log(maxCottonCount);
             }
 
-            allCottonCountInputs.forEach(input => {
-                input.addEventListener('input', function () {
-                    if (!this.dataset.previousValue) {
-                        this.dataset.previousValue = 1;
-                    }
-                    console.log(this.dataset.previousValue);
-                    const previousValue = this.dataset.previousValue || '';
+            // allCottonCountInputs.forEach(input => {
+            //     input.addEventListener('input', function () {
+            //         // if (!this.dataset.previousValue) {
+            //         //     this.dataset.previousValue = 1;
+            //         // }
+            //         // console.log(this.dataset.previousValue);
+            //         // const previousValue = this.dataset.previousValue || '';
 
-                    setMaxOnCottonINP();
-                    let maxCotton = parseInt(document.getElementById('max-cottons-count').textContent)
-                    const cottonCount = parseInt(this.value);
+            //         // let maxCotton = parseInt(document.getElementById('max-cottons-count').textContent)
+            //         // const cottonCount = parseInt(this.value);
                     
-                    // if we input, then it is already in selectedCustomersArray. So, just find that custome object
-                    const customerRowDOM = this.closest('.row-toggle');
-                    const customerData = JSON.parse(customerRowDOM.dataset.json);
-                    const customerId = customerData.id;
-                    const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
-                    if (index >= 0) {
-                        selectedCustomersArray[index]['cotton_count'] = cottonCount;
-                        console.log('farq : '+(this.value - parseInt(previousValue)));
-                        console.log('farq2 : '+parseInt(previousValue));
+            //         // // if we input, then it is already in selectedCustomersArray. So, just find that custome object
+            //         // const customerRowDOM = this.closest('.row-toggle');
+            //         // const customerData = JSON.parse(customerRowDOM.dataset.json);
+            //         // const customerId = customerData.id;
+            //         // const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
+            //         // if (index >= 0) {
+            //         //     selectedCustomersArray[index]['cotton_count'] = cottonCount;
+            //         //     console.log('farq : '+(this.value - parseInt(previousValue)));
+            //         //     console.log('farq2 : '+parseInt(previousValue));
                         
-                        if ((this.value - parseInt(previousValue)) > 0) {
-                            // update maxCount
-                            if (cottonCount > 1 && maxCottonCount > 0) {
-                                maxCottonCount -= (this.value - parseInt(previousValue));
-                            }
-                        } else {
-                            maxCottonCount += Math.abs(this.value - parseInt(previousValue));
-                        }
-                    }
+            //         //     if ((this.value - parseInt(previousValue)) > 0) {
+            //         //         // update maxCount
+            //         //         if (cottonCount > 1 && maxCottonCount > 0) {
+            //         //             maxCottonCount -= (this.value - parseInt(previousValue));
+            //         //         }
+            //         //     } else {
+            //         //         maxCottonCount += Math.abs(this.value - parseInt(previousValue));
+            //         //     }
+            //         // }
 
-                    this.dataset.previousValue = this.value;
-                    updateCustomerRowsState();
+            //         // this.dataset.previousValue = this.value;
+            //         // updateCustomerRowsState();
+
+
+
+
+
+            //     });
+            // });
+
+            function setOnInput(input) {
+                const cottonCount = parseInt(input.value);
+
+                const customerRowDOM = input.closest('.row-toggle');
+                const customerData = JSON.parse(customerRowDOM.dataset.json);
+                const customerId = customerData.id;
+                const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
+
+                if (index >= 0) {
+                    selectedCustomersArray[index]['cotton_count'] = cottonCount;
+                }
+
+                updateCustomerRowsState();
+            }
+
+            function validateCottonCount(currentInput) {
+                currentInput.value = currentInput.value.replace(/[^\d]/g, '');
+
+                const min = 1;
+                const availableCottonCount = getAvailableCottonCount(currentInput);
+
+                if (currentInput.value === '') {
+                    currentInput.value = min;
+                }
+
+                const value = parseInt(currentInput.value, 10);
+
+                if (value > availableCottonCount) {
+                    currentInput.value = availableCottonCount;
+                } else if (value < min) {
+                    currentInput.value = min;
+                }
+
+                setOnInput(currentInput);
+            }
+
+            function getAvailableCottonCount(currentInput) {
+                let sum = 0;
+                document.querySelectorAll('.cottonCount').forEach(input => {
+                    if (input !== currentInput) {
+                        // Skip disabled inputs (opacity 0 or pointer-events none)
+                        const style = window.getComputedStyle(input);
+                        if (
+                            style.opacity === '0' ||
+                            style.pointerEvents === 'none'
+                        ) return;
+
+                        const val = parseInt(input.value, 10);
+                        if (!isNaN(val)) sum += val;
+                    }
                 });
-            });
+                
+                let availableCottonCount = ogMaxCottonCount - sum;
+                return availableCottonCount;
+            }
 
             function updateCustomerRowsState() {
                 const customerRows = document.querySelectorAll('.customer-row');
-                const cottonCountInputs = document.querySelectorAll('.cottonCount');
+
+                const availableCottonCount = getAvailableCottonCount();
 
                 customerRows.forEach((customerRow, index) => {
-                    if (maxCottonCount > 0) {
+                    if (availableCottonCount > 0) {
                         customerRow.style.pointerEvents = 'all';
                         customerRow.style.opacity = '1';
                         customerRow.style.cursor = 'pointer';
@@ -604,10 +678,8 @@
                 // document.getElementById('total-count').textContent = selectedCustomersArray.length;
             }
 
-            function setMaxOnCottonINP() {
-                allCottonCountInputs.forEach((input)=>{
-                    input.max = maxCottonCount + 1;
-                })
+            function validateForNextStep(){
+                return true;
             }
         </script>
     @else

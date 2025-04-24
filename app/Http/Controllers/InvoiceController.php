@@ -84,6 +84,8 @@ class InvoiceController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
+
+        return $request->all();
         
         $validator = Validator::make($request->all(), [
             "invoice_no" => "required|string|unique:invoices,invoice_no",

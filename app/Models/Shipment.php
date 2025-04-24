@@ -21,6 +21,7 @@ class Shipment extends Model
     {
         return $this->hasMany(Invoice::class, 'shipment_no', 'shipment_no');
     }
+    
     public function getArticles()
     {
         $rawArticles = json_decode($this->articles, true); // decode the JSON field

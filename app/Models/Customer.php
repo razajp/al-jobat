@@ -46,6 +46,11 @@ class Customer extends Model
         return $this->morphMany(BankAccount::class, 'sub_category');
     }
 
+    public function invoices()
+    {
+        return $this->hasMany(Invoice::class, 'customer_id');
+    }
+
     public function getBalanceAttribute()
     {
         return $this->calculateBalance();
