@@ -116,24 +116,25 @@ class InvoiceController extends Controller
             $lastNumberPart = substr($last_Invoice->invoice_no, -4); // last 4 characters
             $nextNumber = str_pad((int)$lastNumberPart + 1, 4, '0', STR_PAD_LEFT);
 
-            $article_in_invoice = [];
-            foreach ($articlesInShipment as $article) {
-                $article_in_invoice[] = [
-                    "id" => $article['article']["id"],
-                    "description" => $article["description"],
-                    "invoice_quantity" => $article["shipment_quantity"],
-                ];
-            }
             
             // Loop on customers_array
             foreach ($customers_array as $customer) {
+                $article_in_invoice = [];
+                foreach ($articlesInShipment as $article) {
+                    $article_in_invoice[] = [
+                        "id" => $article['article']["id"],
+                        "description" => $article["description"],
+                        "invoice_quantity" => $article["shipment_quantity"] * $customer['cotton_count'],
+                    ];
+                    $articleDb = Article::where("id", $article['article']["id"])->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                }
+                
                 $invoice = new Invoice();
-
                 $invoice->customer_id = $customer["id"];
-            
                 $invoice->invoice_no = $currentYear . '-' . $nextNumber;
                 $invoice->shipment_no = $request->shipment_no;
                 $invoice->netAmount = $shipment->netAmount;
+                $invoice->cotton_count = $customer['cotton_count'];
                 $invoice->articles_in_invoice = json_encode($article_in_invoice);
                 $invoice->date = date("Y-m-d");
 

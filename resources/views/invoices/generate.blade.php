@@ -32,7 +32,7 @@
                         </div>
             
                         @if (count($customers) > 0)
-                            <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-[var(--h-border-color)]">
+                            <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-gray-600">
                                 <div class="text-sm font-medium">
                                     Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
                                     <span id="total-count">{{ $customers->count() }}</span> customers
@@ -457,7 +457,7 @@
                                 <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                     <div class="w-[5%]">${index + 1}.</div>
                                     <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
-                                    <div class="w-[11%] pr-3">${formatNumbersDigitLess(selectedArticle.shipment_quantity / selectedArticle.article.pcs_per_packet)}</div>
+                                    <div class="w-[11%] pr-3">${Math.floor(formatNumbersDigitLess(selectedArticle.shipment_quantity / selectedArticle.article.pcs_per_packet))}</div>
                                     <div class="w-[10%]">${formatNumbersDigitLess(selectedArticle.shipment_quantity)}</div>
                                     <div class="grow">${selectedArticle.description}</div>
                                     <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>

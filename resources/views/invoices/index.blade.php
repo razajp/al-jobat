@@ -268,6 +268,7 @@
             let totalQuantity = 0;
             let discount = data.order?.discount ?? data.shipment?.discount;
             let netAmount = data.netAmount;
+            let cottonCount = data.cotton_count ? 'Cotton: '+String(data.cotton_count).padStart(2, '0') : 0;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal">
@@ -282,7 +283,12 @@
                                             <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
+                                    <div class="left">
+                                        <div class="invoice-logo">
+                                            <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
+                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''} pr-2">${cottonCount}</div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <hr class="w-full my-3 border-black">
                                 <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
@@ -292,7 +298,7 @@
                                         <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                         <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
                                     </div>
-                                    <div class="right w-50 my-auto pr-3 text-sm text-black space-y-1.5">
+                                    <div class="right my-auto pr-3 text-sm text-black space-y-1.5">
                                         <div class="invoice-date leading-none">Date: ${data.date}</div>
                                         <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
                                         <div class="invoice-copy leading-none">Invoice Copy: Customer</div>

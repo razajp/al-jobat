@@ -16,6 +16,7 @@ class Invoice extends Model
         "customer_id",
         "date",
         "netAmount",
+        "cotton_count",
         "articles_in_invoice",
     ];
 
