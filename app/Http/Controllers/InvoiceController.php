@@ -87,6 +87,18 @@ class InvoiceController extends Controller
         
         // check request has shipment no
         if ($request->has('shipment_no')) {
+            $validator = Validator::make($request->all(), [
+                "invoice_no" => "required|string|unique:invoices,invoice_no",
+                "order_no" => "required|string|exists:orders,order_no",
+                "date" => "required|date",
+                "netAmount" => "required|string",
+                "articles_in_invoice" => "required|string",
+            ]);
+            
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
             $customers_array = json_decode($request->customers_array, true);
 
             return $customers_array;
