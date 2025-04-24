@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PhysicalQuantity;
+use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,7 +27,7 @@ class InvoiceController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $invoices = Invoice::with(['order.customer'])->get();
+        $invoices = Invoice::with(['order', 'shipment', 'customer'])->get();
     
         foreach ($invoices as $invoice) {
             $invoice['articles_in_invoice'] = json_decode($invoice->articles_in_invoice, true);
@@ -48,6 +49,7 @@ class InvoiceController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
         
+        // return $invoices;
         return view('invoices.index', compact('invoices', 'authLayout'));
     }    
 
@@ -88,11 +90,9 @@ class InvoiceController extends Controller
         // check request has shipment no
         if ($request->has('shipment_no')) {
             $validator = Validator::make($request->all(), [
-                "invoice_no" => "required|string|unique:invoices,invoice_no",
-                "order_no" => "required|string|exists:orders,order_no",
+                "shipment_no" => "required|string|exists:shipments,shipment_no",
                 "date" => "required|date",
-                "netAmount" => "required|string",
-                "articles_in_invoice" => "required|string",
+                "customers_array" => "required|json",
             ]);
             
             if ($validator->fails()) {
@@ -101,7 +101,49 @@ class InvoiceController extends Controller
             
             $customers_array = json_decode($request->customers_array, true);
 
-            return $customers_array;
+            $shipment = Shipment::where("shipment_no", $request->shipment_no)->first();
+            $articlesInShipment = $shipment->getArticles();
+            
+            $last_Invoice = Invoice::orderBy('id', 'desc')->first();
+
+            if (!$last_Invoice) {
+                $last_Invoice = new Invoice();
+                $last_Invoice->invoice_no = '0000-0000';
+            }
+            
+            $currentYear = date("Y");
+            
+            $lastNumberPart = substr($last_Invoice->invoice_no, -4); // last 4 characters
+            $nextNumber = str_pad((int)$lastNumberPart + 1, 4, '0', STR_PAD_LEFT);
+
+            $article_in_invoice = [];
+            foreach ($articlesInShipment as $article) {
+                $article_in_invoice[] = [
+                    "id" => $article['article']["id"],
+                    "description" => $article["description"],
+                    "invoice_quantity" => $article["shipment_quantity"],
+                ];
+            }
+            
+            // Loop on customers_array
+            foreach ($customers_array as $customer) {
+                $invoice = new Invoice();
+
+                $invoice->customer_id = $customer["id"];
+            
+                $invoice->invoice_no = $currentYear . '-' . $nextNumber;
+                $invoice->shipment_no = $request->shipment_no;
+                $invoice->netAmount = $shipment->netAmount;
+                $invoice->articles_in_invoice = json_encode($article_in_invoice);
+                $invoice->date = date("Y-m-d");
+
+                $nextNumber = str_pad((int)$nextNumber + 1, 4, '0', STR_PAD_LEFT);
+
+                $invoice->save();
+            }
+
+            return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
+
         } else if ($request->has('order_no')) {
             $validator = Validator::make($request->all(), [
                 "invoice_no" => "required|string|unique:invoices,invoice_no",
@@ -122,9 +164,10 @@ class InvoiceController extends Controller
             foreach ($articles as $article) {
                 $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
             }
-    
+
+            $orderDb = Order::where("order_no", $data["order_no"])->first();
             foreach ($articles as $article) {
-                $orderDb = Order::where("order_no", $data["order_no"])->first();
+                
                 $orderedArticleDb = json_decode($orderDb["articles"], true);
     
                 // Update all matching articles
@@ -141,6 +184,7 @@ class InvoiceController extends Controller
             }
     
             $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
+            $data["customer_id"] = $orderDb["customer_id"];
             
             Invoice::create($data);
         }

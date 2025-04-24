@@ -72,8 +72,8 @@
                                             <x-card :data="[
                                                 'name' => 'Invoice No: ' . $invoice->invoice_no,
                                                 'details' => [
-                                                    'Order No.' => $invoice->order_no,
-                                                    'Customer Name' => $invoice->order->customer->customer_name,
+                                                    $invoice->order_no ? 'Order No.' : 'Shipment No.' => $invoice->order_no ?? $invoice->shipment_no,
+                                                    'Customer Name' => $invoice->customer->customer_name,
                                                     'Date' => $invoice->date,
                                                 ],
                                             ]" />
@@ -92,7 +92,7 @@
                                         <div id="{{ $invoice->id }}" data-json='{{ $invoice }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span class="text-center">{{ $invoice->invoice_no }}</span>
                                             <span class="text-center">{{ $invoice->order_no }}</span>
-                                            <span class="text-center">{{ $invoice->order->customer->customer_name }}</span>
+                                            <span class="text-center">{{ $invoice->customer->customer_name }}</span>
                                             <span class="text-center">{{ $invoice->date }}</span>
                                         </div>
                                     @endforeach
@@ -262,11 +262,11 @@
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
-            let customerData = data.order.customer;
+            let customerData = data.customer;
 
             let totalAmount = 0;
             let totalQuantity = 0;
-            let discount = data.order.discount;
+            let discount = data.order?.discount ?? data.shipment?.discount;
             let netAmount = data.netAmount;
 
             modalDom.innerHTML = `
@@ -294,7 +294,7 @@
                                     </div>
                                     <div class="right w-50 my-auto pr-3 text-sm text-black space-y-1.5">
                                         <div class="invoice-date leading-none">Date: ${data.date}</div>
-                                        <div class="invoice-number leading-none">Invoice No.: ${data.order_no}</div>
+                                        <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
                                         <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
                                         <div class="invoice-copy leading-none">Document: Sales Invoice</div>
                                     </div>
