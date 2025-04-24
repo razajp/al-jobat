@@ -1,4 +1,4 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<!-- <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
@@ -63,4 +63,95 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT). -->
+
+# Garments360 – Garment Business Management System
+
+![Garments360 Banner](https://images.unsplash.com/photo-1605902711622-cfb43c4437d1?fit=crop&w=1200&q=80)
+
+**Garments360** is a role-based, feature-rich web application tailored for garment companies to manage their entire business operations seamlessly from one dashboard. Designed with simplicity, speed, and clarity in mind, it provides all essential features to run a modern garment business efficiently.
+
+---
+
+## 🚀 Tech Stack
+
+- **Backend Framework:** Laravel (PHP)
+- **Frontend:** Blade Templating Engine, Tailwind CSS
+- **Database:** SQLite (lightweight and fast)
+- **Real-time Notifications:** Pusher
+- **Authentication:** Laravel Auth + Role-Based Access Control
+
+---
+
+## 💡 Key Features
+
+- 🔐 Role-Based User Management (Admin, Manager, Staff)
+- 👥 Customer & Supplier Module
+- 📦 Inventory & Stock Control System
+- 📑 Orders & Fulfillment Tracking
+- 💰 Manual Payment Recording & Payment History
+- 📈 Business Analytics & Reporting
+- 🔔 Live Notifications (Pusher)
+- ✅ Input Validation with Realtime Feedback
+- 🧼 Simple, Clean & Fast UI – User-first experience
+
+---
+
+## 📸 Screenshots
+
+### 🔐 Login Page
+![Login](https://images.unsplash.com/photo-1581093588401-054c4a5c6f49?fit=crop&w=800&q=80)
+
+### 🏠 Admin Dashboard
+![Dashboard](https://images.unsplash.com/photo-1631604984237-7b6fa32b8ae4?fit=crop&w=800&q=80)
+
+### 📦 Stock Management
+![Stock](https://images.unsplash.com/photo-1581091870622-2994f2107c6f?fit=crop&w=800&q=80)
+
+### 👥 Customers Panel
+![Customers](https://images.unsplash.com/photo-1603570412341-d670d50c30f1?fit=crop&w=800&q=80)
+
+### 📊 Business Summary Reports
+![Reports](https://images.unsplash.com/photo-1587620962725-abab7fe55159?fit=crop&w=800&q=80)
+
+### 🔔 Realtime Notifications
+![Notifications](https://images.unsplash.com/photo-1521737604893-d14cc237f11d?fit=crop&w=800&q=80)
+
+---
+
+## 🌟 Why Garments360?
+
+> "All your garment business needs, managed in one simple platform."
+
+- Intuitive interface – no training required
+- Real-time alerts and updates for dynamic workflow
+- Optimized for performance and mobile-responsiveness
+- Built for small to mid-size businesses in the garments sector
+
+---
+
+## 📂 Repository Access
+
+This project is hosted in a **private GitHub repository** for confidentiality.  
+🔒 A walkthrough or code demo can be arranged upon request.
+
+---
+
+## 🔗 Live Demo
+🚧 *Coming soon* – or available on request
+
+---
+
+## 👨‍💻 Developer
+
+**Hasan Raza**  
+Full-Stack Developer – Laravel & Web Apps  
+GitHub: [@razajp](https://github.com/razajp)  
+🌐 Portfolio: *[Add your link here]*
+
+---
+
+## 💬 Let’s Connect
+
+Looking to build something similar or hire a Laravel expert?  
+Let’s talk! Message me on [GitHub](https://github.com/razajp) or LinkedIn.
