@@ -87,7 +87,6 @@
                     validateMin
                     max="{{ now()->toDateString() }}"
                     validateMax
-                    value="{{ now()->toDateString() }}"
                     type="date"
                     required
                 />
@@ -268,6 +267,8 @@
         const suppliers = @json($suppliers);
         const supplierNameDom = document.getElementById('supplier_name');
         const supplierNameError = document.getElementById('supplier_name-error');
+        const urduTitleDom = document.getElementById('urdu_title');
+        const urduTitleError = document.getElementById('urdu_title-error');
         const personNameDom = document.getElementById('person_name');
         const personNameError = document.getElementById('person_name-error');
         const usernameDom = document.getElementById('username');
@@ -287,18 +288,38 @@
             let isDuplicate = suppliers.some(s => s.supplier_name === supplierNameValue);
 
             if (!supplierNameValue) {
+                supplierNameDom.classList.remove("border-gray-600");
                 supplierNameDom.classList.add("border-[var(--border-error)]");
                 supplierNameError.classList.remove("hidden");
                 supplierNameError.textContent = "Supplier field is required.";
                 return false;
             } else if (isDuplicate) {
+                supplierNameDom.classList.remove("border-gray-600");
                 supplierNameDom.classList.add("border-[var(--border-error)]");
                 supplierNameError.classList.remove("hidden");
                 supplierNameError.textContent = "This supplier already exists.";
                 return false;
             } else {
+                supplierNameDom.classList.add("border-gray-600");
                 supplierNameDom.classList.remove("border-[var(--border-error)]");
                 supplierNameError.classList.add("hidden");
+                return true;
+            }
+        }
+
+        function validateUrduTitle() {
+            let urduTitleDomValue = urduTitleDom.value
+
+            if (urduTitleDomValue == "") {
+                urduTitleDom.classList.remove("border-gray-600");
+                urduTitleDom.classList.add("border-[var(--border-error)]");
+                urduTitleError.classList.remove("hidden");
+                urduTitleError.textContent = "Urdu title field is required.";
+                return false;
+            } else {
+                urduTitleDom.classList.add("border-gray-600");
+                urduTitleDom.classList.remove("border-[var(--border-error)]");
+                urduTitleError.classList.add("hidden");
                 return true;
             }
         }
@@ -306,11 +327,13 @@
         function validatePersonName() {
             let personNameValue = personNameDom.value
             if (personNameValue == "") {
+                personNameDom.classList.remove("border-gray-600");
                 personNameDom.classList.add("border-[var(--border-error)]");
                 personNameError.classList.remove("hidden");
                 personNameError.textContent = "Person name field is required.";
                 return false;
             } else {
+                personNameDom.classList.add("border-gray-600");
                 personNameDom.classList.remove("border-[var(--border-error)]");
                 personNameError.classList.add("hidden");
                 return true;
@@ -323,21 +346,25 @@
             let hasSpaces = /\s/.test(usernameValue); // Check for spaces using regex
             
             if (hasSpaces) {
+                usernameDom.classList.remove("border-gray-600");
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username should not contain spaces.";
                 return false;
             } else if (!usernameValue) {
+                usernameDom.classList.remove("border-gray-600");
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
                 return false;
             } else if (isDuplicate) {
+                usernameDom.classList.remove("border-gray-600");
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "This username already exists.";
                 return false;
             } else {
+                usernameDom.classList.add("border-gray-600");
                 usernameDom.classList.remove("border-[var(--border-error)]");
                 usernameError.classList.add("hidden");
                 return true;
@@ -347,16 +374,19 @@
         function validatePassword() {
             let PasswordValue = passwordDom.value
             if (PasswordValue == "") {
+                passwordDom.classList.remove("border-gray-600");
                 passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password field is required.";
                 return false;
             } else if (PasswordValue.length < 4) {
+                passwordDom.classList.remove("border-gray-600");
                 passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password must be at least 4 characters.";
                 return false;
             } else {
+                passwordDom.classList.add("border-gray-600");
                 passwordDom.classList.remove("border-[var(--border-error)]");
                 passwordError.classList.add("hidden");
                 return true;
@@ -368,16 +398,19 @@
             let isDuplicate = suppliers.some(s => s.phone_number.replace(/\D/g, '') === phoneNo);
             
             if (!phoneNo) {
+                phoneNumberDom.classList.remove("border-gray-600");
                 phoneNumberDom.classList.add("border-[var(--border-error)]");
                 phoneNumberError.classList.remove("hidden");
                 phoneNumberError.textContent = "Phone number field is required.";
                 return false;
             } else if (isDuplicate) {
+                phoneNumberDom.classList.remove("border-gray-600");
                 phoneNumberDom.classList.add("border-[var(--border-error)]");
                 phoneNumberError.classList.remove("hidden");
                 phoneNumberError.textContent = "This phone number already exists.";
                 return false;
             } else {
+                phoneNumberDom.classList.add("border-gray-600");
                 phoneNumberDom.classList.remove("border-[var(--border-error)]");
                 phoneNumberError.classList.add("hidden");
                 return true;
@@ -388,11 +421,13 @@
             let dateValue = dateDom.value;
             
             if (!dateValue) {
+                dateDom.classList.remove("border-gray-600");
                 dateDom.classList.add("border-[var(--border-error)]");
                 dateError.classList.remove("hidden");
                 dateError.textContent = "Date field is required.";
                 return false;
             } else {
+                dateDom.classList.add("border-gray-600");
                 dateDom.classList.remove("border-[var(--border-error)]");
                 dateError.classList.add("hidden");
                 return true;
@@ -403,16 +438,19 @@
             const categoriesLength = categoriesArray.length;
             
             if (categorySelectorDom.value == '' && categoriesLength <= 0) {
+                categorySelectorDom.classList.remove("border-gray-600");
                 categorySelectorDom.classList.add("border-[var(--border-error)]");
                 categoryError.classList.remove("hidden");
                 categoryError.textContent = "Please select or add a category.";
                 return false;
             } else if (categoriesLength <= 0) {
+                categorySelectorDom.classList.remove("border-gray-600");
                 categorySelectorDom.classList.add("border-[var(--border-error)]");
                 categoryError.classList.remove("hidden");
                 categoryError.textContent = "Please add a category.";
                 return false;
             } else {
+                categorySelectorDom.classList.add("border-gray-600");
                 categorySelectorDom.classList.remove("border-[var(--border-error)]");
                 categoryError.classList.add("hidden");
                 return true;
@@ -421,6 +459,7 @@
 
         // 🔹 **Live Validation Events**
         supplierNameDom.addEventListener("input", validateSupplierName);
+        urduTitleDom.addEventListener("input", validateUrduTitle);
         personNameDom.addEventListener("input", validatePersonName);
         usernameDom.addEventListener("input", validateUsername);
         passwordDom.addEventListener("input", validatePassword);
@@ -430,6 +469,7 @@
 
         function validateForNextStep() {
             let isValidSupplierName = validateSupplierName();
+            let isValidUrduTitle = validateUrduTitle();
             let isValidPersonName = validatePersonName();
             let isValidUsername = validateUsername();
             let isValidPassword = validatePassword();
@@ -437,7 +477,7 @@
             let isValidDate = validateDate();
             let isValidCategory = validateCategory();
 
-            let isValid = isValidSupplierName && isValidPersonName && isValidUsername && isValidPassword && isValidPhoneNumber && isValidDate && isValidCategory;
+            let isValid = isValidSupplierName && isValidUrduTitle && isValidPersonName && isValidUsername && isValidPassword && isValidPhoneNumber && isValidDate && isValidCategory;
 
             if (!isValid) {
                 messageBox.innerHTML = `
