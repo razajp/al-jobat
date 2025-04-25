@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\BankAccount;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
@@ -104,7 +105,7 @@ class Controller extends BaseController
         return true;
     }
 
-    public function getOrderDetails(Request $request)
+    public function getOrderDetails(Order $order, Request $request)
     {
         $validator = Validator::make($request->all(), [
             "order_no" => "required|exists:orders,order_no",
@@ -252,7 +253,24 @@ class Controller extends BaseController
         if (count($shipment->articles) === 0) {
             return response()->json(['error' => 'No articles found for this shipment']);
         }
+        
+        $Allcustomers = Customer::with(['invoices.shipment', 'user'])->whereIn('category', ['regular', 'site'])->whereHas('user', function ($query) {
+            $query->where('status', 'active');
+        })->get();
 
-        return response()->json($shipment);
+        $Customers = $Allcustomers->filter(function ($customer) use ($shipment) {
+            // Check if any of the customer's invoices match the shipment number
+            return !$customer->invoices->contains(function ($invoice) use ($shipment) {
+                return 
+                $invoice->shipment_no == $shipment->shipment_no ||
+                ($invoice->shipment && $invoice->shipment->date == $shipment->date);
+            });
+        })->values()->toArray();
+
+        return response()->json([
+            'status' => 'success',
+            'shipment' => $shipment,
+            'customers' => $Customers,
+        ]);
     }
 }

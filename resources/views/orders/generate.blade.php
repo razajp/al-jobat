@@ -300,7 +300,6 @@
                                     type="text" 
                                     placeholder="Enter quantity in pcs." 
                                     required
-                                    
                                     validateMax
                                     max="${data.quantity - data.ordered_quantity}"
                                     oninput="checkMax(this)"
@@ -330,7 +329,7 @@
             }
 
             openQuantityModal();
-
+            document.getElementById("quantity").focus();
             document.getElementById("quantity").addEventListener('keydown', (e) => {
                 if (e.key == 'Enter') {
                     document.getElementById("setQuantityBtn").click();

@@ -31,51 +31,29 @@
                             ]"/>
                         </div>
             
-                        @if (count($customers) > 0)
-                            <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-[var(--h-border-color)]">
-                                <div class="text-sm font-medium">
-                                    Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
-                                    <span id="total-count">{{ $customers->count() }}</span> customers
-                                </div>
-                                <div class="text-sm font-medium">
-                                    Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
-                                </div>
+                        <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-[var(--h-border-color)]">
+                            <div class="text-sm font-medium">
+                                Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
+                                <span id="total-count">0</span> customers
                             </div>
-                            <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'><!-- HEADER BAR -->
-                                <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
-                                    <div class="text-left pl-5 flex items-center">Select</div>
-                                    <div class="text-left">Customer</div>
-                                    <div class="text-left">Urdu Title</div>
-                                    <div class="text-center">Category</div>
-                                    <div class="text-right">Balance</div>
-                                    <div class="text-right pr-5">Status</div>
-                                </div>
-                            
-                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @foreach ($customers as $customer)
-                                        <div id="customer-{{ $customer->id }}" data-json='{{ $customer }}'
-                                            class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
-                                        >
-                                            <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
-                                                <input type="checkbox" name="selected_customers[]"
-                                                    class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
-                                                
-                                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()"/>
-                                            </span>
-                                            <span class="text-left">{{ $customer->customer_name }}</span>
-                                            <span class="text-left">{{ $customer->urdu_title }}</span>
-                                            <span class="text-center">{{ $customer->category }}</span>
-                                            <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
-                                            <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">
-                                                {{ $customer->user->status }}
-                                            </span>
-                                        </div>
-                                    @endforeach
-                                </div>
+                            <div class="text-sm font-medium">
+                                Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
                             </div>
-                        @else
-                            <div class="text-[var(--border-error)] text-center h-full">Customer Not Found</div>
-                        @endif
+                        </div>
+                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'><!-- HEADER BAR -->
+                            <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
+                                <div class="text-left pl-5 flex items-center">Select</div>
+                                <div class="text-left">Customer</div>
+                                <div class="text-left">Urdu Title</div>
+                                <div class="text-center">Category</div>
+                                <div class="text-right">Balance</div>
+                                <div class="text-right pr-5">Status</div>
+                            </div>
+                        
+                            <div id="customer-container" class="search_container overflow-y-auto grow my-scrollbar-2">
+                                
+                            </div>
+                        </div>
                         
                         <div class="flex w-full gap-4 text-sm mt-5">
                             <div
@@ -325,6 +303,7 @@
             let selectedCustomersArray = [];
 
             let ogMaxCottonCount = 0;
+            let allCustomers = [];
             let maxCottonCount = 0;
 
             shipmentNoDom.addEventListener('keydown', (e) => {
@@ -349,13 +328,16 @@
                         if (!response.error) {
                             openModal();
 
-                            shipmentArticles = response.articles;
-                            discount = response.discount ?? 0;
+                            shipmentArticles = response.shipment.articles;
+                            discount = response.shipment.discount ?? 0;
+                            allCustomers = response.customers;
 
+                            renderCustomers(allCustomers)
                             renderList();
                             renderCalcBottom();
-
-                            calculateNoOfSelectableCustomers(response.articles);
+                            calculateNoOfSelectableCustomers(response.shipment.articles);
+                            document.getElementById('total-count').textContent = allCustomers.length ?? 0;
+                            addListners();
                         }
                     }
                 });
@@ -503,29 +485,31 @@
                 document.getElementById('selected-count').textContent = selected;
             }
 
-            // Individual checkbox
-            document.querySelectorAll('.row-checkbox').forEach(cb => {
-                cb.addEventListener('change', updateSelectedCount);
-            });
-
-            // Row click toggles checkbox
-            document.querySelectorAll('.row-toggle').forEach(row => {
-                row.addEventListener('click', function (e) {
-                    if (e.target.tagName.toLowerCase() === 'input') return;
-
-                    const checkbox = this.querySelector('.row-checkbox');
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change')); // trigger count + update
+            function addListners() {
+                // Individual checkbox
+                document.querySelectorAll('.row-checkbox').forEach(cb => {
+                    cb.addEventListener('change', updateSelectedCount);
                 });
-            });
 
-            // apply event listeners to all checkboxes
-            document.querySelectorAll('.row-checkbox').forEach(cb => {
-                cb.addEventListener('change', function () {
-                    const customerRowDOM = this.closest('.row-toggle');
-                    selectCustomer(customerRowDOM);
+                // Row click toggles checkbox
+                document.querySelectorAll('.row-toggle').forEach(row => {
+                    row.addEventListener('click', function (e) {
+                        if (e.target.tagName.toLowerCase() === 'input') return;
+
+                        const checkbox = this.querySelector('.row-checkbox');
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change')); // trigger count + update
+                    });
                 });
-            });
+
+                // apply event listeners to all checkboxes
+                document.querySelectorAll('.row-checkbox').forEach(cb => {
+                    cb.addEventListener('change', function () {
+                        const customerRowDOM = this.closest('.row-toggle');
+                        selectCustomer(customerRowDOM);
+                    });
+                });
+            }
 
             function selectCustomer(customerRowDOM) {
                 const checkbox = customerRowDOM.querySelector('.row-checkbox');
@@ -542,8 +526,6 @@
                     if (availableCottonCount > 0) {   
                         customerData['cotton_count'] = cottonCount;
                         selectedCustomersArray.push(customerData);
-
-                        // maxCottonCount -= parseInt(cottonCount);
                     }
                 } else {
                     const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
@@ -552,52 +534,9 @@
                     }
 
                     cottonCountInput.dataset.previousValue = 1;
-
-                    // maxCottonCount += parseInt(cottonCount);
                 }
                 updateCustomerRowsState();
             }
-
-            // allCottonCountInputs.forEach(input => {
-            //     input.addEventListener('input', function () {
-            //         // if (!this.dataset.previousValue) {
-            //         //     this.dataset.previousValue = 1;
-            //         // }
-            //         // console.log(this.dataset.previousValue);
-            //         // const previousValue = this.dataset.previousValue || '';
-
-            //         // let maxCotton = parseInt(document.getElementById('max-cottons-count').textContent)
-            //         // const cottonCount = parseInt(this.value);
-                    
-            //         // // if we input, then it is already in selectedCustomersArray. So, just find that custome object
-            //         // const customerRowDOM = this.closest('.row-toggle');
-            //         // const customerData = JSON.parse(customerRowDOM.dataset.json);
-            //         // const customerId = customerData.id;
-            //         // const index = selectedCustomersArray.findIndex(customer => customer.id === customerId);
-            //         // if (index >= 0) {
-            //         //     selectedCustomersArray[index]['cotton_count'] = cottonCount;
-            //         //     console.log('farq : '+(this.value - parseInt(previousValue)));
-            //         //     console.log('farq2 : '+parseInt(previousValue));
-                        
-            //         //     if ((this.value - parseInt(previousValue)) > 0) {
-            //         //         // update maxCount
-            //         //         if (cottonCount > 1 && maxCottonCount > 0) {
-            //         //             maxCottonCount -= (this.value - parseInt(previousValue));
-            //         //         }
-            //         //     } else {
-            //         //         maxCottonCount += Math.abs(this.value - parseInt(previousValue));
-            //         //     }
-            //         // }
-
-            //         // this.dataset.previousValue = this.value;
-            //         // updateCustomerRowsState();
-
-
-
-
-
-            //     });
-            // });
 
             function setOnInput(input) {
                 const cottonCount = parseInt(input.value);
@@ -674,9 +613,34 @@
                         }
                     }
                 });
-
-                // document.getElementById('total-count').textContent = selectedCustomersArray.length;
             }
+
+            function renderCustomers(customers) {
+                    const container = document.getElementById('customer-container');
+                    container.innerHTML = ''; // Clear previous content
+
+                    customers.forEach(customer => {
+                        const html = `
+                            <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}'
+                                class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
+                            >
+                                <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
+                                    <input type="checkbox" name="selected_customers[]"
+                                        class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                                    
+                                    <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
+                                </span>
+                                <span class="text-left">${customer.customer_name}</span>
+                                <span class="text-left">${customer.urdu_title}</span>
+                                <span class="text-center">${customer.category}</span>
+                                <span class="text-right">${Number(customer.balance).toFixed(1)}</span>
+                                <span class="text-right pr-5 capitalize">${customer.user?.status ?? ''}</span>
+                            </div>
+                        `;
+
+                        container.insertAdjacentHTML('beforeend', html);
+                    });
+                }
 
             function validateForNextStep(){
                 return true;

@@ -58,10 +58,14 @@ class PaymentController extends Controller
             foreach ($customer->paymentPrograms as $program) {
                 $subCategory = $program->subCategory;
         
-                if ($subCategory->type === 'self account') {
-                    $subCategory = $subCategory;
+                if (isset($subCategory->type)) {
+                    if ($subCategory->type === 'self account') {
+                        $subCategory = $subCategory;
+                    } else {
+                        $subCategory = $subCategory->bankAccounts;
+                    }
                 } else {
-                    $subCategory = $subCategory->bankAccounts;
+                    $subCategory = null; // Handle the case where subCategory is not set
                 }
             }
         }
