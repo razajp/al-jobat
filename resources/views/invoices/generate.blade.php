@@ -31,22 +31,10 @@
                             ]"/>
                         </div>
             
-<<<<<<< HEAD
                         <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-[var(--h-border-color)]">
                             <div class="text-sm font-medium">
                                 Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
                                 <span id="total-count">0</span> customers
-=======
-                        @if (count($customers) > 0)
-                            <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-gray-600">
-                                <div class="text-sm font-medium">
-                                    Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
-                                    <span id="total-count">{{ $customers->count() }}</span> customers
-                                </div>
-                                <div class="text-sm font-medium">
-                                    Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
-                                </div>
->>>>>>> f14aab4ba7d16dea45e9af3009239addddcc4a16
                             </div>
                             <div class="text-sm font-medium">
                                 Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
@@ -302,6 +290,7 @@
         let discount = 0;
         let isModalOpened = false;
         const lastInvoice = @json($last_Invoice);
+        let companyData = @json(app('company'));
     </script>
 
     @if ($invoiceType == 'shipment')
@@ -443,9 +432,9 @@
                     let clutter = "";
                     shipmentArticles.forEach((selectedArticle, index) => {
                         if (selectedArticle.available_stock > selectedArticle.shipment_quantity) {
-                            totalQuantityPcs += selectedArticle.available_stock;
+                            totalQuantityPcs += selectedArticle.shipment_quantity;
 
-                            let articleAmount = selectedArticle.article.sales_rate * selectedArticle.available_stock;
+                            let articleAmount = selectedArticle.article.sales_rate * selectedArticle.shipment_quantity;
 
                             clutter += `
                                 <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
@@ -628,35 +617,197 @@
             }
 
             function renderCustomers(customers) {
-                    const container = document.getElementById('customer-container');
-                    container.innerHTML = ''; // Clear previous content
+                const container = document.getElementById('customer-container');
+                container.innerHTML = ''; // Clear previous content
 
-                    customers.forEach(customer => {
-                        const html = `
-                            <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}'
-                                class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
-                            >
-                                <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
-                                    <input type="checkbox" name="selected_customers[]"
-                                        class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
-                                    
-                                    <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
-                                </span>
-                                <span class="text-left">${customer.customer_name}</span>
-                                <span class="text-left">${customer.urdu_title}</span>
-                                <span class="text-center">${customer.category}</span>
-                                <span class="text-right">${Number(customer.balance).toFixed(1)}</span>
-                                <span class="text-right pr-5 capitalize">${customer.user?.status ?? ''}</span>
+                customers.forEach(customer => {
+                    const html = `
+                        <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}'
+                            class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
+                        >
+                            <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
+                                <input type="checkbox" name="selected_customers[]"
+                                    class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                                
+                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
+                            </span>
+                            <span class="text-left">${customer.customer_name}</span>
+                            <span class="text-left">${customer.urdu_title}</span>
+                            <span class="text-center">${customer.category}</span>
+                            <span class="text-right">${Number(customer.balance).toFixed(1)}</span>
+                            <span class="text-right pr-5 capitalize">${customer.user?.status ?? ''}</span>
+                        </div>
+                    `;
+
+                    container.insertAdjacentHTML('beforeend', html);
+                });
+            }
+
+            // its for loop
+
+            let invoiceNo;
+            let invoiceDate;
+            let cottonCount = 0;
+            const previewDom = document.getElementById('preview');
+
+            function generateInvoiceNo() {
+                let lastInvoiceNo = lastInvoice.invoice_no.replace("2025-", "")
+                const todayYear = new Date().getFullYear();
+                const nextInvoiceNo = String(parseInt(lastInvoiceNo, 10) + 1).padStart(4, '0');
+                return todayYear + '-' + nextInvoiceNo;
+            }
+
+            function getInvoiceDate() {
+                const date = new Date();
+
+                // Extract day, month, and year
+                const day = String(date.getDate()).padStart(2, '0');
+                const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+                const year = date.getFullYear();
+                const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+
+                // Array of weekday names
+                const weekDays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+                // Return the formatted date
+                return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
+            }
+
+            function getCottonCount() {
+                return ++cottonCount;
+            }
+
+            function generateInvoice() {
+                customerData = selectedCustomersArray[0];
+                invoiceNo = generateInvoiceNo();
+                invoiceDate = getInvoiceDate();
+                cottonCount = getCottonCount();
+                let totalQuantity = 0;
+                if (shipmentArticles.length > 0) {  
+                    previewDom.innerHTML = `
+                        <div id="invoice" class="invoice flex flex-col h-full">
+                            <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                                <div class="left">
+                                    <div class="invoice-logo">
+                                        <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                            class="w-[12rem]" />
+                                        <div class='mt-1'>${ companyData.phone_number }</div>
+                                    </div>
+                                </div>
+                                <div class="left">
+                                    <div class="invoice-logo">
+                                        <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
+                                        <div class="mt-1 text-right ${cottonCount == 0 ? '' : ''} pr-2">Cotton: ${cottonCount}</div>
+                                    </div>
+                                </div>
                             </div>
-                        `;
+                            <hr class="w-full my-3 border-black">
+                            <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
+                                <div class="left w-50 space-y-1">
+                                    <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                    <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
+                                    <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
+                                    <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
+                                </div>
+                                <div class="right my-auto pr-3 text-sm text-black space-y-1.5">
+                                    <div class="invoice-date leading-none">Date: ${invoiceDate}</div>
+                                    <div class="invoice-number leading-none">Invoice No.: ${invoiceNo}</div>
+                                    <input type="hidden" name="invoice_no" value="${invoiceNo}">
+                                    <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
+                                    <div class="invoice-copy leading-none">Document: Sales Invoice</div>
+                                </div>
+                            </div>
+                            <hr class="w-full my-3 border-black">
+                            <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
+                                <div class="invoice-table w-full">
+                                    <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                        <div class="thead w-full">
+                                            <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                                <div class="th text-sm font-medium w-[10%]">Article</div>
+                                                <div class="th text-sm font-medium w-[10%]">Packets</div>
+                                                <div class="th text-sm font-medium w-[10%]">Pcs.</div>
+                                                <div class="th text-sm font-medium grow">Description</div>
+                                                <div class="th text-sm font-medium w-[10%]">Pcs/Pkt.</div>
+                                                <div class="th text-sm font-medium w-[11%]">Rate/Pc.</div>
+                                                <div class="th text-sm font-medium w-[11%]">Amount</div>
+                                            </div>
+                                        </div>
+                                        <div id="tbody" class="tbody w-full">
+                                            ${shipmentArticles.map((articles, index) => {
+                                                const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
-                        container.insertAdjacentHTML('beforeend', html);
-                    });
+                                                return `
+                                                    <div>
+                                                        <hr class="w-full ${hrClass} border-black">
+                                                        <div class="tr flex justify-between w-full px-4">
+                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity / articles.article.pcs_per_packet}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity}</div>
+                                                            <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.shipment_quantity, 1, 1)}</div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                            }).join('')}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="w-full my-3 border-black">
+                            <div class="flex flex-col space-y-2">
+                                <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                    <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                        <div class="text-nowrap">Total Quantity - Pcs</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantityPcs)}</div>
+                                    </div>
+                                    <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                        <div class="text-nowrap">Gross Amount</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                                    </div>
+                                </div>
+                                <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                    <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                        <div class="text-nowrap">Discount</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersDigitLess(discount)}</div>
+                                    </div>
+                                    <div
+                                        class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                        <div class="text-nowrap">Net Amount</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <hr class="w-full my-3 border-black">
+                            <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
+                                <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                                <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    previewDom.innerHTML = `
+                        <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
+                    `;
                 }
+            }
 
             function validateForNextStep(){
+                generateInvoice()
                 return true;
             }
+
+
+            function addListenerToPrintAndSaveBtn() {
+                const printAndSaveBtn = document.getElementById('printAndSaveBtn');
+                printAndSaveBtn.addEventListener('click', function () {
+                    
+                });
+            }
+            addListenerToPrintAndSaveBtn();
         </script>
     @else
         <script>
@@ -853,7 +1004,6 @@
                 renderCalcBottom();
             }
 
-            let companyData = @json(app('company'));
             let invoiceNo;
             let invoiceDate;
             const previewDom = document.getElementById('preview');
@@ -1017,6 +1167,88 @@
                 updateInputArticlesInInvoice();
                 return true;
             }
+            
+            function addListenerToPrintAndSaveBtn() {
+                document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    closeAllDropdowns();
+                    const preview = document.getElementById('preview-container'); // preview content
+
+                    // Pehle se agar koi iframe hai to usko remove karein
+                    let oldIframe = document.getElementById('printIframe');
+                    if (oldIframe) {
+                        oldIframe.remove();
+                    }
+
+                    // Naya iframe banayein
+                    let printIframe = document.createElement('iframe');
+                    printIframe.id = "printIframe";
+                    printIframe.style.position = "absolute";
+                    printIframe.style.width = "0px";
+                    printIframe.style.height = "0px";
+                    printIframe.style.border = "none";
+                    printIframe.style.display = "none"; // ✅ Hide iframe
+
+                    // Iframe ko body me add karein
+                    document.body.appendChild(printIframe);
+
+                    let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+                    printDocument.open();
+
+                    // ✅ Current page ke CSS styles bhi iframe me inject karenge
+                    const headContent = document.head.innerHTML;
+
+                    printDocument.write(`
+                        <html>
+                            <head>
+                                <title>Print Invoice</title>
+                                ${headContent} <!-- Copy current styles -->
+                                <style>
+                                    @media print {
+
+                                        body {
+                                            margin: 0;
+                                            padding: 0;
+                                            width: 210mm; /* A4 width */
+                                            height: 297mm; /* A4 height */
+                                            
+                                        }
+
+                                        .preview-container, .preview-container * {
+                                            page-break-inside: avoid;
+                                        }
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                                <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                            </body>
+                        </html>
+                    `);
+
+                    printDocument.close();
+
+                    // Wait for iframe to load and print
+                    printIframe.onload = () => {
+                        let orderCopy = printDocument.querySelector('#preview-container .invoice-copy');
+                        if (orderCopy) {
+                            orderCopy.textContent = "Invoice Copy: Office";
+                        }
+
+                        // Listen for after print in the iframe's window
+                        printIframe.contentWindow.onafterprint = () => {
+                            document.getElementById('form').submit();
+                        };
+
+                        setTimeout(() => {
+                            printIframe.contentWindow.focus();
+                            printIframe.contentWindow.print();
+                        }, 1000);
+                    };
+                });
+            }
+            addListenerToPrintAndSaveBtn();
         </script>
     @endif
 @endsection

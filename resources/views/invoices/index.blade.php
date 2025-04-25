@@ -268,7 +268,7 @@
             let totalQuantity = 0;
             let discount = data.order?.discount ?? data.shipment?.discount;
             let netAmount = data.netAmount;
-            let cottonCount = data.cotton_count ? 'Cotton: '+String(data.cotton_count).padStart(2, '0') : 0;
+            let cottonCount = data.cotton_count ? data.cotton_count : 0;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal">
@@ -286,7 +286,7 @@
                                     <div class="left">
                                         <div class="invoice-logo">
                                             <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
-                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''} pr-2">${cottonCount}</div>
+                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''} pr-2">Cotton: ${cottonCount}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -476,6 +476,86 @@
             return filteredData;
         }
 
+        // function addListenerToPrintInvoice() {
+        //     document.getElementById('printInvoice').addEventListener('click', (e) => {
+        //         e.preventDefault();
+        //         closeAllDropdowns();
+        //         const preview = document.getElementById('preview-container'); // preview content
+
+        //         // Pehle se agar koi iframe hai to usko remove karein
+        //         let oldIframe = document.getElementById('printIframe');
+        //         if (oldIframe) {
+        //             oldIframe.remove();
+        //         }
+
+        //         // Naya iframe banayein
+        //         let printIframe = document.createElement('iframe');
+        //         printIframe.id = "printIframe";
+        //         printIframe.style.position = "absolute";
+        //         printIframe.style.width = "0px";
+        //         printIframe.style.height = "0px";
+        //         printIframe.style.border = "none";
+        //         printIframe.style.display = "none"; // ✅ Hide iframe
+
+        //         // Iframe ko body me add karein
+        //         document.body.appendChild(printIframe);
+
+        //         let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+        //         printDocument.open();
+
+        //         // ✅ Current page ke CSS styles bhi iframe me inject karenge
+        //         const headContent = document.head.innerHTML;
+
+        //         printDocument.write(`
+        //             <html>
+        //                 <head>
+        //                     <title>Print Invoice</title>
+        //                     ${headContent} <!-- Copy current styles -->
+        //                     <style>
+        //                         @media print {
+
+        //                             body {
+        //                                 margin: 0;
+        //                                 padding: 0;
+        //                                 width: 210mm; /* A4 width */
+        //                                 height: 297mm; /* A4 height */
+                                        
+        //                             }
+
+        //                             .preview-container, .preview-container * {
+        //                                 page-break-inside: avoid;
+        //                             }
+        //                         }
+        //                     </style>
+        //                 </head>
+        //                 <body>
+        //                     <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+        //                     <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+        //                 </body>
+        //             </html>
+        //         `);
+
+        //         printDocument.close();
+
+        //         // Wait for iframe to load and print
+        //         printIframe.onload = () => {
+
+        //             // Select the preview-copy div and update its text
+        //             let orderCopy = printDocument.querySelector('#preview-container .invoice-copy');
+
+        //             if (orderCopy) {
+        //                 orderCopy.textContent = "Invoice Copy: Office"; // Change text to "invoice Copy: Office"
+        //             }
+
+        //             setTimeout(() => {
+        //                 printIframe.contentWindow.focus();
+        //                 printIframe.contentWindow.print();
+        //                 document.body.removeChild(printIframe); // Remove iframe after printing
+        //             }, 1000);
+        //         }
+        //     });
+        // }
+
         function addListenerToPrintInvoice() {
             document.getElementById('printInvoice').addEventListener('click', (e) => {
                 e.preventDefault();
@@ -539,20 +619,21 @@
 
                 // Wait for iframe to load and print
                 printIframe.onload = () => {
-
-                    // Select the preview-copy div and update its text
                     let orderCopy = printDocument.querySelector('#preview-container .invoice-copy');
-
                     if (orderCopy) {
-                        orderCopy.textContent = "Invoice Copy: Office"; // Change text to "invoice Copy: Office"
+                        orderCopy.textContent = "Invoice Copy: Office";
                     }
+
+                    // Listen for after print in the iframe's window
+                    printIframe.contentWindow.onafterprint = () => {
+                        console.log("Print dialog closed");
+                    };
 
                     setTimeout(() => {
                         printIframe.contentWindow.focus();
                         printIframe.contentWindow.print();
-                        document.body.removeChild(printIframe); // Remove iframe after printing
                     }, 1000);
-                }
+                };
             });
         }
     </script>
