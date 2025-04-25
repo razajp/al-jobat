@@ -159,7 +159,7 @@
             selectedProgram = JSON.parse(articleElem.getAttribute('data-json'));
 
             programIdInputDOM.value = selectedProgram.id;
-            let value = `${selectedProgram.amount}`;
+            let value = `${formatNumbersWithDigits(selectedProgram.amount, 1, 1)}`;
             paymentProgramSelectInputDOM.value = value;
 
             dateDom.min = selectedProgram.date;

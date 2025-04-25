@@ -73,6 +73,8 @@
                                                     $beneficiary = $data['payment_programs']['sub_category']['customer_name'];
                                                 } elseif ($data['payment_programs']['category'] == 'waiting' && isset($data['payment_programs']['remarks'])) {
                                                     $beneficiary = $data['payment_programs']['remarks'];
+                                                } elseif ($data['payment_programs']['category'] == 'self_account' && isset($data['payment_programs']['sub_category']['account_title'])) {
+                                                    $beneficiary = $data['payment_programs']['sub_category']['account_title'];
                                                 }
                                             }
                                         @endphp
