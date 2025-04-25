@@ -19,6 +19,7 @@ return new class extends Migration
             $table->date('date');
             $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
+            $table->integer('cotton_count')->nullable();
             $table->json('articles_in_invoice');
             $table->timestamps();
 

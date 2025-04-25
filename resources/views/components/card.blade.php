@@ -17,7 +17,7 @@
 @endif
 
 {{-- Details --}}
-<div class="text-start {{ isset($data['image']) ? "pt-2" : "" }}">
+<div class="text-start {{ isset($data['image']) ? "pt-1" : "" }}">
     <h5 class="text-xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
         {{ $data['name'] ?? 'N/A' }}
     </h5>
