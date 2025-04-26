@@ -127,7 +127,7 @@ class InvoiceController extends Controller
                         "description" => $article["description"],
                         "invoice_quantity" => $article["shipment_quantity"] * $customer['cotton_count'],
                     ];
-                    $articleDb = Article::where("id", $article['article']["id"])->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                    $articleDb = Article::where("id", $article['article']["id"])->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count'])->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
                 }
                 
                 $invoice = new Invoice();
