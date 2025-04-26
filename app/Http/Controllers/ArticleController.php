@@ -124,7 +124,7 @@ class ArticleController extends Controller
         }
 
         Article::create($data);
-        event(new NewNotificationEvent(['message' => 'New Article Added']));
+        event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
 
         foreach (['category' => 'article_category', 'size' => 'article_size', 'season' => 'article_seasons'] as $field => $type) {
             if (!empty($data[$field])) {

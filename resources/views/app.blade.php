@@ -478,35 +478,37 @@
 
         var channel = pusher.subscribe('notifications');
 
-        channel.bind('App\\Events\\NewNotificationEvent', function(data) {
+        // Utility function to create and show notification
+        function showNotification(title = '', message = '') {
+            const notificationBox = document.getElementById("notificationBox");
+            if (!notificationBox) return;
+
+            const wrapper = document.createElement("div");
+            wrapper.innerHTML = `
+                <x-notification
+                    title="${title}"
+                    message="${message}"
+                />
+            `;
+            const notificationElement = wrapper.firstElementChild;
+            notificationBox.prepend(notificationElement);
+
+            setTimeout(() => hideNotification(notificationElement), 5000);
+        }
+
+        // Listen to the event
+        channel.bind('App\\Events\\NewNotificationEvent', function (data) {
             console.log('📢 Notification received:', data);
 
-            let dataObject = data.data;
+            const dataObject = data.data;
 
             @if(request()->is('orders/create'))
-                if (dataObject.message == "New Article Added") {
-                    let dateDom = document.querySelector("#date");
+                if (dataObject.title === "New Article Added.") {
+                    const dateInput = document.querySelector("#date");
 
-                    if (dateDom.value != "") {
-                        getDataByDate(dateDom);
-
-                        let notificationBox = document.getElementById("notificationBox");
-
-                        // Create a wrapper element to track the notification
-                        let notificationWrapper = document.createElement("div");
-                        notificationWrapper.innerHTML = `
-                            <x-notification
-                                title="New Article Added"
-                                message="Your articles feed has been updated. Please check."
-                            />
-                        `;
-                        let notificationElement = notificationWrapper.firstElementChild;
-                        notificationBox.prepend(notificationElement);
-
-                        // Auto-hide after 5 seconds
-                        setTimeout(() => {
-                            hideNotification(notificationElement);
-                        }, 5000);
+                    if (dateInput?.value) {
+                        getDataByDate(dateInput);
+                        showNotification(dataObject.title, dataObject.message);
                     }
                 }
             @endif
