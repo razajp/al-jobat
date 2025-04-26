@@ -250,6 +250,8 @@
 
                 <input type="hidden" name="customers_array" id="customers_array" value="">
 
+                <input type="hidden" name="printAfterSave" id="printAfterSave" value="0">
+
                 <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
                     <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
                         <div class="grow">Total Quantity - Pcs</div>
@@ -390,7 +392,7 @@
                 customersArrayInput.value = JSON.stringify(finalCustomersArray);
             }
             
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 const { id } = e.target;
                 if (id === 'modalForm') {
                     closeModal();
@@ -800,14 +802,16 @@
                 return true;
             }
 
-
-            function addListenerToPrintAndSaveBtn() {
-                const printAndSaveBtn = document.getElementById('printAndSaveBtn');
-                printAndSaveBtn.addEventListener('click', function () {
-                    
-                });
-            }
-            addListenerToPrintAndSaveBtn();
+            document.addEventListener('DOMContentLoaded', function () {
+                function addListenerToPrintAndSaveBtn() {
+                    const printAndSaveBtn = document.getElementById('printAndSaveBtn');
+                    printAndSaveBtn.addEventListener('click', function () {
+                        document.getElementById('printAfterSave').value = 1;
+                        document.getElementById('form').submit();
+                    });
+                }
+                addListenerToPrintAndSaveBtn();
+            });
         </script>
     @else
         <script>

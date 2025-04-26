@@ -499,7 +499,7 @@
     });
 
     // Close any open dropdown when clicking anywhere else on the document
-    document.addEventListener('click', function(e) {
+    document.addEventListener('mousedown', function(e) {
         // Check if the click is outside of any dropdown trigger or menu
         if (!e.target.closest('.dropdown-trigger') && !e.target.closest('.dropdownMenu')) {
             closeAllDropdowns();

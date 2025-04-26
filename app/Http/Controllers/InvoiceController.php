@@ -93,6 +93,7 @@ class InvoiceController extends Controller
                 "shipment_no" => "required|string|exists:shipments,shipment_no",
                 "date" => "required|date",
                 "customers_array" => "required|json",
+                "printAfterSave" => "integer|in:0,1",
             ]);
             
             if ($validator->fails()) {
@@ -117,7 +118,7 @@ class InvoiceController extends Controller
             $nextNumber = str_pad((int)$lastNumberPart + 1, 4, '0', STR_PAD_LEFT);
 
             
-            // Loop on customers_array
+            $invoiceNumbers = [];
             foreach ($customers_array as $customer) {
                 $article_in_invoice = [];
                 foreach ($articlesInShipment as $article) {
@@ -140,12 +141,18 @@ class InvoiceController extends Controller
 
                 $nextNumber = str_pad((int)$nextNumber + 1, 4, '0', STR_PAD_LEFT);
 
+                $invoiceNumbers[] = $currentYear . '-' . str_pad((int)$nextNumber - 1, 4, '0', STR_PAD_LEFT);
+
                 $invoice->save();
             }
 
-            return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
-
-        } else if ($request->has('order_no')) {
+            if ($request->printAfterSave) {
+                return redirect()->route('invoices.print')->with('invoiceNumbers', $invoiceNumbers);
+            } else {
+                return redirect()->route('invoices.create')->with('success', 'Invoice generated successfully.');
+            }
+        }
+        else if ($request->has('order_no')) {
             $validator = Validator::make($request->all(), [
                 "invoice_no" => "required|string|unique:invoices,invoice_no",
                 "order_no" => "required|string|exists:orders,order_no",
@@ -224,4 +231,24 @@ class InvoiceController extends Controller
     {
         //
     }
+
+    public function print()
+    {
+        $invoiceNumbers = session('invoiceNumbers');
+
+        if (!$invoiceNumbers) {
+            return redirect()->route('invoices.create')->with('error', 'No invoices to print.');
+        }
+
+        $invoices = Invoice::with(["customer", 'shipment'])->whereIn('invoice_no', $invoiceNumbers)->get();
+
+        foreach ($invoices as $invoice) {
+            if ($invoice->shipment) {
+                $invoice->shipment->fetchedArticles = $invoice->shipment->getArticles();
+            }
+        }
+        
+        return view("invoices.print", compact("invoices"));
+    }
+
 }
