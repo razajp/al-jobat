@@ -512,6 +512,12 @@
                     }
                 }
             @endif
+
+            @if(!request()->is('login'))
+                if (dataObject.title == "User Inactivated" && dataObject.id == {{Auth::user()->id}}) {
+                    document.getElementById("logoutForm").submit();
+                }
+            @endif
         });
 
         pusher.connection.bind('connected', function() {
