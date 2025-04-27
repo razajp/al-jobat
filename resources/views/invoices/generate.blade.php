@@ -1248,7 +1248,6 @@
                     };
                 });
             }
-            addListenerToPrintAndSaveBtn();
         </script>
     @endif
 @endsection

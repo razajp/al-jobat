@@ -150,6 +150,9 @@
                     }
                 }
             })
+
+            
+            addListenerToPrintAndSaveBtn();
         </script>
     @endif
     @if (request()->is('login'))
