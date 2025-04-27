@@ -60,6 +60,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('physical-quantities', PhysicalQuantityController::class);
     
     Route::resource('invoices', InvoiceController::class);
+    Route::get('/print-invoices', [InvoiceController::class, 'print'])->name('invoices.print');
     
     Route::resource('payments', PaymentController::class);
     

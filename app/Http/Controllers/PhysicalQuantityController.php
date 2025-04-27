@@ -103,7 +103,7 @@ class PhysicalQuantityController extends Controller
      */
     public function show()
     {
-        event(new NewNotificationEvent(['message' => 'New Article Added']));
+        event(new NewNotificationEvent(['title' => 'New Article Added', 'message' => 'hello']));
 
         return "hello";
     }

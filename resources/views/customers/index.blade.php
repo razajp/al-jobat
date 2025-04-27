@@ -49,7 +49,7 @@
                 </div>
 
                 <div
-                    class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
+                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
                     <a href="{{ route('customers.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
@@ -224,13 +224,13 @@
 
             openContextMenu();
 
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "show-details") {
                     generateModal(item)
                 }
             });
 
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "ac_in_btn_context") {
                     user_id_context = document.getElementById('user_id_context');
                     user_status_context = document.getElementById('user_status_context');
@@ -251,7 +251,7 @@
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
             setTimeout(() => {
-                document.addEventListener('click', removeContextMenu);
+                document.addEventListener('mousedown', removeContextMenu);
             }, 10);
         }
 
@@ -360,7 +360,7 @@
             openModal()
         }
 
-        document.addEventListener('click', (e) => {
+        document.addEventListener('mousedown', (e) => {
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();

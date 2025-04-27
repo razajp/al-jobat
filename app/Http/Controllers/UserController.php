@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\NewNotificationEvent;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -122,6 +123,8 @@ class UserController extends Controller
         if ($request->status == 'active') {
             if ($user->id != Auth::id()) {
                 $user->status = 'in active';
+
+                event(new NewNotificationEvent(['title' => 'User Inactivated', 'id' => $user->id]));
             } else {
                 return redirect()->back()->with('error', 'Oops! You cannot deactivate yourself.');
             }

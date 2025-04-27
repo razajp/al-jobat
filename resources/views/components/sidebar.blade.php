@@ -31,7 +31,7 @@
                 class="px-4 py-2 bg-[var(--secondary-bg-color)] border text-[var(--secondary-text)] rounded-md hover:bg-[var(--bg-color)] transition-all 0.3s ease-in-out">Cancel</button>
 
             <!-- Logout Form -->
-            <form method="POST" action="{{ route('logout') }}">
+            <form id="logoutForm" method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
                     class="px-4 py-2 bg-[var(--danger-color)] text-white rounded-md hover:bg-[var(--h-danger-color)] transition-all 0.3s ease-in-out">Logout</button>
@@ -40,7 +40,7 @@
     </div>
 </div>
 <div class="relative w-full md:w-auto md:z-40">
-    <aside class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-5 h-full md:h-screen transition-all 0.3s ease-in-out fade-in relative z-40">
+    <aside class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-3 h-full md:h-screen transition-all 0.3s ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
             class="md:mb-6 text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
@@ -499,7 +499,7 @@
     });
 
     // Close any open dropdown when clicking anywhere else on the document
-    document.addEventListener('click', function(e) {
+    document.addEventListener('mousedown', function(e) {
         // Check if the click is outside of any dropdown trigger or menu
         if (!e.target.closest('.dropdown-trigger') && !e.target.closest('.dropdownMenu')) {
             closeAllDropdowns();

@@ -180,7 +180,7 @@
                     <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
                     {{-- order_no --}}
                     <div class="grow">
-                        <x-input label="Order Number" name="order_no" id="order_no" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
+                        <x-input label="Order Number" name="order_no" id="order_no" autocomplete="off" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
                     </div>
                 </div>
                 {{-- rate showing --}}
@@ -194,6 +194,7 @@
                         <div class="w-[8%]">Pcs/Pkt.</div>
                         <div class="w-[12%] text-right">Rate/Pc</div>
                         <div class="w-[15%] text-right">Amount</div>
+                        <div class="w-[15%] text-right">Action</div>
                     </div>
                     <div id="article-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                         <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
@@ -249,6 +250,8 @@
                 </div>
 
                 <input type="hidden" name="customers_array" id="customers_array" value="">
+
+                <input type="hidden" name="printAfterSave" id="printAfterSave" value="0">
 
                 <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-nowrap">
                     <div class="total-qty flex justify-between items-center border border-gray-600 cursor-not-allowed rounded-lg py-2 px-4 w-full">
@@ -390,7 +393,7 @@
                 customersArrayInput.value = JSON.stringify(finalCustomersArray);
             }
             
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 const { id } = e.target;
                 if (id === 'modalForm') {
                     closeModal();
@@ -445,6 +448,7 @@
                                     <div class="grow">${selectedArticle.description}</div>
                                     <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                     <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
+                                    <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
                                     <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
                                 </div>
                             `;
@@ -800,14 +804,16 @@
                 return true;
             }
 
-
-            function addListenerToPrintAndSaveBtn() {
-                const printAndSaveBtn = document.getElementById('printAndSaveBtn');
-                printAndSaveBtn.addEventListener('click', function () {
-                    
-                });
-            }
-            addListenerToPrintAndSaveBtn();
+            document.addEventListener('DOMContentLoaded', function () {
+                function addListenerToPrintAndSaveBtn() {
+                    const printAndSaveBtn = document.getElementById('printAndSaveBtn');
+                    printAndSaveBtn.addEventListener('click', function () {
+                        document.getElementById('printAfterSave').value = 1;
+                        document.getElementById('form').submit();
+                    });
+                }
+                addListenerToPrintAndSaveBtn();
+            });
         </script>
     @else
         <script>
@@ -917,6 +923,11 @@
                                     <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                     <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
                                     <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
+                                    <div class="w-[15%] text-right">
+                                        <button onclick="removeArticle(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out ${orderedArticles.length > 1 ? 'cursor-pointer' : 'cursor-not-allowed opacity-40'}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             `;
 
@@ -934,6 +945,14 @@
                 }
             }
             renderList();
+
+            function removeArticle(index) {
+                if (orderedArticles.length > index && orderedArticles.length > 1) {
+                    orderedArticles.splice(index, 1);
+                    renderList();
+                    renderCalcBottom();
+                }
+            }
 
             function updateInputArticlesInInvoice() {
                 const articlesInInvoiceInpDom = document.getElementById("articles_in_invoice");
@@ -1248,6 +1267,12 @@
                     };
                 });
             }
+<<<<<<< HEAD
+=======
+            document.addEventListener("DOMContentLoaded", ()=>{
+                addListenerToPrintAndSaveBtn();
+            });
+>>>>>>> c61a27134925b3cf407ae85e9757d9b567c6120e
         </script>
     @endif
 @endsection

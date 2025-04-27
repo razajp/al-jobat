@@ -49,7 +49,7 @@
 
             @if (count($invoices) > 0)
                 <div
-                    class="add-new-article-btn absolute bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
+                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
                     <a href="{{ route('invoices.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
@@ -62,7 +62,7 @@
 
             @if (count($invoices) > 0)
                 <div class="details h-full">
-                    <div class="container-parent h-full overflow-y-auto my-scrollbar">
+                    <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container p-5 pr-3">
                             @if ($authLayout == 'grid')
                                 <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -188,13 +188,13 @@
 
             openContextMenu();
 
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "show-details") {
                     generateModal(item);
                 }
             });
 
-            document.addEventListener('click', (e) => {
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "print-invoice") {
                     generateModal(item, 'context');
                 }
@@ -211,7 +211,7 @@
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
             setTimeout(() => {
-                document.addEventListener('click', removeContextMenu);
+                document.addEventListener('mousedown', removeContextMenu);
             }, 10);
         }
 
@@ -230,7 +230,7 @@
             });
         });
         
-        document.addEventListener('click', (e) => {
+        document.addEventListener('mousedown', (e) => {
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();
