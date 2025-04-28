@@ -157,7 +157,9 @@
                     includesDropdown="true"
                     :items="[
                         ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
+                        ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Cargos'],
                         ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
+                        ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Create Cargo List'],
                     ]"
                 />
             </div>

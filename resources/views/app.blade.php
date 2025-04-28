@@ -229,7 +229,7 @@
 
     <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full">
         {{-- main content --}}
-        <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-3 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-3.5 relative">
+        <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scroller-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-2.5 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-2.5 relative">
             {{-- alert --}}
             <div id="messageBox" class="absolute top-3 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
                 @if (session('info'))
@@ -399,7 +399,7 @@
 
         document.addEventListener("contextmenu", e => e.preventDefault());
 
-        @if(!request()->is('orders/create') && !request()->is('shipments/create'))
+        @if(!request()->is('orders/create') && !request()->is('shipments/create') && !request()->is('cargos/create'))
             // Search Script
             let filterType;
             let cardsDataArray = [];
