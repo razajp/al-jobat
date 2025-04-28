@@ -1267,9 +1267,12 @@
                     };
                 });
             }
+<<<<<<< HEAD
+=======
             document.addEventListener("DOMContentLoaded", ()=>{
                 addListenerToPrintAndSaveBtn();
             });
+>>>>>>> c61a27134925b3cf407ae85e9757d9b567c6120e
         </script>
     @endif
 @endsection
