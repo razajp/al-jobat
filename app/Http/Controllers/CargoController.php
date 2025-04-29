@@ -5,15 +5,19 @@ namespace App\Http\Controllers;
 use App\Models\Cargo;
 use App\Models\Invoice;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CargoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $cargos = Cargo::all();
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+        return view('cargos.index', compact('authLayout', 'cargos'));
     }
 
     /**
@@ -21,10 +25,10 @@ class CargoController extends Controller
      */
     public function create()
     {
-        $invoices = Invoice::with('customer')->whereNotNull('shipment_no')->get();
+        $invoices = Invoice::with('customer')->whereNotNull('shipment_no')->get()->filter(function ($invoice) {return !$invoice->is_in_cargo;})->values();
 
         $last_cargo = [];
-        // $last_cargo = Cargo::orderby('id', 'desc')->first();
+        $last_cargo = Cargo::orderby('id', 'desc')->first();
 
         if (!$last_cargo) {
             $last_cargo = new Cargo();
@@ -39,7 +43,22 @@ class CargoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'cargo_name' => 'required|string',
+            'cargo_no' => 'required|string',
+            'invoices_array' => 'required|json',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        Cargo::create($data);
+
+        return redirect()->back()->with(['success' => 'Cargo List Generated Successfuly!']);
     }
 
     /**

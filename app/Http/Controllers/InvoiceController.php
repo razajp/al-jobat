@@ -6,11 +6,8 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
-use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use function PHPSTORM_META\type;
@@ -127,7 +124,12 @@ class InvoiceController extends Controller
                         "description" => $article["description"],
                         "invoice_quantity" => $article["shipment_quantity"] * $customer['cotton_count'],
                     ];
-                    $articleDb = Article::where("id", $article['article']["id"])->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count'])->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                    $articleModel = Article::where("id", $article['article']["id"])->first();
+
+                    if ($articleModel) {
+                        $articleModel->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                        $articleModel->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                    }
                 }
                 
                 $invoice = new Invoice();

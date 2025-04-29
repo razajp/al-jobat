@@ -39,8 +39,8 @@
         <div id="toFrom" class="toFrom-box w-1/3 flex items-center gap-4">
             <label for="to" class="block font-medium text-[var(--secondary-text)] grow text-nowrap">{{ $toFrom_label }}</label>
             <div class="toFrom-inputs relative grid grid-cols-2 gap-4 w-full">
-                <x-input name="to" id="to" type="{{ $toFrom_type }}" placeholder="To"/>
                 <x-input name="from" id="from" type="{{ $toFrom_type }}" placeholder="From"/>
+                <x-input name="to" id="to" type="{{ $toFrom_type }}" placeholder="To"/>
             </div>
         </div>
     @endif

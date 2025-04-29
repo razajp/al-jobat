@@ -59,7 +59,6 @@
                     label="Home" 
                     icon="fas fa-home"
                     href="/"
-                    includesDropdown="false"
                 />
             </div>
             
@@ -67,7 +66,7 @@
                 <x-nav-link-item 
                     label="Users" 
                     icon="fas fa-user"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
                         ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User']
@@ -79,7 +78,7 @@
                 <x-nav-link-item 
                     label="Suppliers" 
                     icon="fas fa-truck"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
                         ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
@@ -91,7 +90,7 @@
                 <x-nav-link-item 
                     label="Customers" 
                     icon="fas fa-user-tag"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
                         ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
@@ -103,7 +102,7 @@
                 <x-nav-link-item 
                     label="Articles" 
                     icon="fas fa-tshirt"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
                         ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
@@ -116,7 +115,7 @@
                     label="Orders"
                     :activatorTags="['payment-programs']"
                     icon="fas fa-cart-shopping"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
                         ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Payment Prg.'],
@@ -130,7 +129,7 @@
                 <x-nav-link-item 
                     label="Shipments"
                     icon="fas fa-box-open"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('shipments.index'), 'label' => 'Show Shipments'],
                         ['type' => 'link', 'href' => route('shipments.create'), 'label' => 'Generate Shipment'],
@@ -142,24 +141,43 @@
                 <x-nav-link-item 
                     label="Physical-Quantities" 
                     icon="fas fa-boxes-stacked"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
-                        ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show Phys. Quantity'],
-                        ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add Phys. Quantity'],
+                        [
+                            'label' => 'Physical Quantity',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show'],
+                                ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add'],
+                            ]
+                        ]
                     ]"
                 />
             </div>
             
             <div class="relative group">
                 <x-nav-link-item 
-                    label="Invoices" 
+                    label="Invoices"
                     icon="fas fa-receipt"
-                    includesDropdown="true"
+                    includesDropdown
+                    :activatorTags="['invoices', 'cargos']"
                     :items="[
-                        ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
-                        ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Cargos'],
-                        ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
-                        ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Create Cargo List'],
+                        [
+                            'label' => 'Invoices',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
+                                ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
+                            ]
+                        ],
+                        [
+                            'label' => 'Cargos',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Lists'],
+                                ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Generate List'],
+                            ]
+                        ]
                     ]"
                 />
             </div>
@@ -168,7 +186,7 @@
                 <x-nav-link-item 
                     label="Payments" 
                     icon="fas fa-money-check-dollar"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
                         ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
@@ -180,7 +198,7 @@
                 <x-nav-link-item 
                     label="Bank-Accounts" 
                     icon="fas fa-university"
-                    includesDropdown="true"
+                    includesDropdown
                     :items="[
                         ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Accounts'],
                         ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Account'],
@@ -191,14 +209,14 @@
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
             <!-- User Avatar -->
-            <button type="button" class="w-10 h-10 flex items-center justify-center rounded-full cursor-pointer transition-all 0.3s ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
+            <button type="button" class="w-10 h-10 ml-1.5 mb-1 flex items-center justify-center rounded-full cursor-pointer transition-all 0.3s ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
                 @if (Auth::user()->profile_picture == 'default_avatar.png')
                     <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover" alt="Avatar">
                 @else
                     <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" class="w-full h-full object-cover" alt="Avatar">
                 @endif
                 <span
-                    class="absolute shadow-xl capitalize left-16 bottom-1.5 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
+                    class="absolute shadow-xl capitalize left-18 bottom-1.5 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] border border-gray-600 text-sm rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity 0.3s pointer-events-none">
                     {{ Auth::user()->name }}
                 </span>
             </button>
@@ -312,6 +330,8 @@
                     :dropdown="[
                         ['href' => route('invoices.index'), 'title' => 'Show Invoices'],
                         ['href' => route('invoices.create'), 'title' => 'Generate Invoice'],
+                        ['href' => route('cargos.index'), 'title' => 'Show Cargo Lists'],
+                        ['href' => route('cargos.create'), 'title' => 'Generate Cargo List'],
                     ]"
                 />
 
