@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Articles | ' . app('company')->name)
+@section('title', 'Show Cargo Lists | ' . app('company')->name)
 @section('content')
     <!-- Modals -->
     <div id="modal"
@@ -7,22 +7,21 @@
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Invoices" :filter_items="[
+        <x-search-header heading="Cargo Lists" :filter_items="[
             'all' => 'All',
-            'invoice_no' => 'Invoice No.',
-            'order_no' => 'Order No.',
+            'cargo_no' => 'Shipment No.',
             'customer_name' => 'Customer Name',
             'date' => 'Date',
         ]"/>
     </div>
-
+    
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
             <div
                 class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show Invoices</h4>
+                <h4>Show Cargo Lists</h4>
 
                 <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
                     <div class="relative group">
@@ -47,10 +46,10 @@
                 </div>
             </div>
 
-            @if (count($invoices) > 0)
+            @if (count($cargos) > 0)
                 <div
                     class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('invoices.create') }}"
+                    <a href="{{ route('cargos.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -60,40 +59,34 @@
                 </div>
             @endif
 
-            @if (count($invoices) > 0)
+            @if (count($cargos) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container p-5 pr-3">
                             @if ($authLayout == 'grid')
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                    @foreach ($invoices as $invoice)
-                                        <div id="{{ $invoice->id }}" data-json='{{ $invoice }}'
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                                    @foreach ($cargos as $cargo)
+                                        <div id="{{ $cargo->id }}" data-json='{{ $cargo }}'
                                             class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
                                             <x-card :data="[
-                                                'name' => 'Invoice No: ' . $invoice->invoice_no,
+                                                'name' => 'Cargo No: ' . $cargo->cargo_no,
                                                 'details' => [
-                                                    $invoice->order_no ? 'Order No.' : 'Shipment No.' => $invoice->order_no ?? $invoice->shipment_no,
-                                                    'Customer Name' => $invoice->customer->customer_name,
-                                                    'Date' => $invoice->date,
+                                                    'Date' => date('d-M-Y, D', strtotime($cargo->date)),
                                                 ],
                                             ]" />
                                         </div>
                                     @endforeach
                                 </div>
                             @else
-                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Invoice No.</div>
-                                    <div class="text-center">Order No.</div>
-                                    <div class="text-center">Customer</div>
+                                <div class="grid grid-cols-3 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                    <div class="text-center">Cargo No.</div>
                                     <div class="text-center">Date</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($invoices as $invoice)
-                                        <div id="{{ $invoice->id }}" data-json='{{ $invoice }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $invoice->invoice_no }}</span>
-                                            <span class="text-center">{{ $invoice->order_no }}</span>
-                                            <span class="text-center">{{ $invoice->customer->customer_name }}</span>
-                                            <span class="text-center">{{ $invoice->date }}</span>
+                                    @forEach ($cargos as $cargo)
+                                        <div id="{{ $cargo->id }}" data-json='{{ $cargo }}' class="contextMenuToggle modalToggle relative group grid grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $cargo->cargo_no }}</span>
+                                            <span class="text-center">{{ $cargo->date }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -103,8 +96,8 @@
                 </div>
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Invoice Found</h1>
-                    <a href="{{ route('invoices.create') }}"
+                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No List Found</h1>
+                    <a href="{{ route('cargos.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
                         New</a>
                 </div>
@@ -121,9 +114,9 @@
                             Details</button>
                     </li>
                     <li>
-                        <button id="print-invoice" type="button"
+                        <button id="print-list" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
-                            Invoice</button>
+                            List</button>
                     </li>
                 </ul>
             </div>
@@ -148,19 +141,16 @@
             isContextMenuOpened = true;
         }
 
-        function addContextMenuListenerToCards() {
-            let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
+        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
 
-            contextMenuToggle.forEach(toggle => {
-                toggle.addEventListener('contextmenu', (e) => {
-                    generateContextMenu(e);
-                });
+        contextMenuToggle.forEach(toggle => {
+            toggle.addEventListener('contextmenu', (e) => {
+                generateContextMenu(e);
             });
-        }
-
-        addContextMenuListenerToCards();
+        });
 
         function generateContextMenu(e) {
+            contextMenu.classList.remove('fade-in');
             let item = e.target.closest('.modalToggle');
             let data = JSON.parse(item.dataset.json);
 
@@ -190,12 +180,12 @@
 
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "show-details") {
-                    generateModal(item);
+                    generateModal(item, 'openModal');
                 }
             });
 
             document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "print-invoice") {
+                if (e.target.id === "print-list") {
                     generateModal(item, 'context');
                 }
             });
@@ -214,7 +204,7 @@
                 document.addEventListener('mousedown', removeContextMenu);
             }, 10);
         }
-
+        
         const close = document.querySelectorAll('#close');
 
         let isModalOpened = false;
@@ -261,70 +251,63 @@
         function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
-
-            let customerData = data.customer;
+            console.log(data);
+            
 
             let totalAmount = 0;
             let totalQuantity = 0;
-            let discount = data.order?.discount ?? data.shipment?.discount;
+            let discount = data.discount;
             let netAmount = data.netAmount;
-            let cottonCount = data.cotton_count ? data.cotton_count : 0;
 
             modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal">
+                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                         <div id="preview" class="preview flex flex-col h-full">
-                            <div id="invoice" class="invoice flex flex-col h-full">
-                                <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                            <div id="preview-document" class="preview-document flex flex-col h-full">
+                                <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                                     <div class="left">
-                                        <div class="invoice-logo">
+                                        <div class="company-logo">
                                             <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
                                                 class="w-[12rem]" />
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div>
+                                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Cargo List</h1>
                                             <div class='mt-1'>${ companyData.phone_number }</div>
                                         </div>
                                     </div>
-                                    <div class="left">
-                                        <div class="invoice-logo">
-                                            <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
-                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''} pr-2">Cotton: ${cottonCount}</div>
-                                        </div>
+                                </div>
+                                <hr class="w-full my-3 border-black">
+                                <div id="preview-header" class="preview-header w-full flex justify-between px-5">
+                                    <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                        <div class="cargo-date leading-none">Date: ${data.date}</div>
+                                        <div class="cargo-number leading-none">Cargo No.: ${data.cargo_no}</div>
+                                    </div>
+                                    <div class="center my-auto">
+                                        <div class="cargo-name capitalize font-semibold text-md">Cargo Name: ${data.cargo_name}</div>
+                                    </div>
+                                    <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                        <div class="preview-copy leading-none">Cargo List Copy: Office</div>
+                                        <div class="preview-doc leading-none">Document: Cargo List</div>
                                     </div>
                                 </div>
                                 <hr class="w-full my-3 border-black">
-                                <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
-                                    <div class="left w-50 space-y-1">
-                                        <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
-                                        <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
-                                        <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
-                                        <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
-                                    </div>
-                                    <div class="right my-auto pr-3 text-sm text-black space-y-1.5">
-                                        <div class="invoice-date leading-none">Date: ${data.date}</div>
-                                        <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
-                                        <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
-                                        <div class="invoice-copy leading-none">Document: Sales Invoice</div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
-                                    <div class="invoice-table w-full">
+                                <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                                    <div class="preview-table w-full">
                                         <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                             <div class="thead w-full">
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                                     <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Article</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Packets</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Pcs.</div>
-                                                    <div class="th text-sm font-medium grow">Description</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Pcs/Pkt.</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Rate/Pc.</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Amount</div>
+                                                    <div class="th text-sm font-medium w-1/6">Date</div>
+                                                    <div class="th text-sm font-medium w-1/6">Invoice No.</div>
+                                                    <div class="th text-sm font-medium w-1/6">Cotton</div>
+                                                    <div class="th text-sm font-medium grow">Customer</div>
+                                                    <div class="th text-sm font-medium w-1/6">City</div>
                                                 </div>
                                             </div>
                                             <div id="tbody" class="tbody w-full">
-                                                ${data.articles.map((articles, index) => {
-                                                    totalAmount += parseInt(articles.article.sales_rate) * articles.invoice_quantity;
-                                                    totalQuantity += articles.invoice_quantity;
+                                                ${data.invoices.map((invoice, index) => {
                                                     const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                                                     return `
@@ -332,42 +315,16 @@
                                                             <hr class="w-full ${hrClass} border-black">
                                                             <div class="tr flex justify-between w-full px-4">
                                                                 <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
-                                                                <div class="td text-sm font-semibold grow">${articles.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
-                                                                <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
-                                                                <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.invoice_quantity, 1, 1)}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${invoice.date}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${invoice.invoice_no}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${invoice.cotton_count}</div>
+                                                                <div class="td text-sm font-semibold grow">${invoice.customer.customer_name}</div>
+                                                                <div class="td text-sm font-semibold w-1/6">${invoice.customer.city}</div>
                                                             </div>
                                                         </div>
                                                     `;
                                                 }).join('')}
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div class="flex flex-col space-y-2">
-                                    <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Total Quantity - Pcs</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Gross Amount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
-                                        </div>
-                                    </div>
-                                    <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Discount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersDigitLess(discount)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Net Amount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -381,9 +338,9 @@
                     </div>
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
-                        <button type="button" id="printInvoice"
+                        <button type="button" id="printList"
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
-                            Print Invoice
+                            Print List
                         </button>
 
                         <button onclick="closeModal()" type="button"
@@ -392,11 +349,11 @@
                         </button>
                     </x-slot>
                 </x-modal>
-                `;
-
-            addListenerToPrintInvoice()
+            `;
+            
+            addListenerToPrintShipment();
             if (context == 'context') {
-                document.getElementById('printInvoice').click();
+                document.getElementById('printList').click();
             } else {
                 openModal();
             }
@@ -405,11 +362,11 @@
         addListenerToCards();
 
         function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
         }
         
         function closeModal() {
@@ -431,28 +388,21 @@
                 switch (filterType) {
                     case 'all':
                         return (
-                            item.invoice_no.toString().includes(search) ||
-                            item.order_no.toString().includes(search) ||
-                            item.order.customer.customer_name.toLowerCase().includes(search) ||
+                            item.cargo_no.toString().includes(search) ||
+                            item.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;
                         
-                    case 'invoice_no':
+                    case 'cargo_no':
                         return (
-                            item.invoice_no.toString().includes(search)
-                        );
-                        break;
-                        
-                    case 'order_no':
-                        return (
-                            item.order_no.toString().includes(search)
+                            item.cargo_no.toLowerCase().includes(search)
                         );
                         break;
                         
                     case 'customer_name':
                         return (
-                            item.order.customer.customer_name.toLowerCase().includes(search)
+                            item.customer.customer_name.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -464,9 +414,8 @@
                 
                     default:
                         return (
-                            item.invoice_no.toString().includes(search) ||
-                            item.order_no.toString().includes(search) ||
-                            item.order.customer.customer_name.toLowerCase().includes(search) ||
+                            item.cargo_no.toString().includes(search) ||
+                            item.customer.customer_name.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;
@@ -475,9 +424,9 @@
 
             return filteredData;
         }
-
-        function addListenerToPrintInvoice() {
-            document.getElementById('printInvoice').addEventListener('click', (e) => {
+        
+        function addListenerToPrintShipment() {
+            document.getElementById('printList').addEventListener('click', (e) => {
                 e.preventDefault();
                 closeAllDropdowns();
                 const preview = document.getElementById('preview-container'); // preview content
@@ -509,7 +458,7 @@
                 printDocument.write(`
                     <html>
                         <head>
-                            <title>Print Invoice</title>
+                            <title>Print Cargo List</title>
                             ${headContent} <!-- Copy current styles -->
                             <style>
                                 @media print {
@@ -539,21 +488,20 @@
 
                 // Wait for iframe to load and print
                 printIframe.onload = () => {
-                    let orderCopy = printDocument.querySelector('#preview-container .invoice-copy');
-                    if (orderCopy) {
-                        orderCopy.textContent = "Invoice Copy: Office";
-                    }
 
-                    // Listen for after print in the iframe's window
-                    printIframe.contentWindow.onafterprint = () => {
-                        console.log("Print dialog closed");
-                    };
+                    // Select the preview-copy div and update its text
+                    let previewCopy = printDocument.querySelector('#preview-container .preview-copy');
+
+                    if (previewCopy) {
+                        previewCopy.textContent = "Cargo List Copy: Office"; // Change text to "preview Copy: Office"
+                    }
 
                     setTimeout(() => {
                         printIframe.contentWindow.focus();
                         printIframe.contentWindow.print();
+                        document.body.removeChild(printIframe); // Remove iframe after printing
                     }, 1000);
-                };
+                }
             });
         }
     </script>

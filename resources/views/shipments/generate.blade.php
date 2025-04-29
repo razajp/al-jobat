@@ -69,10 +69,11 @@
             </x-slot>
         </x-modal>
     </div>
-
+    
     <div id="quantityModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
+    
     <!-- Main Content -->
     <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Shipment </h1>
 
