@@ -2,14 +2,18 @@
 @section('title', 'Add Payment | ' . app('company')->name)
 @section('content')
     @php
-        $type_options = [
+        $method_options = [
             'cash' => ['text' => 'Cash'],
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
             'online' => ['text' => 'Online'],
-            'payment_program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
+        $type_options = [
+            'normal' => ['text' => 'Normal'],
+            'payment_program' => ['text' => 'Payment Program'],
+            'recovery' => ['text' => 'Recovery'],
+        ]
     @endphp
     <!-- Modal -->
     <div id="modal"
@@ -44,17 +48,13 @@
                     showDefault
                     onchange="trackCustomerState()" 
                 />
-
-                {{-- payment_program --}}
-                <x-input label="Payment Program" id="payment_program" placeholder='Select Payment Program' class="cursor-pointer" readonly/>
-                <input type="hidden" name="program_id" id="program_id" value="" />
                 
                 {{-- balance --}}
                 <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
                 
                 {{-- date --}}
                 <x-input label="Date" name="date" id="date" type="date" required disabled />
-                
+
                 {{-- type --}}
                 <x-select 
                     label="Type"
@@ -62,7 +62,6 @@
                     id="type"
                     :options="$type_options"
                     required
-                    disabled
                     showDefault
                     onchange="trackTypeState(this)" 
                 />
@@ -71,16 +70,25 @@
 
         <div class="step2 space-y-4 hidden">
             <div id="paymentDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
+                {{-- method --}}
+                <x-select 
+                    label="Method"
+                    name="method"
+                    id="method"
+                    :options="$method_options"
+                    required
+                    disabled
+                    showDefault
+                    onchange="trackMethodState(this)" 
+                />
             </div>
         </div>
     </form>
 
     <script>
         const modalDom = document.getElementById("modal");
-        const paymentProgramSelectInputDOM = document.getElementById("payment_program");
-        const programIdInputDOM = document.getElementById("program_id");
         let customerSelectDom = document.getElementById('customer_id');
+        let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
         let balanceDom = document.getElementById('balance');
@@ -89,11 +97,6 @@
         selectedCustomerData = null;
         
         let isModalOpened = false;
-        paymentProgramSelectInputDOM.disabled = true;
-
-        paymentProgramSelectInputDOM.addEventListener('click', () => {
-            generateArticlesModal();
-        })
 
         function generateArticlesModal() {
             if (selectedCustomerData != null) {
@@ -153,20 +156,6 @@
             }
         }
 
-        let selectedProgram = null;
-        
-        function selectThisProgram(articleElem) {
-            selectedProgram = JSON.parse(articleElem.getAttribute('data-json'));
-
-            programIdInputDOM.value = selectedProgram.id;
-            let value = `${formatNumbersWithDigits(selectedProgram.amount, 1, 1)}`;
-            paymentProgramSelectInputDOM.value = value;
-
-            dateDom.min = selectedProgram.date;
-            
-            closeModal();
-        }
-
         function openModal() {
             isModalOpened = true;
             closeAllDropdowns();
@@ -208,29 +197,29 @@
         function trackCustomerState() {
             dateDom.value = '';
             balanceDom.value = '';
-            typeSelectDom.value = '';
-            paymentProgramSelectInputDOM.value = '';
-            paymentProgramSelectInputDOM.disabled = true;
-            paymentDetailsDom.innerHTML = `
-                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
-            `;
+            methodSelectDom.value = '';
 
             if (customerSelectDom.value != '') {
                 selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
                 dateDom.disabled = false;
-                typeSelectDom.disabled = false;
+                methodSelectDom.disabled = false;
                 dateDom.min = selectedCustomer.date;
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
-                paymentProgramSelectInputDOM.disabled = false;
                 selectedCustomerData = selectedCustomer;
             } else {
                 dateDom.disabled = true;
-                typeSelectDom.disabled = true;
+                methodSelectDom.disabled = true;
             }
         }
 
         function trackTypeState(elem) {
+            if (elem.value != '') {
+                gotoStep(2)
+            }
+        }
+
+        function trackMethodState(elem) {
             if (elem.value == 'cash') {
                 paymentDetailsDom.innerHTML = `
                     {{-- amount --}}
@@ -298,20 +287,6 @@
                         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
                     </div>
                 `;
-            } else if (elem.value == 'payment_program') {
-                if (selectedProgram != null) {
-                    paymentDetailsDom.innerHTML = `
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    `;
-                } else {
-                    paymentDetailsDom.innerHTML = `
-                        <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Program.</div>
-                    `;
-                }
             } else if (elem.value == 'adjustment') {
                 paymentDetailsDom.innerHTML = `
                     {{-- amount --}}
