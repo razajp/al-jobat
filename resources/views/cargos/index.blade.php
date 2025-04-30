@@ -288,7 +288,7 @@
                                         <div class="cargo-name capitalize font-semibold text-md">Cargo Name: ${data.cargo_name}</div>
                                     </div>
                                     <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                        <div class="preview-copy leading-none">Cargo List Copy: Office</div>
+                                        <div class="preview-copy leading-none">Cargo List Copy: Cargo</div>
                                         <div class="preview-doc leading-none">Document: Cargo List</div>
                                     </div>
                                 </div>

@@ -136,7 +136,7 @@ class InvoiceController extends Controller
                 $invoice->customer_id = $customer["id"];
                 $invoice->invoice_no = $currentYear . '-' . $nextNumber;
                 $invoice->shipment_no = $request->shipment_no;
-                $invoice->netAmount = $shipment->netAmount;
+                $invoice->netAmount = $shipment->netAmount * $customer['cotton_count'];
                 $invoice->cotton_count = $customer['cotton_count'];
                 $invoice->articles_in_invoice = json_encode($article_in_invoice);
                 $invoice->date = date("Y-m-d");

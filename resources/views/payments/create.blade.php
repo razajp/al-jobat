@@ -2,18 +2,49 @@
 @section('title', 'Add Payment | ' . app('company')->name)
 @section('content')
     @php
-        $type_options = [
+        $method_options = [
             'cash' => ['text' => 'Cash'],
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
             'online' => ['text' => 'Online'],
-            'payment_program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
+        $type_options = [
+            'normal' => ['text' => 'Normal'],
+            'payment_program' => ['text' => 'Payment Program'],
+            'recovery' => ['text' => 'Recovery'],
+        ]
     @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        <x-modal id="modalForm" classForBody="p-4" closeAction="closeModal">
+            <div class="flex items-start relative h-full">
+                <div id="paymentDetails" class="flex-1 overflow-y-auto my-scrollbar-2">
+                </div>
+            </div>
+            <!-- Modal Action Slot -->
+            <x-slot name="actions">
+                <button onclick="closeModal()" type="button"
+                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
+                    Close
+                </button>
+                <button type="button"
+                    class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
+                    Add
+                </button>
+            </x-slot>
+        </x-modal>
+    </div>
+    <!-- Payment Program Modal -->
+    <div id="paymentProgramModal"
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        <x-modal id="paymentProgramModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closePaymentProgramModal">
+            <div class="flex items-start relative h-full">
+                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
+                </div>
+            </div>
+        </x-modal>
     </div>
     <!-- Main Content -->
     <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment </h1>
@@ -44,17 +75,13 @@
                     showDefault
                     onchange="trackCustomerState()" 
                 />
-
-                {{-- payment_program --}}
-                <x-input label="Payment Program" id="payment_program" placeholder='Select Payment Program' class="cursor-pointer" readonly/>
-                <input type="hidden" name="program_id" id="program_id" value="" />
                 
                 {{-- balance --}}
                 <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
                 
                 {{-- date --}}
                 <x-input label="Date" name="date" id="date" type="date" required disabled />
-                
+
                 {{-- type --}}
                 <x-select 
                     label="Type"
@@ -62,7 +89,6 @@
                     id="type"
                     :options="$type_options"
                     required
-                    disabled
                     showDefault
                     onchange="trackTypeState(this)" 
                 />
@@ -70,17 +96,67 @@
         </div>
 
         <div class="step2 space-y-4 hidden">
-            <div id="paymentDetails" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
+            <div class="flex flex-col space-y-4 gap-4">
+                {{-- method --}}
+                <x-select 
+                    label="Method"
+                    name="method"
+                    id="method"
+                    :options="$method_options"
+                    required
+                    showDefault
+                    onchange="trackMethodState(this)" 
+                />
+            </div>
+            {{-- payment showing --}}
+            <div id="payment-table" class="w-full text-left text-sm">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                    <div class="w-[7%]">S.No</div>
+                    <div class="w-1/5">Method</div>
+                    <div class="w-1/5">Remarks</div>
+                    <div class="w-1/5">Amount</div>
+                    <div class="w-[10%] text-center">Action</div>
+                </div>
+                <div id="payment-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Added</div>
+                </div>
+            </div>
+
+            <div class="flex w-full grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mt-5 text-nowrap">
+                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Total Quantity - Pcs</div>
+                    <div id="finalOrderedQuantity">0</div>
+                </div>
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Total Amount - Rs.</div>
+                    <div id="finalOrderAmount">0.0</div>
+                </div>
+                <div class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <label for="discount" class="grow">Discount - %</label>
+                    <input type="text" name="discount" id="discount" value="0"
+                        class="text-right bg-transparent outline-none w-1/2 border-none" />
+                </div>
+                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Previous Balance - Rs.</div>
+                    <div id="finalPreviousBalance">0</div>
+                </div>
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Net Amount - Rs.</div>
+                    <input type="text" name="netAmount" id="finalNetAmount" value="0.0" readonly
+                        class="text-right bg-transparent outline-none w-1/2 border-none" />
+                </div>
+                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Current Balance - Rs.</div>
+                    <div id="finalCurrentBalance">0.0</div>
+                </div>
             </div>
         </div>
     </form>
 
     <script>
         const modalDom = document.getElementById("modal");
-        const paymentProgramSelectInputDOM = document.getElementById("payment_program");
-        const programIdInputDOM = document.getElementById("program_id");
         let customerSelectDom = document.getElementById('customer_id');
+        let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
         let balanceDom = document.getElementById('balance');
@@ -89,11 +165,6 @@
         selectedCustomerData = null;
         
         let isModalOpened = false;
-        paymentProgramSelectInputDOM.disabled = true;
-
-        paymentProgramSelectInputDOM.addEventListener('click', () => {
-            generateArticlesModal();
-        })
 
         function generateArticlesModal() {
             if (selectedCustomerData != null) {
@@ -153,20 +224,6 @@
             }
         }
 
-        let selectedProgram = null;
-        
-        function selectThisProgram(articleElem) {
-            selectedProgram = JSON.parse(articleElem.getAttribute('data-json'));
-
-            programIdInputDOM.value = selectedProgram.id;
-            let value = `${formatNumbersWithDigits(selectedProgram.amount, 1, 1)}`;
-            paymentProgramSelectInputDOM.value = value;
-
-            dateDom.min = selectedProgram.date;
-            
-            closeModal();
-        }
-
         function openModal() {
             isModalOpened = true;
             closeAllDropdowns();
@@ -206,128 +263,136 @@
         const today = new Date().toISOString().split('T')[0];
 
         function trackCustomerState() {
+            typeSelectDom.options[2].dataset.option = '';
             dateDom.value = '';
             balanceDom.value = '';
-            typeSelectDom.value = '';
-            paymentProgramSelectInputDOM.value = '';
-            paymentProgramSelectInputDOM.disabled = true;
-            paymentDetailsDom.innerHTML = `
-                <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
-            `;
+            methodSelectDom.value = '';
 
             if (customerSelectDom.value != '') {
                 selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
                 dateDom.disabled = false;
-                typeSelectDom.disabled = false;
+                methodSelectDom.disabled = false;
                 dateDom.min = selectedCustomer.date;
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
-                paymentProgramSelectInputDOM.disabled = false;
                 selectedCustomerData = selectedCustomer;
+                typeSelectDom.options[2].dataset.option = JSON.stringify(selectedCustomer.payment_programs) ?? '';
             } else {
                 dateDom.disabled = true;
-                typeSelectDom.disabled = true;
+                methodSelectDom.disabled = true;
+                typeSelectDom.options[2].dataset.option = '';
             }
         }
 
         function trackTypeState(elem) {
+            if (elem.value != '') {
+                gotoStep(2)
+            }
+        }
+
+        function trackMethodState(elem) {
+            if (elem.value != '') {
+                paymentDetailsDom.innerHTML = `
+                    <x-search-header heading="${elem.value}"/>
+                `;
+            } else {
+                paymentDetailsDom.innerHTML = '';
+            }
+            
             if (elem.value == 'cash') {
-                paymentDetailsDom.innerHTML = `
-                    {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                `;
-            } else if (elem.value == 'cheque') {
-                paymentDetailsDom.innerHTML = `
-                    {{-- bank --}}
-                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
-
-                    {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- cheque_date --}}
-                    <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
-
-                    {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
-
-                    {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-
-                    {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
-                `;
-            } else if (elem.value == 'slip') {
-                paymentDetailsDom.innerHTML = `
-                    {{-- customer --}}
-                    <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
-
-                    {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- slip_date --}}
-                    <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
-
-                    {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
-
-                    {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-
-                    {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
-                `;
-            } else if (elem.value == 'online') {
-                paymentDetailsDom.innerHTML = `
-                    {{-- account_title --}}
-                    <x-input label="A/C Title" type="number" placeholder="Enter account title" name="account_title" id="account_title" required/>
-                    
-                    {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                    {{-- transition_id --}}
-                    <x-input label="Transition Id" placeholder="Enter cheque no" name="transition_id" id="transition_id" required/>
-
-                    {{-- bank --}}
-                    <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
-
-                    <div class="col-span-full">
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    </div>
-                `;
-            } else if (elem.value == 'payment_program') {
-                if (selectedProgram != null) {
-                    paymentDetailsDom.innerHTML = `
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
                         {{-- remarks --}}
                         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    `;
-                } else {
-                    paymentDetailsDom.innerHTML = `
-                        <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Program.</div>
-                    `;
-                }
-            } else if (elem.value == 'adjustment') {
-                paymentDetailsDom.innerHTML = `
-                    {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    </div>
+                `;
+            } else if (elem.value == 'cheque') {
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                        {{-- bank --}}
+                        <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
 
-                    {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+
+                        {{-- cheque_date --}}
+                        <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
+
+                        {{-- cheque_no --}}
+                        <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+
+                        {{-- clear_date --}}
+                        <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                    </div>
+                `;
+            } else if (elem.value == 'slip') {
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                        {{-- customer --}}
+                        <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
+
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+
+                        {{-- slip_date --}}
+                        <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
+
+                        {{-- slip_no --}}
+                        <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+
+                        {{-- clear_date --}}
+                        <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                    </div>
+                `;
+            } else if (elem.value == 'online') {
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                        {{-- account_title --}}
+                        <x-input label="A/C Title" type="number" placeholder="Enter account title" name="account_title" id="account_title" required/>
+                        
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+
+                        {{-- transition_id --}}
+                        <x-input label="Transition Id" placeholder="Enter cheque no" name="transition_id" id="transition_id" required/>
+
+                        {{-- bank --}}
+                        <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
+
+                        <div class="col-span-full">
+                            {{-- remarks --}}
+                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                        </div>
+                    </div>
+                `;
+            } else if (elem.value == 'adjustment') {
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                    </div>
                 `;
             } else {
-                paymentDetailsDom.innerHTML = `
-                    <div class="col-span-full text-center text-[var(--border-error)]">Select Payment Type.</div>
+                paymentDetailsDom.innerHTML += `
+                    <div class="text-center text-[var(--border-error)]">Select Payment Type.</div>
                 `;
             }
             
             if (elem.value != '') {
                 gotoStep(2)
+                openModal()
             }
         }
         

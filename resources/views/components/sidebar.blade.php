@@ -92,8 +92,22 @@
                     icon="fas fa-user-tag"
                     includesDropdown
                     :items="[
-                        ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
-                        ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
+                        [
+                            'label' => 'Customer',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
+                                ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
+                            ]
+                        ],
+                        [
+                            'label' => 'Payment',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
+                                ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
+                            ]
+                        ]
                     ]"
                 />
             </div>
@@ -101,11 +115,26 @@
             <div class="relative group">
                 <x-nav-link-item 
                     label="Articles" 
+                    :activatorTags="['physical-quantities']"
                     icon="fas fa-tshirt"
                     includesDropdown
                     :items="[
-                        ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
-                        ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+                        [
+                            'label' => 'Article',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
+                                ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+                            ]
+                        ],
+                        [
+                            'label' => 'Physical Quantity',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show'],
+                                ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add'],
+                            ]
+                        ]
                     ]"
                 />
             </div>
@@ -117,10 +146,22 @@
                     icon="fas fa-cart-shopping"
                     includesDropdown
                     :items="[
-                        ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
-                        ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Payment Prg.'],
-                        ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
-                        ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Payment Prg.'],
+                        [
+                            'label' => 'Order',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
+                                ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
+                            ]
+                        ],
+                        [
+                            'label' => 'Payment Program',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Programs'],
+                                ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Program'],
+                            ]
+                        ]
                     ]"
                 />
             </div>
@@ -133,24 +174,6 @@
                     :items="[
                         ['type' => 'link', 'href' => route('shipments.index'), 'label' => 'Show Shipments'],
                         ['type' => 'link', 'href' => route('shipments.create'), 'label' => 'Generate Shipment'],
-                    ]"
-                />
-            </div>
-            
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Physical-Quantities" 
-                    icon="fas fa-boxes-stacked"
-                    includesDropdown
-                    :items="[
-                        [
-                            'label' => 'Physical Quantity',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show'],
-                                ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add'],
-                            ]
-                        ]
                     ]"
                 />
             </div>
@@ -178,18 +201,6 @@
                                 ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Generate List'],
                             ]
                         ]
-                    ]"
-                />
-            </div>
-            
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Payments" 
-                    icon="fas fa-money-check-dollar"
-                    includesDropdown
-                    :items="[
-                        ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
-                        ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
                     ]"
                 />
             </div>

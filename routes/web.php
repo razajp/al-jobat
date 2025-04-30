@@ -79,7 +79,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
-    Route::post('/update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
+    Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
 
     Route::resource('users', UserController::class);
     Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');
