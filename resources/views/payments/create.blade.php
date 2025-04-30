@@ -29,7 +29,7 @@
                     class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
                     Close
                 </button>
-                <button type="button"
+                <button onclick="addPaymentDetails()" type="button"
                     class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
                     Add
                 </button>
@@ -164,65 +164,54 @@
 
         selectedCustomerData = null;
         
+        let paymentDetailsArray = [];
         let isModalOpened = false;
 
-        function generateArticlesModal() {
-            if (selectedCustomerData != null) {
-                console.log(selectedCustomerData.payment_programs);
+        // function generateArticlesModal() {
+        //     if (selectedCustomerData != null) {
+        //         console.log(selectedCustomerData.payment_programs);
                 
-                let programHTML = '';
+        //         let programHTML = '';
 
-                if (selectedCustomerData.payment_programs.length > 0) {
-                    programHTML = `
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                ${selectedCustomerData.payment_programs.map((program) => {
-                                    let beneficiary = '-';
-                                    if (program.category) {
-                                        if (program.category === 'supplier' && program.sub_category?.supplier_name) {
-                                            beneficiary = program.sub_category.supplier_name;
-                                        } else if (program.category === 'customer' && program.sub_category?.customer_name) {
-                                            beneficiary = program.sub_category.customer_name;
-                                        } else if (program.category === 'self_account' && program.sub_category?.account_title) {
-                                            beneficiary = program.sub_category.account_title;
-                                        } else if (program.category === 'waiting' && program.remarks) {
-                                            beneficiary = program.remarks;
-                                        }
-                                    }
-                                    return `
-                                        <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(this)'
-                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                            <div>
-                                                <h3 class="text-xl font-bold text-white">${program.order_no ?? program.program_no ?? '-'}</h3>
-                                                <ul class="text-sm">
-                                                    <li class="capitalize"><strong>Category:</strong> ${program.category}</li>
-                                                    <li><strong>Beneficiary:</strong> ${beneficiary}</li>
-                                                    <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    `;
-                                }).join('')}
-                            </div>
-                        </div>
-                    `;
-                }
+        //         if (selectedCustomerData.payment_programs.length > 0) {
+        //             programHTML = `
+        //                 <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
+        //                     <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        //                         ${selectedCustomerData.payment_programs.map((program) => {
+        //                             let beneficiary = '-';
+        //                             if (program.category) {
+        //                                 if (program.category === 'supplier' && program.sub_category?.supplier_name) {
+        //                                     beneficiary = program.sub_category.supplier_name;
+        //                                 } else if (program.category === 'customer' && program.sub_category?.customer_name) {
+        //                                     beneficiary = program.sub_category.customer_name;
+        //                                 } else if (program.category === 'self_account' && program.sub_category?.account_title) {
+        //                                     beneficiary = program.sub_category.account_title;
+        //                                 } else if (program.category === 'waiting' && program.remarks) {
+        //                                     beneficiary = program.remarks;
+        //                                 }
+        //                             }
+        //                             return `
+        //                                 <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(this)'
+        //                                     class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
+        //                                     <div>
+        //                                         <h3 class="text-xl font-bold text-white">${program.order_no ?? program.program_no ?? '-'}</h3>
+        //                                         <ul class="text-sm">
+        //                                             <li class="capitalize"><strong>Category:</strong> ${program.category}</li>
+        //                                             <li><strong>Beneficiary:</strong> ${beneficiary}</li>
+        //                                             <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
+        //                                         </ul>
+        //                                     </div>
+        //                                 </div>
+        //                             `;
+        //                         }).join('')}
+        //                     </div>
+        //                 </div>
+        //             `;
+        //         }
 
-                modalDom.innerHTML = `
-                    <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeModal">
-                        <div class="flex items-start relative h-full">
-                            <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Articles</h5>
-                                <hr class="border-gray-600 my-3">
-                                ${programHTML}
-                            </div>
-                        </div>
-                    </x-modal>
-                `;
-
-                openModal();
-            }
-        }
+        //         openModal();
+        //     }
+        // }
 
         function openModal() {
             isModalOpened = true;
@@ -247,7 +236,7 @@
             const {
                 id
             } = e.target;
-            if (id === 'articlesModalForm') {
+            if (id === 'modalForm') {
                 closeModal();
             }
         });
@@ -394,6 +383,30 @@
                 gotoStep(2)
                 openModal()
             }
+        }
+
+        function addPaymentDetails() {
+            closeModal();
+            let detail = {};
+            const inputs = paymentDetailsDom.querySelectorAll('input');
+
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                const value = input.value;
+                if (name && value !== '') {
+                    const isAmountValid = name === 'amount' || parseFloat(value) > 0;
+                    if (isAmountValid) {
+                        detail[name] = value;
+                    }
+                }
+            });
+            
+            if (Object.keys(detail).length > 0) {
+                detail['method'] = methodSelectDom.value;
+                paymentDetailsArray.push(detail);
+            }
+
+            console.log(paymentDetailsArray);
         }
         
         function validateForNextStep() {
