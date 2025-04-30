@@ -5,7 +5,9 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <script src="{{ asset('jquery.js') }}"></script>
+    <meta name="theme-color" content="#2563eb">
+    <meta name="description" content="Al Jobat`s Garments Busniess Management Solution!">
+    <link rel="manifest" href="/manifest.json">
     <title>@yield('title', app('company')->name)</title>
     <style>
         @font-face {
@@ -218,6 +220,14 @@
     
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+            .then(reg => console.log('Service Worker registered ✔️', reg))
+            .catch(err => console.warn('Service Worker registration failed ❌', err));
+        }
+    </script>
+    <script src="{{ asset('jquery.js') }}"></script>
 </head>
 
 <body class="bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">

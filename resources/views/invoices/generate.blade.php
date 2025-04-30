@@ -1237,7 +1237,7 @@
                                             page-break-inside: avoid;
                                         }
                                     }
-                                </style>
+                                </style> 
                             </head>
                             <body>
                                 <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
@@ -1267,12 +1267,10 @@
                     };
                 });
             }
-<<<<<<< HEAD
-=======
+            
             document.addEventListener("DOMContentLoaded", ()=>{
                 addListenerToPrintAndSaveBtn();
             });
->>>>>>> c61a27134925b3cf407ae85e9757d9b567c6120e
         </script>
     @endif
 @endsection

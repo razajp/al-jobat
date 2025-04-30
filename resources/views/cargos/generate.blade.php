@@ -32,17 +32,11 @@
                     @endif
                 </div>
 
-                <div
-                    class="absolute z-[999] bottom-3 right-0 hover:scale-105 transition-all group duration-300 ease-in-out">
-                    <div
-                        class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out">
-                        <input type="checkbox" id="select-all-checkbox" class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 
-                     cursor-pointer">
+                <div id="select-all-checkbox-parent" class="absolute z-[999] bottom-1.5 right-0 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer">
+                    <div class="bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--text-color)] px-4 py-2 rounded-xl flex gap-3 items-center justify-between">
+                        <span>Select All</span>
+                        <input type="checkbox" id="select-all-checkbox" class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer pointer-events-none">
                     </div>
-                    <span
-                        class="absolute shadow-xl right-4 top-1/2 -translate-y-1/2 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none text-nowrap">
-                        Select All
-                    </span>
                 </div>
             </div>
             <!-- Modal Action Slot -->
@@ -136,6 +130,7 @@
 
         const lastCargo = @json($last_cargo);
         const modalDom = document.getElementById("modal");
+        const selectAllCheckbox = document.getElementById("select-all-checkbox");
         const generateListBtn = document.getElementById("generateListBtn");
         const cargoListDOM = document.getElementById('cargo-list');
         const finalTotalCottonsDOM = document.getElementById('finalTotalCottons');
@@ -349,30 +344,55 @@
 
         document.querySelectorAll(".invoice-card").forEach((card)=>{
             card.addEventListener("click", ()=>{
-                selectInvoice(card);
+                onClickInvoice(card);
             });
         });
 
-        function selectInvoice(invoiceElem) {
+        function onClickInvoice(invoiceElem) {
             let checkbox = invoiceElem.querySelector("input[type='checkbox']")
             checkbox.checked = !checkbox.checked;
 
-            addInvoiceAsSelected(invoiceElem, checkbox);
+            toggleInvoice(invoiceElem, checkbox);
         }
 
-        function addInvoiceAsSelected(invoiceElem, checkbox) {
-            let invoiceData = JSON.parse(invoiceElem.dataset.json);
-
+        function toggleInvoice(invoiceElem, checkbox) {
             if (checkbox.checked) {
+                selectInvoice(invoiceElem);
+            } else {
+                deselectInvoice(invoiceElem);
+            }
+        }
+
+        function selectInvoice(invoiceElem) {
+            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+
+            const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
+            if (index == -1) {
                 selectedInvoicesArray.push(invoiceData);
                 totalCottonCount += invoiceData.cotton_count;
-            } else {
-                const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
-                if (index > -1) {
-                    selectedInvoicesArray.splice(index, 1);
-                    totalCottonCount -= invoiceData.cotton_count;
-                }
             }
+        }
+
+        function deselectInvoice(invoiceElem) {
+            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+
+            const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
+            if (index > -1) {
+                selectedInvoicesArray.splice(index, 1);
+                totalCottonCount -= invoiceData.cotton_count;
+
+                selectAllCheckbox.checked = false;
+            }
+        }
+
+        function deselectAllInvoices() {
+            document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            selectedInvoicesArray = [];
+            totalCottonCount = 0;
+            selectAllCheckbox.checked = false;
         }
 
         function validateForNextStep() {
@@ -393,6 +413,8 @@
             const fromVal = getInvoiceNumber(fromInput.value);
             const toVal = getInvoiceNumber(toInput.value);
 
+            deselectAllInvoices();
+
             cards.forEach(card => {
                 const data = JSON.parse(card.getAttribute("data-json"));
                 const invoiceNum = getInvoiceNumber(data.invoice_no);
@@ -409,19 +431,25 @@
 
         fromInput.addEventListener("input", filterCards);
         toInput.addEventListener("input", filterCards);
+
+        const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
+        selectAllCheckboxParent.addEventListener('click', ()=>{
+            selectAllCheckbox.checked = !selectAllCheckbox.checked;
+
+            selectAllScript();
+        });
         
-        const selectAllCheckbox = document.getElementById("select-all-checkbox");
-        selectAllCheckbox.addEventListener("change", () => {
+        function selectAllScript() {
             let invoiceCards = document.querySelectorAll(".invoice-card");
             invoiceCards.forEach(card => {
                 if (card.style.display != "none") {
                     const checkbox = card.querySelector("input[type='checkbox']");
                     checkbox.checked = selectAllCheckbox.checked;
                     
-                    addInvoiceAsSelected(card, checkbox);
+                    toggleInvoice(card, checkbox);
                 }
             });
-        });
+        }
         
         function addListenerToPrintAndSaveBtn() {
             document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {

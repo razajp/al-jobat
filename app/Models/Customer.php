@@ -55,49 +55,42 @@ class Customer extends Model
     {
         return $this->calculateBalance();
     }
-
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $ordersQuery = $this->orders();
+        $invoicesQuery = $this->invoices()->whereNotNull('shipment_no');
         $paymentsQuery = $this->payments();
-
+    
         // Handle different date scenarios
         if ($fromDate && $toDate) {
-            // Between two dates
-            $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
-            $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
-
-            if (!$includeGivenDate) {
+            if ($includeGivenDate) {
+                $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
+                $invoicesQuery->whereBetween('date', [$fromDate, $toDate]);
+                $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
+            } else {
                 $ordersQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $invoicesQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
             }
         } elseif ($fromDate) {
-            // From a specific date onwards
-            $ordersQuery->where('date', '>=', $fromDate);
-            $paymentsQuery->where('date', '>=', $fromDate);
-
-            if (!$includeGivenDate) {
-                $ordersQuery->where('date', '>', $fromDate);
-                $paymentsQuery->where('date', '>', $fromDate);
-            }
+            $operator = $includeGivenDate ? '>=' : '>';
+            $ordersQuery->where('date', $operator, $fromDate);
+            $invoicesQuery->where('date', $operator, $fromDate);
+            $paymentsQuery->where('date', $operator, $fromDate);
         } elseif ($toDate) {
-            // Up to a specific date
-            $ordersQuery->where('date', '<=', $toDate);
-            $paymentsQuery->where('date', '<=', $toDate);
-
-            if (!$includeGivenDate) {
-                $ordersQuery->where('date', '<', $toDate);
-                $paymentsQuery->where('date', '<', $toDate);
-            }
+            $operator = $includeGivenDate ? '<=' : '<';
+            $ordersQuery->where('date', $operator, $toDate);
+            $invoicesQuery->where('date', $operator, $toDate);
+            $paymentsQuery->where('date', $operator, $toDate);
         }
-
+    
         // Calculate totals
         $totalOrders = $ordersQuery->sum('netAmount') ?? 0;
+        $totalInvoices = $invoicesQuery->sum('netAmount') ?? 0;
         $totalPayments = $paymentsQuery->sum('amount') ?? 0;
-
-        $balance = $totalOrders - $totalPayments;
-
-        // Return balance (formatted or raw)
+    
+        $balance = ($totalOrders + $totalInvoices) - $totalPayments;
+    
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
-    }
+    }    
 }
