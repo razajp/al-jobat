@@ -17,10 +17,6 @@
             font-style: normal;
         }
 
-        /* *:not(i) {
-            font-family: 'Calibri', sans-serif !important;
-        } */
-
         /* color theme */
         :root {
             --bg-color: #111827;
@@ -55,7 +51,7 @@
             --success-color: hsl(142, 65%, 36%);
             --h-success-color: hsl(142, 65%, 26%);
 
-            --overlay-color: rgba(0, 0, 0, 0.3);
+            --overlay-color: rgba(0, 0, 0, 0.438);
             --glass-border-color: #ffffff;
         }
 
