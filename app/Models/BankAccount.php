@@ -22,4 +22,8 @@ class BankAccount extends Model
     {
         return $this->morphMany(PaymentProgram::class, 'sub_category');
     }
+    public function bankAccounts()
+    {
+        return $this->hasOne(BankAccount::class, 'id');
+    }
 }

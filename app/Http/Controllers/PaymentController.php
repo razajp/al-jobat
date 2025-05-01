@@ -50,7 +50,7 @@ class PaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
         
-        $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory')->whereHas('user', function ($query) {
+        $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory.bankAccounts.bank')->whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
 
@@ -59,7 +59,7 @@ class PaymentController extends Controller
                 $subCategory = $program->subCategory;
         
                 if (isset($subCategory->type)) {
-                    if ($subCategory->type === 'self account') {
+                    if ($subCategory->type === '"App\Models\BankAccount"') {
                         $subCategory = $subCategory;
                     } else {
                         $subCategory = $subCategory->bankAccounts;
@@ -67,6 +67,8 @@ class PaymentController extends Controller
                 } else {
                     $subCategory = null; // Handle the case where subCategory is not set
                 }
+
+                $program['date'] = date('d-M-Y D', strtotime($program['date']));
             }
         }
 

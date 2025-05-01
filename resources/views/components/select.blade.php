@@ -10,6 +10,7 @@
     'id' => '', 
     'btnText' => '+', 
     'onchange' => '',
+    'btnOnclick' => '',
 ])
 
 @php
@@ -54,7 +55,7 @@
             @endif
         </select>
         @if ($withButton)
-            <button id="{{$btnId}}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{{ $btnText }}</button>
+            <button onclick="{{ $btnOnclick }}" id="{{$btnId}}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{{ $btnText }}</button>
         @endif
     </div>
 
