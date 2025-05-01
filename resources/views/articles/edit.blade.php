@@ -162,7 +162,7 @@
                                         <div class="w-1/4">{{ number_format($rate['rate'], 2) }}</div>
                                         <div class="w-[10%] text-center">
                                             <button onclick="deleteRate(this)" type="button"
-                                                class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                                                class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
@@ -259,7 +259,7 @@
                     <div class="grow ml-5">${title}</div>
                     <div class="w-1/4">${parseFloat(rate).toFixed(2)}</div>
                     <div class="w-[10%] text-center">
-                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>

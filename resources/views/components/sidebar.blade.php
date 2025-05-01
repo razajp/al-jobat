@@ -4,7 +4,7 @@
     <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg w-80 md:w-full md:max-w-lg p-6 relative">
         <!-- Close Button -->
         <button onclick="closeLogoutModal()"
-            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out">
+            class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-all 0.3s ease-in-out cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                 class="w-6 h-6">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -28,13 +28,13 @@
         <div class="flex justify-end space-x-3">
             <!-- Cancel Button -->
             <button onclick="closeLogoutModal()"
-                class="px-4 py-2 bg-[var(--secondary-bg-color)] border text-[var(--secondary-text)] rounded-md hover:bg-[var(--bg-color)] transition-all 0.3s ease-in-out">Cancel</button>
+                class="px-4 py-2 bg-[var(--secondary-bg-color)] border text-[var(--secondary-text)] rounded-md hover:bg-[var(--bg-color)] transition-all 0.3s ease-in-out cursor-pointer">Cancel</button>
 
             <!-- Logout Form -->
             <form id="logoutForm" method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit"
-                    class="px-4 py-2 bg-[var(--danger-color)] text-white rounded-md hover:bg-[var(--h-danger-color)] transition-all 0.3s ease-in-out">Logout</button>
+                    class="px-4 py-2 bg-[var(--danger-color)] text-white rounded-md hover:bg-[var(--h-danger-color)] transition-all 0.3s ease-in-out cursor-pointer">Logout</button>
             </form>
         </div>
     </div>
@@ -48,7 +48,7 @@
         </a>
     
         <!-- Mobile Menu Toggle Button -->
-        <button id="menuToggle" type="button" class="md:hidden flex items-center p-2 text-[var(--text-color)]">
+        <button id="menuToggle" type="button" class="md:hidden flex items-center p-2 text-[var(--text-color)] cursor-pointer">
             <i class="fas fa-bars text-xl transition-all 0.5s ease-in-out"></i>
         </button>
 
@@ -238,7 +238,7 @@
                     <!-- Add Setups -->
                     <li>
                         <a href="{{route('addSetup')}}"
-                            class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out">
+                            class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
                             <i class="fas fa-cog text-[var(--secondary-color)] mr-3"></i>
                             Setups
                         </a>
@@ -246,7 +246,7 @@
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out">
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
                             <i class="fas fa-moon text-[var(--secondary-color)] mr-3"></i>
                             Theme
                         </button>
@@ -254,7 +254,7 @@
                     <!-- Logout Button -->
                     <li>
                         <button onclick="openLogoutModal()"
-                            class="block w-full text-left px-4 py-2 text-[var(--border-error)] hover:bg-[var(--bg-error)] hover:text-[var(--text-error)] rounded-lg transition-all duration-200 ease-in-out">
+                            class="block w-full text-left px-4 py-2 text-[var(--border-error)] hover:bg-[var(--bg-error)] hover:text-[var(--text-error)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
                             <i class="fas fa-sign-out-alt mr-3"></i>
                             Logout
                         </button>

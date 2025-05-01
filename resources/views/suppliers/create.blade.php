@@ -109,16 +109,6 @@
                 
                 <div class="chipsContainer col-span-2">
                     <div id="chips" class="w-full flex gap-2">
-                        {{-- <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                            <div class="text tracking-wide">Fabric</div>
-                            <button class="delete" type="button">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                class="size-3 stroke-gray-300">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
-                        </div> --}}
-                        
                         <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto fade-in">
                             <div class="text tracking-wide text-[var(--secondary-text)]">Please add category</div>
                         </div>

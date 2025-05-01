@@ -132,27 +132,27 @@
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Print
                             Article</button>
                     </li>
                     <li id="edit-article-in-context" class="hidden">
                         <button id="edit-article-in-context-btn"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Edit
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Edit
                             Article</button>
                     </li>
                     <li id="update-img-in-context">
                         <button id="update-img-in-context-btn"
-                            class="font-medium text-[var(--border-warning)] w-full px-4 py-2 text-left hover:bg-[var(--bg-warning)] hover:text-[var(--text-warning)] rounded-md transition-all 0.3s ease-in-out">Update
+                            class="font-medium text-[var(--border-warning)] w-full px-4 py-2 text-left hover:bg-[var(--bg-warning)] hover:text-[var(--text-warning)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Update
                             Image</button>
                     </li>
                     <li id="add-rate-in-context" class="hidden">
                         <button id="add-rate-in-context-btn"
-                            class="font-medium text-[var(--border-success)] w-full px-4 py-2 text-left hover:bg-[var(--bg-success)] hover:text-[var(--text-success)] rounded-md transition-all 0.3s ease-in-out">Add
+                            class="font-medium text-[var(--border-success)] w-full px-4 py-2 text-left hover:bg-[var(--bg-success)] hover:text-[var(--text-success)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Add
                             Rate</button>
                     </li>
                 </ul>
@@ -303,12 +303,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeUpdateImageModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Cancel
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
                             Update Image
                         </button>
                     </x-slot>
@@ -417,12 +417,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeAddRateModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Cancel
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
                             Add Rate
                         </button>
                     </x-slot>
@@ -460,7 +460,7 @@
                     <div class="grow ml-5">${title}</div>
                     <div class="w-1/4">${parseFloat(rate).toFixed(2)}</div>
                     <div class="w-[10%] text-center">
-                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                        <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             <i class="fas fa-trash"></i>
                         </button>
                     </div>
@@ -649,27 +649,27 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
                             Print Article
                         </button>
                         
                         <button onclick="" type="button" id="edit-btn-in-modal"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Edit Article
                         </button>
 
                         <button id="update-image-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] transition-all 0.3s ease-in-out cursor-pointer">
                             Update Image
                         </button>
 
                         <button id="add-rate-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
                             Add Rate
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
                             Cancel
                         </button>
                     </x-slot>

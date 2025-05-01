@@ -20,7 +20,7 @@
             </div>
             @if (request()->is('login'))
                 <div class="flex justify-center mx-5 fixed right-0">
-                    <button id="themeToggle" onclick="changeTheme()" class="text-sm text-[var(--secondary-text)] hover:text-[var(--primary-color)]">
+                    <button id="themeToggle" onclick="changeTheme()" class="text-sm text-[var(--secondary-text)] hover:text-[var(--primary-color)] cursor-pointer">
                         <i class="fas fa-moon"></i>
                     </button>
                 </div>

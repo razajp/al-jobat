@@ -32,13 +32,13 @@
                                 <button type="submit" class="group cursor-pointer">
                                     <i class='fas fa-list-ul text-white'></i>
                                     <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
                                 </button>
                             @else
                                 <button type="submit" class="group cursor-pointer">
                                     <i class='fas fa-grip text-white'></i>
                                     <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
                                 </button>
                             @endif
                         </form>
@@ -116,12 +116,12 @@
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Print
                             Order</button>
                     </li>
                 </ul>
@@ -277,7 +277,7 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Cancel
                         </button>
                     </x-slot>

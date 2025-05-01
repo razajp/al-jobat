@@ -42,7 +42,7 @@
             <!-- Modal Action Slot -->
             <x-slot name="actions">
                 <button onclick="closeModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
+                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
                     Close
                 </button>
             </x-slot>
@@ -88,7 +88,7 @@
                 </div>
 
                 <button id="generateListBtn" type="button"
-                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap disabled:opacity-50 disabled:cursor-not-allowed">Select Invoices</button>
+                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Invoices</button>
             </div>
             {{-- cargo-list-table --}}
             <div id="cargo-list-table" class="w-full text-left text-sm">
@@ -224,7 +224,7 @@
                             <div class="grow">${selectedInvoice.customer.customer_name}</div>
                             <div class="w-[10%]">${selectedInvoice.customer.city}</div>
                             <div class="w-[10%] text-center">
-                                <button onclick="deselectThisInvoice(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                                <button onclick="deselectThisInvoice(${index})" type="button" class="text-[var(--danger-color)] cursor-pointer text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>

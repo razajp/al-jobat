@@ -272,6 +272,10 @@
                                                 <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
                                             </ul>
                                         </div>
+                                        <button type="button"
+                                            class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center bg-[var(--h-bg-color)] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
+                                            <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
+                                        </button>
                                     </div>
                                 `;
                             }).join('')}

@@ -63,7 +63,7 @@
             <!-- Modal Action Slot -->
             <x-slot name="actions">
                 <button onclick="closeArticlesModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out">
+                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
                     Close
                 </button>
             </x-slot>
@@ -102,7 +102,7 @@
                 </div>
 
                 <button id="generateShipmentBtn" type="button"
-                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
+                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
             </div>
             {{-- rate showing --}}
             <div id="shipment-table" class="w-full text-left text-sm">
@@ -292,11 +292,11 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeQuantityModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Cancel
                         </button>
                         <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
                             Set Quantity
                         </button>
                     </x-slot>
@@ -498,7 +498,7 @@
                             <div class="w-1/6">${selectedArticle.sales_rate}</div>
                             <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.shipmentQuantity}</div>
                             <div class="w-[10%] text-center">
-                                <button onclick="deselectThisArticle(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                                <button onclick="deselectThisArticle(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>
