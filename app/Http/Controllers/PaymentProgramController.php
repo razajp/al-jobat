@@ -36,10 +36,12 @@ class PaymentProgramController extends Controller
         foreach($orders as $order) {
             $order['payment'] = 0;
             $order['balance'] = 0;
-            foreach($order['paymentPrograms']['payments'] as $payment) {
-                $order['payment'] += $payment['amount'];
+            if ($order['paymentPrograms'] && $order['paymentPrograms']['payments']) {
+                foreach($order['paymentPrograms']['payments'] as $payment) {
+                    $order['payment'] += $payment['amount'];
+                }
+                $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
             }
-            $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
         }
         // Fetch and sort payment programs by date and created_at
         $paymentPrograms = PaymentProgram::with('customer', 'subCategory', 'payments')

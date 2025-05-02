@@ -89,6 +89,7 @@
             <div class="relative group">
                 <x-nav-link-item 
                     label="Customers" 
+                    :activatorTags="['payments']"
                     icon="fas fa-user-tag"
                     includesDropdown
                     :items="[
