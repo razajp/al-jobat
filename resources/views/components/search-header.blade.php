@@ -4,6 +4,9 @@
     'toFrom' => false,
     'toFrom_type' => 'text',
     'toFrom_label' => 'text',
+    'link' => false,
+    'linkText' => '',
+    'linkHref' => '#',
 ])
 
 <div class="header w-full flex items-center justify-between">
@@ -42,6 +45,13 @@
                 <x-input name="from" id="from" type="{{ $toFrom_type }}" placeholder="From"/>
                 <x-input name="to" id="to" type="{{ $toFrom_type }}" placeholder="To"/>
             </div>
+        </div>
+    @endif
+
+    @if ($link)
+        <!-- link_in_header -->
+        <div id="link_in_header" class="link_in_headerrom-box flex items-center gap-4">
+            <a type="button" href="{{ $linkHref }}" class="bg-[var(--primary-color)] px-4.5 py-1.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out cursor-pointer text-nowrap flex items-center">{{ $linkText }}</a>
         </div>
     @endif
 </div>

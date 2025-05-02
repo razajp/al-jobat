@@ -37,7 +37,7 @@
 
                 @if (count($finalData) > 0)
                     <div class="data_container">
-                        <div class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                        <div class="grid grid-cols-9 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                             <div class="text-center">Date</div>
                             <div class="text-center">Customer</div>
                             <div class="text-center">O/P No.</div>
@@ -46,11 +46,12 @@
                             <div class="text-center">Amount</div>
                             <div class="text-center">Document</div>
                             <div class="text-center">Payment</div>
+                            <div class="text-center">Balance</div>
                         </div>
                         
                         <div class="search_container overflow-y-auto grow my-scrollbar-2">
                             @foreach ($finalData as $data)
-                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-9 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                     <span class="text-center">{{ $data['date'] }}</span>
                                     <span class="text-center">{{ $data['customer']['customer_name'] }}</span>
                                     <span class="text-center">{{ $data['order_no'] ?? $data['program_no'] }}</span>
@@ -65,6 +66,8 @@
                                                     $beneficiary = $data['sub_category']['customer_name'];
                                                 } elseif ($data['category'] == 'waiting' && isset($data['remarks'])) {
                                                     $beneficiary = $data['remarks'];
+                                                } elseif ($data['category'] == 'self_account' && isset($data['sub_category']['account_title'])) {
+                                                    $beneficiary = $data['sub_category']['account_title'];
                                                 }
                                             } else if (isset($data['payment_programs']['category'])) {
                                                 if ($data['payment_programs']['category'] == 'supplier' && isset($data['payment_programs']['sub_category']['supplier_name'])) {
@@ -80,9 +83,10 @@
                                         @endphp
                                         {{ $beneficiary }}
                                     </span>
-                                    <span class="text-center">{{ $data['amount'] ?? $data['netAmount'] }}</span>
+                                    <span class="text-center">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
                                     <span class="text-center">{{ $data['document'] ?? '-' }}</span>
-                                    <span class="text-center">{{ $data['payment'] ?? '-' }}</span>
+                                    <span class="text-center">{{ number_format($data['payment'] ?? '0', 1) }}</span>
+                                    <span class="text-center">{{ number_format($data['balance'] ?? '0', 1) }}</span>
                                 </div>
                             @endforeach
                         </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BankAccountController;
+use App\Http\Controllers\BiltyController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
@@ -70,6 +71,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('bank-accounts', BankAccountController::class);
     
     Route::resource('cargos', CargoController::class);
+    
+    Route::resource('bilties', BiltyController::class);
     
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');

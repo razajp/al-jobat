@@ -183,7 +183,7 @@
                     label="Invoices"
                     icon="fas fa-receipt"
                     includesDropdown
-                    :activatorTags="['invoices', 'cargos']"
+                    :activatorTags="['invoices', 'cargos', 'bilties']"
                     :items="[
                         [
                             'label' => 'Invoices',
@@ -199,6 +199,14 @@
                             'children' => [
                                 ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Lists'],
                                 ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Generate List'],
+                            ]
+                        ],
+                        [
+                            'label' => 'Bilties',
+                            'type' => 'group',
+                            'children' => [
+                                ['type' => 'link', 'href' => route('bilties.index'), 'label' => 'Show Bilties'],
+                                ['type' => 'link', 'href' => route('bilties.create'), 'label' => 'Add Bilty'],
                             ]
                         ]
                     ]"
@@ -343,6 +351,8 @@
                         ['href' => route('invoices.create'), 'title' => 'Generate Invoice'],
                         ['href' => route('cargos.index'), 'title' => 'Show Cargo Lists'],
                         ['href' => route('cargos.create'), 'title' => 'Generate Cargo List'],
+                        ['href' => route('bilties.index'), 'title' => 'Show Bilties'],
+                        ['href' => route('bilties.create'), 'title' => 'Add Bilty'],
                     ]"
                 />
 

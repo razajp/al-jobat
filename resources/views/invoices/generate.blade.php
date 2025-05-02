@@ -157,10 +157,9 @@
     </script>
 
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Invoice </h1>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
+        <x-search-header heading="Generate Invoice" link linkText="Show Invoices" linkHref="{{ route('invoices.index') }}"/>
         <x-progress-bar :steps="['Generate Invoice', 'Preview']" :currentStep="1" />
     </div>
 
@@ -1000,7 +999,7 @@
                 let pcsPerPktInRowDom = childrenDom[5];
                 let ratePerPcInRowDom = childrenDom[6];
 
-                let amountInRowDom = childrenDom[childrenDom.length - 1];
+                let amountInRowDom = childrenDom[childrenDom.length - 2];
                 totalAmount -= parseInt(amountInRowDom.textContent.replace(/[,]/g, ''));
 
                 let pcsCalculated = packetsValue * parseInt(pcsPerPktInRowDom.textContent);

@@ -11,6 +11,7 @@
             'all' => 'All',
             'customer_name' => 'Customer Name',
             'type' => 'Type',
+            'method' => 'Method',
             'date' => 'Date',
         ]"/>
     </div>
@@ -71,9 +72,9 @@
                                             <x-card :data="[
                                                 'name' => 'Customer: ' . $payment->customer->customer_name,
                                                 'details' => [
-                                                    'Type' => $payment->type,
-                                                    'Date' => $payment->date,
-                                                    'Amount' => $payment->amount,
+                                                    'Type' => str_replace('_', ' ',$payment->type),
+                                                    'Date' => date('d-M-Y D', strtotime($payment->date)),
+                                                    'Amount' => number_format($payment->amount, 1),
                                                 ],
                                             ]" />
                                         </div>
@@ -90,9 +91,9 @@
                                     @forEach ($payments as $payment)
                                         <div id="{{ $payment->id }}" data-json='{{ $payment }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span class="text-center">{{ $payment->customer->customer_name }}</span>
-                                            <span class="text-center">{{ $payment->type }}</span>
-                                            <span class="text-center">{{ $payment->date }}</span>
-                                            <span class="text-center">{{ $payment->amount }}</span>
+                                            <span class="text-center">{{ str_replace('_', ' ',$payment->type) }}</span>
+                                            <span class="text-center">{{ date('d-M-Y D', strtotime($payment->date)) }}</span>
+                                            <span class="text-center">{{ number_format($payment->amount, 1) }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -261,9 +262,9 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <div class="px-2">
                                 <h5 id="name" class="text-2xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">Customer: ${data.customer.customer_name}</h5>
-                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>
-                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Amount:</strong> <span>${data.amount}</span></p>
-                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Type:</strong> <span>${data.type}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${formatDate(data.date)}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Amount:</strong> <span>${formatNumbersWithDigits(data.amount)}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Type:</strong> <span>${data.type.replace('_', ' ')}</span></p>
                             </div>
                             
                             <hr class="border-gray-600 my-3"/>
@@ -343,6 +344,7 @@
                         return (
                             item.customer.customer_name.toLowerCase().includes(search) ||
                             item.type.toLowerCase().includes(search) ||
+                            item.method.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;
@@ -359,6 +361,12 @@
                         );
                         break;
                         
+                    case 'method':
+                        return (
+                            item.method.toLowerCase().includes(search)
+                        );
+                        break;
+                        
                     case 'date':
                         return (
                             item.date.toLowerCase().includes(search)
@@ -369,6 +377,7 @@
                         return (
                             item.customer.customer_name.toLowerCase().includes(search) ||
                             item.type.toLowerCase().includes(search) ||
+                            item.method.toLowerCase().includes(search) ||
                             item.date.toLowerCase().includes(search)
                         );
                         break;

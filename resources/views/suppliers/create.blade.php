@@ -1,10 +1,9 @@
 @extends('app')
 @section('title', 'Add Suppliers | ' . app('company')->name)
 @section('content')
-    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)] fade-in"> Add Supplier </h1>
-
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-2xl mx-auto">
+    <div class="mb-5 max-w-3xl mx-auto">
+        <x-search-header heading="Add Supplier" link linkText="Show Suppliers" linkHref="{{ route('suppliers.index') }}"/>
         <x-progress-bar 
             :steps="['Enter Details', 'Upload Image']" 
             :currentStep="1"
@@ -13,7 +12,7 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('suppliers.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
@@ -208,9 +207,9 @@
                 chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
                 chip.innerHTML = `
                     <div class="text tracking-wide">${selectedCategoryName}</div>
-                    <button class="delete" type="button">
+                    <button class="delete cursor-pointer" type="button">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            class="size-3 stroke-[var(--secondary-text)]">
+                            class="size-3.5 stroke-[var(--secondary-text)]">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                     </button>

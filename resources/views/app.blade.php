@@ -365,6 +365,18 @@
         }
         setDropdownListeners();
 
+        function formatDate(date) {
+            const inputDate = new Date(date);
+
+            const day = inputDate.getDate().toString().padStart(2, '0');
+            const month = inputDate.toLocaleString('en-US', { month: 'short' });
+            const year = inputDate.getFullYear();
+            const weekday = inputDate.toLocaleString('en-US', { weekday: 'short' });
+
+            const formatted = `${day}-${month}-${year} ${weekday}`;
+            return formatted;
+        }
+
         function closeAllDropdowns() {
             dropdownMenus.forEach(menu => {
                 menu.classList.add('hidden');

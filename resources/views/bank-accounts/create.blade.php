@@ -8,11 +8,12 @@
         'customer' => ['text' => 'Customer'],
     ];
 @endphp
-    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)] fade-in"> Add Bank </h1>
-
+    <div class="max-w-3xl mx-auto">
+        <x-search-header heading="Add Bank Account" link linkText="Show Bank Accounts" linkHref="{{ route('bank-accounts.index') }}"/>
+    </div>
     <!-- Form -->
     <form id="form" action="{{ route('bank-accounts.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-2xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
         <div
             class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">

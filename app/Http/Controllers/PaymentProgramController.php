@@ -24,7 +24,7 @@ class PaymentProgramController extends Controller
         };
         
         // Fetch and sort orders by date and created_at
-        $orders = Order::with('customer', 'paymentPrograms.subCategory')
+        $orders = Order::with('customer', 'paymentPrograms.payments', 'paymentPrograms.subCategory')
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get()
@@ -33,8 +33,16 @@ class PaymentProgramController extends Controller
                 return $order;
             });
 
+        foreach($orders as $order) {
+            $order['payment'] = 0;
+            $order['balance'] = 0;
+            foreach($order['paymentPrograms']['payments'] as $payment) {
+                $order['payment'] += $payment['amount'];
+            }
+            $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
+        }
         // Fetch and sort payment programs by date and created_at
-        $paymentPrograms = PaymentProgram::with('customer', 'subCategory')
+        $paymentPrograms = PaymentProgram::with('customer', 'subCategory', 'payments')
             ->where('order_no', null)
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
@@ -44,17 +52,18 @@ class PaymentProgramController extends Controller
                 return $paymentPrograms;
             });
 
+        foreach($paymentPrograms as $paymentProgram) {
+            $paymentProgram['payment'] = 0;
+            $paymentProgram['balance'] = 0;
+            foreach($paymentProgram['payments'] as $payment) {
+                $paymentProgram['payment'] += $payment['amount'];
+            }
+            $paymentProgram['balance'] = $paymentProgram['amount'] - $paymentProgram['payment'];
+        }
+
         // Convert collections to arrays
         $ordersArray = $orders->toArray();
         $paymentProgramsArray = $paymentPrograms->toArray();
-
-        foreach ($ordersArray as $order) {
-            $order['document'] = 'Order';
-        }
-
-        foreach ($paymentProgramsArray as $paymentProgram) {
-            $paymentProgram['document'] = 'Payment Program';
-        }
 
         // Combine both arrays manually
         $finalData = array_merge($ordersArray, $paymentProgramsArray);
@@ -122,7 +131,7 @@ class PaymentProgramController extends Controller
             'customer_id'=> 'required|integer|exists:customers,id',
             'category'=> 'required|in:supplier,self_account,customer,waiting',
             'sub_category'=> 'nullable|integer',
-            'amount'=> 'required|integer',
+            'amount'=> 'required|numeric',
             'remarks'=> 'nullable|string',
         ]);
 

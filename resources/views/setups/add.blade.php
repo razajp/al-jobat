@@ -2,9 +2,10 @@
 @section('title', 'Add Setups | ' . app('company')->name)
 @section('content')
 <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)]">
-        Add Setups
-    </h1>
+
+    <div class="max-w-lg mx-auto">
+        <x-search-header heading="Add Setup"/>
+    </div>
 
     <!-- Form -->
     <form id="add-setups-form" action="{{route('addSetup')}}" method="post"

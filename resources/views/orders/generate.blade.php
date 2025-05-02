@@ -72,10 +72,9 @@
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Order </h1>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
+        <x-search-header heading="Generate Order" link linkText="Show Orders" linkHref="{{ route('orders.index') }}"/>
         <x-progress-bar :steps="['Generate Order', 'Preview']" :currentStep="1" />
     </div>
 
@@ -514,7 +513,7 @@
                             <div class="w-1/6">${selectedArticle.orderedQuantity} pcs</div>
                             <div class="grow">${selectedArticle.description}</div>
                             <div class="w-1/6">${selectedArticle.sales_rate}</div>
-                            <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.orderedQuantity}</div>
+                            <div class="w-1/5">${formatNumbersWithDigits(selectedArticle.sales_rate * selectedArticle.orderedQuantity, 1, 1)}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisArticle(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                                     <i class="fas fa-trash"></i>
@@ -634,7 +633,6 @@
                                     <div id="tbody" class="tbody w-full">
                                         ${selectedArticles.map((article, index) => {
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-                                            if (index == 0) {
                                                 return `
                                                     <div>
                                                         <hr class="w-full ${hrClass} border-gray-600">
@@ -643,7 +641,7 @@
                                                             <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
                                                             <div class="td text-sm font-semibold grow">${article.description}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">
                                                                 ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
                                                             </div>
@@ -654,27 +652,6 @@
                                                         </div>
                                                     </div>
                                                     `;
-                                            } else {
-                                                return `
-                                                    <div>
-                                                        <hr class="w-full ${hrClass} border-gray-600">
-                                                        <div class="tr flex justify-between w-full px-4">
-                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                            <div class="td text-sm font-semibold grow">${article.description}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${Math.floor(article.orderedQuantity / article.pcs_per_packet)}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(article.sales_rate)}
-                                                            </div>
-                                                            <div class="td text-sm font-semibold w-[10%]">
-                                                                ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
-                                                            </div>
-                                                            <div class="td text-sm font-semibold w-[8%]"></div>
-                                                        </div>
-                                                    </div>
-                                                    `;
-                                            }
                                         }).join('')}
                                     </div>
                                 </div>

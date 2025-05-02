@@ -14,7 +14,10 @@
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment Program </h1>
+
+    <div class="max-w-3xl mx-auto">
+        <x-search-header heading="Add Payment Program" link linkText="Show Payment Programs" linkHref="{{ route('payment-programs.index') }}"/>
+    </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('payment-programs.store') }}" method="post"

@@ -52,11 +52,10 @@
             </x-slot>
         </x-modal>
     </div>
-    <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Payment </h1>
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
+        <x-search-header heading="Add Payment" link linkText="Show Payments" linkHref="{{ route('payments.index') }}"/>
         <x-progress-bar :steps="['Select Customer', 'Enter Payment']" :currentStep="1" />
     </div>
 

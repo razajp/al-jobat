@@ -50,10 +50,9 @@
     </div>
 
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Generate Cargo List </h1>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
+        <x-search-header heading="Generate Cargo List" link linkText="Show Cargo Lists" linkHref="{{ route('cargos.index') }}"/>
         <x-progress-bar :steps="['Generate Cargo List', 'Preview']" :currentStep="1" />
     </div>
 

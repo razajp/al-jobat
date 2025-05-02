@@ -2,10 +2,9 @@
 @section('title', 'Add Article | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
-    <h1 class="text-3xl font-bold mb-6 text-center text-[var(--primary-color)] fade-in"> Add Article </h1>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
+        <x-search-header heading="Add Article" link linkText="Show Articles" linkHref="{{ route('articles.index') }}"/>
         <x-progress-bar 
             :steps="['Enter Details', 'Enter Rates', 'Upload Image']" 
             :currentStep="1"
