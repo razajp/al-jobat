@@ -16,20 +16,23 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->date('date');
             $table->string('type');
+            $table->string('method');
             $table->integer('amount');
             $table->string('cheque_no')->nullable();
             $table->string('slip_no')->nullable();
-            $table->string('transition_id')->nullable();
+            $table->string('transaction_id')->nullable();
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();
             $table->date('clear_date')->nullable();
             $table->string('bank')->nullable();
             $table->string('remarks')->nullable();
-            $table->string('program_no')->nullable();
+            $table->string('program_id')->nullable();
+            $table->string('bank_account_id')->nullable();
 
             // Define foreign key constraint
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-            $table->foreign('program_no')->references('program_no')->on('payment_programs')->onDelete('set null');
+            $table->foreign('bank_account_id')->references('id')->on('bank_accounts')->onDelete('cascade');
+            $table->foreign('program_id')->references('id')->on('payment_programs')->onDelete('set null');
 
             $table->timestamps();
         });

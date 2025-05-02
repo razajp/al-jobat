@@ -103,33 +103,36 @@ class PaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        return $request->all();
-
         $validator = Validator::make($request->all(), [
             "customer_id" => "required|integer|exists:customers,id",
             "date" => "required|date",
             "type" => "required|string",
-            "amount" => "required|numeric", 
-            "program_no" => "required|string", 
-            "cheque_no" => "nullable|string",
-            "slip_no" => "nullable|string",
-            "transition_id" => "nullable|string",
-            "cheque_date" => "nullable|date", 
-            "slip_date" => "nullable|date",
-            "clear_date" => "nullable|date",
-            "bank" => "nullable|string",
-            "bank_account_id" => "nullable|string",
-            "remarks" => "nullable|string",
+            "program_id" => "nullable|exists:payment_programs,id", 
+            "payment_details_array" => "required|json",
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator);
         }
 
         $data = $request->all();
-        $data["amount"] = (int)str_replace(',', '', $data["amount"]);
 
-        Payment::create($data);
+        $paymentDetailsArray = json_decode($data['payment_details_array'], true);
+
+        foreach ($paymentDetailsArray as $paymentDetails) {
+            $paymentDetails['customer_id'] = $request->customer_id;
+            $paymentDetails['date'] = $request->date;
+            $paymentDetails['type'] = $request->type;
+            $paymentDetails['program_id'] = $request->program_id;
+
+            Payment::create($paymentDetails);
+        }
+
+        // return $paymentDetailsArray;
+
+        // $data["amount"] = (int)str_replace(',', '', $data["amount"]);
+
+        // Payment::create($data);
 
         return redirect()->route('payments.create')->with('success', 'Payment Added successfully.');
     }

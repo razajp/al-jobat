@@ -132,7 +132,7 @@
                 <input type="hidden" name="payment_details_array" id="payment_details_array">
             </div>
 
-            <input type="hidden" name="programInp" id="programInp">
+            <input type="hidden" name="program_id" id="programInp">
             <div class="flex w-full text-sm mt-5 text-nowrap">
                 <div class="total-payment flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Payment - Rs.</div>

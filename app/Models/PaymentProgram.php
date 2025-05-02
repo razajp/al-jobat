@@ -11,7 +11,7 @@ class PaymentProgram extends Model
 
     protected $fillable = ['program_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
-    function customer()
+    public function customer()
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
@@ -23,5 +23,9 @@ class PaymentProgram extends Model
     public function subCategory()
     {
         return $this->morphTo();
+    }
+
+    public function payments() {
+        return $this->hasMany(Payment::class, "program_id");
     }
 }

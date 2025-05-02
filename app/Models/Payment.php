@@ -13,6 +13,7 @@ class Payment extends Model
         "customer_id",
         "date",
         "type",
+        "method",
         "amount",
         "cheque_no",
         "slip_no",
@@ -22,12 +23,23 @@ class Payment extends Model
         "clear_date",
         "bank",
         "remarks",
-        "program_no",
+        "program_id",
+        "bank_account_id",
     ];
 
     // Relationship with the Customer model
     public function customer()
     {
         return $this->belongsTo(Customer::class, "customer_id");
+    }
+    
+    public function program()
+    {
+        return $this->belongsTo(PaymentProgram::class, "program_id");
+    }
+    
+    public function bankAccount()
+    {
+        return $this->belongsTo(BankAccount::class, "bank_account_id");
     }
 }
