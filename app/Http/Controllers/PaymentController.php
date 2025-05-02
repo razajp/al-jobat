@@ -103,6 +103,8 @@ class PaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
+        return $request->all();
+
         $validator = Validator::make($request->all(), [
             "customer_id" => "required|integer|exists:customers,id",
             "date" => "required|date",

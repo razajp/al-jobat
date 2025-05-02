@@ -6,7 +6,6 @@
             'cash' => ['text' => 'Cash'],
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
-            'program' => ['text' => 'Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
         $type_options = [
@@ -107,7 +106,6 @@
                 {{-- method --}}
                 <x-select 
                     label="Method"
-                    name="method"
                     id="method"
                     :options="$method_options"
                     required
@@ -131,6 +129,7 @@
                 <div id="payment-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Added</div>
                 </div>
+                <input type="hidden" name="payment_details_array" id="payment_details_array">
             </div>
 
             <input type="hidden" name="programInp" id="programInp">
@@ -155,6 +154,7 @@
         let paymentListDom = document.getElementById('payment-list');
         const paymentProgramsContainer = document.getElementById("paymentProgramsContainer");
         const programInpDom = document.getElementById("programInp");
+        const paymentDetailsArrayDom = document.getElementById("payment_details_array");
 
         selectedCustomerData = null;
         let totalPayment = 0;
@@ -210,6 +210,10 @@
             dateDom.value = '';
             balanceDom.value = '';
             methodSelectDom.value = '';
+            typeSelectDom.value = '';
+
+            paymentDetailsArray = [];
+            renderList();
 
             if (customerSelectDom.value != '') {
                 selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
@@ -228,6 +232,11 @@
         }
 
         function trackTypeState(elem) {
+            paymentDetailsArray = [];
+            methodSelectDom.value = '';
+            methodSelectDom.querySelector("option[value='program']")?.remove();
+            renderList();
+
             if (elem.value != '' && elem.value != 'payment_program') {
                 gotoStep(2)
             }
@@ -239,8 +248,6 @@
 
         function generatePaymentProgramModal(item) {
             let programs = JSON.parse(item.dataset.option);
-            console.log(programs);
-            
             let programHTML;
 
             if (programs.length > 0) {
@@ -400,13 +407,16 @@
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- category --}}
-                        <x-input label="Category" name="category" value="${selectedProgramData.category}" id="category" disabled required/>
+                        <x-input label="Category" value="${selectedProgramData.category}" id="category" disabled required/>
                         
                         {{-- beneficiary --}}
-                        <x-input label="Beneficiary" name="beneficiary" value="${selectedProgramData.beneficiary}" id="beneficiary" disabled required/>
+                        <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" id="beneficiary" disabled required/>
+
+                        {{-- program date --}}
+                        <x-input label="Program Date" value="${selectedProgramData.date}" id="program_date" disabled required/>
 
                         {{-- program amount --}}
-                        <x-input label="Program Amount" type="number" name="program_amount" value="${selectedProgramData.amount}" id="program_amount" disabled required/>
+                        <x-input label="Program Amount" type="number" value="${selectedProgramData.amount}" id="program_amount" disabled required/>
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
@@ -414,6 +424,9 @@
                         {{-- bank account --}}
                         <x-select label="Bank Accounts" name="bank_accounts" id="bank_accounts" required showDefault />
                         
+                        {{-- transaction id --}}
+                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />
+
                         {{-- remarks --}}
                         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
                     </div>
@@ -433,8 +446,9 @@
         function selectThisProgram(programElem) {
             closeProgramModal();
             selectedProgramData = JSON.parse(programElem.dataset.json);
-            programInpDom.value = JSON.stringify(selectedProgramData);
+            programInpDom.value = selectedProgramData.id;
             if (selectedProgramData.category != 'waiting') {
+                methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
                 methodSelectDom.value = 'program';
                 let beneficiary = '-';
                 if (selectedProgramData.category) {
@@ -470,7 +484,7 @@
         function addPaymentDetails() {
             closeModal();
             let detail = {};
-            const inputs = paymentDetailsDom.querySelectorAll('input');
+            const inputs = paymentDetailsDom.querySelectorAll('input:not([disabled])');
 
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
@@ -483,10 +497,14 @@
                 }
             });
 
+            const selectBankAccount = paymentDetailsDom.querySelector("select");
+            if (selectBankAccount) {
+                detail[selectBankAccount.getAttribute('name')] = selectBankAccount.value;
+            }
+
             if (isNaN(detail.amount) || detail.amount <= 0) {
                 detail = {};
             }
-            
             
             if (Object.keys(detail).length > 0) {
                 totalPayment += detail.amount;
@@ -517,6 +535,10 @@
 
                 paymentListDom.innerHTML = clutter;
 
+                paymentDetailsArrayDom.value = JSON.stringify(paymentDetailsArray);
+                
+                console.log(paymentDetailsArrayDom);
+                
             } else {
                 paymentListDom.innerHTML =
                 `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Yet</div>`;
