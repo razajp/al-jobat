@@ -27,6 +27,9 @@ return new class extends Migration
             $table->integer('sold_quantity')->unsigned()->default(0);
             $table->integer('pcs_per_packet')->unsigned()->default(0);
             $table->string('image')->default('no_image_icon.png');
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

@@ -25,6 +25,9 @@ return new class extends Migration
 
             $table->foreign('customer_id')->references('id')->on('customers');
             $table->foreign('order_no')->references('order_no')->on('orders')->onDelete('set null');
+            
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

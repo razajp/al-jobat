@@ -26,7 +26,7 @@
             />
 
             <!-- login Button -->
-            <button type="submit" class="bg-[var(--primary-color)] px-5 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 ease-in-out font-medium cursor-pointer">Login</button>
+            <button type="submit" class="bg-[var(--primary-color)] px-5 py-2 rounded-lg hover:bg-blue-600 transition-all duration-300 ease-in-out font-medium cursor-pointer hover:scale-[0.95]">Login</button>
         </form>
     </div>
 @endsection

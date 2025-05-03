@@ -98,7 +98,7 @@
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No List Found</h1>
                     <a href="{{ route('cargos.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>
             @endif
@@ -106,16 +106,16 @@
 
         <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left cursor-pointer hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Show
+                            class="w-full px-4 py-2 text-left cursor-pointer hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="print-list" type="button"
-                            class="w-full px-4 py-2 text-left cursor-pointer hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out">Print
+                            class="w-full px-4 py-2 text-left cursor-pointer hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out">Print
                             List</button>
                     </li>
                 </ul>
@@ -339,12 +339,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button" id="printList"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Print List
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                     </x-slot>

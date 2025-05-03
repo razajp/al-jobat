@@ -67,7 +67,7 @@
 
         function validateName() {
             // Validate Name
-            if (nameDom.value.trim() === "") {
+            if (nameDom.value === "") {
                 nameDom.classList.add("border-[var(--border-error)]");
                 nameError.classList.remove("hidden");
                 nameError.textContent = "Name field is required.";
@@ -81,12 +81,12 @@
 
         function validateUsername() {
             // Validate Username
-            if (usernameDom.value.trim() === "") {
+            if (usernameDom.value === "") {
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
                 return false;
-            } else if (users.some(user => user.username === usernameDom.value.trim())) {
+            } else if (users.some(user => user.username === usernameDom.value)) {
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username is already taken.";
@@ -100,7 +100,7 @@
 
         function validatePassword() {
             // Validate Password
-            if (passwordDom.value.trim() === "") {
+            if (passwordDom.value === "") {
                 passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password field is required.";

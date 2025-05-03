@@ -59,7 +59,7 @@
 
             @if (count($articles) > 0)
                 <div
-                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out z-50">
+                    class="add-new-article-btn absolute z-40 bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
                     <a href="{{ route('articles.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
@@ -120,7 +120,7 @@
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Article Found</h1>
                     <a href="{{ route('articles.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>
             @endif
@@ -128,31 +128,31 @@
 
         <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
                             Article</button>
                     </li>
                     <li id="edit-article-in-context" class="hidden">
                         <button id="edit-article-in-context-btn"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Edit
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit
                             Article</button>
                     </li>
                     <li id="update-img-in-context">
                         <button id="update-img-in-context-btn"
-                            class="font-medium text-[var(--border-warning)] w-full px-4 py-2 text-left hover:bg-[var(--bg-warning)] hover:text-[var(--text-warning)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Update
+                            class="font-medium text-[var(--border-warning)] w-full px-4 py-2 text-left hover:bg-[var(--bg-warning)] hover:text-[var(--text-warning)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Update
                             Image</button>
                     </li>
                     <li id="add-rate-in-context" class="hidden">
                         <button id="add-rate-in-context-btn"
-                            class="font-medium text-[var(--border-success)] w-full px-4 py-2 text-left hover:bg-[var(--bg-success)] hover:text-[var(--text-success)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Add
+                            class="font-medium text-[var(--border-success)] w-full px-4 py-2 text-left hover:bg-[var(--bg-success)] hover:text-[var(--text-success)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Add
                             Rate</button>
                     </li>
                 </ul>
@@ -308,7 +308,7 @@
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer">
                             Update Image
                         </button>
                     </x-slot>
@@ -422,7 +422,7 @@
                         </button>
                         <input type="hidden" id="article_id" name="article_id">
                         <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer">
                             Add Rate
                         </button>
                     </x-slot>
@@ -605,12 +605,24 @@
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
+            console.log(data);
+            
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="p-5 max-w-5xl" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-[27rem]">
-                        <div id="no_image_dot_modal"
+                        <div id="info_in_modal" class="absolute top-0 right-0 border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pl-3 transition-all duration-300 ease-in-out">
+                            <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:mr-2">
+                                Added by ${data.creator.name}
+                            </span>
+                            <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
+                                <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512">
+                                    <path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div id="no_rate_dot_modal"
                             class="image_dot absolute top-2 left-2 w-[0.7rem] h-[0.7rem] bg-transparent rounded-full">
                         </div>
                         <div class="rounded-lg h-full aspect-square overflow-hidden">
@@ -649,27 +661,27 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Print Article
                         </button>
                         
                         <button onclick="" type="button" id="edit-btn-in-modal"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Edit Article
                         </button>
 
                         <button id="update-image-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Update Image
                         </button>
 
                         <button id="add-rate-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Add Rate
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                     </x-slot>
@@ -680,7 +692,7 @@
             let updateImageInModal = document.getElementById('update-image-in-modal');
             let addRateInModal = document.getElementById('add-rate-in-modal');
             let editArticleInModal = document.getElementById('edit-btn-in-modal');
-            let no_image_dot_modal = document.getElementById('no_image_dot_modal');
+            let no_rate_dot_modal = document.getElementById('no_rate_dot_modal');
 
             if (data.image == "no_image_icon.png") {
                 imageInModal.src = `images/no_image_icon.png`;
@@ -694,18 +706,18 @@
             })
 
             if (data.sales_rate == "0.00") {
-                no_image_dot_modal.classList.add('bg-[var(--border-error)]');
-                no_image_dot_modal.classList.add('shadow-md');
-                no_image_dot_modal.classList.remove('bg-transparent');
+                no_rate_dot_modal.classList.add('bg-[var(--border-error)]');
+                no_rate_dot_modal.classList.add('shadow-md');
+                no_rate_dot_modal.classList.remove('bg-transparent');
 
                 addRateInModal.classList.remove('hidden');
                 addRateInModal.addEventListener('click', function() {
                     generateAddRateModal(item);
                 })
             } else {
-                no_image_dot_modal.classList.remove('bg-[var(--border-error)]');
-                no_image_dot_modal.classList.remove('shadow-md');
-                no_image_dot_modal.classList.add('bg-transparent');
+                no_rate_dot_modal.classList.remove('bg-[var(--border-error)]');
+                no_rate_dot_modal.classList.remove('shadow-md');
+                no_rate_dot_modal.classList.add('bg-transparent');
 
                 addRateInModal.classList.add('hidden');
             }

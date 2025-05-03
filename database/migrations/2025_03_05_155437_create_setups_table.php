@@ -17,6 +17,9 @@ return new class extends Migration
             $table->string('title');
             $table->string('short_title')->unique()->nullable();
             $table->timestamps();
+            
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->unique(['type', 'title']);
         });

@@ -112,7 +112,7 @@
                             <div class="text tracking-wide text-[var(--secondary-text)]">Please add category</div>
                         </div>
                     </div>
-                    <div id="category-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
+                    <div id="category-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
                 </div>
             </div>
         </div>

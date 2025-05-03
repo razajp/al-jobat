@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class Invoice extends Model
 {
@@ -19,6 +21,27 @@ class Invoice extends Model
         "cotton_count",
         "articles_in_invoice",
     ];
+    
+    protected static function booted()
+    {
+        // Automatically set creator_id when creating a new Article
+        static::creating(function ($thisModel) {
+            if (Auth::check()) {
+                $thisModel->creator_id = Auth::id();
+            }
+        });
+
+        // Always eager load the associated creator
+        static::addGlobalScope('withCreator', function (Builder $builder) {
+            $builder->with('creator');
+        });
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
     protected $appends = ['is_in_cargo'];
     public function order() {
         return $this->belongsTo(Order::class, 'order_no', 'order_no');

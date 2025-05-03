@@ -72,7 +72,7 @@
                 <!-- Modal Action Slot -->
                 <x-slot name="actions">
                     <button onclick="closeModal()" type="button"
-                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                         Close
                     </button>
                 </x-slot>

@@ -116,7 +116,7 @@
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Order Found</h1>
                     <a href="{{ route('orders.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>
             @endif
@@ -124,16 +124,16 @@
 
         <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="print-order" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
                             Order</button>
                     </li>
                 </ul>
@@ -280,123 +280,125 @@
             let currentBalance = data.current_balance;
 
             modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                        <div id="preview" class="preview flex flex-col h-full">
-                            <div id="order" class="order flex flex-col h-full">
-                                <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
-                                    <div class="left">
-                                        <div class="order-logo">
-                                            <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                class="w-[12rem]" />
-                                            <div class='mt-1'>${ companyData.phone_number }</div>
+                <x-modal id="modalForm" classForBody="py-0 max-w-4xl h-[35rem] bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
+                    <div class="w-full h-full overflow-y-auto my-scrollbar-2 py-5">
+                        <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
+                            <div id="preview" class="preview flex flex-col h-full">
+                                <div id="order" class="order flex flex-col h-full">
+                                    <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 px-5">
+                                        <div class="left">
+                                            <div class="order-logo">
+                                                <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                                    class="w-[12rem]" />
+                                                <div class='mt-1'>${ companyData.phone_number }</div>
+                                            </div>
+                                        </div>
+                                        <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Order</h1>
+                                    </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div id="order-header" class="order-header w-full flex justify-between px-5">
+                                        <div class="left w-50 space-y-1">
+                                            <div class="order-customer text-lg leading-none">M/s: ${data.customer.customer_name}</div>
+                                            <div class="order-person text-md text-lg leading-none">${data.customer.urdu_title}</div>
+                                            <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
+                                            <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
+                                        </div>
+                                        <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
+                                            <div class="order-date leading-none">Date: ${data.date}</div>
+                                            <div class="order-number leading-none">Order No.: ${data.order_no}</div>
+                                            <div class="order-copy leading-none">Order Copy: Customer</div>
+                                            <div class="order-copy leading-none">Document: Sales Order</div>
                                         </div>
                                     </div>
-                                    <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Order</h1>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div id="order-header" class="order-header w-full flex justify-between px-5">
-                                    <div class="left w-50 space-y-1">
-                                        <div class="order-customer text-lg leading-none">M/s: ${data.customer.customer_name}</div>
-                                        <div class="order-person text-md text-lg leading-none">${data.customer.urdu_title}</div>
-                                        <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
-                                        <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
-                                    </div>
-                                    <div class="right w-50 my-auto pr-3 text-sm text-black space-y-1.5">
-                                        <div class="order-date leading-none">Date: ${data.date}</div>
-                                        <div class="order-number leading-none">Order No.: ${data.order_no}</div>
-                                        <div class="order-copy leading-none">Order Copy: Customer</div>
-                                        <div class="order-copy leading-none">Document: Sales Order</div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div id="order-body" class="order-body w-[95%] grow mx-auto">
-                                    <div class="order-table w-full">
-                                        <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
-                                            <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                                    <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Article</div>
-                                                    <div class="th text-sm font-medium grow">Description</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Pcs.</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Packets</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Rate</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                                    <div class="th text-sm font-medium w-[8%]">Dispatch</div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div id="order-body" class="order-body w-[95%] grow mx-auto">
+                                        <div class="order-table w-full">
+                                            <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                                <div class="thead w-full">
+                                                    <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                        <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Article</div>
+                                                        <div class="th text-sm font-medium grow">Description</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Pcs.</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Packets</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Rate</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Amount</div>
+                                                        <div class="th text-sm font-medium w-[8%]">Dispatch</div>
+                                                    </div>
+                                                </div>
+                                                <div id="tbody" class="tbody w-full">
+                                                    ${data.articles.map((orderedArticle, index) => {
+                                                        const article = orderedArticle.article;
+                                                        const salesRate = article.sales_rate;
+                                                        const orderedQuantity = orderedArticle.ordered_quantity;
+                                                        const total = parseInt(salesRate) * orderedQuantity;
+                                                        const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+
+                                                        totalAmount += total;
+                                                        totalQuantity += orderedQuantity;
+
+                                                        return `
+                                                            <div>
+                                                                <hr class="w-full ${hrClass} border-black">
+                                                                <div class="tr flex justify-between w-full px-4">
+                                                                    <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                                    <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet) : 0}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">
+                                                                        ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
+                                                                    </div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">
+                                                                        ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
+                                                                    </div>
+                                                                    <div class="td text-sm font-semibold w-[8%]"></div>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                    }).join('')}
                                                 </div>
                                             </div>
-                                            <div id="tbody" class="tbody w-full">
-                                                ${data.articles.map((orderedArticle, index) => {
-                                                    const article = orderedArticle.article;
-                                                    const salesRate = article.sales_rate;
-                                                    const orderedQuantity = orderedArticle.ordered_quantity;
-                                                    const total = parseInt(salesRate) * orderedQuantity;
-                                                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-
-                                                    totalAmount += total;
-                                                    totalQuantity += orderedQuantity;
-
-                                                    return `
-                                                        <div>
-                                                            <hr class="w-full ${hrClass} border-black">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
-                                                                <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet) : 0}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-[10%]">
-                                                                    ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
-                                                                </div>
-                                                                <div class="td text-sm font-semibold w-[8%]"></div>
-                                                            </div>
-                                                        </div>
-                                                    `;
-                                                }).join('')}
+                                        </div>
+                                    </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div class="flex flex-col space-y-2">
+                                        <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Total Quantity - Pcs</div>
+                                                <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
+                                            </div>
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Total Amount</div>
+                                                <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
+                                            </div>
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Discount - %</div>
+                                                <div class="w-1/4 text-right grow">${discount}</div>
+                                            </div>
+                                        </div>
+                                        <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Previous Balance</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
+                                            </div>
+                                            <div
+                                                class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Net Amount</div>
+                                                <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
+                                            </div>
+                                            <div
+                                                class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Current Balance</div>
+                                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div class="flex flex-col space-y-2">
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Total Quantity - Pcs</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Total Amount</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Discount - %</div>
-                                            <div class="w-1/4 text-right grow">${discount}</div>
-                                        </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
+                                        <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                                        <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                     </div>
-                                    <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Previous Balance</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Net Amount</div>
-                                            <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Current Balance</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
-                                    <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
-                                    <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                 </div>
                             </div>
                         </div>
@@ -404,12 +406,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button" id="printOrder"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Print Order
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                     </x-slot>

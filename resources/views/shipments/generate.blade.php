@@ -63,7 +63,7 @@
             <!-- Modal Action Slot -->
             <x-slot name="actions">
                 <button onclick="closeArticlesModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                     Close
                 </button>
             </x-slot>
@@ -101,7 +101,7 @@
                 </div>
 
                 <button id="generateShipmentBtn" type="button"
-                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
+                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
             </div>
             {{-- rate showing --}}
             <div id="shipment-table" class="w-full text-left text-sm">
@@ -295,7 +295,7 @@
                             Cancel
                         </button>
                         <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer">
                             Set Quantity
                         </button>
                     </x-slot>
@@ -567,7 +567,7 @@
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
                     <div id="shipment" class="shipment flex flex-col h-full">
-                        <div id="shipment-banner" class="shipment-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                        <div id="shipment-banner" class="shipment-banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="shipment-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
@@ -575,20 +575,20 @@
                                 </div>
                             </div>
                             <div class="right">
-                                <div>
-                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Shipment</h1>
+                                <div class="text-right">
+                                    <h1 class="text-2xl font-medium text-[var(--primary-color)]">Shipment</h1>
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
-                            <div class="left w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                            <div class="left w-50 my-auto text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-date leading-none">Date: ${shipmentDate}</div>
                                 <div class="shipment-number leading-none">Shipment No.: ${shipmentNo}</div>
                                 <input type="hidden" name="shipment_no" value="${shipmentNo}" />
                             </div>
-                            <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                            <div class="right w-50 my-auto text-right text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-copy leading-none">Shipment Copy: Office</div>
                                 <div class="shipment-copy leading-none">Document: Shipment</div>
                             </div>

@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('cargo_name');
             $table->json('invoices_array');
             $table->timestamps();
+            
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

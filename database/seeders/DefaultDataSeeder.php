@@ -22,8 +22,8 @@ class DefaultDataSeeder extends Seeder
 
         // add type="supplier_category", "created_at":"2025-03-05T17:37:26.000000Z","updated_at":"2025-03-05T17:37:26.000000Z", title="fabric" and short_title="FBR" to setups table
         DB::table('setups')->insert([
-            ['type' =>'supplier_category', 'title' => 'Fabric', 'short_title' => 'FBR', 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
-            ['type' =>'supplier_category', 'title' => 'Embroidery', 'short_title' => 'EMB', 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
+            ['type' =>'supplier_category', 'title' => 'Fabric', 'short_title' => 'FBR', 'creator_id' => 1, 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
+            ['type' =>'supplier_category', 'title' => 'Embroidery', 'short_title' => 'EMB', 'creator_id' => 1, 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
         ]);
     }
 }

@@ -11,6 +11,7 @@
 
 {{-- Profile Picture --}}
 @if (isset($data['image']))
+<img src="{{ $data['image'] }}" alt="" class="absolute top-0 left-0 blur-3xl h-[100%] object-cover">
     <div class="{{ $data['classImg'] ?? '' }} img aspect-square h-full rounded-full overflow-hidden relative">
         <img src="{{ $data['image'] }}" alt="" class="w-full h-full object-cover">
     </div>
@@ -32,6 +33,7 @@
 
 {{-- Action Button --}}
 <button type="button"
-    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center bg-[var(--h-bg-color)] text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
+    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
+    <div class="absolute top-0 left-0 bg-[var(--h-bg-color)] blur-md rounded-full h-50 aspect-square"></div>
     <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
 </button>

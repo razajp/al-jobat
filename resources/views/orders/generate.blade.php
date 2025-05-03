@@ -4,19 +4,17 @@
     <!-- Modal -->
     <div id="articleModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-        <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
+        <x-modal id="articlesModalForm" classForBody="p-5 max-w-7xl h-[45rem]" closeAction="closeArticlesModal">
             <!-- Modal Content Slot -->
             <div class="flex items-start relative h-full">
                 <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                    <div class="pr-5 pt-1">
-                        <x-search-header heading="Articles" :filter_items="[
-                            'all' => 'All',
-                            '#' => 'Article No.',
-                            'category' => 'Category',
-                            'season' => 'Season',
-                            'size' => 'Size',
-                        ]"/>
-                    </div>
+                    <x-search-header heading="Articles" :filter_items="[
+                        'all' => 'All',
+                        '#' => 'Article No.',
+                        'category' => 'Category',
+                        'season' => 'Season',
+                        'size' => 'Size',
+                    ]"/>
         
                     @if (count($articles) > 0)
                         <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
@@ -61,7 +59,7 @@
             <!-- Modal Action Slot -->
             <x-slot name="actions">
                 <button onclick="closeArticlesModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                     Close
                 </button>
             </x-slot>
@@ -310,11 +308,11 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeQuantityModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                         <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Set Quantity
                         </button>
                     </x-slot>
@@ -588,7 +586,7 @@
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
                     <div id="order" class="order flex flex-col h-full">
-                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="order-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
@@ -596,7 +594,7 @@
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
-                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Sales Order</h1>
+                            <h1 class="text-2xl font-medium text-[var(--primary-color)]">Sales Order</h1>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div id="order-header" class="order-header w-full flex justify-between px-5">
@@ -606,7 +604,7 @@
                                 <div class="order-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                 <div class="order-phone text-md leading-none">${customerData.phone_number}</div>
                             </div>
-                            <div class="right w-50 my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                            <div class="right w-50 my-auto text-right text-sm text-gray-600 space-y-1.5">
                                 <div class="order-date leading-none">Date: ${orderDate}</div>
                                 <div class="order-number leading-none">Order No.: ${orderNo}</div>
                                 <input type="hidden" name="order_no" value="${orderNo}" />

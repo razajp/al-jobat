@@ -1,10 +1,27 @@
 <!DOCTYPE html>
-<html>
-<head>
-  <title>Offline</title>
-</head>
-<body>
-  <h1>You're Offline</h1>
-  <p>Internet connection nahi hai. Baad me try karo.</p>
-</body>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>You’re Offline</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+  </head>
+  <body class="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200 flex items-center justify-center px-4">
+    <div class="max-w-md text-center bg-white p-8 rounded-2xl shadow-xl">
+      <div class="mb-6">
+        <!-- Icon Placeholder (replace with SVG or image if needed) -->
+        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-20 w-20 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 0118 0M9.75 15a6 6 0 014.5 0M6 18h12M12 9v3" />
+        </svg>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">You’re Offline</h1>
+      <p class="text-gray-600 mb-6">Please check your internet connection and try again.</p>
+      <button
+        onclick="location.reload()"
+        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow transition duration-300"
+      >
+        Retry
+      </button>
+    </div>
+  </body>
 </html>

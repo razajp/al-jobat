@@ -57,7 +57,7 @@
 
         [data-theme='light'] {
             --bg-color: #eef0f2;
-            --h-bg-color:#e4e7ee;
+            --h-bg-color: #d1d3d7;
             --secondary-bg-color: #ffffff;
             --h-secondary-bg-color: hsl(0, 0%, 96%);
             --text-color: #1f2937;

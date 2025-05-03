@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('chqbk_serial_start')->nullable();
             $table->string('chqbk_serial_end')->nullable();
             $table->timestamps();
+            
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

@@ -31,7 +31,7 @@
             id="{{ $id }}" 
             name="{{ $name }}"
             {{ $attributes->merge([
-                'class' => 'w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all 0.3s ease-in-out'
+                'class' => 'w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out'
             ]) }}
 
             {{ $onchange ? 'onchange='.$onchange : '' }}
@@ -55,13 +55,13 @@
             @endif
         </select>
         @if ($withButton)
-            <button onclick="{{ $btnOnclick }}" id="{{$btnId}}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all 0.3s ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{{ $btnText }}</button>
+            <button onclick="{{ $btnOnclick }}" id="{{$btnId}}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{{ $btnText }}</button>
         @endif
     </div>
 
     @error($name)
-        <div class="text-[var(--border-error)] text-xs mt-1 transition-all 0.3s ease-in-out">{{ $message }}</div>
+        <div class="text-[var(--border-error)] text-xs mt-1 transition-all duration-300 ease-in-out">{{ $message }}</div>
     @enderror
     
-    <div id="{{ $name }}-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
+    <div id="{{ $name }}-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
 </div>

@@ -23,7 +23,7 @@ class ArticleController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
 
-        $articles = Article::all();
+        $articles = Article::with('creator')->get();
 
         foreach ($articles as $article) {
             $orders = Order::all();

@@ -117,17 +117,17 @@
         </section>
         <div class="context-menu absolute top-0 text-sm" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
 
                     <li>
                         <button id="manage-category" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Manage
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Manage
                             Category</button>
                     </li>
 
@@ -137,7 +137,7 @@
                             <input type="hidden" id="user_id_context" name="user_id" value="">
                             <input type="hidden" id="user_status_context" name="status" value="">
                             <button id="ac_in_btn_context" type="submit"
-                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all 0.3s ease-in-out cursor-pointer">In
+                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
                                 Active</button>
                         </form>
                     </li>
@@ -476,13 +476,13 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button onclick="closeManageCategoryModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                         <input type="hidden" id="supplier_id" name="supplier_id" value="${data.id}">
                         <input type="hidden" id="categories_array" name="categories_array">
                         <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Update Categories
                         </button>
                     </x-slot>

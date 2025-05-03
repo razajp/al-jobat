@@ -105,7 +105,7 @@
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Invoice Found</h1>
                     <a href="{{ route('invoices.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all 0.3s ease-in-out font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>
             @endif
@@ -113,16 +113,16 @@
 
         <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
             <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all 0.3s ease-in-out z-50">
+                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
                     <li>
                         <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Show
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
                     <li>
                         <button id="print-invoice" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all 0.3s ease-in-out cursor-pointer">Print
+                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
                             Invoice</button>
                     </li>
                 </ul>
@@ -271,110 +271,112 @@
             let cottonCount = data.cotton_count ? data.cotton_count : 0;
 
             modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal">
-                    <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                        <div id="preview" class="preview flex flex-col h-full">
-                            <div id="invoice" class="invoice flex flex-col h-full">
-                                <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
-                                    <div class="left">
-                                        <div class="invoice-logo">
-                                            <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                class="w-[12rem]" />
-                                            <div class='mt-1'>${ companyData.phone_number }</div>
+                <x-modal id="modalForm" classForBody="py-0 max-w-4xl h-[35rem] bg-white text-black" closeAction="closeModal">
+                    <div class="w-full h-full overflow-y-auto my-scrollbar-2 py-5">
+                        <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
+                            <div id="preview" class="preview flex flex-col h-full">
+                                <div id="invoice" class="invoice flex flex-col h-full">
+                                    <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 px-5">
+                                        <div class="left">
+                                            <div class="invoice-logo">
+                                                <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                                    class="w-[12rem]" />
+                                                <div class='mt-1'>${ companyData.phone_number }</div>
+                                            </div>
+                                        </div>
+                                        <div class="left">
+                                            <div class="invoice-logo text-right">
+                                                <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Invoice</h1>
+                                                <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="left">
-                                        <div class="invoice-logo">
-                                            <h1 class="text-2xl font-medium text-[var(--h-primary-color)] pr-2">Sales Invoice</h1>
-                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''} pr-2">Cotton: ${cottonCount}</div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
+                                        <div class="left w-50 space-y-1">
+                                            <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                            <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
+                                            <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
+                                            <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
+                                        </div>
+                                        <div class="right my-auto text-right text-sm text-black space-y-1.5">
+                                            <div class="invoice-date leading-none">Date: ${data.date}</div>
+                                            <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
+                                            <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
+                                            <div class="invoice-copy leading-none">Document: Sales Invoice</div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
-                                    <div class="left w-50 space-y-1">
-                                        <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
-                                        <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
-                                        <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
-                                        <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
-                                    </div>
-                                    <div class="right my-auto pr-3 text-sm text-black space-y-1.5">
-                                        <div class="invoice-date leading-none">Date: ${data.date}</div>
-                                        <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
-                                        <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
-                                        <div class="invoice-copy leading-none">Document: Sales Invoice</div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
-                                    <div class="invoice-table w-full">
-                                        <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
-                                            <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                                    <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Article</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Packets</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Pcs.</div>
-                                                    <div class="th text-sm font-medium grow">Description</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Pcs/Pkt.</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Rate/Pc.</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Amount</div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div id="invoice-body" class="invoice-body w-[95%] grow mx-auto">
+                                        <div class="invoice-table w-full">
+                                            <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                                <div class="thead w-full">
+                                                    <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                        <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Article</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Packets</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Pcs.</div>
+                                                        <div class="th text-sm font-medium grow">Description</div>
+                                                        <div class="th text-sm font-medium w-[10%]">Pcs/Pkt.</div>
+                                                        <div class="th text-sm font-medium w-[11%]">Rate/Pc.</div>
+                                                        <div class="th text-sm font-medium w-[11%]">Amount</div>
+                                                    </div>
+                                                </div>
+                                                <div id="tbody" class="tbody w-full">
+                                                    ${data.articles.map((articles, index) => {
+                                                        totalAmount += parseInt(articles.article.sales_rate) * articles.invoice_quantity;
+                                                        totalQuantity += articles.invoice_quantity;
+                                                        const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+
+                                                        return `
+                                                            <div>
+                                                                <hr class="w-full ${hrClass} border-black">
+                                                                <div class="tr flex justify-between w-full px-4">
+                                                                    <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
+                                                                    <div class="td text-sm font-semibold grow">${articles.description}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
+                                                                    <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
+                                                                    <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.invoice_quantity, 1, 1)}</div>
+                                                                </div>
+                                                            </div>
+                                                        `;
+                                                    }).join('')}
                                                 </div>
                                             </div>
-                                            <div id="tbody" class="tbody w-full">
-                                                ${data.articles.map((articles, index) => {
-                                                    totalAmount += parseInt(articles.article.sales_rate) * articles.invoice_quantity;
-                                                    totalQuantity += articles.invoice_quantity;
-                                                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-
-                                                    return `
-                                                        <div>
-                                                            <hr class="w-full ${hrClass} border-black">
-                                                            <div class="tr flex justify-between w-full px-4">
-                                                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
-                                                                <div class="td text-sm font-semibold grow">${articles.description}</div>
-                                                                <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
-                                                                <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
-                                                                <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.invoice_quantity, 1, 1)}</div>
-                                                            </div>
-                                                        </div>
-                                                    `;
-                                                }).join('')}
+                                        </div>
+                                    </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div class="flex flex-col space-y-2">
+                                        <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Total Quantity - Pcs</div>
+                                                <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
+                                            </div>
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Gross Amount</div>
+                                                <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                                            </div>
+                                        </div>
+                                        <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Discount</div>
+                                                <div class="w-1/2 text-right grow">${formatNumbersDigitLess(discount)}</div>
+                                            </div>
+                                            <div
+                                                class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                                <div class="text-nowrap">Net Amount</div>
+                                                <div class="w-1/2 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div class="flex flex-col space-y-2">
-                                    <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Total Quantity - Pcs</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Gross Amount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
-                                        </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
+                                        <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                                        <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                     </div>
-                                    <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Discount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersDigitLess(discount)}</div>
-                                        </div>
-                                        <div
-                                            class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                            <div class="text-nowrap">Net Amount</div>
-                                            <div class="w-1/2 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-black">
-                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
-                                    <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
-                                    <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                 </div>
                             </div>
                         </div>
@@ -382,12 +384,12 @@
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
                         <button type="button" id="printInvoice"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-nowrap text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Print Invoice
                         </button>
 
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all 0.3s ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
                     </x-slot>

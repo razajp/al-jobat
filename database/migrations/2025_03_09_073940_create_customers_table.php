@@ -23,6 +23,9 @@ return new class extends Migration
             $table->string('city');
             $table->string('address');
             $table->timestamps();
+            
+            $table->unsignedBigInteger('creator_id');
+            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
