@@ -1,27 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>You’re Offline</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
-  </head>
-  <body class="min-h-screen bg-gradient-to-b from-slate-100 to-slate-200 flex items-center justify-center px-4">
-    <div class="max-w-md text-center bg-white p-8 rounded-2xl shadow-xl">
-      <div class="mb-6">
-        <!-- Icon Placeholder (replace with SVG or image if needed) -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-20 w-20 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12a9 9 0 0118 0M9.75 15a6 6 0 014.5 0M6 18h12M12 9v3" />
-        </svg>
-      </div>
-      <h1 class="text-3xl font-bold text-gray-800 mb-2">You’re Offline</h1>
-      <p class="text-gray-600 mb-6">Please check your internet connection and try again.</p>
-      <button
-        onclick="location.reload()"
-        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl shadow transition duration-300"
-      >
-        Retry
-      </button>
-    </div>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You’re Offline</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      height: 100vh;
+      background: linear-gradient(to bottom, #f8fafc, #e2e8f0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      padding: 20px;
+    }
+    .container {
+      max-width: 420px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      text-align: center;
+      padding: 40px 30px;
+    }
+    .emoji-icon {
+      font-size: 64px;
+      margin-bottom: 24px;
+    }
+    .wifi-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 24px;
+      position: relative;
+    }
+    .wifi-icon::before,
+    .wifi-icon::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 50%;
+      border: 4px solid #ef4444;
+    }
+    .wifi-icon::before {
+      width: 60px;
+      height: 60px;
+      top: 0;
+    }
+    .wifi-icon::after {
+      width: 30px;
+      height: 30px;
+      top: 15px;
+    }
+    .wifi-dot {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 10px;
+      height: 10px;
+      background: #ef4444;
+      border-radius: 50%;
+    }
+    img.offline-img {
+      width: 80px;
+      margin-bottom: 24px;
+    }
+    h1 {
+      font-size: 26px;
+      color: #1e293b;
+      margin-bottom: 12px;
+    }
+    p {
+      font-size: 15px;
+      color: #475569;
+      margin-bottom: 30px;
+      line-height: 1.5;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      padding: 12px 28px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- ✅ Option 1: Emoji Icon -->
+    <div class="emoji-icon">📡</div>
+
+    <h1>You’re Offline</h1>
+    <p>Please check your internet connection and try again.</p>
+    <button onclick="location.reload()">Retry</button>
+  </div>
+</body>
 </html>

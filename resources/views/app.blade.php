@@ -237,6 +237,10 @@
         @endcomponent
     @endif
 
+    <!-- Loader -->
+    <div id="page-loader" class="fixed inset-0 z-[999] bg-[var(--overlay-color)] bg-opacity-80 flex items-center justify-center hidden">
+        <div class="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
     <div class="wrapper flex-1 flex flex-col md:h-screen relative w-full overflow-y-hidden">
         {{-- main content --}}
         <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scrollbar-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-2.5 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-2.5 relative">
@@ -547,5 +551,104 @@
         });
     </script>
 </body>
+<script>
+    window.addEventListener('beforeunload', function () {
+        showLoader();
+    });
+
+    function showLoader() {
+        document.getElementById('page-loader').classList.remove('hidden');
+        document.getElementById('page-loader').classList.remove('fade-out');
+        document.getElementById('page-loader').classList.add('fade-in');
+    }
+
+    function hideLoader() {
+        document.getElementById('page-loader').classList.add('hidden');
+        document.getElementById('page-loader').classList.add('fade-out');
+        document.getElementById('page-loader').classList.remove('fade-in');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Loader for normal <a> clicks
+        document.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                const target = this.getAttribute('target');
+
+                if (
+                    href &&
+                    !href.startsWith('#') &&
+                    !href.startsWith('javascript:') &&
+                    !target
+                ) {
+                    showLoader();
+                }
+            });
+        });
+
+        // Loader for all form submissions
+        document.querySelectorAll('form').forEach(form => {
+            form.addEventListener('submit', function () {
+                showLoader();
+            });
+        });
+    });
+
+    // Hide loader on full page load (in case of back/refresh)
+    window.addEventListener('load', function () {
+        hideLoader();
+    });
+
+    // ======================
+    // For AJAX Requests
+    // ======================
+
+    // If using Axios
+    if (typeof axios !== 'undefined') {
+        axios.interceptors.request.use(config => {
+            showLoader();
+            return config;
+        }, error => {
+            hideLoader();
+            return Promise.reject(error);
+        });
+
+        axios.interceptors.response.use(response => {
+            hideLoader();
+            return response;
+        }, error => {
+            hideLoader();
+            return Promise.reject(error);
+        });
+    }
+
+    // If using jQuery
+    if (typeof $ !== 'undefined') {
+        $(document).ajaxStart(function () {
+            showLoader();
+        }).ajaxStop(function () {
+            hideLoader();
+        });
+    }
+
+    // its for cache clear
+    // // Unregister service worker and clear caches
+    // if ('serviceWorker' in navigator) {
+    // navigator.serviceWorker.getRegistrations().then(registrations => {
+    //     for (let registration of registrations) {
+    //     registration.unregister();
+    //     }
+    // });
+
+    // caches.keys().then(function(names) {
+    //     for (let name of names) {
+    //     caches.delete(name);
+    //     }
+    // }).then(() => {
+    //     console.log('Service Worker and Cache cleared!');
+    //     window.location.reload(); // Optional: reload the page
+    // });
+    // }
+</script>
 
 </html>
