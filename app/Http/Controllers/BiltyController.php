@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bilty;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
 
 class BiltyController extends Controller
@@ -12,7 +13,9 @@ class BiltyController extends Controller
      */
     public function index()
     {
-        //
+        $bilties = Bilty::with('invoice')->get();
+
+        return view('bilties.show', compact('bilties'));
     }
 
     /**
@@ -20,7 +23,9 @@ class BiltyController extends Controller
      */
     public function create()
     {
-        return view("bilties.add");
+        $invoices = Invoice::with('customer')->get();
+
+        return view("bilties.add", compact('invoices'));
     }
 
     /**
@@ -28,7 +33,27 @@ class BiltyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->all();
+        
+        $invoicesArray = json_decode($data['invoices_array'], true);
+        
+        // Validate that all invoices have biltyNo
+        foreach ($invoicesArray as $invoice) {
+            if (!isset($invoice['biltyNo'])) {
+                return redirect()->back()->with('error', 'All invoices must have a Bilty number assigned');
+            }
+        }
+
+        // Create bilties for each invoice
+        foreach ($invoicesArray as $invoice) {
+            Bilty::create([
+                'date' => $data['date'],
+                'invoice_id' => $invoice['id'],
+                'bilty_no' => $invoice['biltyNo']
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Bilties created successfully');
     }
 
     /**
