@@ -421,7 +421,7 @@
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
                         
                         {{-- bank account --}}
-                        <x-select label="Bank Accounts" name="bank_accounts" id="bank_accounts" required showDefault />
+                        <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
                         
                         {{-- transaction id --}}
                         <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />

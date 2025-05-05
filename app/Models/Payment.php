@@ -19,7 +19,7 @@ class Payment extends Model
         "amount",
         "cheque_no",
         "slip_no",
-        "transition_id",
+        "transaction_id",
         "cheque_date",
         "slip_date",
         "clear_date",

@@ -203,38 +203,41 @@
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
-
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <!-- Modal Content Slot -->
-                    <div id="active_inactive_dot_modal"
-                        class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
-                    </div>
-                    <div class="flex items-start relative h-[15rem]">
-                        <div class="rounded-full h-full aspect-square overflow-hidden">
-                            <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
-                                class="w-full h-full object-cover">
+            console.log(data);
+            
+            if (data.payments.length > 0) {
+                modalDom.innerHTML = `
+                    <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
+                        <!-- Modal Content Slot -->
+                        <div id="active_inactive_dot_modal"
+                            class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
                         </div>
-                
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.account_title}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Name:</strong> <span>${data.category == 'supplier' ? data.sub_category.supplier_name : data.category == 'customer' ? data.sub_category.customer_name : data.category == 'self' ? data.sub_category.name : ''}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank.replace(/_/g, ' ')}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Account No.:</strong> <span>${data.account_no}</span></p>
+                        <div class="flex items-start relative h-[15rem]">
+                            <div class="rounded-full h-full aspect-square overflow-hidden">
+                                <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
+                                    class="w-full h-full object-cover">
+                            </div>
+                    
+                            <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
+                                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.account_title}</h5>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Name:</strong> <span>${data.category == 'supplier' ? data.sub_category.supplier_name : data.category == 'customer' ? data.sub_category.customer_name : data.category == 'self' ? data.sub_category.name : ''}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank.title}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Account No.:</strong> <span>${data.account_no}</span></p>
+                            </div>
                         </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
+                    
+                        <!-- Modal Action Slot -->
+                        <x-slot name="actions">
+                            <button onclick="closeModal()" type="button"
+                                class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                                Cancel
+                            </button>
+                        </x-slot>
+                    </x-modal>
+                `;
+            }
 
             openModal()
         }

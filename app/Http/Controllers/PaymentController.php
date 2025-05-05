@@ -125,6 +125,7 @@ class PaymentController extends Controller
             $paymentDetails['type'] = $request->type;
             $paymentDetails['program_id'] = $request->program_id;
 
+            // return $paymentDetails;
             Payment::create($paymentDetails);
         }
 
