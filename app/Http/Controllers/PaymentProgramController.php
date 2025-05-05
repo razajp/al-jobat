@@ -24,7 +24,7 @@ class PaymentProgramController extends Controller
         };
         
         // Fetch and sort orders by date and created_at
-        $orders = Order::with('customer', 'paymentPrograms.payments', 'paymentPrograms.subCategory')
+        $orders = Order::with('customer', 'paymentPrograms.payments.bankAccount', 'paymentPrograms.subCategory')
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get()
@@ -44,7 +44,7 @@ class PaymentProgramController extends Controller
             }
         }
         // Fetch and sort payment programs by date and created_at
-        $paymentPrograms = PaymentProgram::with('customer', 'subCategory', 'payments')
+        $paymentPrograms = PaymentProgram::with('customer', 'subCategory', 'payments.bankAccount')
             ->where('order_no', null)
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
