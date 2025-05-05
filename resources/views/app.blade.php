@@ -398,8 +398,6 @@
         }, true); // Use capturing phase
 
         const previewImage = (event) => {
-            console.log(event.target.files[0]);
-            
             const file = event.target.files[0];
             const placeholderIcon = document.querySelector(".placeholder_icon");
             const uploadText = document.querySelector(".upload_text");

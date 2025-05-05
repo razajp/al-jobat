@@ -11,6 +11,12 @@ class Bilty extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'invoice_id',
+        'bilty_no',
+        'date'
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article
@@ -29,5 +35,10 @@ class Bilty extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
+    public function invoice()
+    {
+        return $this->belongsTo(Invoice::class, 'invoice_id', 'id');
     }
 }

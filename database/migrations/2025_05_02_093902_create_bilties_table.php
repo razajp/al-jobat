@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('bilties', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('invoice_id');
+            $table->string('bilty_no');
+            $table->date('date');
             $table->timestamps();
+            
+            $table->foreign('invoice_id')->references('id')->on('invoices')->onDelete('cascade');
             
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
