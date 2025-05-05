@@ -23,7 +23,9 @@ class BiltyController extends Controller
      */
     public function create()
     {
-        $invoices = Invoice::with('customer')->get();
+        $invoices = Invoice::with('customer')
+            ->doesntHave('bilties')
+            ->get();
 
         return view("bilties.add", compact('invoices'));
     }

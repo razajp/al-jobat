@@ -10,6 +10,7 @@
                 <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col pt-2 pr-1">
                     <x-search-header heading="Invoices" toFrom_label="Invoice No:" toFrom toFrom_type="text" :filter_items="[
                         'all' => 'Invoice No.',
+                        'city' => 'City'
                     ]"/>
 
                     @if (count($invoices) > 0)
@@ -19,9 +20,10 @@
                                     <div id="{{ $invoice->id }}" data-json='{{ $invoice }}'
                                         class="invoice-card card relative border flex items-center justify-between border-gray-600 shadow rounded-xl min-w-[100px] py-3 px-4 cursor-pointer overflow-hidden fade-in">
                                         <div class="text-start {{ isset($data['image']) ? "pt-1" : "" }}">
-                                            <h5 class="text-lg text-[var(--text-color)] capitalize font-semibold leading-none">
+                                            <h5 class="text-lg mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
                                                 Invoice No: {{ $invoice->invoice_no }}
                                             </h5>
+                                            {{ $invoice->customer->customer_name }} | {{ $invoice->customer->city }}
                                         </div>
                                         <input type="checkbox" name="selected_customers[]"
                                             class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
@@ -54,7 +56,7 @@
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
-        <x-search-header heading="Add Bilty" link linkText="Show Bilties" linkHref="{{ route('cargos.index') }}"/>
+        <x-search-header heading="Add Bilty" link linkText="Show Bilties" linkHref="{{ route('bilties.index') }}"/>
     </div>
 
     <!-- Form -->

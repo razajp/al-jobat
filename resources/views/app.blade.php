@@ -630,7 +630,7 @@
     }
 
     // its for cache clear
-    // // Unregister service worker and clear caches
+    // Unregister service worker and clear caches
     // if ('serviceWorker' in navigator) {
     // navigator.serviceWorker.getRegistrations().then(registrations => {
     //     for (let registration of registrations) {

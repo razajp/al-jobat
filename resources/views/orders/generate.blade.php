@@ -125,7 +125,7 @@
                 </div>
                 <div class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <label for="discount" class="grow">Discount - %</label>
-                    <input type="text" name="discount" id="discount" value="0"
+                    <input type="text" name="discount" id="discount" value="10" min="0" max="100"
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
                 <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
