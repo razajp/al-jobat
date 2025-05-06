@@ -179,7 +179,7 @@
                     <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
                     {{-- order_no --}}
                     <div class="grow">
-                        <x-input label="Order Number" name="order_no" id="order_no" autocomplete="off" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="2025-"/>
+                        <x-input label="Order Number" name="order_no" id="order_no" autocomplete="off" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="25-"/>
                     </div>
                 </div>
                 {{-- rate showing --}}
@@ -654,10 +654,15 @@
             const previewDom = document.getElementById('preview');
 
             function generateInvoiceNo() {
-                let lastInvoiceNo = lastInvoice.invoice_no.replace("2025-", "")
-                const todayYear = new Date().getFullYear();
-                const nextInvoiceNo = String(parseInt(lastInvoiceNo, 10) + 1).padStart(4, '0');
-                return todayYear + '-' + nextInvoiceNo;
+                const yearShort = String(new Date().getFullYear()).slice(-2); // e.g., "25"
+
+                let lastInvoiceNo = lastInvoice?.invoice_no || `${yearShort}-0000`;
+
+                // Extract numeric part after the dash
+                let lastNumber = lastInvoiceNo.split('-')[1];
+                const nextInvoiceNo = String(parseInt(lastNumber, 10) + 1).padStart(4, '0');
+
+                return `${yearShort}-${nextInvoiceNo}`;
             }
 
             function getInvoiceDate() {
@@ -834,18 +839,14 @@
             let totalAmountDOM;
 
             orderNoDom.addEventListener('input', (e) => {
-                let value = e.target.value;
+                let value = e.target.value.replace(/\D/g, ''); // Remove non-digits
 
-                value = value.replace(/\D/g, '');
+                // Limit total input to 6 digits (2 for year, 4 for number)
+                value = value.slice(0, 6);
 
-                if (value.length > 4) {
-                    value = value.slice(0, 4) + '-' + value.slice(4);
-                }
-
-                if (value.includes('-')) {
-                    let parts = value.split('-');
-                    parts[1] = parts[1].slice(0, 4);
-                    value = parts.join('-');
+                // Format as "25-0001"
+                if (value.length > 2) {
+                    value = value.slice(0, 2) + '-' + value.slice(2);
                 }
 
                 e.target.value = value;
@@ -1027,10 +1028,15 @@
             const previewDom = document.getElementById('preview');
 
             function generateInvoiceNo() {
-                let lastInvoiceNo = lastInvoice.invoice_no.replace("2025-", "")
-                const todayYear = new Date().getFullYear();
-                const nextInvoiceNo = String(parseInt(lastInvoiceNo, 10) + 1).padStart(4, '0');
-                return todayYear + '-' + nextInvoiceNo;
+                const yearShort = String(new Date().getFullYear()).slice(-2); // e.g., "25"
+
+                let lastInvoiceNo = lastInvoice?.invoice_no || `${yearShort}-0000`;
+
+                // Extract numeric part after the dash
+                let lastNumber = lastInvoiceNo.split('-')[1];
+                const nextInvoiceNo = String(parseInt(lastNumber, 10) + 1).padStart(4, '0');
+
+                return `${yearShort}-${nextInvoiceNo}`;
             }
 
             function getInvoiceDate() {

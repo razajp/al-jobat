@@ -223,6 +223,7 @@
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
                 selectedCustomerData = selectedCustomer;
                 typeSelectDom.options[2].dataset.option = JSON.stringify(selectedCustomer.payment_programs) ?? '';
+                console.log(selectedCustomer);
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
@@ -230,18 +231,62 @@
             }
         }
 
-        function trackTypeState(elem) {
+        window.addEventListener('DOMContentLoaded', () => {
+            const url = new URL(window.location.href);
+
+            // Clean the URL after initial load (remove query params)
+            if (url.searchParams.has('program_id') || url.searchParams.has('source')) {
+                // reset url
+                url.search = ''; // remove all query parameters
+                window.history.replaceState({}, document.title, url.toString());
+
+                // select customer
+                for (const option of customerSelectDom.options) {
+                    if (option.value.trim() !== '') {
+                        customerSelectDom.value = option.value;
+                        break; 
+                    }
+                }
+                trackCustomerState();
+
+                // set date today
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                dateDom.value = `${yyyy}-${mm}-${dd}`;
+
+                // select type
+                for (const option of typeSelectDom.options) {
+                    if (option.value.trim() === 'payment_program') {
+                        option.dataset.option = JSON.stringify(selectedCustomer.payment_programs);
+                        typeSelectDom.value = option.value;
+                        break; 
+                    }
+                }
+                trackTypeState(typeSelectDom, true);
+
+                // select Program
+                selectThisProgram(selectedCustomer.payment_programs)
+            }
+        });
+
+        function trackTypeState(elem, isNoModal) {
             paymentDetailsArray = [];
             methodSelectDom.value = '';
             methodSelectDom.querySelector("option[value='program']")?.remove();
             renderList();
 
             if (elem.value != '' && elem.value != 'payment_program') {
-                gotoStep(2)
+                gotoStep(2);
             }
             
-            if (elem.value == "payment_program") {
+            if (elem.value == "payment_program" && !isNoModal) {
                 generatePaymentProgramModal(elem.options[elem.selectedIndex]);
+            }
+
+            if (isNoModal) {
+                gotoStep(2);
             }
         }
 
@@ -268,7 +313,7 @@
                                     }
                                 }
                                 return `
-                                    <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(this)'
+                                    <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(JSON.parse(this.dataset.json))'
                                         class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
                                         <div>
                                             <ul class="text-sm">
@@ -442,9 +487,11 @@
             }
         }
 
-        function selectThisProgram(programElem) {
+        function selectThisProgram(programDate) {
             closeProgramModal();
-            selectedProgramData = JSON.parse(programElem.dataset.json);
+            selectedProgramData = programDate;
+            console.log(selectedProgramData);
+            
             programInpDom.value = selectedProgramData.id;
             if (selectedProgramData.category != 'waiting') {
                 methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;

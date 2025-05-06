@@ -52,10 +52,10 @@
                         <div class="search_container overflow-y-auto grow my-scrollbar-2">
                             @foreach ($finalData as $data)
                                 <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-9 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                    <span class="text-center">{{ $data['date'] }}</span>
-                                    <span class="text-center">{{ $data['customer']['customer_name'] }}</span>
+                                    <span class="text-center">{{ date('d-M-Y D', strtotime($data['date'])) }}</span>
+                                    <span class="text-center capitalize">{{ $data['customer']['customer_name'] }}</span>
                                     <span class="text-center">{{ $data['order_no'] ?? $data['program_no'] }}</span>
-                                    <span class="text-center">{{ $data['category'] ?? ($data['payment_programs']['category'] ?? '-') }}</span>
+                                    <span class="text-center capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category']) ?? '-') }}</span>
                                     <span class="text-center">
                                         @php
                                             $beneficiary = '-';
@@ -109,6 +109,11 @@
                         <button id="show-details" type="button"
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
+                    </li>
+                    <li>
+                        <a id="add-payment" href=""
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Add
+                            Payment</a>
                     </li>
                 </ul>
             </div>
@@ -175,6 +180,12 @@
                     generateModal(item)
                 }
             });
+            
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "add-payment") {
+                    goToAddPayment(data);
+                }
+            });
 
             // Function to remove context menu
             const removeContextMenu = (event) => {
@@ -217,7 +228,7 @@
                                 </h5>
                                 <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize"><strong>Method:</strong> <span>${payment.method}</span></p>
                                 <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize"><strong>Amount:</strong> <span>${formatNumbersWithDigits(payment.amount, 1, 1)}</span></p>
-                                <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize"><strong>Account:</strong> <span>${payment.bank_account?.account_title} | ${payment.bank_account?.bank.short_title}</span></p>
+                                <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize"><strong>Account:</strong> <span>${payment.bank_account?.account_title ?? ' - '} | ${payment.bank_account?.bank.short_title ?? ' - '}</span></p>
                             </div>
                         </div>
                     `;
@@ -284,6 +295,12 @@
             }, {
                 once: true
             });
+        }
+        
+        function goToAddPayment(program) {
+            const url = new URL("{{ route('payments.create') }}", window.location.origin);
+            url.searchParams.set("program_id", program.payment_programs?.id ?? program.id); // or send other keys like amount, customer_id, etc.
+            window.location.href = url.toString();
         }
 
         // Function for Search

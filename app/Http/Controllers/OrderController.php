@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -119,7 +120,7 @@ class OrderController extends Controller
 
         if (!$last_order) {
             $last_order = new Order();
-            $last_order->order_no = '0000-0000';
+            $last_order->order_no = '00-0000';
         }
 
         return view('orders.generate', compact('customers_options', 'articles', 'last_order'));
@@ -163,6 +164,20 @@ class OrderController extends Controller
                 $article->save();
             }
         }
+
+        $lastProgram = PaymentProgram::orderBy('id','desc')->first();
+        $nextProgramNo = $lastProgram ? $lastProgram->program_no + 1 : 1;
+
+        $program = new PaymentProgram([
+            'program_no' => $nextProgramNo,
+            'date' => $order['date'],
+            'order_no' => $order['order_no'],
+            'customer_id' => $order['customer_id'],
+            'category' => 'waiting',
+            'amount' => $order['netAmount'],
+        ]);
+
+        $program->save();
         
         return redirect()->route('orders.create')->with('success', 'Order generated successfully.');
     }

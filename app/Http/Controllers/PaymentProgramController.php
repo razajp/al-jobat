@@ -129,7 +129,6 @@ class PaymentProgramController extends Controller
         $validator = Validator::make($request->all(), [
             'program_no'=> 'required|integer',
             'date'=> 'required|date',
-            'order_no'=> 'nullable|string',
             'customer_id'=> 'required|integer|exists:customers,id',
             'category'=> 'required|in:supplier,self_account,customer,waiting',
             'sub_category'=> 'nullable|integer',
@@ -168,7 +167,6 @@ class PaymentProgramController extends Controller
         $program = new PaymentProgram([
             'program_no' => $data['program_no'],
             'date' => $data['date'],
-            'order_no' => $data['order_no'],
             'customer_id' => $data['customer_id'],
             'category' => $data['category'],
             'amount' => $data['amount'],

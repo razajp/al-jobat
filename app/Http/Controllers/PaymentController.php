@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Order;
 use App\Models\Payment;
 use App\Models\PaymentProgram;
 use Illuminate\Http\Request;
@@ -43,12 +42,30 @@ class PaymentController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
+
+        $customers_options = [];
+        $programId = $request->query('program_id');
+
+        if (!empty($programId)) {
+            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->find($programId);
+        
+            if ($program && $program->customer) {
+                $customers = $program->customer->toArray();
+                $program->customer['payment_programs'] = $program->toArray();
+                $customers_options = [(int)$program->customer->id => [
+                    'text' => $program->customer->customer_name . ' | ' . $program->customer->city,
+                    'data_option' => $program->customer,
+                ]];
+        
+                return view("payments.create", compact("customers", "customers_options"));
+            }
+        }
         
         $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory.bankAccounts.bank')->whereHas('user', function ($query) {
             $query->where('status', 'active');
@@ -72,7 +89,6 @@ class PaymentController extends Controller
             }
         }
 
-        $customers_options = [];
         foreach ($customers as $customer) {
             foreach ($customer['orders'] as $order) {
                 $customer['totalAmount'] += $order->netAmount;

@@ -29,9 +29,6 @@
         </div>
 
         <div class="grid grid-cols-2 gap-4">
-            {{-- order_no --}}
-            <x-input label="Order No." name="order_no" id="order_no" placeholder='Enter Order No.' />
-            
             {{-- date --}}
             <x-input label="Date" name="date" id="date" type="date" onchange="trackCustomerState(this)" required />
 
@@ -68,9 +65,12 @@
             {{-- remarks --}}
             <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
 
-            {{-- amount --}}
-            <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
             <x-input name="program_no" id="program_no" type="hidden" value="{{ $lastProgram->program_no + 1 }}" />
+
+            <div class="col-span-full">
+                {{-- amount --}}
+                <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
+            </div>
         </div>
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
@@ -81,7 +81,6 @@
     </form>
 
     <script>
-        let orderNoInpDom = document.getElementById('order_no');
         let dateInpDom = document.getElementById('date');
         let customerSelect = document.getElementById('customer_id');
         let categorySelectDom = document.getElementById('category');
@@ -214,75 +213,5 @@
                 remarksInputDom.parentElement.parentElement.classList.remove("hidden");
             }
         }
-
-        orderNoInpDom.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                getOrderDetails(orderNoInpDom.value);
-            }
-        });
-        
-        let orderNoInpBlurValue = '';
-
-        orderNoInpDom.addEventListener('focus', () => {
-            let currentYear = new Date().getFullYear();
-            if (orderNoInpDom.value) {
-                orderNoInpDom.value = orderNoInpDom.value.split('|')[0].trim();
-            } else {
-                orderNoInpDom.value = currentYear + '-';
-            }
-        })
-
-        function getOrderDetails(value) {
-            $.ajax({
-                url: "/get-order-details",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    order_no: value,
-                    only_order: true,
-                },
-                success: function (response) {
-                    let clutter = '';
-                    if (response && !response.error) {
-                        orderNoInpBlurValue = `${response.order_no}`
-
-                        categorySelectDom.disabled = false;
-
-                        dateInpDom.value = response.date;
-                        dateInpDom.readOnly = true;
-                        
-                        clutter += `
-                            <option value='${response.customer.id}'>
-                                ${response.customer.customer_name} | ${response.customer.city} | Balance: ${formatNumbersWithDigits(response.customer.balance, 1, 1)}
-                            </option>
-                        `;
-                        customerSelect.innerHTML = clutter;
-                        customerSelect.disabled = false;
-                        customerSelect.readOnly = true;
-
-                        amountInpDom.readOnly = true;
-                        amountInpDom.value = response.netAmount;
-
-                        orderNoInpDom.blur();
-                    } else {
-                        dateInpDom.value = '';
-                        dateInpDom.readOnly = false;
-                        dateInpDom.disabled = true;
-
-                        customerSelect.innerHTML = clutter;
-                        customerSelect.disabled = true;
-                        customerSelect.readOnly = false;
-                        
-                        amountInpDom.readOnly = false;
-                        amountInpDom.value = 0;
-                    }
-                }
-            });
-        }
-
-        orderNoInpDom.addEventListener('blur', () => {
-            orderNoInpDom.value = orderNoInpBlurValue;
-        })
     </script>
 @endsection

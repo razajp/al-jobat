@@ -39,7 +39,7 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="data_container p-5 pr-3">
                             <div class="table_container overflow-hidden text-sm">
-                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div>Date</div>
                                     <div>Customer</div>
                                     <div>Invoice No.</div>
@@ -49,11 +49,11 @@
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @forEach ($bilties as $bilty)
                                         <div id="{{ $bilty->id }}" data-json="{{ $bilty }}"
-                                            class="contextMenuToggle modalToggle relative group grid grid-cols-4 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span>{{ $bilty->date }}</span>
                                             <span>{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city }}</span>
                                             <span>{{ $bilty->invoice->invoice_no }}</span>
-                                            <span>{{ $bilty }}</span>
+                                            <span>Cargo Name</span>
                                             <span>{{ $bilty->bilty_no }} | {{ $bilty->invoice->cotton_count ?? "-" }}</span>
                                         </div>
                                     @endforeach

@@ -404,7 +404,7 @@
         const cards = document.querySelectorAll(".invoice-card");
 
         function getInvoiceNumber(str) {
-            // Converts '2025-0001' => 20250001 (as number)
+            // Converts '25-0001' => 250001 (as number)
             return parseInt(str.replace("-", ""));
         }
 

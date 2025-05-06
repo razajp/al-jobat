@@ -556,10 +556,15 @@
         const previewDom = document.getElementById('preview');
 
         function generateOrderNo() {
-            let lastOrderNo = lastOrder.order_no.replace("2025-", "")
-            const todayYear = new Date().getFullYear();
-            const nextOrderNo = String(parseInt(lastOrderNo, 10) + 1).padStart(4, '0');
-            return todayYear + '-' + nextOrderNo;
+            const yearShort = String(new Date().getFullYear()).slice(-2); // e.g., "25"
+
+            let lastOrderNo = lastOrder?.order_no || `${yearShort}-0000`;
+
+            // Extract numeric part after the dash
+            let lastNumber = lastOrderNo.split('-')[1];
+            const nextOrderNo = String(parseInt(lastNumber, 10) + 1).padStart(4, '0');
+
+            return `${yearShort}-${nextOrderNo}`;
         }
 
         function getOrderDate() {
