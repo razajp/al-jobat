@@ -31,7 +31,7 @@
             id="{{ $id }}" 
             name="{{ $name }}"
             {{ $attributes->merge([
-                'class' => 'w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out'
+                'class' => 'w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent'
             ]) }}
 
             {{ $onchange ? 'onchange='.$onchange : '' }}

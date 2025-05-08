@@ -278,6 +278,7 @@
             let previousBalance = data.previous_balance;
             let netAmount = data.netAmount;
             let currentBalance = data.current_balance;
+            let cottonCount = data.cotton_count ? data.cotton_count : 0;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="py-0 max-w-4xl h-[35rem] bg-white text-black" closeAction="closeModal" action="{{ route('update-user-status') }}">
@@ -293,7 +294,12 @@
                                                 <div class='mt-1'>${ companyData.phone_number }</div>
                                             </div>
                                         </div>
-                                        <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Order</h1>
+                                        <div class="right">
+                                            <div class="invoice-logo text-right">
+                                                <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Order</h1>
+                                                <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                            </div>
+                                        </div>
                                     </div>
                                     <hr class="w-full my-3 border-black">
                                     <div id="order-header" class="order-header w-full flex justify-between px-5">

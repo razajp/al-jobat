@@ -1,8 +1,20 @@
 @extends('app')
 @section('title', 'Show Payment Programs | ' . app('company')->name)
 @section('content')
+@php
+    $categories_options = [
+        'self_account' => ['text' => 'Self Account'],
+        'supplier' => ['text' => 'Supplier'],
+        'customer' => ['text' => 'Customer'],
+        'waiting' => ['text' => 'Waiting'],
+    ]
+@endphp
     <!-- Modal -->
     <div id="modal"
+        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+    </div>
+    <!-- updateModal -->
+    <div id="updateModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <div>
@@ -111,9 +123,14 @@
                             Details</button>
                     </li>
                     <li>
-                        <a id="add-payment" href=""
+                        <button id="add-payment" type="button"
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Add
-                            Payment</a>
+                            Payment</button>
+                    </li>
+                    <li>
+                        <button id="update-beneficiary" type="button"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Update
+                            Beneficiary</button>
                     </li>
                 </ul>
             </div>
@@ -186,6 +203,12 @@
                     goToAddPayment(data);
                 }
             });
+            
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "update-beneficiary") {
+                    generateUpdateProgramModal(data);
+                }
+            });
 
             // Function to remove context menu
             const removeContextMenu = (event) => {
@@ -203,6 +226,7 @@
         }
 
         let isModalOpened = false;
+        let isUpdateupdateModalOpened = false;
         let card = document.querySelectorAll('.modalToggle')
 
         card.forEach(item => {
@@ -212,10 +236,8 @@
         });
 
         function generateModal(item) {
-            let modalDom = document.getElementById('modal')
+            let modalDom = document.getElementById('modal');
             let data = JSON.parse(item.dataset.json);
-            console.log(data);
-            
             let cardsHTML = '';
             if (data && (data.payments?.length > 0 || data.payment_programs?.payments?.length > 0)) {
                 let paymentsArray = data.payments ?? data.payment_programs.payments ?? [];
@@ -254,21 +276,251 @@
                     </div>
                     <!-- Modal Action Slot -->
                     <x-slot name="actions">
+                        <button id="update-program-btn-in-modal" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Update Program
+                        </button>
+                        <button id="add-payment-btn-in-modal" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            App Payment
+                        </button>
                         <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Close
                         </button>
                     </x-slot>
                 </x-modal>
             `;
 
+            document.getElementById('add-payment-btn-in-modal').addEventListener('click', () => {
+                goToAddPayment(data);
+            })
+
+            document.getElementById('update-program-btn-in-modal').addEventListener('click', () => {
+                generateUpdateProgramModal(data);
+            })
+
             openModal()
+        }
+
+        function generateUpdateProgramModal(data) {
+            let modalDom = document.getElementById('updateModal');
+            modalDom.innerHTML = `
+                <x-modal id="updateModalForm" classForBody="p-4 pt-4" action="" method="PUT" closeAction="closeUpdateModal">
+                    <!-- Modal Content Slot -->
+                    <div class="flex items-start relative h-full">
+                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col pt-2 pr-1">
+                            <x-search-header heading="Update Program"/>
+                            <div class="grid grid-cols-2 gap-4 p-1">
+                                {{-- date --}}
+                                <x-input label="Date" id="date" type="date" disabled/>
+
+                                {{-- cusomer --}}
+                                <x-select 
+                                    label="Customer"
+                                    name="customer_id"
+                                    id="customer_id"
+                                    required
+                                    showDefault
+                                    disabled
+                                />
+                                
+                                {{-- category --}}
+                                <x-select 
+                                    label="Category"    
+                                    name="category"
+                                    id="category"
+                                    :options="$categories_options"
+                                    required
+                                    showDefault
+                                />
+                                
+                                {{-- cusomer --}}
+                                <x-select 
+                                    label="Disabled"
+                                    name="sub_category"
+                                    id="subCategory"
+                                    disabled
+                                    showDefault
+                                />
+                                
+                                {{-- remarks --}}
+                                <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
+
+                                <div class="col-span-full">
+                                    {{-- amount --}}
+                                    <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Modal Action Slot -->
+                    <x-slot name="actions">
+                        <button onclick="closeUpdateModal()" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Close
+                        </button>
+                        <button type="submit"
+                            class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--border-success)] text-[var(--success-text)] rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Update
+                        </button>
+                    </x-slot>
+                </x-modal>
+            `;
+
+            updateProgramFormScript(data)
+            openUpdateModal()
+        }
+
+        function updateProgramFormScript(data) {
+            let allData = data;
+            data = data.payment_programs || data;
+            data.customer ||= allData.customer;
+            let dateInpDom = document.getElementById('date');
+            let customerSelectDom = document.getElementById('customer_id');
+            let categorySelectDom = document.getElementById('category');
+            let amountInpDom = document.getElementById('amount');
+
+            let subCategoryLabelDom = document.querySelector('[for=sub_category]');
+            let subCategorySelectDom = document.getElementById('subCategory');
+            let subCategoryFirstOptDom = subCategorySelectDom.children[0];
+            
+            let remarksInputDom = document.getElementById('remarks');
+            remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
+            dateInpDom.value  = data.date;
+
+            customerSelectDom.innerHTML += `
+                <option value="${data.customer.id}" selected>${data.customer.customer_name} | ${data.customer.city}</option>
+            `;
+            
+            categorySelectDom.value = data.category;
+            getCategoryData(categorySelectDom.value)
+
+            categorySelectDom.addEventListener('change', () => {
+                getCategoryData(categorySelectDom.value);
+            })
+
+            amountInpDom.value = data.amount;
+
+            function getCategoryData(value) {
+                if (value != "waiting") {
+                    subCategorySelectDom.parentElement.parentElement.classList.remove("hidden");
+                    remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
+                    $.ajax({
+                        url: "/get-category-data",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            category: value,
+                        },
+                        success: function (response) {
+                            let clutter = `
+                                <option value=''>
+                                    -- No option avalaible --
+                                </option>
+                            `;
+                            switch (value) {   
+                                case 'self_account':
+                                    if (response.length > 0) {
+                                        clutter = '';
+                                        clutter += `
+                                            <option value=''>
+                                                -- Select Self Account --
+                                            </option>
+                                        `;
+                                        subCategorySelectDom.disabled = false;
+                                    } else {
+                                        subCategorySelectDom.disabled = true;
+                                        subCategoryFirstOptDom.textContent = '-- No options available --';
+                                    }
+                            
+                                    response.forEach(subCat => {
+                                        clutter += `
+                                            <option value='${subCat.id}'>
+                                                ${subCat.account_title} | ${subCat.bank.short_title}
+                                            </option>
+                                        `;
+                                    });
+                                    
+                                    subCategoryLabelDom.textContent = 'Self Account';
+                                    subCategoryFirstOptDom.textContent = '-- Select Self Account --';
+                                    break;
+                                    
+                                case 'supplier':
+                                    if (response.length > 0) {
+                                        clutter = '';
+                                        clutter += `
+                                            <option value=''>
+                                                -- Select Supplier --
+                                            </option>
+                                        `;
+                                        subCategorySelectDom.disabled = false;
+                                    } else {
+                                        subCategorySelectDom.disabled = true;
+                                        subCategoryFirstOptDom.textContent = '-- No options available --';
+                                    }
+                            
+                                    response.forEach(subCat => {
+                                        clutter += `
+                                            <option value='${subCat.id}'>
+                                                ${subCat.supplier_name} | Balance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
+                                            </option>
+                                        `;
+                                    });
+                                    
+                                    subCategoryLabelDom.textContent = 'Supplier';
+                                    subCategoryFirstOptDom.textContent = '-- Select Supplier --';
+                                    break;
+                                
+                                case 'customer':
+                                    clutter = '';
+                                    clutter += `
+                                        <option value=''>
+                                            -- Select Customer --
+                                        </option>
+                                    `;
+                            
+                                    response.forEach(subCat => {
+                                        if (subCat.id != customerSelectDom.value) {
+                                            clutter += `
+                                                <option value='${subCat.id}'>
+                                                    ${subCat.customer_name} | ${subCat.city} | Baalance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
+                                                </option>
+                                            `;
+                                            subCategorySelectDom.disabled = false;
+                                        }
+                                    });
+                                    
+                                    subCategoryLabelDom.textContent = 'Customer';
+                                    subCategoryFirstOptDom.textContent = '-- Select Customer --';
+                                    break;
+                            
+                                default:
+                                    break;
+                            }
+
+                            subCategorySelectDom.innerHTML = clutter;
+                            subCategorySelectDom.value = data.sub_category_id;
+                        }
+                    });
+                } else {
+                    subCategorySelectDom.parentElement.parentElement.classList.add("hidden");
+                    remarksInputDom.parentElement.parentElement.classList.remove("hidden");
+                    remarksInputDom.value = data.remarks;
+                }
+            }
+            console.log(data);
+            document.getElementById('updateModalForm').action = "{{ route('payment-programs.update', ['payment_program' => '__payment_program_id__']) }}".replace('__payment_program_id__', data.id);
         }
 
         document.addEventListener('mousedown', (e) => {
             const { id } = e.target;
             if (id === 'modalForm') {
                 closeModal();
+            } else if (id === 'updateModalForm') {
+                closeUpdateModal();
             }
         });
 
@@ -276,6 +528,7 @@
             if (e.key === 'Escape' && isModalOpened) {
                 closeContextMenu();
                 closeModal();
+                closeUpdateModal();
             }
         })
 
@@ -287,6 +540,26 @@
         }
 
         function closeModal() {
+            let modal = document.getElementById('modal');
+            modal.classList.add('fade-out');
+
+            modal.addEventListener('animationend', () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('fade-out');
+            }, {
+                once: true
+            });
+        }
+
+        function openUpdateModal() {
+            isModalOpened = true;
+            document.getElementById('updateModal').classList.remove('hidden');
+            closeAllDropdowns();
+            closeContextMenu();
+        }
+
+        function closeUpdateModal() {
+            let modal = document.getElementById('updateModal');
             modal.classList.add('fade-out');
 
             modal.addEventListener('animationend', () => {

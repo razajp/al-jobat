@@ -20,6 +20,7 @@ return new class extends Migration
             $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
             $table->integer('cotton_count')->nullable();
+            $table->string('cargo_name')->nullable();
             $table->json('articles_in_invoice');
             $table->timestamps();
 

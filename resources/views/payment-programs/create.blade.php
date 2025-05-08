@@ -44,7 +44,7 @@
             
             {{-- category --}}
             <x-select 
-                label="Category"
+                label="Category"    
                 name="category"
                 id="category"
                 :options="$categories_options"

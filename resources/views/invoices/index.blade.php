@@ -284,7 +284,7 @@
                                                 <div class='mt-1'>${ companyData.phone_number }</div>
                                             </div>
                                         </div>
-                                        <div class="left">
+                                        <div class="right">
                                             <div class="invoice-logo text-right">
                                                 <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Invoice</h1>
                                                 <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>

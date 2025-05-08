@@ -275,7 +275,32 @@
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
                 /> --}}
             </div>
-
+            <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll">
+                <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
+                    <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
+                        <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <path d="M19 12H5m6-6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" fill="none"/>
+                        </svg>
+                    </div>                    
+                    <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:ml-2">
+                        Go Back
+                    </span>
+                </div>
+                <div id="refresh_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
+                    <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
+                        <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                            <g>
+                              <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                              <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" transform="translate(0.3, 0.3)" />
+                            </g>
+                        </svg>                          
+                    </div>
+                    <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:ml-2">
+                        Refersh
+                    </span>
+                </div>
+            </div>
             <div class="main-child grow">
                 @yield('content')
             </div>
@@ -287,6 +312,17 @@
     </div>
 
     <script>
+        if (window.history.length > 1) {
+            document.getElementById('go_back_button').classList.remove('hidden');
+            document.getElementById('go_back_button').addEventListener('click', () => {
+            window.history.back();
+        })
+        } else {
+            document.getElementById('go_back_button').classList.add('hidden')
+        }
+        document.getElementById('refresh_button').addEventListener('click', () => {
+            location.reload();
+        })
         function checkMax(input) {
             input.value = input.value.replace(/\D/g, '');
 
