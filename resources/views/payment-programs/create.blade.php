@@ -9,10 +9,6 @@
         'waiting' => ['text' => 'Waiting'],
     ]
 @endphp
-    <!-- Modal -->
-    <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <!-- Main Content -->
 
     <div class="max-w-3xl mx-auto">

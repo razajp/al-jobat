@@ -306,7 +306,7 @@
         function generateUpdateProgramModal(data) {
             let modalDom = document.getElementById('updateModal');
             modalDom.innerHTML = `
-                <x-modal id="updateModalForm" classForBody="p-4 pt-4" action="" method="PUT" closeAction="closeUpdateModal">
+                <x-modal id="updateModalForm" classForBody="p-4 pt-4" action="{{ route('payment-programs.update-program') }}" method="POST" closeAction="closeUpdateModal">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-full">
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col pt-2 pr-1">
@@ -344,6 +344,7 @@
                                     showDefault
                                 />
                                 
+                                <input type="hidden" name="program_id" id="program_id" />
                                 {{-- remarks --}}
                                 <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
 
@@ -376,6 +377,7 @@
             let allData = data;
             data = data.payment_programs || data;
             data.customer ||= allData.customer;
+            let programIdDom = document.getElementById('program_id');
             let dateInpDom = document.getElementById('date');
             let customerSelectDom = document.getElementById('customer_id');
             let categorySelectDom = document.getElementById('category');
@@ -387,6 +389,8 @@
             
             let remarksInputDom = document.getElementById('remarks');
             remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
+            programIdDom.value  = data.id;
 
             dateInpDom.value  = data.date;
 
@@ -417,7 +421,7 @@
                         },
                         success: function (response) {
                             let clutter = `
-                                <option value=''>
+                                <option value='' selected>
                                     -- No option avalaible --
                                 </option>
                             `;
@@ -426,7 +430,7 @@
                                     if (response.length > 0) {
                                         clutter = '';
                                         clutter += `
-                                            <option value=''>
+                                            <option value='' selected>
                                                 -- Select Self Account --
                                             </option>
                                         `;
@@ -452,7 +456,7 @@
                                     if (response.length > 0) {
                                         clutter = '';
                                         clutter += `
-                                            <option value=''>
+                                            <option value='' selected>
                                                 -- Select Supplier --
                                             </option>
                                         `;
@@ -477,7 +481,7 @@
                                 case 'customer':
                                     clutter = '';
                                     clutter += `
-                                        <option value=''>
+                                        <option value='' selected>
                                             -- Select Customer --
                                         </option>
                                     `;
@@ -502,7 +506,9 @@
                             }
 
                             subCategorySelectDom.innerHTML = clutter;
-                            subCategorySelectDom.value = data.sub_category_id;
+                            if (data.category == value) {
+                                subCategorySelectDom.value = data.sub_category_id;
+                            }
                         }
                     });
                 } else {
@@ -511,8 +517,6 @@
                     remarksInputDom.value = data.remarks;
                 }
             }
-            console.log(data);
-            document.getElementById('updateModalForm').action = "{{ route('payment-programs.update', ['payment_program' => '__payment_program_id__']) }}".replace('__payment_program_id__', data.id);
         }
 
         document.addEventListener('mousedown', (e) => {

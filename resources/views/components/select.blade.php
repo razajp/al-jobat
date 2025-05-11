@@ -49,7 +49,7 @@
                     </option>
                 @endforeach
             @else
-                <option value="">
+                <option value="" selected>
                     -- No options available --
                 </option>
             @endif

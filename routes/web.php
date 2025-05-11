@@ -67,6 +67,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('payments', PaymentController::class);
     
     Route::resource('payment-programs', PaymentProgramController::class);
+    Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
     
     Route::resource('bank-accounts', BankAccountController::class);
     
