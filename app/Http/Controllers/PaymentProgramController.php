@@ -201,9 +201,9 @@ class PaymentProgramController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, PaymentProgram $paymentProgram)
+    public function update(Request $request)
     {
-        return 'helllo';
+        //
     }
 
     /**
@@ -212,5 +212,56 @@ class PaymentProgramController extends Controller
     public function destroy(PaymentProgram $paymentProgram)
     {
         //
+    }
+    public function updateProgram(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'program_id' => 'required|integer',
+            'category' => 'required|string',
+            'sub_category' => 'required|integer',
+            'remarks' => 'nullable|string',
+            'amount' => 'required|numeric',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        $program = PaymentProgram::find($data['program_id']);
+
+        $program->category = $data['category'];
+        $program->remarks = $data['remarks'];
+        $program->amount = $data['amount'];
+
+        $subCategoryModel = null;
+
+        switch ($data['category']) {
+            case 'supplier':
+                $subCategoryModel = Supplier::find($data['sub_category']);
+                break;
+            
+            case 'self_account':
+                $subCategoryModel = BankAccount::find($data['sub_category']);
+                break;
+            
+            case 'customer':
+                $subCategoryModel = Customer::find($data['sub_category']);
+                break;
+    
+            case 'waiting':
+                $subCategoryModel = null; // No association for 'waiting'
+                break;
+        }
+
+        
+        if ($subCategoryModel) {
+            $subCategoryModel->paymentPrograms()->save($program);
+        } else {
+            $program->save();
+        }
+
+        return redirect()->route('payment-programs.index')->with('success', 'Program updated successfully.');
     }
 }
