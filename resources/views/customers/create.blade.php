@@ -36,7 +36,9 @@
                     id="customer_name" 
                     placeholder="Enter supplire name" 
                     required 
+                    capitalized
                 />
+                
                 <!-- urdu_title -->
                 <x-input 
                     label="Urdu Title"
@@ -45,6 +47,7 @@
                     placeholder="Enter urdu title" 
                     required 
                 />
+
                 {{-- person name --}}
                 <x-input 
                     label="Person Name"
@@ -52,6 +55,7 @@
                     id="person_name" 
                     placeholder="Enter person name" 
                     required 
+                    capitalized
                 />
 
                 {{-- customer_registration_date --}}

@@ -7,6 +7,7 @@
     'required' => false,     // If the input is required
     'disabled' => false,     // If the input is disabled
     'uppercased' => false,     // If the input is uppercased
+    'capitalized' => false,     // If the input is uppercased
     'class' => '',     // If the input is uppercased
     'id' => '',
     'list' => '',
@@ -31,6 +32,18 @@
     <style>
         input#{{ $id }} {
             text-transform: uppercase;
+        }
+
+        input#{{ $id }}::placeholder {
+            text-transform: none;
+        }
+    </style>
+@endif
+
+@if ($capitalized)
+    <style>
+        input#{{ $id }} {
+            text-transform: capitalize;
         }
 
         input#{{ $id }}::placeholder {
