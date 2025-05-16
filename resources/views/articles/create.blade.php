@@ -1,6 +1,26 @@
 @extends('app')
 @section('title', 'Add Article | ' . app('company')->name)
 @section('content')
+@php
+    $categories_options = [
+        '1_pc' => ['text' => '1 Pc'],
+        '2_pc' => ['text' => '2 Pc'],
+        '3_pc' => ['text' => '3 Pc'],
+    ];
+
+    $sizes_options = [
+        'sml' => ['text' => 'SML'],
+        '1_2' => ['text' => '1-2'],
+        '2_3' => ['text' => '2-3'],
+    ];
+
+    $seasons_options = [
+        'half' => ['text' => 'Half'],
+        'full' => ['text' => 'Full'],
+        'winter' => ['text' => 'Winter'],
+        'light_weight' => ['text' => 'Light Weight'],
+    ];
+@endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
@@ -46,40 +66,34 @@
                         required 
                     />
                     
-                    <x-input 
+                    {{-- category --}}
+                    <x-select 
                         label="Category"
-                        name="category" 
-                        id="category" 
-                        type="text" 
-                        placeholder="Enter category"
-                        autocomplete="off"
-                        list="category_list"
-                        :listOptions="$categories"
-                        required 
+                        name="category"
+                        id="category"
+                        :options="$categories_options"
+                        required
+                        showDefault
                     />
                     
-                    <x-input 
+                    {{-- size --}}
+                    <x-select 
                         label="Size"
-                        name="size" 
-                        id="size" 
-                        type="text" 
-                        placeholder="Enter size"
-                        autocomplete="off"
-                        list="size_list"
-                        :listOptions="$sizes"
-                        required 
+                        name="size"
+                        id="size"
+                        :options="$sizes_options"
+                        required
+                        showDefault
                     />
                     
-                    <x-input 
+                    {{-- season --}}
+                    <x-select 
                         label="Season"
-                        name="season" 
-                        id="season" 
-                        type="text" 
-                        placeholder="Enter season"
-                        autocomplete="off"
-                        list="season_list"
-                        :listOptions="$seasons"
-                        required 
+                        name="season"
+                        id="season"
+                        :options="$seasons_options"
+                        required
+                        showDefault
                     />
                     
                     {{-- quantity --}}

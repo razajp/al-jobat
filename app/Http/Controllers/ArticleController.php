@@ -63,22 +63,9 @@ class ArticleController extends Controller
             $lastRecord = '';
         } 
 
-        $categories = Setup::where('type', 'article_category')->pluck('title');
-        if ($categories->isEmpty()) {
-            $categories = collect();
-        }
-        $sizes = Setup::where('type', 'article_size')->pluck('title');
-        if ($sizes->isEmpty()) {
-            $sizes = collect();
-        }
-        $seasons = Setup::where('type', 'article_seasons')->pluck('title');
-        if ($seasons->isEmpty()) {
-            $seasons = collect();
-        }
-
         $articles = Article::all();
 
-        return view('articles.create', compact('lastRecord', 'categories', 'sizes', 'seasons', 'articles'));
+        return view('articles.create', compact('lastRecord', 'articles'));
     }
 
     /**
@@ -109,6 +96,21 @@ class ArticleController extends Controller
 
         // Prepare data for saving
         $data = $request->all();
+        
+        $year = date('y');
+        $seasonLetter = strtoupper(substr($data['season'], 0, 1));
+
+        // Get first and last digit of the year
+        $yearFirstDigit = substr($year, 0, 1);
+        $yearLastDigit = substr($year, -1);
+
+        // Pad article_no to 3 digits
+        $articleNoPadded = str_pad($data['article_no'], 3, '0', STR_PAD_LEFT);
+
+        // Combine as F2-5-001
+        $formattedArticleNo = $seasonLetter . $yearFirstDigit . '-' . $yearLastDigit . $articleNoPadded;
+
+        $data['article_no'] = $formattedArticleNo;
 
         // Handle the image upload if present
         if ($request->hasFile('image_upload')) {
@@ -125,15 +127,6 @@ class ArticleController extends Controller
 
         Article::create($data);
         event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
-
-        foreach (['category' => 'article_category', 'size' => 'article_size', 'season' => 'article_seasons'] as $field => $type) {
-            if (!empty($data[$field])) {
-                Setup::firstOrCreate([
-                    'type' => $type,
-                    'title' => $data[$field],
-                ]);
-            }
-        }
 
         return redirect()->route('articles.create')->with('success', 'Article added successfully');
     }
