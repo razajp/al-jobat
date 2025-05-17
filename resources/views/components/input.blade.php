@@ -26,6 +26,7 @@
     'btnClass' => "",
     'onchange' => "",
     'oninput' => "",
+    'minlength' => "",
 ])
 
 @if ($uppercased)
@@ -52,6 +53,31 @@
     </style>
 @endif
 
+@if ($type == 'username')
+    @php
+        $type = 'text';
+        $oninput = 'formatUsername(this)';
+        $minlength = '6';
+    @endphp
+    
+<script>
+    function formatUsername(input) {
+        input.value = input.value.toLowerCase().replace(/[^a-z0-9]/g, '');
+    }
+
+    function validateUsername() {
+        const username = document.getElementById('username').value;
+
+        if (username.length < 6) {
+            alert('Username must be at least 6 characters long.');
+            return false;
+        }
+
+        return true;
+    }
+</script>
+@endif
+
 <div class="form-group relative">
     @if($label)
         <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}</label>
@@ -72,7 +98,7 @@
             {{ $readonly ? 'readonly' : '' }}
             {{ $disabled ? 'disabled' : '' }}
             {{ $attributes->merge([
-                'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ' . ($type == 'date' ? 'py-[7px]' : 'py-2') . ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent'
+                'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ' . ($type == 'date' ? 'py-[7px]' : 'py-2') . ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
             ]) }}
             {{ $validateMax ? 'max='.$max : '' }}
             {{ $validateMin ? 'min='.$min : '' }}

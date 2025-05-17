@@ -261,7 +261,8 @@
         function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
-
+            console.log(data);
+            
             let customerData = data.customer;
 
             let totalAmount = 0;

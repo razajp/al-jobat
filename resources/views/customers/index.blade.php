@@ -122,6 +122,12 @@
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
+                    
+                    <li>
+                        <button id="edit-in-context" type="button"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit 
+                            Customer</button>
+                    </li>
 
                     <li id="ac_in_context" class="hidden">
                         <form method="POST" action="{{ route('update-user-status') }}">

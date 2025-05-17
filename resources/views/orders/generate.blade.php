@@ -90,7 +90,7 @@
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" value="{{ now()->toDateString() }}" required />
                 </div>
 
                 {{-- title --}}
@@ -142,7 +142,7 @@
                     <div id="finalCurrentBalance">0.0</div>
                 </div>
             </div>
-            <input type="hidden" name="articles" id="articles" value="">
+            <input type="hidden" name="articles" id="articles" value="" />
         </div>
 
         <!-- Step 2: view order -->
@@ -624,7 +624,7 @@
                                     <div class="thead w-full">
                                         <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                             <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                            <div class="th text-sm font-medium w-[10%]">Article</div>
+                                            <div class="th text-sm font-medium w-[13%]">Article</div>
                                             <div class="th text-sm font-medium grow">Description</div>
                                             <div class="th text-sm font-medium w-[10%]">Pcs.</div>
                                             <div class="th text-sm font-medium w-[10%]">Packets</div>
@@ -641,7 +641,7 @@
                                                         <hr class="w-full ${hrClass} border-gray-600">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                            <div class="td text-sm font-semibold w-[13%]">#${article.article_no}</div>
                                                             <div class="td text-sm font-semibold grow">${article.description}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${article.orderedQuantity}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(article.orderedQuantity / article.pcs_per_packet) : 0}</div>
@@ -730,6 +730,8 @@
                 }
             });
         }
+
+        getDataByDate(document.getElementById('date'));
 
         function populateOptions(response){
             const customersOptions = $(response).find('#customer_id').html();

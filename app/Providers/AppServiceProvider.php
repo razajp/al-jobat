@@ -24,6 +24,31 @@ class AppServiceProvider extends ServiceProvider
                 'address' => 'Plot DP-19, Sec. 12-C, Ind. Area, North Karachi',
             ];
         });
+        app()->singleton('cities', function () {
+            return [
+                'Karachi',
+                'Lahore',
+                'Islamabad',
+                'Rawalpindi',
+                'Faisalabad',
+                'Peshawar',
+                'Quetta',
+                'Multan',
+                'Hyderabad',
+                'Sialkot',
+                'Gujranwala',
+                'Bahawalpur',
+                'Sargodha',
+                'Sukkur',
+                'Larkana',
+                'Abbottabad',
+                'Mardan',
+                'Mingora',
+                'Mirpurkhas',
+                'Rahim Yar Khan',
+                // ... add more as needed
+            ];
+        });
     }
 
     /**

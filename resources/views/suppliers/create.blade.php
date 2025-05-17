@@ -28,6 +28,7 @@
                     id="supplier_name" 
                     placeholder="Enter supplire name" 
                     required 
+                    capitalized
                 />
 
                 <!-- urdu_title -->
@@ -46,6 +47,7 @@
                     id="person_name" 
                     placeholder="Enter person name" 
                     required 
+                    capitalized
                 />
 
                 {{-- supplier_phone_number --}}
@@ -62,8 +64,8 @@
                     label="Username" 
                     name="username" 
                     id="username" 
+                    type="username"
                     placeholder="Enter username" 
-                    class="lowercase placeholder:capitalize"
                     required
                 />
 

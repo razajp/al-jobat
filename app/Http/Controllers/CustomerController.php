@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\Setup;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +19,7 @@ class CustomerController extends Controller
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
-        };
+        }
 
         $customers = Customer::with('user', 'orders', 'payments')->get();
 
@@ -36,9 +37,17 @@ class CustomerController extends Controller
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
-        
-        return view('customers.create');
+        }
+
+        $cities = app('cities');
+
+        $cities_options = [];
+
+        foreach ($cities as $city) {
+            $cities_options[$city] = ['text' => $city];
+        }
+
+        return view('customers.create',compact('cities_options'));
     }
 
     /**
@@ -55,7 +64,7 @@ class CustomerController extends Controller
             'customer_name' => 'required|string|max:255|unique:customers,customer_name',
             'person_name' => 'required|string|max:255',
             'urdu_title' => 'nullable|string|max:255',
-            'username' => 'required|string|max:255',
+            'username' => 'required|string|min:6|max:255|regex:/^[a-z0-9]+$/|unique:users,username',
             'password' => 'required|string|min:3',
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',

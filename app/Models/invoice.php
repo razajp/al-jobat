@@ -19,6 +19,7 @@ class Invoice extends Model
         "date",
         "netAmount",
         "cotton_count",
+        "cargo_name",
         "articles_in_invoice",
     ];
     
@@ -61,7 +62,6 @@ class Invoice extends Model
 
     public function getIsInCargoAttribute()
     {
-        // Loop through all cargos
         $cargos = Cargo::all();
 
         foreach ($cargos as $cargo) {

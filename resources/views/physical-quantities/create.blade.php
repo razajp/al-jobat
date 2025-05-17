@@ -30,7 +30,7 @@
 
                 {{-- date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" max="{{ Now()->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" max="{{ Now()->toDateString() }}" value="{{ now()->toDateString() }}" required />
                 </div>
             </div>
 

@@ -56,6 +56,15 @@ class CargoController extends Controller
 
         $data = $request->all();
 
+        $invoicesArray = json_decode($data['invoices_array'], true);
+        foreach ($invoicesArray as $invoice) {
+            $invoiceModel = Invoice::find($invoice['id']);
+            if ($invoiceModel) {
+                $invoiceModel->cargo_name = $data['cargo_name'];
+                $invoiceModel->save();
+            }
+        }
+
         Cargo::create($data);
 
         return redirect()->back()->with(['success' => 'Cargo List Generated Successfuly!']);

@@ -7,9 +7,10 @@
     </div>
     <!-- Main Content -->
     <div>
-        <h1 class="text-3xl font-bold mb-5 text-center text-[var(--primary-color)]">
-            Show Users
-        </h1>
+        
+        <div class="w-[80%] mx-auto">
+            <x-search-header heading="Users" />
+        </div>
 
         <section class="text-center mx-auto ">
             <div
