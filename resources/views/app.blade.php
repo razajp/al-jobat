@@ -275,7 +275,7 @@
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
                 /> --}}
             </div>
-            {{-- <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll">
+            <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll">
                 <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
                     <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
                         <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 
@@ -300,7 +300,7 @@
                         Refersh
                     </span>
                 </div>
-            </div> --}}
+            </div>
             <div class="main-child grow">
                 @yield('content')
             </div>
@@ -313,37 +313,37 @@
 
     <script>
         // go back and refresh script
-        // if (window.history.length > 1) {
-        //     document.getElementById('go_back_button').classList.remove('hidden');
-        //     document.getElementById('go_back_button').addEventListener('click', () => {
-        //     window.history.back();
-        // })
-        // } else {
-        //     document.getElementById('go_back_button').classList.add('hidden')
-        // }
-        // document.getElementById('refresh_button').addEventListener('click', () => {
-        //     location.reload();
-        // })
-        // function checkMax(input) {
-        //     input.value = input.value.replace(/\D/g, '');
+        if (window.history.length > 1) {
+            document.getElementById('go_back_button').classList.remove('hidden');
+            document.getElementById('go_back_button').addEventListener('click', () => {
+            window.history.back();
+        })
+        } else {
+            document.getElementById('go_back_button').classList.add('hidden')
+        }
+        document.getElementById('refresh_button').addEventListener('click', () => {
+            location.reload();
+        })
+        function checkMax(input) {
+            input.value = input.value.replace(/\D/g, '');
 
-        //     let errorElem = document.getElementById(input.id+"-error");
+            let errorElem = document.getElementById(input.id+"-error");
             
-        //     const max = parseInt(input.max, 10);
-        //     if (parseInt(input.value, 10) > max) {
-        //         errorElem.textContent = `Value cannot exceed ${max}.`;
-        //         if (errorElem.classList.contains("hidden")) {
-        //             errorElem.classList.remove("hidden");
-        //         }
+            const max = parseInt(input.max, 10);
+            if (parseInt(input.value, 10) > max) {
+                errorElem.textContent = `Value cannot exceed ${max}.`;
+                if (errorElem.classList.contains("hidden")) {
+                    errorElem.classList.remove("hidden");
+                }
 
-        //         input.value = max;
-        //     } else {
-        //         errorElem.textContent = ``;
-        //         if (!errorElem.classList.contains("hidden")) {
-        //             errorElem.classList.add("hidden");
-        //         }
-        //     }
-        // }
+                input.value = max;
+            } else {
+                errorElem.textContent = ``;
+                if (!errorElem.classList.contains("hidden")) {
+                    errorElem.classList.add("hidden");
+                }
+            }
+        }
 
         // Message box animation
         function messageBoxAnimation() {

@@ -25,6 +25,12 @@ class BiltyController extends Controller
     {
         $invoices = Invoice::with('customer')
             ->doesntHave('bilties')
+            ->where(function ($query) {
+                $query->where(function ($q) {
+                    $q->whereNotNull('shipment_no')
+                    ->whereNotNull('cargo_name');
+                })->orWhereNull('shipment_no');
+            })
             ->get();
 
         return view("bilties.add", compact('invoices'));
@@ -51,8 +57,17 @@ class BiltyController extends Controller
             Bilty::create([
                 'date' => $data['date'],
                 'invoice_id' => $invoice['id'],
-                'bilty_no' => $invoice['biltyNo']
+                'bilty_no' => $invoice['biltyNo'],
             ]);
+
+            $updateData = array_filter([
+                'cargo_name' => $invoice['cargoName'] ?? null,
+                'cotton_count' => $invoice['cottonCount'] ?? null,
+            ], fn($value) => !is_null($value));
+
+            if (!empty($updateData)) {
+                Invoice::where('id', $invoice['id'])->update($updateData);
+            }
         }
 
         return redirect()->back()->with('success', 'Bilties created successfully');

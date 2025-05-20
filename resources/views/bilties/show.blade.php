@@ -53,7 +53,7 @@
                                             <span>{{ $bilty->date }}</span>
                                             <span>{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city }}</span>
                                             <span>{{ $bilty->invoice->invoice_no }}</span>
-                                            <span>Cargo Name</span>
+                                            <span>{{ $bilty->invoice->cargo_name }}</span>
                                             <span>{{ $bilty->bilty_no }} | {{ $bilty->invoice->cotton_count ?? "-" }}</span>
                                         </div>
                                     @endforeach

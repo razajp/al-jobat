@@ -56,8 +56,8 @@ class Invoice extends Model
         return $this->belongsTo(Customer::class, 'customer_id', 'id');
     }
 
-    public function bilties() {
-        return $this->hasMany(Bilty::class);
+    public function bilty() {
+        return $this->hasOne(Bilty::class);
     }
 
     public function getIsInCargoAttribute()

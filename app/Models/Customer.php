@@ -23,6 +23,10 @@ class Customer extends Model
         'address',
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article

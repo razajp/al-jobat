@@ -270,6 +270,8 @@
             let discount = data.order?.discount ?? data.shipment?.discount;
             let netAmount = data.netAmount;
             let cottonCount = data.cotton_count ? data.cotton_count : 0;
+            let cargoName = data.cargo_name ? data.cargo_name : '';
+            let SHORNo = data.shipment_no ? data.shipment_no : data.order_no ? data.order_no : '';
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" classForBody="py-0 max-w-4xl h-[35rem] bg-white text-black" closeAction="closeModal">
@@ -288,7 +290,11 @@
                                         <div class="right">
                                             <div class="invoice-logo text-right">
                                                 <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">Sales Invoice</h1>
-                                                <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                                <div class="space-y-1 mt-1">
+                                                    <div class="text-right leading-none ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                                    <div class="text-right leading-none ${cargoName == '' ? 'hidden' : ''}">Cargo Name: ${cargoName}</div>
+                                                    <div class="text-right leading-none ${SHORNo == '' ? 'hidden' : ''}">${data.shipment_no ? 'Shipment No' : data.order_no ? 'Order No' : ''}.: ${SHORNo}</div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

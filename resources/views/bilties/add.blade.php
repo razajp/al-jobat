@@ -204,8 +204,8 @@
             if (selectedInvoicesArray.length > 0) {
                 let clutter = "";
                 selectedInvoicesArray.forEach((selectedInvoice, index) => {
-                    let cottonCount = selectedInvoice.cotton_count ?? `<input oninput="setBiltyNo(${selectedInvoice.id}, this.value)" class="cotton_count_inp w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="number"/>`;
-                    let cargoName = selectedInvoice.cargo_name ?? `<input oninput="setBiltyNo(${selectedInvoice.id}, this.value)" class="cotton_count_inp w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="number"/>`;
+                    let cottonCount = selectedInvoice.cotton_count ?? `<input oninput="setCottonCount(${selectedInvoice.id}, this.value)" class="cotton_count_inp w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="number"/>`;
+                    let cargoName = selectedInvoice.cargo_name ?? `<input oninput="setCargoName(${selectedInvoice.id}, this.value)" class="cotton_count_inp w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="text" />`;
                     clutter += `
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[7%]">${index+1}</div>
@@ -241,12 +241,12 @@
             let finalInovicesArray = selectedInvoicesArray.map(invoice => {
                 return {
                     id: invoice.id,
-                    biltyNo: invoice.biltyNo
+                    cottonCount: invoice.cottonCount,
+                    biltyNo: invoice.biltyNo,
+                    cargoName: invoice.cargoName,
                 }
             });
             inputinvoices.value = JSON.stringify(finalInovicesArray);
-
-            console.log(inputinvoices);
         }
 
         let companyData = @json(app('company'));
@@ -489,10 +489,28 @@
             });
         }
 
+        function setCottonCount(invoiceId, cottonCount) {
+            const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);
+            if (invoice) {
+                invoice.cottonCount = cottonCount;
+            }
+
+            updateInputInvoicesArray();
+        }
+
         function setBiltyNo(invoiceId, biltyNo) {
             const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);
             if (invoice) {
                 invoice.biltyNo = biltyNo;
+            }
+
+            updateInputInvoicesArray();
+        }
+
+        function setCargoName(invoiceId, cargoName) {
+            const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);
+            if (invoice) {
+                invoice.cargoName = cargoName;
             }
 
             updateInputInvoicesArray();

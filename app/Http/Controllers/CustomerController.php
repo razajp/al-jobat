@@ -135,7 +135,12 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        return view('customers.edit', compact('customer'));
     }
 
     /**
@@ -143,7 +148,52 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string|max:255',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'address' => 'required|string|max:255',
+        ]);
+        
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+            
+        $data = $request->all();
+
+        $user = User::where('username', $customer->user->username)->first();
+
+        if ($user) {
+            if ($request->hasFile('image_upload')) {
+                $file = $request->file('image_upload');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
+
+                $data['image'] = $fileName; // Save the file path in the database
+            } else {
+                $data['image'] = "default_avatar.png";
+            }
+
+            // Update the user
+            $user->update([
+                'profile_picture' => $data['image'],
+            ]);
+        } else {
+            return redirect()->back()->with('error', 'This user does not exist.')->withInput();
+        }
+
+        // Update the customer
+        $customer->update([
+            'phone_number' => $data['phone_number'],
+            'address' => $data['address'],
+        ]);
+        
+        return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
     }
 
     /**

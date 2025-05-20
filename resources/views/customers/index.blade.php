@@ -237,6 +237,12 @@
             });
 
             document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "edit-in-context") {
+                    window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
+                }
+            });
+
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "ac_in_btn_context") {
                     user_id_context = document.getElementById('user_id_context');
                     user_status_context = document.getElementById('user_status_context');
@@ -294,6 +300,7 @@
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city}</span></p>
                         </div>
                     </div>
                 
@@ -302,6 +309,11 @@
                         <button onclick="closeModal()" type="button"
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
+                        </button>
+
+                        <button id="edit-in-modal" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Edit Customer
                         </button>
 
                         <div id="ac_in_modal">
@@ -320,6 +332,7 @@
             let imageInModal = document.getElementById('imageInModal');
             let ac_in_btn = document.getElementById('ac_in_btn');
             let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
+            let editInModalDom = document.getElementById('edit-in-modal');
             
             ac_in_modal.classList.add("hidden");
 
@@ -362,6 +375,10 @@
             } else {
                 ac_in_modal.classList.add("hidden");
             }
+
+            editInModalDom.addEventListener('click', () => {
+                window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
+            });
 
             openModal()
         }

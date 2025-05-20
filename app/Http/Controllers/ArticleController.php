@@ -169,7 +169,6 @@ class ArticleController extends Controller
         $article->rates_array = json_decode($article->rates_array, true);
 
         return view('articles.edit', compact('article' , 'categories', 'sizes', 'seasons'));
-        // return $article;
     }
 
     /**
