@@ -24,13 +24,7 @@ class BiltyController extends Controller
     public function create()
     {
         $invoices = Invoice::with('customer')
-            ->doesntHave('bilties')
-            ->where(function ($query) {
-                $query->where(function ($q) {
-                    $q->whereNotNull('shipment_no')
-                    ->whereNotNull('cargo_name');
-                })->orWhereNull('shipment_no');
-            })
+            ->doesntHave('bilty')
             ->get();
 
         return view("bilties.add", compact('invoices'));

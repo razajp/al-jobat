@@ -80,7 +80,7 @@
         </div>
     @endif
 
-    <div class="switch-btn-container flex absolute top-3 md:top-7 left-3 md:left-8">
+    <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-[100]">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
             <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>

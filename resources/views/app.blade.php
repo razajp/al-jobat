@@ -245,7 +245,7 @@
         {{-- main content --}}
         <main class="flex-1 px-8 py-0 md:p-8 overflow-y-auto my-scrollbar-2 flex items-center justify-center bg-[var(--bg-color)] rounded-3xl mx-2.5 md:mr-2.5 {{ request()->is('login') ? 'mt-2.5 md:ml-2.5' : 'mt-0 md:ml-0' }} md:mt-2.5 relative">
             {{-- alert --}}
-            <div id="messageBox" class="absolute top-3 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
+            <div id="messageBox" class="absolute top-5 mx-auto flex items-center flex-col space-y-3 z-[100] text-sm w-full select-none pointer-events-none">
                 @if (session('info'))
                     <x-alert type="info" :messages="session('info')" />
                 @endif
@@ -263,7 +263,7 @@
                 @endif
             </div>
             <!-- Notification Box -->
-            <div id="notificationBox" class="absolute top-3 right-3 flex flex-col space-y-3 z-[100] text-sm mx-auto items-end w-full select-none">
+            <div id="notificationBox" class="absolute top-5 right-5 flex flex-col space-y-3 z-[100] text-sm mx-auto items-end w-full select-none">
                 {{-- <x-notification
                     title="Payment Method Expiring"
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
@@ -275,7 +275,7 @@
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
                 /> --}}
             </div>
-            <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll">
+            <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll z-[100]">
                 <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
                     <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
                         <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 

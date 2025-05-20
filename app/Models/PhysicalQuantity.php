@@ -15,6 +15,7 @@ class PhysicalQuantity extends Model
         "date",
         "article_id",
         "packets",
+        "category",
     ];
 
     protected static function booted()

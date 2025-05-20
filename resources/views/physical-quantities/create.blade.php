@@ -1,6 +1,12 @@
 @extends('app')
 @section('title', 'Add Physical Quantities | ' . app('company')->name)
 @section('content')
+@php
+    $category_options = [
+        'a' => ['text'  => 'A'],
+        'b' => ['text'  => 'B'],
+];
+@endphp
     <!-- Modal -->
     <div id="articleModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
@@ -34,35 +40,47 @@
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- pcs_per_packet  --}}
-                <div>
-                    <x-input label="Pcs./packet" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter pcs. count per packet" required />
-                </div>
+                <x-input label="Pcs./packet" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter pcs. count per packet" required />
 
                 {{-- packets --}}
-                <div>
-                    <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
-                </div>
+                <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
+
+                {{-- category --}}
+                <x-select 
+                    label="Category"
+                    name="category"
+                    id="category"
+                    :options="$category_options"
+                    required
+                    showDefault
+                />
             </div>
 
             <hr class="border-gray-600 my-3">
 
-            <div class="flex w-full gap-4 text-sm mt-5 items-start">
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-5 items-start">
                 <div class="first w-full">
                     <div class="current-phys-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
-                        <div class="grow">Total Physical Stock - Pcs</div>
+                        <div class="grow">Total Physical Stock - Pcs.</div>
                         <div id="currentPhysicalQuantity">0</div>
                     </div>
                 </div>
                 <div class="second w-full">
                     <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
-                        <div class="grow">Total Quantity - Pcs</div>
+                        <div class="grow">Total Quantity - Pcs.</div>
                         <div id="finalOrderedQuantity">0</div>
                     </div>
                     <div id="total-qty-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
                 </div>
                 <div class="thered w-full">
+                    <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
+                        <div class="grow">Remaining Quantity - Pcs.</div>
+                        <div id="remainingquantity">0</div>
+                    </div>
+                </div>
+                <div class="fourth w-full">
                     <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
                         <div class="grow">Total Amount - Rs.</div>
                         <div id="finalOrderAmount">0.0</div>
@@ -86,9 +104,11 @@
 
         const pcsPerPacketDom = document.getElementById('pcs_per_packet');
         const packetsDom = document.getElementById('packets');
+        const categoryDom = document.getElementById('category');
 
         const totalPhysicalQuantityDom = document.getElementById('currentPhysicalQuantity');
         const finalOrderedQuantityDom = document.getElementById('finalOrderedQuantity');
+        const remainingqQuantityDom = document.getElementById('remainingquantity');
         const finalOrderAmountDom = document.getElementById('finalOrderAmount');
 
         let isModalOpened = false;
@@ -221,6 +241,8 @@
                 pcsPerPacketDom.classList.remove('cursor-not-allowed');
                 pcsPerPacketDom.value = '';
             }
+
+            remainingqQuantityDom.innerText = new Intl.NumberFormat('en-US').format(pcsPerPacketDom.value > 0 && parseInt(totalPhysicalQuantityDom.textContent) > 0 ? selectedArticle.quantity - parseInt(totalPhysicalQuantityDom.textContent) : selectedArticle.quantity);
         }
 
         document.getElementById('pcs_per_packet').addEventListener('input', () => {
@@ -237,9 +259,11 @@
             if (!selectedArticle) {
                 pcsPerPacketDom.disabled = true;
                 packetsDom.disabled = true;
+                categoryDom.disabled = true;
             } else {
                 pcsPerPacketDom.disabled = false;
                 packetsDom.disabled = false;
+                categoryDom.disabled = false;
             }
         }
         trackFieldsDisability();

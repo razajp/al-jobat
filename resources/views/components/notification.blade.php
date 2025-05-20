@@ -14,13 +14,13 @@
         <p class="text-sm">{{ $message }}</p>
 
         @if($actionLabel && $actionUrl)
-            <a href="{{ $actionUrl }}" class="text-xs mt-2 inline-block bg-[var(--bg-color)] me-1 px-4 py-2 rounded-lg transition-all duration-300 ease-in-out hover:opacity-80">
+            <a href="{{ $actionUrl }}" class="text-xs font-medium mt-2 inline-block bg-[var(--glass-border-color)]/5 backdrop-blur-md me-1 px-4 py-2 border border-[var(--glass-border-color)]/20 rounded-lg transition-all duration-300 ease-in-out hover:opacity-80">
                 {{ $actionLabel }}
             </a>
         @endif
     </div>
 
-    <button class="absolute top-2.5 right-3.5 text-md opacity-60 cursor-pointer hover:opacity-100 transition-all duration-300 ease-in-out cursor-pointer" onclick="this.parentElement.remove()">
+    <button class="absolute top-2.5 right-3.5 text-md opacity-60 hover:opacity-100 transition-all duration-300 ease-in-out cursor-pointer" onclick="this.parentElement.remove()">
         <i class="fas fa-xmark"></i>
     </button>
 </div>

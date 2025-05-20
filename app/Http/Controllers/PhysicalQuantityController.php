@@ -15,18 +15,42 @@ class PhysicalQuantityController extends Controller
      */
     public function index()
     {
-        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
-        {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
-        };
-        
-        $physicalQuantities = PhysicalQuantity::with('article')->get();
-        
-        foreach ($physicalQuantities as $physicalQuantity) {
-            $physicalQuantity['date'] = date('d-M-y, D', strtotime($physicalQuantity['date']));
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        return view("physical-quantities.index", compact("physicalQuantities"));
+        $allQuantities = PhysicalQuantity::with('article')->get();
+
+        // Group total packets by article (all categories combined)
+        $totalPacketsByArticle = $allQuantities
+            ->groupBy('article_id')
+            ->map(fn($group) => $group->sum('packets'));
+
+        // Now group by article_id + category to show each row
+        $grouped = $allQuantities
+            ->groupBy(fn($item) => $item->article_id . '-' . $item->category)
+            ->map(function ($group) use ($totalPacketsByArticle) {
+                $first = $group->first();
+                $articleId = $first->article_id;
+                $pcsPerPacket = $first->article->pcs_per_packet;
+
+                return (object)[
+                    'id' => $first->id,
+                    'article' => $first->article,
+                    'category' => $first->category,
+                    'total_packets_this_category' => $group->sum('packets'),
+                    'total_packets_all_categories' => $totalPacketsByArticle[$articleId],
+                    'latest_date' => $group->max('date'),
+                ];
+            })->values();
+
+        foreach ($grouped as $item) {
+            $item->date = date('d-M-y, D', strtotime($item->latest_date));
+        }
+
+        return view('physical-quantities.index', [
+            'physicalQuantities' => $grouped
+        ]);
     }
 
     /**
@@ -89,11 +113,7 @@ class PhysicalQuantityController extends Controller
             'pcs_per_packet' => $data['pcs_per_packet'],
         ]);
 
-        PhysicalQuantity::create([
-            'date' => $data['date'],
-            'article_id' => $data['article_id'],
-            'packets' => $data['packets'],
-        ]);
+        PhysicalQuantity::create($data);
 
         return redirect()->route('physical-quantities.create')->with('success', 'Physical quantity added successfully');
     }
@@ -103,9 +123,7 @@ class PhysicalQuantityController extends Controller
      */
     public function show()
     {
-        event(new NewNotificationEvent(['title' => 'New Article Added', 'message' => 'hello']));
-
-        return "hello";
+        // 
     }
 
     /**

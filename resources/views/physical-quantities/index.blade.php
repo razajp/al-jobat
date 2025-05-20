@@ -38,20 +38,34 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="data_container p-5 pr-3">
                             <div class="table_container overflow-hidden text-sm">
-                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div>Article No.</div>
-                                    <div>Date</div>
                                     <div>Pc/Pkt</div>
-                                    <div>Packets</div>
+                                    <div>Total Qty.</div>
+                                    <div>Received Qty.</div>
+                                    <div>Remaining Qty.</div>
+                                    <div>category</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($physicalQuantities as $physicalQuantity)
-                                        <div id="{{ $physicalQuantity->id }}" data-json="{{ $physicalQuantity }}"
-                                            class="contextMenuToggle modalToggle relative group grid grid-cols-4 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span>#{{ $physicalQuantity->article->article_no }}</span>
-                                            <span>{{ $physicalQuantity->date }}</span>
-                                            <span>{{ $physicalQuantity->article->pcs_per_packet }}</span>
-                                            <span>{{ $physicalQuantity->packets }}</span>
+                                    @foreach ($physicalQuantities as $physicalQuantity)
+                                        @php
+                                            $article = $physicalQuantity->article;
+                                            $pcsPerPacket = $article->pcs_per_packet;
+                                            $totalQuantity = $article->quantity;
+
+                                            $totalPackets = $physicalQuantity->total_packets_this_category;
+                                            $totalPacketsAll = $physicalQuantity->total_packets_all_categories;
+
+                                            $remainingPcs = $totalQuantity - ($totalPacketsAll * $pcsPerPacket);
+                                        @endphp
+
+                                        <div class="contextMenuToggle modalToggle relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span>#{{ $article->article_no }}</span>
+                                            <span>{{ $pcsPerPacket }} - Pcs.</span>
+                                            <span>{{ $totalQuantity }} - Pcs.</span>
+                                            <span>{{ $totalPackets }} - Pkts.</span>
+                                            <span>{{ $remainingPcs }} - Pcs.</span>
+                                            <span class="capitalize">{{ $physicalQuantity->category }}</span>
                                         </div>
                                     @endforeach
                                 </div>
