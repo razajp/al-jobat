@@ -270,7 +270,7 @@
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
 
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${formatNumbersDigitLess(data.quantity)} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
                                 disabled
                             />
 

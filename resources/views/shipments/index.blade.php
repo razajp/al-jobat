@@ -19,29 +19,30 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show Shipments</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                    <h4>Show Shipments</h4>
 
-                <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                    <div class="relative group">
-                        <form method="POST" action="{{ route('change-data-layout') }}">
-                            @csrf
-                            <input type="hidden" name="layout" value="{{ $authLayout }}">
-                            @if ($authLayout == 'grid')
-                                <button type="submit" class="group cursor-pointer">
-                                    <i class='fas fa-list-ul text-white'></i>
-                                    <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                </button>
-                            @else
-                                <button type="submit" class="group cursor-pointer">
-                                    <i class='fas fa-grip text-white'></i>
-                                    <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                </button>
-                            @endif
-                        </form>
+                    <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
+                        <div class="relative group">
+                            <form method="POST" action="{{ route('change-data-layout') }}">
+                                @csrf
+                                <input type="hidden" name="layout" value="{{ $authLayout }}">
+                                @if ($authLayout == 'grid')
+                                    <button type="submit" class="group cursor-pointer">
+                                        <i class='fas fa-list-ul text-white'></i>
+                                        <span
+                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                    </button>
+                                @else
+                                    <button type="submit" class="group cursor-pointer">
+                                        <i class='fas fa-grip text-white'></i>
+                                        <span
+                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                    </button>
+                                @endif
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -71,7 +72,7 @@
                                             <x-card :data="[
                                                 'name' => 'Shipment No: ' . $shipment->shipment_no,
                                                 'details' => [
-                                                    'Date' => date('d-M-Y, D', strtotime($shipment->date)),
+                                                    'Date' => $shipment->date->format('d-M-Y, D'),
                                                     'Amount' => number_format($shipment->netAmount, 1),
                                                 ],
                                             ]" />
@@ -298,7 +299,7 @@
                                     <hr class="w-full my-3 border-black">
                                     <div id="shipment-header" class="shipment-header w-full flex justify-between px-5">
                                         <div class="left w-50 space-y-1">
-                                            <div class="shipment-date leading-none">Date: ${data.date}</div>
+                                            <div class="shipment-date leading-none">Date: ${formatDate(data.date)}</div>
                                             <div class="shipment-number leading-none">Shipment No.: ${data.shipment_no}</div>
                                         </div>
                                         <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
@@ -313,7 +314,7 @@
                                                 <div class="thead w-full">
                                                     <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                                         <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                        <div class="th text-sm font-medium w-[10%]">Article</div>
+                                                        <div class="th text-sm font-medium w-[12%]">Article</div>
                                                         <div class="th text-sm font-medium grow">Description</div>
                                                         <div class="th text-sm font-medium w-[10%]">Pcs.</div>
                                                         <div class="th text-sm font-medium w-[10%]">Packets</div>
@@ -337,7 +338,7 @@
                                                                 <hr class="w-full ${hrClass} border-black">
                                                                 <div class="tr flex justify-between w-full px-4">
                                                                     <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                    <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                                    <div class="td text-sm font-semibold w-[12%]">#${article.article_no}</div>
                                                                     <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${shipmentQuantity}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${Math.floor(orderedArticle.shipment_quantity / article.pcs_per_packet)}</div>

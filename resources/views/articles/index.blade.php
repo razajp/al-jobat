@@ -30,29 +30,30 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                    <h4>Show Articles</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                        <h4>Show Articles</h4>
 
-                    <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                        <div class="relative group">
-                            <form method="POST" action="{{ route('change-data-layout') }}">
-                                @csrf
-                                <input type="hidden" name="layout" value="{{ $authLayout }}">
-                                @if ($authLayout == 'grid')
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-list-ul text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                    </button>
-                                @else
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-grip text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                    </button>
-                                @endif
-                            </form>
+                        <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
+                            <div class="relative group">
+                                <form method="POST" action="{{ route('change-data-layout') }}">
+                                    @csrf
+                                    <input type="hidden" name="layout" value="{{ $authLayout }}">
+                                    @if ($authLayout == 'grid')
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-list-ul text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                        </button>
+                                    @else
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-grip text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                        </button>
+                                    @endif
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,9 +88,9 @@
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [
-                                                        'Season' => $article->season,
-                                                        'Size' => $article->size,
-                                                        'Category' => $article->category,
+                                                        'Season' => str_replace('_', ' ', $article->season),
+                                                        'Size' => str_replace('_', ' ', $article->size),
+                                                        'Category' => ucfirst(str_replace('_', ' ', $article->category)),
                                                     ],
                                                 ]" />
                                             </div>
@@ -106,9 +107,9 @@
                                         @forEach ($articles as $article)
                                             <div id="{{ $article->id }}" data-json='{{ $article }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                                 <span>#{{ $article->article_no }}</span>
-                                                <span>{{ $article->season }}</span>
-                                                <span>{{ $article->size }}</span>
-                                                <span>{{ $article->category }}</span>
+                                                <span>{{ str_replace('_', ' ', $article->season) }}</span>
+                                                <span>{{ str_replace('_', " ", $article->size) }}</span>
+                                                <span>{{ ucfirst(str_replace('_', " ", $article->category)) }}</span>
                                             </div>
                                         @endforeach
                                     </div>
@@ -285,7 +286,7 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
                                 disabled
                             />
                             
@@ -350,7 +351,7 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 p-2">
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
+                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
                                 disabled
                             />
                             
@@ -635,14 +636,14 @@
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Season:</strong> <span>${data.season}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Size:</strong> <span>${data.size}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Sales Rate:</strong> <span>${data.sales_rate}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Sales Rate:</strong> <span>${formatNumbersWithDigits(data.sales_rate, 1, 1)}</span></p>
                             
                             <hr class="border-gray-600 my-3">
                 
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Fabric Type:</strong> <span>${data.fabric_type}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Quantity-Pcs:</strong> <span>${data.quantity}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Current Stock-Pcs:</strong> <span>${data.quantity - data.ordered_quantity}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Ready Date:</strong> <span>${data.date}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Quantity-Pcs:</strong> <span>${formatNumbersDigitLess(data.quantity)}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Current Stock-Pcs:</strong> <span>${formatNumbersDigitLess(data.quantity - data.ordered_quantity)}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Ready Date:</strong> <span>${formatDate(data.date)}</span></p>
 
                             <hr class="border-gray-600 my-3">
 

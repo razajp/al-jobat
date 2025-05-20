@@ -13,6 +13,10 @@ class BankAccount extends Model
 
     protected $fillable = ['category', 'sub_category', 'bank_id', 'account_title', 'date', 'remarks', 'account_no', 'chqbk_serial_start', 'chqbk_serial_end'];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article
@@ -37,7 +41,8 @@ class BankAccount extends Model
     {
         return $this->morphTo();
     }
-    public function bank() {
+    public function bank()
+    {
         return $this->belongsTo(Setup::class, 'bank_id')->where('type', 'bank_name');
     }
     public function paymentPrograms()

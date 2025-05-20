@@ -18,6 +18,10 @@ class Cargo extends Model
         "invoices_array",
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article

@@ -11,7 +11,6 @@
                 'all' => 'All',
                 'title' => 'Title',
                 'category' => 'Category',
-                'name' => 'Name',
             ]"/>
         </div>
 
@@ -19,29 +18,30 @@
         <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 uppercase font-semibold">
-                    <h4>Show Bank Accounts</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                        <h4>Show Bank Accounts</h4>
 
-                    <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                        <div class="relative group">
-                            <form method="POST" action="{{ route('change-data-layout') }}">
-                                @csrf
-                                <input type="hidden" name="layout" value="{{ $authLayout }}">
-                                @if ($authLayout == 'grid')
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-list-ul text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                    </button>
-                                @else
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-grip text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                    </button>
-                                @endif
-                            </form>
+                        <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
+                            <div class="relative group">
+                                <form method="POST" action="{{ route('change-data-layout') }}">
+                                    @csrf
+                                    <input type="hidden" name="layout" value="{{ $authLayout }}">
+                                    @if ($authLayout == 'grid')
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-list-ul text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                        </button>
+                                    @else
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-grip text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                        </button>
+                                    @endif
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -80,7 +80,7 @@
                                                 @break
                                         @endswitch
 
-                                        @php $details['Date'] = $bankAccount->date; @endphp
+                                        @php $details['Date'] = $bankAccount->date->format('d-M-Y, D'); @endphp
                                         
                                         <x-card :data="[
                                             'name' => $bankAccount->account_title,
@@ -90,18 +90,17 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                            <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                 <div class="text-left pl-5">Account Title</div>
                                 <div class="text-left pl-5">Name</div>
                                 <div class="text-center">Category</div>
-                                <div class="text-right">Date</div>
-                                <div class="text-right pr-5">Status</div>
+                                <div class="text-right pr-5">Date</div>
                             </div>
                             
                             <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                 @foreach ($bankAccounts as $bankAccount)
                                     @php
-                                        $owner = '';
+                                        $owner = '-';
                                         switch ($bankAccount->category) {
                                             case 'customer':
                                                 $owner = $bankAccount->subCategory->customer_name;
@@ -112,12 +111,11 @@
                                         }
                                     @endphp
                             
-                                    <div id="{{ $bankAccount->id }}" data-json='{{ $bankAccount }}' class="contextMenuToggle modalToggle relative group grid grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                    <div id="{{ $bankAccount->id }}" data-json='{{ $bankAccount }}' class="contextMenuToggle modalToggle relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                         <span class="text-left pl-5">{{ $bankAccount->account_title }}</span>
                                         <span class="text-left pl-5">{{ $owner }}</span>
                                         <span class="text-center capitalize">{{ $bankAccount->category }}</span>
-                                        <span class="text-right">{{ $bankAccount->date }}</span>
-                                        <span class="text-right pr-5 capitalize">{{ $bankAccount->status ?? 'N/A' }}</span>
+                                        <span class="text-right pr-5">{{ $bankAccount->date->format('d-M-Y, D') }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -127,7 +125,7 @@
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Bank Account yet</h1>
                         <a href="{{ route('bank-accounts.create') }}"
-                            class="text-md bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>
                 @endif
@@ -252,7 +250,7 @@
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.account_title}</h5>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm ${data.category === 'self' ? 'hidden' : ''}"><strong>Name:</strong> <span>${data.category == 'supplier' ? data.sub_category.supplier_name : data.category == 'customer' ? data.sub_category.customer_name : ''}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${data.date}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${formatDate(data.date)}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank.title}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm ${data.category !== 'self' ? 'hidden' : ''}"><strong>Account No.:</strong> <span>${data.account_no}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm ${data.category !== 'self' ? 'hidden' : ''}"><strong>Cheque Book Serial:</strong> <span>Start: ${data.chqbk_serial_start}</span> | <span>End: ${data.chqbk_serial_end}</span></p>
@@ -310,25 +308,9 @@
                 let name = '';
                 switch (filterType) {
                     case 'all':
-                        switch (item.category) {
-                            
-                            case 'supplier':
-                                name = item.sub_category.supplier_name;
-                                break;
-                            case 'customer':
-                                name = item.sub_category.customer_name;
-                                break;
-                            case 'self':
-                                name = item.sub_category.name;
-                                break;
-                            default:
-                                break;
-                        }
-
                         return (
                             item.account_title.toLowerCase().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            name.toLowerCase().includes(search)
+                            item.category.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -344,47 +326,10 @@
                         );
                         break;
                         
-                    case 'name':
-                        // let name = '';
-                        switch (item.category) {
-                            case 'supplier':
-                                name = item.sub_category.supplier_name;
-                                break;
-                            case 'customer':
-                                name = item.sub_category.customer_name;
-                                break;
-                            case 'self':
-                                name = item.sub_category.name;
-                                break;
-                            default:
-                                break;
-                        }
-
-                        return (
-                            name.toLowerCase().includes(search)
-                        );
-                        break;
-                
                     default:
-                        // let name = '';
-                        switch (item.category) {
-                            case 'supplier':
-                                name = item.sub_category.supplier_name;
-                                break;
-                            case 'customer':
-                                name = item.sub_category.customer_name;
-                                break;
-                            case 'self':
-                                name = item.sub_category.name;
-                                break;
-                            default:
-                                break;
-                        }
-
                         return (
                             item.account_title.toLowerCase().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            name.toLowerCase().includes(search)
+                            item.category.toLowerCase().includes(search)
                         );
                         break;
                 }

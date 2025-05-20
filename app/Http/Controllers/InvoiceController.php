@@ -27,8 +27,6 @@ class InvoiceController extends Controller
         $invoices = Invoice::with(['order', 'shipment', 'customer'])->get();
     
         foreach ($invoices as $invoice) {
-            $invoice['articles_in_invoice'] = json_decode($invoice->articles_in_invoice, true);
-
             $articles = [];
     
             foreach ($invoice->articles_in_invoice as $article_in_invoice) {
@@ -41,7 +39,6 @@ class InvoiceController extends Controller
                 ];
             }
             $invoice['articles'] = $articles;
-            $invoice['date'] = date('d-M-Y, D', strtotime($invoice['date']));
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());

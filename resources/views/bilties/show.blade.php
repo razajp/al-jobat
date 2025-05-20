@@ -16,9 +16,10 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show Bilties</h4>
+            <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                    <h4>Show Bilties</h4>
+                </div>
             </div>
 
             @if (count($bilties) > 0)
@@ -50,8 +51,8 @@
                                     @forEach ($bilties as $bilty)
                                         <div id="{{ $bilty->id }}" data-json="{{ $bilty }}"
                                             class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span>{{ $bilty->date }}</span>
-                                            <span>{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city }}</span>
+                                            <span>{{ $bilty->date->format('d-M-Y. D') }}</span>
+                                            <span class="capitalize">{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city }}</span>
                                             <span>{{ $bilty->invoice->invoice_no }}</span>
                                             <span>{{ $bilty->invoice->cargo_name }}</span>
                                             <span>{{ $bilty->bilty_no }} | {{ $bilty->invoice->cotton_count ?? "-" }}</span>

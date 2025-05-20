@@ -22,6 +22,11 @@ class Invoice extends Model
         "cargo_name",
         "articles_in_invoice",
     ];
+
+    protected $casts = [
+        'articles_in_invoice' => 'array',
+        'date' => 'datetime',
+    ];
     
     protected static function booted()
     {

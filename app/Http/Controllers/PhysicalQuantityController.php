@@ -73,9 +73,10 @@ class PhysicalQuantityController extends Controller
             } else {
                 $article['physical_quantity'] = 0;
             }
-            $article["rates_array"] = json_decode($article->rates_array, true);
-            $article['date'] = date('d-M-Y, D', strtotime($article['date']));
-            $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
+
+            $article['category'] = ucfirst(str_replace('_', ' ', $article['category']));
+            $article['season'] = ucfirst(str_replace('_', ' ', $article['season']));
+            $article['size'] = ucfirst(str_replace('_', '-', $article['size']));
         }
 
         $articles = $articles->filter(function ($article) {

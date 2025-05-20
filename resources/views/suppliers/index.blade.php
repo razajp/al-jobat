@@ -23,31 +23,32 @@
         <section class="text-center mx-auto ">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 uppercase font-semibold">
-                    <h4>Show Suppliers</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                        <h4>Show Suppliers</h4>
 
-                    <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                        <div class="relative group">
-                            <form method="POST" action="{{ route('change-data-layout') }}">
-                                @csrf
-                                <input type="hidden" name="layout" value="{{ $authLayout }}">
-                                @if ($authLayout == 'grid')
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-list-ul text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                    </button>
-                                @else
-                                    <button type="submit" class="group cursor-pointer">
-                                        <i class='fas fa-grip text-white'></i>
-                                        <span
-                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                    </button>
-                                @endif
-                            </form>
+                        <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
+                            <div class="relative group">
+                                <form method="POST" action="{{ route('change-data-layout') }}">
+                                    @csrf
+                                    <input type="hidden" name="layout" value="{{ $authLayout }}">
+                                    @if ($authLayout == 'grid')
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-list-ul text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                        </button>
+                                    @else
+                                        <button type="submit" class="group cursor-pointer">
+                                            <i class='fas fa-grip text-white'></i>
+                                            <span
+                                                class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] cursor-pointer text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                        </button>
+                                    @endif
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    </div>  
                 </div>
 
                 <div
@@ -109,7 +110,7 @@
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Suppliers yet</h1>
                         <a href="{{ route('suppliers.create') }}"
-                            class="text-md bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>
                 @endif

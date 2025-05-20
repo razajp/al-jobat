@@ -20,29 +20,30 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show Invoices</h4>
+            <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                    <h4>Show Invoices</h4>
 
-                <div class="buttons absolute top-0 right-4 text-sm h-full flex items-center">
-                    <div class="relative group">
-                        <form method="POST" action="{{ route('change-data-layout') }}">
-                            @csrf
-                            <input type="hidden" name="layout" value="{{ $authLayout }}">
-                            @if ($authLayout == 'grid')
-                                <button type="submit" class="group cursor-pointer">
-                                    <i class='fas fa-list-ul text-white'></i>
-                                    <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
-                                </button>
-                            @else
-                                <button type="submit" class="group cursor-pointer">
-                                    <i class='fas fa-grip text-white'></i>
-                                    <span
-                                        class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
-                                </button>
-                            @endif
-                        </form>
+                    <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
+                        <div class="relative group">
+                            <form method="POST" action="{{ route('change-data-layout') }}">
+                                @csrf
+                                <input type="hidden" name="layout" value="{{ $authLayout }}">
+                                @if ($authLayout == 'grid')
+                                    <button type="submit" class="group cursor-pointer">
+                                        <i class='fas fa-list-ul text-white'></i>
+                                        <span
+                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                    </button>
+                                @else
+                                    <button type="submit" class="group cursor-pointer">
+                                        <i class='fas fa-grip text-white'></i>
+                                        <span
+                                            class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                    </button>
+                                @endif
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -74,7 +75,7 @@
                                                 'details' => [
                                                     $invoice->order_no ? 'Order No.' : 'Shipment No.' => $invoice->order_no ?? $invoice->shipment_no,
                                                     'Customer Name' => $invoice->customer->customer_name,
-                                                    'Date' => $invoice->date,
+                                                    'Date' => $invoice->date->format('d-M-Y, D'),
                                                 ],
                                             ]" />
                                         </div>
@@ -93,7 +94,7 @@
                                             <span class="text-center">{{ $invoice->invoice_no }}</span>
                                             <span class="text-center">{{ $invoice->order_no }}</span>
                                             <span class="text-center">{{ $invoice->customer->customer_name }}</span>
-                                            <span class="text-center">{{ $invoice->date }}</span>
+                                            <span class="text-center">{{ $invoice->date->format('d-M-Y, D') }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -283,7 +284,7 @@
                                         <div class="left">
                                             <div class="invoice-logo">
                                                 <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                    class="w-[12rem]" />
+                                                    class="w-[12rem]"10 />
                                                 <div class='mt-1'>${ companyData.phone_number }</div>
                                             </div>
                                         </div>
@@ -301,13 +302,13 @@
                                     <hr class="w-full my-3 border-black">
                                     <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
                                         <div class="left w-50 space-y-1">
-                                            <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                            <div class="invoice-customer text-lg leading-none capitalize">M/s: ${customerData.customer_name}</div>
                                             <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
                                             <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                             <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
                                         </div>
                                         <div class="right my-auto text-right text-sm text-black space-y-1.5">
-                                            <div class="invoice-date leading-none">Date: ${data.date}</div>
+                                            <div class="invoice-date leading-none">Date: ${formatDate(data.date)}</div>
                                             <div class="invoice-number leading-none">Invoice No.: ${data.invoice_no}</div>
                                             <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
                                             <div class="invoice-copy leading-none">Document: Sales Invoice</div>

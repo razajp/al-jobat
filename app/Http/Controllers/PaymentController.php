@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Customer;
 use App\Models\Payment;
 use App\Models\PaymentProgram;
+use App\Models\Setup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -48,6 +49,17 @@ class PaymentController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
+        
+        $banks_options = [];
+        $banks = Setup::where('type', 'bank_name')->get();
+        foreach ($banks as $bank) {
+            if ($bank) {
+                $banks_options[$bank->title] = [
+                    'text' => $bank->title,
+                    'data_option' => $bank,
+                ];
+            }
+        }
 
         $customers_options = [];
         $programId = $request->query('program_id');
@@ -63,7 +75,7 @@ class PaymentController extends Controller
                     'data_option' => $program->customer,
                 ]];
         
-                return view("payments.create", compact("customers", "customers_options"));
+                return view("payments.create", compact("customers", "customers_options", "banks_options"));
             }
         }
         
@@ -106,7 +118,7 @@ class PaymentController extends Controller
             ];
         }
 
-        return view("payments.create", compact("customers", "customers_options"));
+        return view("payments.create", compact("customers", "customers_options", 'banks_options'));
         // return $customers;
     }
 
@@ -144,12 +156,6 @@ class PaymentController extends Controller
             // return $paymentDetails;
             Payment::create($paymentDetails);
         }
-
-        // return $paymentDetailsArray;
-
-        // $data["amount"] = (int)str_replace(',', '', $data["amount"]);
-
-        // Payment::create($data);
 
         return redirect()->route('payments.create')->with('success', 'Payment Added successfully.');
     }

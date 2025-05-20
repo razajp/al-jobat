@@ -15,9 +15,10 @@
         <section class="text-center mx-auto ">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto pt-7 pr-2 relative">
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 uppercase font-semibold">
-                    <h4>Show Users</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                        <h4>Show Users</h4>
+                    </div>
                 </div>
 
                 <div

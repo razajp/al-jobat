@@ -26,6 +26,11 @@ class Article extends Model
         'image',
     ];
 
+    protected $casts = [
+        'rates_array' => 'array',
+        'date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article

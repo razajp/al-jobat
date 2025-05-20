@@ -218,12 +218,11 @@
                 selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
-                dateDom.min = selectedCustomer.date;
+                dateDom.min = selectedCustomer.date.toString().split('T')[0];
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
                 selectedCustomerData = selectedCustomer;
                 typeSelectDom.options[2].dataset.option = JSON.stringify(selectedCustomer.payment_programs) ?? '';
-                console.log(selectedCustomer);
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
@@ -397,7 +396,7 @@
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- bank --}}
-                        <x-input label="Bank" placeholder="Enter Bank" name="bank" id="bank" required/>
+                        <x-select label="Bank" name="bank" id="bank" :options="$banks_options" required showDefault />
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
@@ -490,8 +489,6 @@
         function selectThisProgram(programDate) {
             closeProgramModal();
             selectedProgramData = programDate;
-            console.log(selectedProgramData);
-            
             programInpDom.value = selectedProgramData.id;
             if (selectedProgramData.category != 'waiting') {
                 methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
@@ -582,9 +579,6 @@
                 paymentListDom.innerHTML = clutter;
 
                 paymentDetailsArrayDom.value = JSON.stringify(paymentDetailsArray);
-                
-                console.log(paymentDetailsArrayDom);
-                
             } else {
                 paymentListDom.innerHTML =
                 `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Yet</div>`;

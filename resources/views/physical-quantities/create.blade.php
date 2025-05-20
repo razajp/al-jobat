@@ -201,7 +201,7 @@
             selectedArticle = JSON.parse(articleElem.getAttribute('data-json'));
 
             articleIdInputDOM.value = selectedArticle.id;
-            let value = `#${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.quantity} (pcs) | Rs. ${selectedArticle.sales_rate}`;
+            let value = `#${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
             articleSelectInputDOM.value = value;
             
             articleImageShowDOM.classList.remove('opacity-0');

@@ -15,9 +15,10 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm">
-                <h4>Show physical Quantities</h4>
+            <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                    <h4>Show physical Quantities</h4>
+                </div>
             </div>
 
             @if (count($physicalQuantities) > 0)
@@ -40,7 +41,7 @@
                             <div class="table_container overflow-hidden text-sm">
                                 <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div>Article No.</div>
-                                    <div>Pc/Pkt</div>
+                                    <div>Unit</div>
                                     <div>Total Qty.</div>
                                     <div>Received Qty.</div>
                                     <div>Remaining Qty.</div>
@@ -57,14 +58,15 @@
                                             $totalPacketsAll = $physicalQuantity->total_packets_all_categories;
 
                                             $remainingPcs = $totalQuantity - ($totalPacketsAll * $pcsPerPacket);
+                                            $remainingPkts = number_format(($totalQuantity - $totalPacketsAll) / $pcsPerPacket, 1);
                                         @endphp
 
-                                        <div class="contextMenuToggle modalToggle relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                        <div id="{{ $physicalQuantity->id }}" data-json="{{ json_encode($physicalQuantity) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span>#{{ $article->article_no }}</span>
                                             <span>{{ $pcsPerPacket }} - Pcs.</span>
-                                            <span>{{ $totalQuantity }} - Pcs.</span>
-                                            <span>{{ $totalPackets }} - Pkts.</span>
-                                            <span>{{ $remainingPcs }} - Pcs.</span>
+                                            <span>{{ $totalQuantity / 12 }} - Dz. | {{ $totalQuantity }} - Pcs.</span>
+                                            <span>{{ number_format(($totalPackets * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $totalPackets }} - Pkts.</span>
+                                            <span>{{ $remainingPcs / 12 }} - Dz. | {{ $remainingPkts }} - Pkts.</span>
                                             <span class="capitalize">{{ $physicalQuantity->category }}</span>
                                         </div>
                                     @endforeach

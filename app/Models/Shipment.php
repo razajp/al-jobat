@@ -19,6 +19,11 @@ class Shipment extends Model
         'shipment_no',
     ];
 
+    protected $casts = [
+        'articles' => 'json',
+        'date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article
@@ -46,8 +51,7 @@ class Shipment extends Model
     
     public function getArticles()
     {
-        $rawArticles = json_decode($this->articles, true); // decode the JSON field
-    
+        $rawArticles = $this->articles; // decode the JSON field
         if (!is_array($rawArticles)) return [];
     
         $articles = [];

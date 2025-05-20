@@ -31,9 +31,10 @@
         <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
-                <div
-                    class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 uppercase font-semibold">
-                    <h4>Show Payment Programs</h4>
+                <div class="form-title absolute top-0 left-0 w-full p-1.5">
+                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+                        <h4>Show Payment Programs</h4>
+                    </div>
                 </div>
 
                 <div
@@ -107,7 +108,7 @@
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Payment Programs yet</h1>
                         <a href="{{ route('payment-programs.create') }}"
-                            class="text-md bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-blue-600 transition-all duration-300 ease-in-out uppercase font-semibold">Add
+                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>
                 @endif
@@ -128,9 +129,9 @@
                             Payment</button>
                     </li>
                     <li>
-                        <button id="update-beneficiary" type="button"
+                        <button id="update-program" type="button"
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Update
-                            Beneficiary</button>
+                            Program</button>
                     </li>
                 </ul>
             </div>
@@ -205,7 +206,7 @@
             });
             
             document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "update-beneficiary") {
+                if (e.target.id === "update-program") {
                     generateUpdateProgramModal(data);
                 }
             });
