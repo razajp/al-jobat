@@ -168,15 +168,62 @@ class SupplierController extends Controller
      */
     public function edit(Supplier $supplier)
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        return view('suppliers.edit', compact('supplier'));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, Supplier $supplier)
-    {
-        //
+    {if(!$this->checkRole(['developer', 'owner', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'phone_number' => 'required|string|max:255',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+        
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+            
+        $data = $request->all();
+
+        $user = User::where('username', $supplier->user->username)->first();
+
+        if ($user) {
+            if ($request->hasFile('image_upload')) {
+                $file = $request->file('image_upload');
+                $fileName = time() . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
+
+                $data['image'] = $fileName; // Save the file path in the database
+            } else {
+                $data['image'] = "default_avatar.png";
+            }
+
+            // Update the user
+            $user->update([
+                'profile_picture' => $data['image'],
+            ]);
+        } else {
+            return redirect()->back()->with('error', 'This user does not exist.')->withInput();
+        }
+
+        // Update the customer
+        $supplier->update([
+            'phone_number' => $data['phone_number'],
+        ]);
+        
+        return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
     }
 
     /**

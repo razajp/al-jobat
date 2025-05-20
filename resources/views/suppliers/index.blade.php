@@ -131,6 +131,11 @@
                             Category</button>
                     </li>
 
+                    <li>
+                        <button id="edit-in-context" type="button"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit Supplier</button>
+                    </li>
+
                     <li id="ac_in_context" class="hidden">
                         <form method="POST" action="{{ route('update-user-status') }}">
                             @csrf
@@ -239,6 +244,12 @@
             });
 
             document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "edit-in-context") {
+                    window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
+                }
+            });
+
+            document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "ac_in_btn_context") {
                     user_id_context = document.getElementById('user_id_context');
                     user_status_context = document.getElementById('user_status_context');
@@ -316,6 +327,11 @@
                             Manage Category
                         </button>
 
+                        <button id="edit-in-modal" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Edit Supplier
+                        </button>
+
                         <button onclick="closeModal()" type="button"
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
                             Cancel
@@ -350,6 +366,9 @@
                 imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
             }
 
+            document.getElementById('edit-in-modal').addEventListener('click', () => {
+                window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
+            });
             
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "manageCategoryBtn") {
@@ -479,6 +498,7 @@
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
+
                         <input type="hidden" id="supplier_id" name="supplier_id" value="${data.id}">
                         <input type="hidden" id="categories_array" name="categories_array">
                         <button type="submit"
