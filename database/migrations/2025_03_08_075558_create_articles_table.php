@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('article_no')->unique();
             $table->date('date');
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('size');
             $table->string('season');
             $table->integer('quantity')->unsigned();

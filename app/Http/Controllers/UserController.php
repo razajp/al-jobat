@@ -123,15 +123,23 @@ class UserController extends Controller
         if ($request->status == 'active') {
             if ($user->id != Auth::id()) {
                 $user->status = 'in active';
+                $user->save();
 
-                event(new NewNotificationEvent(['title' => 'User Inactivated', 'id' => $user->id]));
+                try {
+                    event(new NewNotificationEvent([
+                        'title' => 'User Inactivated',
+                        'id' => $user->id,
+                    ]));
+                } catch (\Exception $e) {
+                    return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+                }
             } else {
                 return redirect()->back()->with('error', 'Oops! You cannot deactivate yourself.');
             }
         } else {
             $user->status = 'active';
+            $user->save();
         }
-        $user->save();
         return redirect()->back()->with('success', 'Status has been updated successfully!');
     }
 

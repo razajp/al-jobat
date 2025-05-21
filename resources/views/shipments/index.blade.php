@@ -20,7 +20,6 @@
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
                 <x-form-title-bar title="Show Shipments" changeLayoutBtn layout="{{ $authLayout }}" />
-            </div>
 
             @if (count($shipments) > 0)
                 <div

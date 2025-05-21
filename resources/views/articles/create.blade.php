@@ -9,16 +9,17 @@
     ];
 
     $sizes_options = [
-        'sml' => ['text' => 'SML'],
         '1_2' => ['text' => '1-2'],
-        '2_3' => ['text' => '2-3'],
+        'sml' => ['text' => 'SML'],
+        '18_20_22' => ['text' => '18-20-22'],
+        '20_22_24' => ['text' => '20-22-24'],
+        '24_26_28' => ['text' => '24-26-28'],
     ];
 
     $seasons_options = [
         'half' => ['text' => 'Half'],
         'full' => ['text' => 'Full'],
         'winter' => ['text' => 'Winter'],
-        'light_weight' => ['text' => 'Light Weight'],
     ];
 @endphp
     <!-- Main Content -->
@@ -69,7 +70,6 @@
                         name="category"
                         id="category"
                         :options="$categories_options"
-                        required
                         showDefault
                     />
                     
@@ -95,7 +95,7 @@
                     
                     {{-- quantity --}}
                     <x-input 
-                        label="Quantity"
+                        label="Quantity - Pcs."
                         name="quantity" 
                         id="quantity" 
                         type="number"
@@ -105,7 +105,7 @@
                     
                     {{-- extra_pcs --}}
                     <x-input 
-                        label="Extra Pcs"
+                        label="Extra Pcs."
                         name="extra_pcs" 
                         id="extra_pcs" 
                         type="number"
@@ -120,7 +120,6 @@
                         id="fabric_type" 
                         type="text"
                         placeholder="Enter fabric type" 
-                        required
                     />
                 </div>
             </div>
@@ -562,12 +561,10 @@
         function validateForNextStep() {
             let isValidArticleNo = validateArticleNo();
             let isValidDate = validateDate();
-            let isValidCategory = validateCategory();
             let isValidSize = validateSize();
             let isValidSeason = validateSeason();
             let isValidQuantity = validateQuantity();
             let isValidExtraPcs = validateExtraPcs();
-            let isValidFabricType = validateFabricType();
 
             let isValid = isValidArticleNo || isValidDate || isValidCategory || isValidSize || isValidSeason || isValidQuantity || isValidExtraPcs || isValidFabricType;
 

@@ -31,6 +31,11 @@ class Article extends Model
         'date' => 'date',
     ];
 
+    public function setDateAttribute($value)
+    {
+        $this->attributes['date'] = \Carbon\Carbon::parse($value)->toDateString(); // 'Y-m-d'
+    }
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article

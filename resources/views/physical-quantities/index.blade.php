@@ -54,7 +54,7 @@
                                             $totalPacketsAll = $physicalQuantity->total_packets_all_categories;
 
                                             $remainingPcs = $totalQuantity - ($totalPacketsAll * $pcsPerPacket);
-                                            $remainingPkts = number_format(($totalQuantity - $totalPacketsAll) / $pcsPerPacket, 1);
+                                            $remainingPkts = number_format(($totalQuantity / $pcsPerPacket) - $totalPacketsAll, 1);
                                         @endphp
 
                                         <div id="{{ $physicalQuantity->id }}" data-json="{{ json_encode($physicalQuantity) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
@@ -62,7 +62,7 @@
                                             <span>{{ $pcsPerPacket }} - Pcs.</span>
                                             <span>{{ $totalQuantity / 12 }} - Dz. | {{ $totalQuantity }} - Pcs.</span>
                                             <span>{{ number_format(($totalPackets * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $totalPackets }} - Pkts.</span>
-                                            <span>{{ $remainingPcs / 12 }} - Dz. | {{ $remainingPkts }} - Pkts.</span>
+                                            <span>{{ number_format(($remainingPcs / 12), 1) }} - Dz. | {{ $remainingPkts }} - Pkts.</span>
                                             <span class="capitalize">{{ $physicalQuantity->category }}</span>
                                         </div>
                                     @endforeach

@@ -39,7 +39,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- pcs_per_packet  --}}
-                <x-input label="Pcs./packet" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter pcs. count per packet" required />
+                <x-input label="Maste Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter pcs. count per packet" required />
 
                 {{-- packets --}}
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
@@ -51,7 +51,6 @@
                     id="category"
                     :options="$category_options"
                     required
-                    showDefault
                 />
             </div>
 
@@ -137,6 +136,7 @@
                                                     'image' => $article->image == 'no_image_icon.png' 
                                                         ? asset('images/no_image_icon.png') 
                                                         : asset('storage/uploads/images/' . $article->image),
+                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
                                                     'name' => '#' . $article->article_no,
                                                     'details' => [

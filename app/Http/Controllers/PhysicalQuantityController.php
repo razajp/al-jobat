@@ -63,7 +63,7 @@ class PhysicalQuantityController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
         
-        $articles = Article::withSum('physicalQuantity', 'packets')->where('sales_rate', '>', '0')->get();
+        $articles = Article::withSum('physicalQuantity', 'packets')->get();
         
         foreach ($articles as $article) {
             $physical_quantity = $article['physical_quantity_sum_packets'];

@@ -214,7 +214,7 @@
                 }
             });
 
-            if (data.sales_rate === "0.00") {
+            if (data.sales_rate === 0.00) {
                 addRateInContext.classList.remove('hidden');
             }
 

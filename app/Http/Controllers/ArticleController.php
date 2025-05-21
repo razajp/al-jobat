@@ -82,12 +82,12 @@ class ArticleController extends Controller
         $validator = Validator::make($request->all(), [
             'article_no' => 'required|integer|unique:articles,article_no',
             'date' => 'required|date',
-            'category' => 'required|string',
+            'category' => 'nullable|string',
             'size' => 'required|string',
             'season' => 'required|string',
             'quantity' => 'required|integer|min:1',
             'extra_pcs' => 'required|integer|min:0',
-            'fabric_type' => 'required|string',
+            'fabric_type' => 'nullable|string',
             'rates_array' => 'nullable|json',
             "sales_rate" => 'required|numeric|min:0',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
@@ -127,7 +127,12 @@ class ArticleController extends Controller
         }
 
         Article::create($data);
-        event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
+
+        try {
+            event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
+        } catch (\Exception $e) {
+            // 
+        }
 
         return redirect()->route('articles.create')->with('success', 'Article added successfully');
     }
@@ -166,8 +171,6 @@ class ArticleController extends Controller
         if ($seasons->isEmpty()) {
             $seasons = collect();
         }
-
-        $article->rates_array = json_decode($article->rates_array, true);
 
         return view('articles.edit', compact('article' , 'categories', 'sizes', 'seasons'));
     }

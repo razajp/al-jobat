@@ -1,0 +1,10 @@
+@echo off
+cd /d "E:\al-jobat-spark-pair"
+start /b php artisan serve --host=192.168.100.37 --port=8000
+timeout /t 2 >nul
+start http://192.168.100.37:8000
+
+
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.Run chr(34) & "E:\al-jobat-spark-pair\run.bat" & Chr(34), 0
+Set WshShell = Nothing

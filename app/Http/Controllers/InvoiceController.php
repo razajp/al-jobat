@@ -165,8 +165,10 @@ class InvoiceController extends Controller
             }
             
             $data = $request->all();
+
+            $data['articles_in_invoice'] = json_decode($data['articles_in_invoice'], true);
     
-            $articles = json_decode($data["articles_in_invoice"], true);
+            $articles = $data['articles_in_invoice'];
     
             foreach ($articles as $article) {
                 $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
