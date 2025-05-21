@@ -225,14 +225,19 @@ class Controller extends BaseController
             if (!$article) continue;
 
             // Total stock from PhysicalQuantity
-            $totalPackets = PhysicalQuantity::where("article_id", $article->id)->sum("packets");
+            $totalPackets = PhysicalQuantity::where("article_id", $article['id'])->sum("packets");
+
+        // return response()->json([
+        //     'status' => 'success',
+        //     'shipment' => $shipment,
+        // ]);
 
             // Available quantity calculation
-            $availablePackets = $article->sold_quantity > 0
-                ? $totalPackets - ($article->sold_quantity / $article->pcs_per_packet)
+            $availablePackets = $article['sold_quantity'] > 0
+                ? $totalPackets - ($article['sold_quantity'] / $article['pcs_per_packet'])
                 : $totalPackets;
 
-            $availableStock = max(0, floor($availablePackets * $article->pcs_per_packet)); // convert packets to pcs
+            $availableStock = max(0, floor($availablePackets * $article['pcs_per_packet'])); // convert packets to pcs
             $articleData['article'] = $article;
             $articleData['available_stock'] = $availableStock;
 
@@ -241,7 +246,7 @@ class Controller extends BaseController
 
             // Check if available stock is enough
             if ($availableStock < $requiredShipmentQty) {
-                return response()->json(['error' => 'Stock is less than shipment quantity for article: ' . $article->name]);
+                return response()->json(['error' => 'Stock is less than shipment quantity for article: ' . $article['article_no']]);
             }
 
             $validArticles[] = $articleData;

@@ -27,7 +27,7 @@ class Article extends Model
     ];
 
     protected $casts = [
-        'rates_array' => 'array',
+        'rates_array' => 'json',
         'date' => 'date',
     ];
 

@@ -57,7 +57,6 @@ class ArticleController extends Controller
         $lastRecord = Article::orderBy('id', 'desc')->first();
 
         if ($lastRecord) {
-            $lastRecord->rates_array = json_decode($lastRecord->rates_array, true);
             $lastRecord->total_rate = 0;
         } else {
             $lastRecord = '';
@@ -89,13 +88,15 @@ class ArticleController extends Controller
             'quantity' => 'required|integer|min:1',
             'extra_pcs' => 'required|integer|min:0',
             'fabric_type' => 'required|string',
-            'rates_array' => 'nullable|string',
+            'rates_array' => 'nullable|json',
             "sales_rate" => 'required|numeric|min:0',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         // Prepare data for saving
         $data = $request->all();
+
+        $data['rates_array'] = json_decode($data['rates_array']);
         
         $year = date('y');
         $seasonLetter = strtoupper(substr($data['season'], 0, 1));

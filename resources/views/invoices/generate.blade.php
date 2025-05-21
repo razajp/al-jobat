@@ -167,10 +167,7 @@
     <form id="form" action="{{ route('invoices.store') }}" method="post" enctype="multipart/form-data"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
-        <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Generate New Invoice</h4>
-        </div>
+        <x-form-title-bar title="Generate Invoice" />
 
         <!-- Step 1: Generate Invoice -->
         @if($invoiceType == 'order')
@@ -328,6 +325,8 @@
                         shipment_no: shipmentNoDom.value
                     },
                     success: function (response) {
+                        console.log(response);
+                        
                         if (!response.error) {
                             openModal();
 

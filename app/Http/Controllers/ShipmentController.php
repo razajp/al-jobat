@@ -70,10 +70,6 @@ class ShipmentController extends Controller
             foreach ($articles as $article) {
                 $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
                 $article['physical_quantity'] = ( $physical_quantity * $article->pcs_per_packet ) - $article['sold_quantity'];
-    
-                $article["rates_array"] = json_decode($article->rates_array, true);
-                $article['date'] = date('d-M-Y, D', strtotime($article['date']));
-                $article['sales_rate'] = number_format($article['sales_rate'], 2, '.', ',');
             }
         }
 
@@ -97,6 +93,8 @@ class ShipmentController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
+
+        // return $request->all();
         
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
@@ -113,6 +111,7 @@ class ShipmentController extends Controller
         $data = $request->all();
         
         $data['netAmount'] = str_replace(',', '', $data['netAmount']);
+        $data['articles'] = json_decode($data['articles'], true);
 
         $shipment = Shipment::create($data);
         

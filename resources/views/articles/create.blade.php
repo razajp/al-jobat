@@ -36,10 +36,7 @@
         <form id="form" action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data"
             class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
             @csrf
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-                <h4>Add New Article</h4>
-            </div>
+            <x-form-title-bar title="Add Article" />
             <!-- Step 1: Basic Information -->
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -196,10 +193,7 @@
 
         <div
             class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--h-bg-color)] w-[35%] pt-12 relative overflow-hidden fade-in">
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold">
-                <h4>Last Record</h4>
-            </div>
+            <x-form-title-bar title="Last Record" />
 
             <!-- Step 1: Basic Information -->
             <div class="step1 space-y-4 ">
@@ -212,7 +206,7 @@
                         />
                         <x-input 
                             label="Date"
-                            value="{{ $lastRecord->date }}" 
+                            value="{{ $lastRecord->date->format('d-M-Y, D') }}" 
                             disabled
                         />
                         <x-input 
@@ -311,7 +305,7 @@
                             <x-image-upload 
                                 id="image_upload"
                                 name="image_upload"
-                                placeholder="{{ asset('storage/uploads/images/' . $lastRecord->image) }}"
+                                placeholder="{{ asset('storage/uploads/images/' . rawurlencode(html_entity_decode($lastRecord->image))) }}"
                                 uploadText="Image"
                             />
                         @endif

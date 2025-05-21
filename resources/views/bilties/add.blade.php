@@ -61,12 +61,9 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('bilties.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-5xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-5xl mx-auto relative overflow-hidden">
         @csrf
-        <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Add Bilty</h4>
-        </div>
+        <x-form-title-bar title="Add Bilty" />
 
         <div class="space-y-4 ">
             <div class="flex items-end gap-4">
@@ -87,10 +84,10 @@
                     <div class="w-1/6">Date</div>
                     <div class="w-[11%]">Bill No.</div>
                     <div class="w-[13%]">Cottons</div>
-                    <div class="grow">Customer</div>
+                    <div class="w-[17%]">Customer</div>
                     <div class="w-[10%]">City</div>
                     <div class="w-1/6">Bilty No.</div>
-                    <div class="w-1/6">Cargo</div>
+                    <div class="w-[8%]">Cargo</div>
                     <div class="w-[8%] text-center">Action</div>
                 </div>
                 <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
@@ -212,12 +209,12 @@
                             <div class="w-1/6">${formatDate(selectedInvoice.date)}</div>
                             <div class="w-[11%]">${selectedInvoice.invoice_no}</div>
                             <div class="w-[13%]">${cottonCount}</div>
-                            <div class="grow">${selectedInvoice.customer.customer_name}</div>
+                            <div class="w-[17%] capitalize">${selectedInvoice.customer.customer_name}</div>
                             <div class="w-[10%]">${selectedInvoice.customer.city}</div>
                             <div class="w-1/6">
                                 <input oninput="setBiltyNo(${selectedInvoice.id}, this.value)" class="bilty_no w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="number"/>
                             </div>
-                            <div class="w-1/6">${cargoName}</div>
+                            <div class="w-[8%]">${cargoName}</div>
                             <div class="w-[8%] text-center">
                                 <button onclick="deselectThisInvoice(${index})" type="button" class="text-[var(--danger-color)] cursor-pointer text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>

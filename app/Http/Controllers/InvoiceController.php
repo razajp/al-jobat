@@ -61,7 +61,7 @@ class InvoiceController extends Controller
 
         if (!$last_Invoice) {
             $last_Invoice = new invoice();
-            $last_Invoice->invoice_no = '0000-0000';
+            $last_Invoice->invoice_no = '00-0000';
         }
 
         $customers = Customer::with('user')->whereIn('category', ['regular', 'site'])->whereHas('user', function ($query) {
@@ -103,10 +103,10 @@ class InvoiceController extends Controller
 
             if (!$last_Invoice) {
                 $last_Invoice = new Invoice();
-                $last_Invoice->invoice_no = '0000-0000';
+                $last_Invoice->invoice_no = '00-0000';
             }
             
-            $currentYear = date("Y");
+            $currentYear = date("y");
             
             $lastNumberPart = substr($last_Invoice->invoice_no, -4); // last 4 characters
             $nextNumber = str_pad((int)$lastNumberPart + 1, 4, '0', STR_PAD_LEFT);
@@ -135,7 +135,7 @@ class InvoiceController extends Controller
                 $invoice->shipment_no = $request->shipment_no;
                 $invoice->netAmount = $shipment->netAmount * $customer['cotton_count'];
                 $invoice->cotton_count = $customer['cotton_count'];
-                $invoice->articles_in_invoice = json_encode($article_in_invoice);
+                $invoice->articles_in_invoice = $article_in_invoice;
                 $invoice->date = date("Y-m-d");
 
                 $nextNumber = str_pad((int)$nextNumber + 1, 4, '0', STR_PAD_LEFT);

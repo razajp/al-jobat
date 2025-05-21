@@ -31,11 +31,7 @@
         <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
-                <div class="form-title absolute top-0 left-0 w-full p-1.5">
-                    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
-                        <h4>Show Payment Programs</h4>
-                    </div>
-                </div>
+                <x-form-title-bar title="Show Payment Programs" />
 
                 <div
                     class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">

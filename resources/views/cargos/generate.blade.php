@@ -60,10 +60,7 @@
     <form id="form" action="{{ route('cargos.store') }}" method="post" enctype="multipart/form-data"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
-        <div
-            class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-            <h4>Generate Cargo List</h4>
-        </div>
+        <x-form-title-bar title="Generate Cargo List" />
 
         <!-- Step 1: Generate cargo list -->
         <div class="step1 space-y-4 ">
@@ -314,7 +311,7 @@
                                                     <hr class="w-full ${hrClass} border-gray-600">
                                                     <div class="tr flex justify-between w-full px-4">
                                                         <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                        <div class="td text-sm font-semibold w-1/6">${invoice.date}</div>
+                                                        <div class="td text-sm font-semibold w-1/6">${formatDate(invoice.date)}</div>
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.invoice_no}</div>
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.cotton_count}</div>
                                                         <div class="td text-sm font-semibold grow">${invoice.customer.customer_name}</div>

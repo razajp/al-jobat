@@ -17,10 +17,8 @@
             class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
             @csrf
             @method('PUT')
-            <div
-                class="form-title text-center absolute top-0 left-0 w-full bg-[var(--primary-color)] py-1 capitalize tracking-wide font-medium text-sm">
-                <h4>Edit Customer</h4>
-            </div>
+            <x-form-title-bar title="Edit Customer" />
+
             <!-- Step 1: Basic Information -->
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
