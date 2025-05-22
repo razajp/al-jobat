@@ -9,12 +9,12 @@
 
 @if ($includesDropdown)
     <!-- Main Icon Button -->
-    <button class="nav-link {{ strtolower($label) }} dropdown-trigger text-[var(--text-color)] p-3 rounded-full hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative">
+    <button class="nav-link {{ strtolower($label) }} dropdown-trigger text-[var(--text-color)] p-3 rounded-[41.5%] group-hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative">
         <i class="{{ $icon }} group-hover:text-[var(--primary-color)]"></i>
         <span class="absolute shadow-xl left-18 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">
             {{ $label }}
         </span>
-    </button>
+    </button> 
 
     <!-- Dropdown Menu -->
     <div class="dropdownMenu text-sm absolute top-0 left-16 hidden group-hover:block border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
@@ -51,9 +51,9 @@
 @else
     <!-- No Dropdown, Just Link -->
     <a href="{{ $href }}"
-       class="nav-link {{ strtolower($label) }} text-[var(--text-color)] p-3 rounded-full hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center group relative">
+       class="nav-link {{ strtolower($label) }} text-[var(--text-color)] p-3 rounded-[41.5%] hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center group relative">
         <i class="{{ $icon }} group-hover:text-[var(--primary-color)] transition-all duration-300 ease-in-out"></i>
-        <span class="absolute shadow-xl left-16 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+        <span class="absolute shadow-xl left-18 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">
             {{ $label }}
         </span>
     </a>

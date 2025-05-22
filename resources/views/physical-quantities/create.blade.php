@@ -13,13 +13,13 @@
     </div>
     <!-- Main Content -->
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-5xl mx-auto">
         <x-search-header heading="Add Physical Quantity" link linkText="Show Physical Quantities" linkHref="{{ route('physical-quantities.index') }}"/>
     </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('physical-quantities.store') }}" method="post"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-5xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Physical Quantity" />
 
@@ -32,8 +32,13 @@
                 </div>
 
                 {{-- date --}}
-                <div class="w-1/3">
+                <div class="w-1/4">
                     <x-input label="Date" name="date" id="date" type="date" max="{{ Now()->toDateString() }}" value="{{ now()->toDateString() }}" required />
+                </div>
+
+                {{-- processed_by --}}
+                <div class="w-1/4">
+                    <x-input label="Processed By" name="processed_by" id="processed_by" placeholder="Enter processed by" required />
                 </div>
             </div>
 
@@ -99,6 +104,7 @@
         const articleImageShowDOM = document.getElementById("img-article");
 
         const pcsPerPacketDom = document.getElementById('pcs_per_packet');
+        const processedByDom = document.getElementById('processed_by');
         const packetsDom = document.getElementById('packets');
         const categoryDom = document.getElementById('category');
 
@@ -149,6 +155,8 @@
                                         @endforeach
                                     </div>
                                 </div>
+                            @else
+                                <div class="text-[var(--border-error)] text-center font-medium h-full col-span-full">Data Not Found</div>
                             @endif
                         </div>
                     </div>
@@ -231,12 +239,22 @@
                 pcsPerPacketDom.classList.add('bg-transparent');
                 pcsPerPacketDom.classList.add('cursor-not-allowed');
                 pcsPerPacketDom.value = selectedArticle.pcs_per_packet;
+                processedByDom.readOnly = true;
+                processedByDom.classList.remove('bg-[var(--h-bg-color)]');
+                processedByDom.classList.add('bg-transparent');
+                processedByDom.classList.add('cursor-not-allowed');
+                processedByDom.value = selectedArticle.processed_by;
             } else {
                 pcsPerPacketDom.readOnly = false;
                 pcsPerPacketDom.classList.add('bg-[var(--h-bg-color)]');
                 pcsPerPacketDom.classList.remove('bg-transparent');
                 pcsPerPacketDom.classList.remove('cursor-not-allowed');
                 pcsPerPacketDom.value = '';
+                processedByDom.readOnly = false;
+                processedByDom.classList.add('bg-[var(--h-bg-color)]');
+                processedByDom.classList.remove('bg-transparent');
+                processedByDom.classList.remove('cursor-not-allowed');
+                processedByDom.value = '';
             }
 
             remainingqQuantityDom.innerText = new Intl.NumberFormat('en-US').format(pcsPerPacketDom.value > 0 && parseInt(totalPhysicalQuantityDom.textContent) > 0 ? selectedArticle.quantity - parseInt(totalPhysicalQuantityDom.textContent) : selectedArticle.quantity);

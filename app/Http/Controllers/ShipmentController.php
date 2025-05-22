@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\PhysicalQuantity;
+use App\Models\Setup;
 use App\Models\Shipment;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -51,7 +52,7 @@ class ShipmentController extends Controller
         $articles = [];
 
         if ($request->date) {
-            $customers = Customer::with('user', 'orders', 'payments')->where('date', '<=', $request->date)->get();
+            $customers = Customer::with('user', 'orders', 'payments', 'city')->where('date', '<=', $request->date)->get();
 
             foreach ($customers as $customer) {
                 $user = User::where('id', $customer->user_id)->first();
@@ -59,7 +60,7 @@ class ShipmentController extends Controller
     
                 if ($customer->status == 'active') {
                     $customers_options[(int)$customer->id] = [
-                        'text' => $customer->customer_name . ' | ' . $customer->city,
+                        'text' => $customer->customer_name . ' | ' . $customer->city->title,
                         'data_option' => $customer
                     ];
                 }
@@ -101,6 +102,7 @@ class ShipmentController extends Controller
             'discount' => 'required|integer',
             'netAmount' => 'required|string',
             'articles' => 'required|json',
+            'city' => 'required|string',
             'shipment_no' => 'required|string',
         ]);
 

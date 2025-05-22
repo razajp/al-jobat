@@ -1,6 +1,27 @@
 @extends('app')
 @section('title', 'Edit Article | ' . app('company')->name)
 @section('content')
+@php
+    $categories_options = [
+        '1_pc' => ['text' => '1 Pc'],
+        '2_pc' => ['text' => '2 Pc'],
+        '3_pc' => ['text' => '3 Pc'],
+    ];
+
+    $sizes_options = [
+        '1_2' => ['text' => '1-2'],
+        'sml' => ['text' => 'SML'],
+        '18_20_22' => ['text' => '18-20-22'],
+        '20_22_24' => ['text' => '20-22-24'],
+        '24_26_28' => ['text' => '24-26-28'],
+    ];
+
+    $seasons_options = [
+        'half' => ['text' => 'Half'],
+        'full' => ['text' => 'Full'],
+        'winter' => ['text' => 'Winter'],
+    ];
+@endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
@@ -27,6 +48,7 @@
                         label="Article No"
                         value="{{ $article->article_no }}"
                         disabled
+                        name="article_no"
                     />
                     <input type="hidden" name="article_no" id="article_no" value="{{ $article->article_no }}" />
                     
@@ -38,43 +60,36 @@
                     />
                     <input type="hidden" name="date" id="date" value="{{ $article->date }}" />
                     
-                    <x-input 
+                    {{-- category --}}
+                    <x-select 
                         label="Category"
-                        name="category" 
-                        id="category" 
-                        type="text" 
+                        name="category"
+                        id="category"
+                        :options="$categories_options"
+                        showDefault
                         value="{{ $article->category }}"
-                        placeholder="Enter category"
-                        autocomplete="off"
-                        list="category_list"
-                        :listOptions="$categories"
-                        required 
                     />
                     
-                    <x-input 
+                    {{-- size --}}
+                    <x-select 
                         label="Size"
-                        name="size" 
-                        id="size" 
-                        type="text" 
+                        name="size"
+                        id="size"
+                        :options="$sizes_options"
+                        required
+                        showDefault
                         value="{{ $article->size }}"
-                        placeholder="Enter size"
-                        autocomplete="off"
-                        list="size_list"
-                        :listOptions="$sizes"
-                        required 
                     />
                     
-                    <x-input 
+                    {{-- season --}}
+                    <x-select 
                         label="Season"
-                        name="season" 
-                        id="season" 
-                        type="text" 
+                        name="season"
+                        id="season"
+                        :options="$seasons_options"
+                        required
+                        showDefault
                         value="{{ $article->season }}"
-                        placeholder="Enter season"
-                        autocomplete="off"
-                        list="season_list"
-                        :listOptions="$seasons"
-                        required 
                     />
                     
                     {{-- quantity --}}
@@ -187,7 +202,7 @@
                         </div>
                     </div>
                     @if(is_array($article->rates_array) && count($article->rates_array) > 0)
-                        <input type="hidden" name="rates_array" id="rates_array" value="{{ json_encode($article->rates_array) }}" />
+                        <input type="hidden" name="rates_array" id="rates_array" value="{{ $article->rates_array }}" />
                     @else
                         <input type="hidden" name="rates_array" id="rates_array" value="[]" />
                     @endif
@@ -229,7 +244,7 @@
 
         let totalRate = 0.00;
 
-        let ratesArray = ratesArrayDom.value ? JSON.parse(ratesArrayDom.value) : [];
+        let ratesArray = ratesArrayDom.value ? ratesArrayDom.value : [];
         if (ratesArray.length > 0) {
             ratesArray.forEach(rate => {
                 rateCount++;

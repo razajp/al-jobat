@@ -229,7 +229,7 @@
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
             <!-- User Avatar -->
-            <button type="button" class="w-10 h-10 ml-1.5 mb-1 flex items-center justify-center rounded-full cursor-pointer transition-all duration-300 ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
+            <button type="button" class="w-10 h-10 ml-1.5 mb-1 flex items-center justify-center rounded-[41.5%] cursor-pointer transition-all duration-300 ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
                 @if (Auth::user()->profile_picture == 'default_avatar.png')
                     <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover" alt="Avatar">
                 @else
@@ -382,9 +382,9 @@
                 <!-- Profile Section -->
                 <div class="flex items-center space-x-4 px-4">
                     @if (Auth::user()->profile_picture == 'default_avatar.png')
-                            <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                            <img src="{{ asset('images/default_avatar.png') }}" alt="Avatar" class="w-10 h-10 rounded-[41.5%]">
                         @else
-                            <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-full">
+                            <img src="{{ asset('storage/uploads/images/' . auth()->user()->profile_picture) }}" alt="Avatar" class="w-10 h-10 rounded-[41.5%]">
                         @endif
                     <div>
                         <div class="text-[var(--text-color)] font-semibold capitalize">{{ Auth::user()->name }}</div>

@@ -56,9 +56,9 @@
         }
 
         [data-theme='light'] {
-            --bg-color: #eef0f2;
+            --bg-color: #ffffff;
             --h-bg-color: #d1d3d7;
-            --secondary-bg-color: #ffffff;
+            --secondary-bg-color: #eef0f2;
             --h-secondary-bg-color: hsl(0, 0%, 96%);
             --text-color: #1f2937;
             --secondary-text: #4b5563;
@@ -275,12 +275,12 @@
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
                 /> --}}
             </div>
-            <div class="left_actions absolute top-5 left-5 flex items-center gap-2 w-fll">
+            <div class="left_actions absolute top-5 left-5 w-full flex gap-2">
                 <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
                     <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
                         <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 
-                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-                            <path d="M19 12H5m6-6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" fill="none"/>
+                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                        <path d="M19 12H5m6-6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" fill="none"/>
                         </svg>
                     </div>                    
                     <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:ml-2">
@@ -301,6 +301,12 @@
                     </span>
                 </div>
             </div>
+            {{-- <div class="left_actions absolute top-0 left-0 w-full flex p-2">
+                <div class="flex items-center gap-2 p-2.5 bg-[var(--secondary-bg-color)] rounded-2xl">
+                    <x-section-navigation-button id="refresh_button" title="Refersh" icon="fa-plus" direction="right" />
+                    <x-section-navigation-button id="go_back_button" title="Go Back" icon="fa-plus" direction="right" />
+                </div>
+            </div> --}}
             <div class="main-child grow">
                 @yield('content')
             </div>

@@ -285,7 +285,7 @@
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city.title}</span></p>
                         </div>
                     </div>
                 

@@ -16,15 +16,14 @@ class CustomerController extends Controller
      */
     public function index(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
-        {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $customers = Customer::with('user', 'orders', 'payments')->get();
+        $customers = Customer::with('user', 'orders', 'payments', 'city')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
-    
+
         // return $customers;
         return view("customers.index", compact('customers', 'authLayout'));
     }
@@ -34,20 +33,18 @@ class CustomerController extends Controller
      */
     public function create()
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $cities = app('cities');
-
         $cities_options = [];
+        $allCities = Setup::where('type', 'city')->get();
 
-        foreach ($cities as $city) {
-            $cities_options[$city] = ['text' => $city];
+        foreach ($allCities as $city) {
+            $cities_options[$city->id] = ['text' => $city->title];
         }
 
-        return view('customers.create',compact('cities_options'));
+        return view('customers.create', compact('cities_options'));
     }
 
     /**
@@ -55,11 +52,10 @@ class CustomerController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'customer_name' => 'required|string|max:255|unique:customers,customer_name',
             'person_name' => 'required|string|max:255',
@@ -70,15 +66,15 @@ class CustomerController extends Controller
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'date' => 'required|string',
             'category' => 'required|string|max:255',
-            'city' => 'required|string|max:255',
+            'city' => 'required|integer|exists:setups,id',
             'address' => 'required|string|max:255',
         ]);
-        
+
         // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-            
+
         $data = $request->all();
         $data['password'] = Hash::make($data['password']); // Hash the password
 
@@ -88,7 +84,7 @@ class CustomerController extends Controller
             // Upload the image if provided
             if ($request->hasFile('image_upload')) {
                 $image = $request->file('image_upload');
-                $image_name = time(). '.'. $image->getClientOriginalExtension();
+                $image_name = time() . '.' . $image->getClientOriginalExtension();
                 $image->move(public_path('uploads/suppliers'), $image_name);
                 $data['image'] = $image_name;
             } else {
@@ -99,7 +95,7 @@ class CustomerController extends Controller
                 'name' => $data['customer_name'],
                 'username' => $data['username'],
                 'password' => $data['password'],
-                'role' =>'customer',
+                'role' => 'customer',
                 'profile_picture' => $data['image'],
             ]);
         } else {
@@ -115,10 +111,10 @@ class CustomerController extends Controller
             'urdu_title' => $data['urdu_title'],
             'date' => $data['date'],
             'category' => $data['category'],
-            'city' => $data['city'],
+            'city_id' => $data['city'],
             'address' => $data['address'],
         ]);
-        
+
         return redirect()->route('customers.create')->with('success', 'Customer created successfully.');
     }
 
@@ -135,8 +131,7 @@ class CustomerController extends Controller
      */
     public function edit(Customer $customer)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
@@ -148,8 +143,7 @@ class CustomerController extends Controller
      */
     public function update(Request $request, Customer $customer)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
@@ -158,12 +152,12 @@ class CustomerController extends Controller
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
             'address' => 'required|string|max:255',
         ]);
-        
+
         // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-            
+
         $data = $request->all();
 
         $user = User::where('username', $customer->user->username)->first();
@@ -192,7 +186,7 @@ class CustomerController extends Controller
             'phone_number' => $data['phone_number'],
             'address' => $data['address'],
         ]);
-        
+
         return redirect()->route('customers.index')->with('success', 'Customer updated successfully.');
     }
 

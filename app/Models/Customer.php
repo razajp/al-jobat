@@ -19,7 +19,7 @@ class Customer extends Model
         'phone_number',
         'date',
         'category',
-        'city',
+        'city_id',
         'address',
     ];
 
@@ -50,6 +50,11 @@ class Customer extends Model
     protected $appends = ['balance'];
     public function user() {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(Setup::class, 'city_id', 'id')->where('type', 'city');
     }
 
     public function orders()

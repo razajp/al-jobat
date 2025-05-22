@@ -220,7 +220,7 @@
                         class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
                     </div>
                     <div class="flex items-start relative">
-                        <div class="rounded-full h-[15rem] aspect-square overflow-hidden">
+                        <div class="rounded-[41.5%] h-[15rem] aspect-square overflow-hidden">
                             <img id="userImage" src="{{ asset('images/default_avatar.png') }}" alt=""
                                 class="w-full h-full object-cover">
                         </div>

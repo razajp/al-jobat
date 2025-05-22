@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\NewNotificationEvent;
 use App\Models\Article;
 use App\Models\PhysicalQuantity;
+use App\Models\Shipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -20,32 +21,73 @@ class PhysicalQuantityController extends Controller
         }
 
         $allQuantities = PhysicalQuantity::with('article')->get();
+        $allShipments = Shipment::with('invoices.customer')->get();
 
-        // Group total packets by article (all categories combined)
-        $totalPacketsByArticle = $allQuantities
-            ->groupBy('article_id')
-            ->map(fn($group) => $group->sum('packets'));
+        // Group all records by id
+        $grouped = $allQuantities->groupBy('id')->map(function ($group) {
+            $first = $group->first();
+            $article = $first->article;
 
-        // Now group by article_id + category to show each row
-        $grouped = $allQuantities
-            ->groupBy(fn($item) => $item->article_id . '-' . $item->category)
-            ->map(function ($group) use ($totalPacketsByArticle) {
-                $first = $group->first();
-                $articleId = $first->article_id;
-                $pcsPerPacket = $first->article->pcs_per_packet;
+            // Initialize packet sums
+            $categoryA = $group->where('category', 'a')->sum('packets');
+            $categoryB = $group->where('category', 'b')->sum('packets');
+            $total = $categoryA + $categoryB;
 
-                return (object)[
-                    'id' => $first->id,
-                    'article' => $first->article,
-                    'category' => $first->category,
-                    'total_packets_this_category' => $group->sum('packets'),
-                    'total_packets_all_categories' => $totalPacketsByArticle[$articleId],
-                    'latest_date' => $group->max('date'),
-                ];
-            })->values();
+            // Get the latest date across both categories
+            $latestDate = $group->max('date');
 
-        foreach ($grouped as $item) {
-            $item->date = date('d-M-y, D', strtotime($item->latest_date));
+            return (object)[
+                'id' => $article->id,
+                'article' => $article,
+                'total_packets' => $total,
+                'current_stock' => $total - ($article->sold_quantity / $article->pcs_per_packet),
+                'a_category' => $categoryA,
+                'b_category' => $categoryB,
+                'latest_date' => $latestDate,
+                'date' => date('d-M-y, D', strtotime($latestDate)),
+            ];
+        })->values();
+
+        $shipment = '';
+
+        foreach ($allShipments as $shipment) {
+            $shipment['articles'] = $shipment->getArticles();
+
+            foreach ($shipment['articles'] as $article) {
+                foreach ($grouped as $group) {
+                    if ($article['article']['id'] == $group->article->id) {
+                        // Append city title to group->city
+                        $cityTitle = $shipment->city;
+
+                        if (!isset($group->city)) {
+                            $group->city = [];
+                        }
+
+                        if (!in_array($cityTitle, $group->city)) {
+                            $group->city[] = $cityTitle;
+                        }
+                    }
+                }
+            }
+        }
+
+        // After collecting city titles, decide shipment type
+        foreach ($grouped as $group) {
+            $cities = $group->city ?? [];
+
+            $hasKarachi = in_array('karachi', $cities);
+            $hasOther = count(array_filter($cities, fn($c) => $c !== 'karachi' && $c !== 'all')) > 0;
+            $hasAll = in_array('all', $cities);
+
+            if ($hasAll || ($hasKarachi && $hasOther)) {
+                $group->shipment = 'All';
+            } elseif ($hasKarachi) {
+                $group->shipment = 'Karachi';
+            } elseif ($hasOther) {
+                $group->shipment = 'Other';
+            } else {
+                $group->shipment = null; // Or any default
+            }
         }
 
         return view('physical-quantities.index', [
@@ -99,6 +141,7 @@ class PhysicalQuantityController extends Controller
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'article_id' => 'required|integer|exists:articles,id',
+            'processed_by' => 'required|string',
             'pcs_per_packet' => 'required|integer|min:1',
             'packets' => 'required|integer|min:1',
         ]);
@@ -112,6 +155,7 @@ class PhysicalQuantityController extends Controller
         
         $article = Article::where('id', $data['article_id'])->update([
             'pcs_per_packet' => $data['pcs_per_packet'],
+            'processed_by' => $data['processed_by'],
         ]);
 
         PhysicalQuantity::create($data);

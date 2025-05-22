@@ -9,21 +9,77 @@ class DefaultDataSeeder extends Seeder
 {
     public function run()
     {
-        // Default users
+        // Default user
         DB::table('users')->updateOrInsert(
             [
-                'name' => 'dev',
                 'username' => 'dev',
+            ],
+            [
+                'name' => 'dev',
                 'password' => '$2y$12$V6SBN1THQHkTbhGarfCk1eArE5Mye2FkOjHLgAmbubQXQlQNMSZSe',
                 'role' => 'developer',
                 'theme' => 'dark',
-            ],
+            ]
         );
 
-        // add type="supplier_category", "created_at":"2025-03-05T17:37:26.000000Z","updated_at":"2025-03-05T17:37:26.000000Z", title="fabric" and short_title="FBR" to setups table
+        // Insert default setups
         DB::table('setups')->insert([
-            ['type' =>'supplier_category', 'title' => 'Fabric', 'short_title' => 'FBR', 'creator_id' => 1, 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
-            ['type' =>'supplier_category', 'title' => 'Embroidery', 'short_title' => 'EMB', 'creator_id' => 1, 'created_at' => '2025-03-05T17:37:26.000000Z', 'updated_at' => '2025-03-05T17:37:26.000000Z'],
+            [
+                'type' => 'supplier_category',
+                'title' => 'Fabric',
+                'short_title' => 'FBR',
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'supplier_category',
+                'title' => 'Embroidery',
+                'short_title' => 'EMB',
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'bank_name',
+                'title' => 'Meezan Bank Limited',
+                'short_title' => 'MBL',
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'city',
+                'title' => 'Karachi',
+                'short_title' => null,
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'city',
+                'title' => 'Lahore',
+                'short_title' => null,
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'city',
+                'title' => 'Islamabad',
+                'short_title' => null,
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
+            [
+                'type' => 'city',
+                'title' => 'Rawalpindi',
+                'short_title' => null,
+                'creator_id' => 1,
+                'created_at' => '2025-03-05T17:37:26.000000Z',
+                'updated_at' => '2025-03-05T17:37:26.000000Z',
+            ],
         ]);
     }
 }

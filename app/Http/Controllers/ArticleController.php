@@ -159,20 +159,7 @@ class ArticleController extends Controller
             return redirect(route('articles.index'))->with("error", "This article can't be edited.");
         }
 
-        $categories = Setup::where('type', 'article_category')->pluck('title');
-        if ($categories->isEmpty()) {
-            $categories = collect();
-        }
-        $sizes = Setup::where('type', 'article_size')->pluck('title');
-        if ($sizes->isEmpty()) {
-            $sizes = collect();
-        }
-        $seasons = Setup::where('type', 'article_seasons')->pluck('title');
-        if ($seasons->isEmpty()) {
-            $seasons = collect();
-        }
-
-        return view('articles.edit', compact('article' , 'categories', 'sizes', 'seasons'));
+        return view('articles.edit', compact('article'));
     }
 
     /**
@@ -186,14 +173,14 @@ class ArticleController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
-            'article_no' => 'required|integer|unique:articles,article_no,' . $article->id,
+            'article_no' => 'required|string|unique:articles,article_no,' . $article->id,
             'date' => 'required|date',
-            'category' => 'required|string',
+            'category' => 'nullable|string',
             'size' => 'required|string',
             'season' => 'required|string',
             'quantity' => 'required|integer|min:1',
             'extra_pcs' => 'required|integer|min:0',
-            'fabric_type' => 'required|string',
+            'fabric_type' => 'nullable|string',
             'rates_array' => 'nullable|string',
             "sales_rate" => 'required|numeric|min:0',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
@@ -201,6 +188,8 @@ class ArticleController extends Controller
 
         // Prepare data for saving
         $data = $request->all();
+
+        $data['rates_array'] = json_decode($data['rates_array']);
 
         // Handle the image upload if present
         if ($request->hasFile('image_upload')) {
@@ -216,7 +205,7 @@ class ArticleController extends Controller
         }
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->withInput()->with('error', 'Please check the form for errors.');
         }
 
         $article->update($data);
@@ -302,6 +291,7 @@ class ArticleController extends Controller
         }
     
         $data = $request->all();
+        $data['rates_array'] = json_decode($data['rates_array']);
     
         Article::where('id', $request->article_id)->update(['sales_rate' => $data['sales_rate'], 'rates_array' => $data['rates_array'], 'pcs_per_packet' => $data['pcs_per_packet']]);
 

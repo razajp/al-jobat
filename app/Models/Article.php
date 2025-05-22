@@ -23,6 +23,7 @@ class Article extends Model
         'sales_rate',
         'rates_array',
         'pcs_per_packet',
+        'processed_by',
         'image',
     ];
 

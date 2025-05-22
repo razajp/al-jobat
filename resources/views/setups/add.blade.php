@@ -24,6 +24,7 @@
                     :options="[
                         'supplier_category' => ['text' => 'Supplier Category'],
                         'bank_name' => ['text' => 'Bank Name'],
+                        'city' => ['text' => 'City'],
                     ]"
                     showDefault='true'
                 />

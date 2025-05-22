@@ -96,6 +96,19 @@
                         validateMax max='{{ now()->toDateString() }}' validateMin
                         min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
+                <div class="w-1/3">
+                    <x-select 
+                        label="City"
+                        name="city"
+                        id="city"
+                        :options="[
+                            'all' => ['text' => 'All'],
+                            'karachi' => ['text' => 'Karachi'],
+                            'other' => ['text' => 'Other'],
+                        ]"
+                        required
+                        showDefault />
+                </div>
 
                 <button id="generateShipmentBtn" type="button"
                     class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
@@ -214,6 +227,7 @@
             isModalOpened = true;
             closeAllDropdowns();
             document.getElementById('articleModal').classList.remove('hidden');
+            setFilter('all');
         }
 
         function closeArticlesModal() {
@@ -694,8 +708,6 @@
                         cardsDom.forEach((card) => {
                             cardsDataArray.push(JSON.parse(card.dataset.json));
                         })
-
-                        setFilter('all');
                     }
                 },
                 error: function() {

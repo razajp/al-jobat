@@ -104,7 +104,7 @@ class OrderController extends Controller
                 }
             }
             
-            $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereRaw('ordered_quantity < quantity')->get();
+            $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereNotNull(['category', 'fabric_type'])->whereRaw('ordered_quantity < quantity')->get();
     
             foreach ($articles as $article) {
                 $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');

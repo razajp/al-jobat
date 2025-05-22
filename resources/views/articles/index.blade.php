@@ -4,15 +4,15 @@
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
-        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     {{-- add image modal --}}
     <div id="updateImageModal"
-        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     {{-- add rate modal --}}
     <div id="addRateModal"
-        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
+        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     {{-- header --}}
@@ -33,16 +33,19 @@
             <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($articles) > 0)
-                <div
-                    class="add-new-article-btn absolute z-40 bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('articles.create') }}"
+                <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <x-section-navigation-button link="{{ route('articles.create') }}" title="Add New Article" icon="fa-plus" />
+                </div>
+                {{-- <div
+                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
+                    <a href="{{ route('bank-accounts.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
                         class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                         Add
                     </span>
-                </div>
+                </div> --}}
             @endif
 
             @if (count($articles) > 0)
@@ -587,15 +590,8 @@
                 <x-modal id="modalForm" classForBody="p-5 max-w-5xl" closeAction="closeModal" action="{{ route('update-user-status') }}">
                     <!-- Modal Content Slot -->
                     <div class="flex items-start relative h-[27rem]">
-                        <div id="info_in_modal" class="absolute top-0 right-0 border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pl-3 transition-all duration-300 ease-in-out">
-                            <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:mr-2">
-                                Added by ${data.creator.name}
-                            </span>
-                            <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
-                                <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512">
-                                    <path d="M48 80a48 48 0 1 1 96 0A48 48 0 1 1 48 80zM0 224c0-17.7 14.3-32 32-32l64 0c17.7 0 32 14.3 32 32l0 224 32 0c17.7 0 32 14.3 32 32s-14.3 32-32 32L32 512c-17.7 0-32-14.3-32-32s14.3-32 32-32l32 0 0-192-32 0c-17.7 0-32-14.3-32-32z"/>
-                                </svg>
-                            </div>
+                        <div class="absolute top-0 right-0 flex items-center gap-2 w-fll z-50">
+                            <x-section-navigation-button title="Added by " id="added_by" icon="fa-info" />
                         </div>
                         <div id="no_rate_dot_modal"
                             class="image_dot absolute top-2 left-2 w-[0.7rem] h-[0.7rem] bg-transparent rounded-full">
@@ -668,6 +664,9 @@
             let addRateInModal = document.getElementById('add-rate-in-modal');
             let editArticleInModal = document.getElementById('edit-btn-in-modal');
             let no_rate_dot_modal = document.getElementById('no_rate_dot_modal');
+            let addedByDom = document.getElementById('added_by');
+
+            addedByDom.querySelector('span').innerText = 'Added By ' + data.creator.name
 
             if (data.image == "no_image_icon.png") {
                 imageInModal.src = `images/no_image_icon.png`;

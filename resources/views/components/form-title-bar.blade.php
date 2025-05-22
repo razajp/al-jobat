@@ -5,13 +5,14 @@
 ])
 
 {{-- Title bar for the form --}}
-<div class="form-title absolute top-0 left-0 w-full p-1.5">
-    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg">
+<div class="form-title absolute top-0 left-0 w-full p-1.5 flex items-center gap-1.5">
+    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg grow">
         <h4>{{ $title }}</h4>
-
-        @if ($changeLayoutBtn)
-            <div class="buttons absolute top-0 right-4.5 text-sm h-full flex items-center">
-                <div class="relative group">
+    </div>
+    @if ($changeLayoutBtn)
+        <div class="text-center bg-[var(--primary-color)] h-7 shadow-lg uppercase font-semibold text-sm rounded-lg">
+            <div class="buttons top-0 right-4.5 text-sm h-full flex items-center px-2">
+                <div class="relative group flex items-center justify-between">
                     <form method="POST" action="{{ route('change-data-layout') }}">
                         @csrf
                         <input type="hidden" name="layout" value="{{ $layout }}">
@@ -19,18 +20,17 @@
                             <button type="submit" class="group cursor-pointer">
                                 <i class='fas fa-list-ul text-white'></i>
                                 <span
-                                    class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">List</span>
+                                    class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
                             </button>
                         @else
                             <button type="submit" class="group cursor-pointer">
                                 <i class='fas fa-grip text-white'></i>
-                                <span
-                                    class="absolute shadow-md text-nowrap border border-gray-600 z-10 -right-1 top-8 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] text-[12px] rounded px-3 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">Grid</span>
+                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
                             </button>
                         @endif
                     </form>
                 </div>
             </div>
-        @endif
-    </div>
+        </div>
+    @endif
 </div>

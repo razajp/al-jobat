@@ -7,7 +7,7 @@
         <x-search-header heading="Physical Quantity" :filter_items="[
             'all' => 'All',
             '#' => 'Article No.',
-            'date' => 'Date',
+            'proc_by' => 'Proc. By',
         ]"/>
     </div>
 
@@ -35,13 +35,17 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="data_container p-5 pr-3">
                             <div class="table_container overflow-hidden text-sm">
-                                <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div>Article No.</div>
-                                    <div>Unit</div>
-                                    <div>Total Qty.</div>
-                                    <div>Received Qty.</div>
-                                    <div>Remaining Qty.</div>
-                                    <div>category</div>
+                                <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 px-4">
+                                    <div class="w-[10%]">Article No.</div>
+                                    <div class="w-[7%]">Proc. By</div>
+                                    <div class="w-[8%]">Unit</div>
+                                    <div class="w-[15%]">Total Qty.</div>
+                                    <div class="w-[15%]">Received Qty.</div>
+                                    <div class="w-[15%]">Current Stock Qty.</div>
+                                    <div class="w-[15%]">A</div>
+                                    <div class="w-[15%]">B</div>
+                                    <div class="w-[15%]">Remaining Qty.</div>
+                                    <div class="w-[8%]">Shipment</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                     @foreach ($physicalQuantities as $physicalQuantity)
@@ -50,20 +54,26 @@
                                             $pcsPerPacket = $article->pcs_per_packet;
                                             $totalQuantity = $article->quantity;
 
-                                            $totalPackets = $physicalQuantity->total_packets_this_category;
-                                            $totalPacketsAll = $physicalQuantity->total_packets_all_categories;
+                                            $totalPackets = $physicalQuantity->total_packets;
 
-                                            $remainingPcs = $totalQuantity - ($totalPacketsAll * $pcsPerPacket);
-                                            $remainingPkts = number_format(($totalQuantity / $pcsPerPacket) - $totalPacketsAll, 1);
+                                            $remainingPcs = $totalQuantity - ($totalPackets * $pcsPerPacket);
+                                            $remainingPkts = number_format(($totalQuantity / $pcsPerPacket) - $totalPackets, 1);
+
+                                            $aCategoryPkts = $physicalQuantity->a_category;
+                                            $bCategoryPkts = $physicalQuantity->b_category;
                                         @endphp
 
-                                        <div id="{{ $physicalQuantity->id }}" data-json="{{ json_encode($physicalQuantity) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span>#{{ $article->article_no }}</span>
-                                            <span>{{ $pcsPerPacket }} - Pcs.</span>
-                                            <span>{{ $totalQuantity / 12 }} - Dz. | {{ $totalQuantity }} - Pcs.</span>
-                                            <span>{{ number_format(($totalPackets * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $totalPackets }} - Pkts.</span>
-                                            <span>{{ number_format(($remainingPcs / 12), 1) }} - Dz. | {{ $remainingPkts }} - Pkts.</span>
-                                            <span class="capitalize">{{ $physicalQuantity->category }}</span>
+                                        <div id="{{ $physicalQuantity->id }}" data-json="{{ json_encode($physicalQuantity) }}" class="contextMenuToggle modalToggle relative group flex text-center border-b border-[var(--h-bg-color)] items-center py-2 px-4 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="w-[10%]">#{{ $article->article_no }}</span>
+                                            <span class="capitalize w-[7%]">{{ $article->processed_by }}</span>
+                                            <span class="w-[8%]">{{ $pcsPerPacket }} - Pcs.</span>
+                                            <span class="w-[15%]">{{ $totalQuantity / 12 }} - Dz. | {{ $totalQuantity / $pcsPerPacket }} - Pcs.</span>
+                                            <span class="w-[15%]">{{ number_format(($totalPackets * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $totalPackets }} - Pkts.</span>
+                                            <span class="w-[15%]">{{ number_format(($physicalQuantity->current_stock * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $physicalQuantity->current_stock }} - Pkts.</span>
+                                            <span class="w-[15%]">{{ number_format(($aCategoryPkts * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $aCategoryPkts }} - Pkts.</span>
+                                            <span class="w-[15%]">{{ number_format(($bCategoryPkts * $pcsPerPacket) / 12, 1) }} - Dz. | {{ $bCategoryPkts }} - Pkts.</span>
+                                            <span class="w-[15%]">{{ number_format(($remainingPcs / 12), 1) }} - Dz. | {{ $remainingPkts }} - Pkts.</span>
+                                            <span class="w-[8%]">{{ $physicalQuantity->shipment ?? '-' }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -90,7 +100,7 @@
                     case 'all':
                         return (
                             item.article.article_no.toString().includes(search) ||
-                            item.date.toLowerCase().includes(search)
+                            item.article.processed_by.toLowerCase().includes(search)
                         );
                         break;
                         
@@ -100,16 +110,16 @@
                         );
                         break;
                         
-                    case 'date':
+                    case 'proc_by':
                         return (
-                            item.date.toLowerCase().includes(search)
+                            item.article.processed_by.toLowerCase().includes(search)
                         );
                         break;
 
                     default:
                         return (
                             item.article.article_no.toString().includes(search) ||
-                            item.date.toLowerCase().includes(search)
+                            item.article.processed_by.toLowerCase().includes(search)
                         );
                         break;
                 }

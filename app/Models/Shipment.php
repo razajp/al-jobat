@@ -16,6 +16,7 @@ class Shipment extends Model
         'discount',
         'netAmount',
         'articles',
+        'city',
         'shipment_no',
     ];
 

@@ -98,7 +98,11 @@
             {{ $readonly ? 'readonly' : '' }}
             {{ $disabled ? 'disabled' : '' }}
             {{ $attributes->merge([
-                'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ' . ($type == 'date' ? 'py-[7px]' : 'py-2') . ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
+                'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
+                    ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
+                    ' text-[var(--text-color)] px-3 ' . 
+                    ($type == 'date' ? 'py-[7px]' : 'py-2') .
+                    ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
             ]) }}
             {{ $validateMax ? 'max='.$max : '' }}
             {{ $validateMin ? 'min='.$min : '' }}
@@ -122,8 +126,8 @@
     @endif
 
     @error($name)
-        <div class="text-[var(--border-error)] text-xs mt-1 transition-all duration-300 ease-in-out">{{ $message }}</div>
+        <div class="absolute -bottom-4 left-1 text-[var(--border-error)] text-xs mt-1 transition-all duration-300 ease-in-out">{{ $message }}</div>
     @enderror
 
-    <div id="{{ $name }}-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
+    <div id="{{ $name }}-error" class="absolute -bottom-4 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
 </div>

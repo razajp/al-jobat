@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('discount');
             $table->integer('netAmount');
             $table->json('articles');
+            $table->string('city');
             $table->timestamps();
             
             $table->unsignedBigInteger('creator_id');

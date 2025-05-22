@@ -41,13 +41,13 @@
                             </div>
                         </div>
                         <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'><!-- HEADER BAR -->
-                            <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
-                                <div class="text-left pl-5 flex items-center">Select</div>
-                                <div class="text-left">Customer</div>
-                                <div class="text-left">Urdu Title</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-right">Balance</div>
-                                <div class="text-right pr-5">Status</div>
+                            <div class="text-center flex bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
+                                <div class="text-left pl-5 flex items-center w-[12%]">Select</div>
+                                <div class="grow">Customer</div>
+                                <div class="w-[15%]">Urdu Title</div>
+                                <div class="w-[15%]">Category</div>
+                                <div class="w-[15%]">Balance</div>
+                                <div class="w-[15%]">Status</div>
                             </div>
                         
                             <div id="customer-container" class="search_container overflow-y-auto grow my-scrollbar-2">
@@ -624,20 +624,18 @@
 
                 customers.forEach(customer => {
                     const html = `
-                        <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}'
-                            class="customer-row contextMenuToggle modalToggle relative group grid grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none"
-                        >
-                            <span class="text-left pl-5 flex items-center gap-4 checkbox-container">
+                        <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}' class="customer-row contextMenuToggle modalToggle relative text-center group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none" >
+                            <span class="text-left pl-5 flex items-center gap-4 checkbox-container w-[12%]">
                                 <input type="checkbox" name="selected_customers[]"
                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
                                 
-                                <input class="cottonCount w-[50%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
+                                <input class="cottonCount w-[70%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
                             </span>
-                            <span class="text-left">${customer.customer_name}</span>
-                            <span class="text-left">${customer.urdu_title}</span>
-                            <span class="text-center">${customer.category}</span>
-                            <span class="text-right">${Number(customer.balance).toFixed(1)}</span>
-                            <span class="text-right pr-5 capitalize">${customer.user?.status ?? ''}</span>
+                            <span class="capitalize grow">${customer.customer_name} | ${customer.city.title}</span>
+                            <span class="w-[15%]">${customer.urdu_title}</span>
+                            <span class="w-[15%]">${customer.category}</span>
+                            <span class="w-[15%]">${Number(customer.balance).toFixed(1)}</span>
+                            <span class="w-[15%] capitalize">${customer.user?.status ?? ''}</span>
                         </div>
                     `;
 

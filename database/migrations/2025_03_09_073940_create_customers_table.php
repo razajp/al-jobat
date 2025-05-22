@@ -20,9 +20,11 @@ return new class extends Migration
             $table->string('phone_number');
             $table->date('date');
             $table->string('category');
-            $table->string('city');
+            $table->unsignedBigInteger('city_id');
             $table->string('address');
             $table->timestamps();
+
+            $table->foreign('city_id')->references('id')->on('setups')->onDelete('cascade');
             
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
