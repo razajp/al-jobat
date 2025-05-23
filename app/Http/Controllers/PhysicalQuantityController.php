@@ -16,7 +16,7 @@ class PhysicalQuantityController extends Controller
      */
     public function index()
     {
-        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
@@ -100,7 +100,7 @@ class PhysicalQuantityController extends Controller
      */
     public function create()
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
@@ -133,7 +133,7 @@ class PhysicalQuantityController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant'. 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };

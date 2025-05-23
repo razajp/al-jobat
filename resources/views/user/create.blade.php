@@ -4,6 +4,7 @@
     $roleOptions = [
         'guest' => ['text' => 'Guest'],
         'accountant' => ['text' => 'Accountant'],
+        'store_keeper' => ['text' => 'Store Keeper '],
     ];
 
     if ($authUser->role == 'developer') {

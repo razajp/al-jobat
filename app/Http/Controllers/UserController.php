@@ -54,7 +54,7 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users,username',
             'password' => 'required|string|min:4',
-            'role' => 'required|string|in:admin,accountant,guest,owner',
+            'role' => 'required|string|in:admin,accountant,guest,owner,store_keeper',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 

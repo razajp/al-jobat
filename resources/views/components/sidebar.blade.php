@@ -62,169 +62,185 @@
                 />
             </div>
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Users" 
-                    icon="fas fa-user"
-                    includesDropdown
-                    :items="[
-                        ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
-                        ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User']
-                    ]"
-                />
-            </div>
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Users" 
+                        icon="fas fa-user"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
+                            ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User']
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Suppliers" 
-                    icon="fas fa-truck"
-                    includesDropdown
-                    :items="[
-                        ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
-                        ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
-                    ]"
-                />
-            </div>
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Suppliers" 
+                        icon="fas fa-truck"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                            ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Customers" 
-                    :activatorTags="['payments']"
-                    icon="fas fa-user-tag"
-                    includesDropdown
-                    :items="[
-                        [
-                            'label' => 'Customer',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
-                                ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Customers" 
+                        :activatorTags="['payments']"
+                        icon="fas fa-user-tag"
+                        includesDropdown
+                        :items="[
+                            [
+                                'label' => 'Customer',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('customers.index'), 'label' => 'Show Customers'],
+                                    ['type' => 'link', 'href' => route('customers.create'), 'label' => 'Add Customer'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Payment',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
+                                    ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
+                                ]
                             ]
-                        ],
-                        [
-                            'label' => 'Payment',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
-                                ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
-                            ]
-                        ]
-                    ]"
-                />
-            </div>
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Articles" 
-                    :activatorTags="['physical-quantities']"
-                    icon="fas fa-tshirt"
-                    includesDropdown
-                    :items="[
-                        [
-                            'label' => 'Article',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
-                                ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Articles" 
+                        :activatorTags="['physical-quantities']"
+                        icon="fas fa-tshirt"
+                        includesDropdown
+                        :items="[
+                            [
+                                'label' => 'Article',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('articles.index'), 'label' => 'Show Articles'],
+                                    ['type' => 'link', 'href' => route('articles.create'), 'label' => 'Add Article'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Physical Quantity',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show'],
+                                    ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add'],
+                                ]
                             ]
-                        ],
-                        [
-                            'label' => 'Physical Quantity',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('physical-quantities.index'), 'label' => 'Show'],
-                                ['type' => 'link', 'href' => route('physical-quantities.create'), 'label' => 'Add'],
-                            ]
-                        ]
-                    ]"
-                />
-            </div>
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Orders"
-                    :activatorTags="['payment-programs']"
-                    icon="fas fa-cart-shopping"
-                    includesDropdown
-                    :items="[
-                        [
-                            'label' => 'Order',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
-                                ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Orders"
+                        :activatorTags="['payment-programs']"
+                        icon="fas fa-cart-shopping"
+                        includesDropdown
+                        :items="[
+                            [
+                                'label' => 'Order',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('orders.index'), 'label' => 'Show Orders'],
+                                    ['type' => 'link', 'href' => route('orders.create'), 'label' => 'Generate Order'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Payment Program',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Programs'],
+                                    ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Program'],
+                                ]
                             ]
-                        ],
-                        [
-                            'label' => 'Payment Program',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('payment-programs.index'), 'label' => 'Show Programs'],
-                                ['type' => 'link', 'href' => route('payment-programs.create'), 'label' => 'Add Program'],
-                            ]
-                        ]
-                    ]"
-                />
-            </div>
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Shipments"
-                    icon="fas fa-box-open"
-                    includesDropdown
-                    :items="[
-                        ['type' => 'link', 'href' => route('shipments.index'), 'label' => 'Show Shipments'],
-                        ['type' => 'link', 'href' => route('shipments.create'), 'label' => 'Generate Shipment'],
-                    ]"
-                />
-            </div>
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Shipments"
+                        icon="fas fa-box-open"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('shipments.index'), 'label' => 'Show Shipments'],
+                            ['type' => 'link', 'href' => route('shipments.create'), 'label' => 'Generate Shipment'],
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Invoices"
-                    icon="fas fa-receipt"
-                    includesDropdown
-                    :activatorTags="['invoices', 'cargos', 'bilties']"
-                    :items="[
-                        [
-                            'label' => 'Invoices',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
-                                ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Invoices"
+                        icon="fas fa-receipt"
+                        includesDropdown
+                        :activatorTags="['invoices', 'cargos', 'bilties']"
+                        :items="[
+                            [
+                                'label' => 'Invoices',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('invoices.index'), 'label' => 'Show Invoices'],
+                                    ['type' => 'link', 'href' => route('invoices.create'), 'label' => 'Generate Invoice'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Cargos',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Lists'],
+                                    ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Generate List'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Bilties',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('bilties.index'), 'label' => 'Show Bilties'],
+                                    ['type' => 'link', 'href' => route('bilties.create'), 'label' => 'Add Bilty'],
+                                ]
                             ]
-                        ],
-                        [
-                            'label' => 'Cargos',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('cargos.index'), 'label' => 'Show Lists'],
-                                ['type' => 'link', 'href' => route('cargos.create'), 'label' => 'Generate List'],
-                            ]
-                        ],
-                        [
-                            'label' => 'Bilties',
-                            'type' => 'group',
-                            'children' => [
-                                ['type' => 'link', 'href' => route('bilties.index'), 'label' => 'Show Bilties'],
-                                ['type' => 'link', 'href' => route('bilties.create'), 'label' => 'Add Bilty'],
-                            ]
-                        ]
-                    ]"
-                />
-            </div>
+                        ]"
+                    />
+                </div>
+            @endif
             
-            <div class="relative group">
-                <x-nav-link-item 
-                    label="Bank-Accounts" 
-                    icon="fas fa-university"
-                    includesDropdown
-                    :items="[
-                        ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Accounts'],
-                        ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Account'],
-                    ]"
-                />
-            </div>
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Bank-Accounts" 
+                        icon="fas fa-university"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('bank-accounts.index'), 'label' => 'Show Accounts'],
+                            ['type' => 'link', 'href' => route('bank-accounts.create'), 'label' => 'Add Account'],
+                        ]"
+                    />
+                </div>
+            @endif
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">

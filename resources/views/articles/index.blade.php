@@ -225,6 +225,14 @@
                 editArticleInContext.classList.remove('hidden');
             }
 
+            const editArticleInContextBtnDom = document.getElementById('edit-article-in-context-btn');
+
+            if ('{{ Auth::user()->role }}' == 'developer' || '{{ Auth::user()->role }}' == 'owner' || '{{ Auth::user()->role }}' == 'admin') {
+                editArticleInContextBtnDom.classList.remove('hidden');
+            } else {
+                editArticleInContextBtnDom.classList.add('hidden');
+            }
+
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "edit-article-in-context-btn") {
                     gotoEditArticlePage(item.id);
@@ -696,11 +704,15 @@
                 addRateInModal.classList.add('hidden');
             }
 
-            if (data.ordered_quantity == 0) {
+            if ('{{ Auth::user()->role }}' == 'developer' || '{{ Auth::user()->role }}' == 'owner' || '{{ Auth::user()->role }}' == 'admin') {
                 editArticleInModal.classList.remove('hidden');
-                editArticleInModal.addEventListener('click', function() {
-                    gotoEditArticlePage(item.id);
-                })
+                if (data.ordered_quantity == 0) {
+                    editArticleInModal.addEventListener('click', function() {
+                        gotoEditArticlePage(item.id);
+                    })
+                } else {
+                    editArticleInModal.classList.add('hidden');
+                }
             } else {
                 editArticleInModal.classList.add('hidden');
             }
