@@ -125,6 +125,7 @@
                     id="address"
                     placeholder="Enter address"
                     required
+                    capitalized
                 />
             </div>
         </div>

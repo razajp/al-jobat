@@ -23,7 +23,7 @@
                                             <h5 class="text-lg mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
                                                 Invoice No: {{ $invoice->invoice_no }}
                                             </h5>
-                                            {{ $invoice->customer->customer_name }} | {{ $invoice->customer->city }}
+                                            {{ $invoice->customer->customer_name }} | {{ $invoice->customer->city->title }}
                                         </div>
                                         <input type="checkbox" name="selected_customers[]"
                                             class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
@@ -55,13 +55,13 @@
 
     <!-- Main Content -->
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-5xl mx-auto">
+    <div class="mb-5 max-w-6xl mx-auto">
         <x-search-header heading="Add Bilty" link linkText="Show Bilties" linkHref="{{ route('bilties.index') }}"/>
     </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('bilties.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-5xl mx-auto relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-6xl mx-auto relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Bilty" />
 
@@ -87,7 +87,7 @@
                     <div class="w-[17%]">Customer</div>
                     <div class="w-[10%]">City</div>
                     <div class="w-1/6">Bilty No.</div>
-                    <div class="w-[8%]">Cargo</div>
+                    <div class="w-1/6">Cargo</div>
                     <div class="w-[8%] text-center">Action</div>
                 </div>
                 <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
@@ -210,11 +210,11 @@
                             <div class="w-[11%]">${selectedInvoice.invoice_no}</div>
                             <div class="w-[13%]">${cottonCount}</div>
                             <div class="w-[17%] capitalize">${selectedInvoice.customer.customer_name}</div>
-                            <div class="w-[10%]">${selectedInvoice.customer.city}</div>
+                            <div class="w-[10%]">${selectedInvoice.customer.city.title}</div>
                             <div class="w-1/6">
                                 <input oninput="setBiltyNo(${selectedInvoice.id}, this.value)" class="bilty_no w-[80%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none" type="number"/>
                             </div>
-                            <div class="w-[8%]">${cargoName}</div>
+                            <div class="w-1/6">${cargoName}</div>
                             <div class="w-[8%] text-center">
                                 <button onclick="deselectThisInvoice(${index})" type="button" class="text-[var(--danger-color)] cursor-pointer text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>
@@ -311,7 +311,7 @@
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.invoice_no}</div>
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.cotton_count}</div>
                                                         <div class="td text-sm font-semibold grow">${invoice.customer.customer_name}</div>
-                                                        <div class="td text-sm font-semibold w-1/6">${invoice.customer.city}</div>
+                                                        <div class="td text-sm font-semibold w-1/6">${invoice.customer.city.title}</div>
                                                     </div>
                                                 </div>
                                             `;

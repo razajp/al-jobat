@@ -430,7 +430,9 @@
 
         function validateArticleNo() {
             let articleNoValue = parseFloat(articleNoDom.value);
-            let existingArticle = articles.some(a => a.article_no.slice(4).replace(/^0+/, '') == articleNoValue)
+            let existingArticle = articles.some(a =>
+                a.article_no.slice(4).split('|')[1] == articleNoValue
+            );
 
             if (!articleNoValue) {
                 articleNoDom.classList.add("border-[var(--border-error)]");

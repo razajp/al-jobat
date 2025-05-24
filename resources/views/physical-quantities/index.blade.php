@@ -64,7 +64,7 @@
                                         @endphp
 
                                         <div id="{{ $physicalQuantity->id }}" data-json="{{ json_encode($physicalQuantity) }}" class="contextMenuToggle modalToggle relative group flex text-center border-b border-[var(--h-bg-color)] items-center py-2 px-4 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="w-[10%]">#{{ $article->article_no }}</span>
+                                            <span class="w-[10%]">{{ $article->article_no }}</span>
                                             <span class="capitalize w-[7%]">{{ $article->processed_by }}</span>
                                             <span class="w-[8%]">{{ $pcsPerPacket }} - Pcs.</span>
                                             <span class="w-[15%]">{{ $totalQuantity / 12 }} - Dz. | {{ $totalQuantity / $pcsPerPacket }} - Pcs.</span>

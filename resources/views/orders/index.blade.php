@@ -323,7 +323,7 @@
                                                                 <hr class="w-full ${hrClass} border-black">
                                                                 <div class="tr flex justify-between w-full px-4">
                                                                     <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                    <div class="td text-sm font-semibold w-[13%]">#${article.article_no}</div>
+                                                                    <div class="td text-sm font-semibold w-[13%]">${article.article_no}</div>
                                                                     <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet) : 0}</div>

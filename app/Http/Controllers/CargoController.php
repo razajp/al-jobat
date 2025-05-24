@@ -25,7 +25,7 @@ class CargoController extends Controller
      */
     public function create()
     {
-        $invoices = Invoice::with('customer')->whereNotNull('shipment_no')->get()->filter(function ($invoice) {return !$invoice->is_in_cargo;})->values();
+        $invoices = Invoice::with('customer.city')->whereNotNull('shipment_no')->get()->filter(function ($invoice) {return !$invoice->is_in_cargo;})->values();
 
         $last_cargo = [];
         $last_cargo = Cargo::orderby('id', 'desc')->first();

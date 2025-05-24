@@ -49,7 +49,7 @@
             @endif
 
             @if (count($articles) > 0)
-                <div class="details h-full">
+                <div class="details h-full z-40">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container p-5 pr-3 h-full flex flex-col">
                                 @if ($authLayout == 'grid')
@@ -63,7 +63,7 @@
                                                         : asset('storage/uploads/images/' . $article->image),
                                                     'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
                                                     'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                                    'name' => '#' . $article->article_no,
+                                                    'name' => $article->article_no,
                                                     'details' => [
                                                         'Season' => str_replace('_', ' ', $article->season),
                                                         'Size' => str_replace('_', ' ', $article->size),
@@ -83,7 +83,7 @@
                                     <div class="search_container overflow-y-auto grow my-scrollbar-2">
                                         @forEach ($articles as $article)
                                             <div id="{{ $article->id }}" data-json='{{ $article }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                                <span>#{{ $article->article_no }}</span>
+                                                <span>{{ $article->article_no }}</span>
                                                 <span>{{ str_replace('_', ' ', $article->season) }}</span>
                                                 <span>{{ str_replace('_', " ", $article->size) }}</span>
                                                 <span>{{ ucfirst(str_replace('_', " ", $article->category)) }}</span>
@@ -271,7 +271,7 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
+                                value="${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
                                 disabled
                             />
                             
@@ -336,7 +336,7 @@
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 p-2">
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
+                                value="${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
                                 disabled
                             />
                             
@@ -610,7 +610,7 @@
                         </div>
                 
                         <div class="flex-1 ml-6 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">#${data.article_no}</h5>
+                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.article_no}</h5>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Season:</strong> <span>${data.season}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Size:</strong> <span>${data.size}</span></p>

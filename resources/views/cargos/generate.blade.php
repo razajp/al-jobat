@@ -214,11 +214,11 @@
                     clutter += `
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[10%]">${index+1}</div>
-                            <div class="w-1/6">${selectedInvoice.date}</div>
+                            <div class="w-1/6">${formatDate(selectedInvoice.date)}</div>
                             <div class="w-1/6">${selectedInvoice.invoice_no}</div>
                             <div class="w-1/6">${selectedInvoice.cotton_count ?? '-'}</div>
                             <div class="grow">${selectedInvoice.customer.customer_name}</div>
-                            <div class="w-[10%]">${selectedInvoice.customer.city}</div>
+                            <div class="w-[10%]">${selectedInvoice.customer.city.title}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisInvoice(${index})" type="button" class="text-[var(--danger-color)] cursor-pointer text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>

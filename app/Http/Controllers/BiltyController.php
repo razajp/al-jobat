@@ -23,7 +23,7 @@ class BiltyController extends Controller
      */
     public function create()
     {
-        $invoices = Invoice::with('customer')
+        $invoices = Invoice::with('customer.city')
             ->doesntHave('bilty')
             ->get();
 

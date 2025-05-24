@@ -31,7 +31,7 @@
                                                     ? asset('images/no_image_icon.png')
                                                     : asset('storage/uploads/images/' . $article->image),
                                             'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                            'name' => '#' . $article->article_no,
+                                            'name' => $article->article_no,
                                             'details' => [
                                                 'Season' => $article->season,
                                                 'Size' => $article->size,
@@ -104,7 +104,7 @@
                         :options="[
                             'all' => ['text' => 'All'],
                             'karachi' => ['text' => 'Karachi'],
-                            'other' => ['text' => 'Other'],
+                            'lahore' => ['text' => 'Lahore'],
                         ]"
                         required
                         showDefault />
@@ -263,7 +263,7 @@
                             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
 
                             <x-input 
-                                value="#${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
+                                value="${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
                                 disabled
                             />
 
@@ -627,7 +627,7 @@
                                                     <hr class="w-full ${hrClass} border-gray-600">
                                                     <div class="tr flex justify-between w-full px-4">
                                                         <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                        <div class="td text-sm font-semibold w-[10%]">#${article.article_no}</div>
+                                                        <div class="td text-sm font-semibold w-[10%]">${article.article_no}</div>
                                                         <div class="td text-sm font-semibold grow">${article.description}</div>
                                                         <div class="td text-sm font-semibold w-[10%]">${article.shipmentQuantity}</div>
                                                         <div class="td text-sm font-semibold w-[10%]">${article.pcs_per_packet ? Math.floor(article.shipmentQuantity / article.pcs_per_packet) : 0}</div>

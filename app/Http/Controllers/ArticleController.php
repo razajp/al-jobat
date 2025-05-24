@@ -109,7 +109,7 @@ class ArticleController extends Controller
         $articleNoPadded = str_pad($data['article_no'], 3, '0', STR_PAD_LEFT);
 
         // Combine as F2-5-001
-        $formattedArticleNo = $seasonLetter . $yearFirstDigit . '-' . $yearLastDigit . $articleNoPadded;
+        $formattedArticleNo = $seasonLetter . $yearFirstDigit . '-' . $yearLastDigit . '|' . $articleNoPadded;
 
         $data['article_no'] = $formattedArticleNo;
 

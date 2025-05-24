@@ -36,7 +36,8 @@
                     id="title" 
                     type="text" 
                     placeholder="Enter Title" 
-                    required 
+                    required
+                    capitalized
                 />
 
                 <!-- title -->

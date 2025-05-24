@@ -315,7 +315,7 @@
                                                                 <hr class="w-full ${hrClass} border-black">
                                                                 <div class="tr flex justify-between w-full px-4">
                                                                     <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                    <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity / articles.article.pcs_per_packet}</div>
                                                                     <div class="td text-sm font-semibold w-[10%]">${articles.invoice_quantity}</div>
                                                                     <div class="td text-sm font-semibold grow">${articles.description}</div>

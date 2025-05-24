@@ -445,7 +445,7 @@
                             clutter += `
                                 <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                     <div class="w-[5%]">${index + 1}.</div>
-                                    <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
+                                    <div class="w-[11%]">${selectedArticle.article.article_no}</div>
                                     <div class="w-[11%] pr-3">${Math.floor(formatNumbersDigitLess(selectedArticle.shipment_quantity / selectedArticle.article.pcs_per_packet))}</div>
                                     <div class="w-[10%]">${formatNumbersDigitLess(selectedArticle.shipment_quantity)}</div>
                                     <div class="grow">${selectedArticle.description}</div>
@@ -755,7 +755,7 @@
                                                         <hr class="w-full ${hrClass} border-black">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity / articles.article.pcs_per_packet}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity}</div>
                                                             <div class="td text-sm font-semibold grow">${articles.description}</div>
@@ -927,7 +927,7 @@
                             clutter += `
                                 <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                     <div class="w-[5%]">${index + 1}.</div>
-                                    <div class="w-[11%]">#${selectedArticle.article.article_no}</div>
+                                    <div class="w-[11%]">${selectedArticle.article.article_no}</div>
                                     <div class="w-[11%] pr-3">
                                         <input type="number" class="w-full border border-gray-600 bg-[var(--h-bg-color)] py-1 px-2 rounded-md focus:outline-none" value="${totalQuantityInPackets}" max="${totalQuantityInPackets}" onclick='this.select()' oninput="packetEdited(this)" />
                                     </div>
@@ -1133,7 +1133,7 @@
                                                         <hr class="w-full ${hrClass} border-black">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">#${articles.article.article_no}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity / articles.article.pcs_per_packet}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity}</div>
                                                             <div class="td text-sm font-semibold grow">${articles.description}</div>
