@@ -47,7 +47,7 @@
                                         <div id="{{ $bilty->id }}" data-json="{{ $bilty }}"
                                             class="contextMenuToggle modalToggle relative group grid grid-cols-5 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                             <span>{{ $bilty->date->format('d-M-Y. D') }}</span>
-                                            <span class="capitalize">{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city }}</span>
+                                            <span class="capitalize">{{ $bilty->invoice->customer->customer_name }} | {{ $bilty->invoice->customer->city->title }}</span>
                                             <span>{{ $bilty->invoice->invoice_no }}</span>
                                             <span>{{ $bilty->invoice->cargo_name }}</span>
                                             <span>{{ $bilty->bilty_no }} | {{ $bilty->invoice->cotton_count ?? "-" }}</span>
