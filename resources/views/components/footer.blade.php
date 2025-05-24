@@ -32,6 +32,11 @@
                     <i class='fas fa-save'></i> <div class="text-[#e2e8f0] hidden md:block">Print & Save</div>
                 </button>
             @endif
+            @if (request()->is('orders/create'))
+                <button id="quickInvoiceBtn" class="bg-[var(--success-color)] text-[#e2e8f0] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:bg-[var(--h-success-color)] hover:scale-95 transition-all duration-300 ease-in-out flex items-center gap-1 hidden cursor-pointer">
+                    <i class='fas fa-receipt'></i> <div class="text-[#e2e8f0] hidden md:block">Quick Invoice</div>
+                </button>
+            @endif
             @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('articles/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('payments/create') || request()->is('cargos/create'))
                 <button id="saveBtn" class="bg-[var(--success-color)] text-[#e2e8f0] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:bg-[var(--h-success-color)] hover:scale-95 transition-all duration-300 ease-in-out flex items-center gap-1 hidden cursor-pointer">
                     <i class='fas fa-save'></i> <div class="text-[#e2e8f0] hidden md:block">Save</div>
@@ -128,6 +133,7 @@
                 document.getElementById('nextBtn')?.classList.toggle('hidden', currentStep === noOfSteps);
                 document.getElementById('saveBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
                 document.getElementById('printAndSaveBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
+                document.getElementById('quickInvoiceBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
             }
 
 

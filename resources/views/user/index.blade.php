@@ -39,7 +39,7 @@
                                     'status' => $user->status,
                                     'details' => [
                                         'Username' => $user->username,
-                                        'Role' => $user->role
+                                        'Role' => str_replace('_', ' ', $user->role),
                                     ]
                                 ]"/>
                             </div>

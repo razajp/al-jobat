@@ -89,6 +89,8 @@
                 <div class="w-1/3">
                     <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" value="{{ now()->toDateString() }}" required />
                 </div>
+                
+                <input type="hidden" name="generateInvoiceAfterSave" id="generateInvoiceAfterSave" value="0">
 
                 {{-- title --}}
                 <div class="grow">
@@ -871,6 +873,17 @@
             totalAmountDOM = document.getElementById('totalOrderAmount');
             renderTotals();
         }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            function addListenerToQuickInvoiceBtn() {
+                const quickInvoiceBtn = document.getElementById('quickInvoiceBtn');
+                quickInvoiceBtn.addEventListener('click', function () {
+                    document.getElementById('generateInvoiceAfterSave').value = 1;
+                    document.getElementById('form').submit();
+                });
+            }
+            addListenerToQuickInvoiceBtn();
+        });
 
     </script>
 @endsection

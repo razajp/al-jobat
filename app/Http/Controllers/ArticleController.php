@@ -126,12 +126,14 @@ class ArticleController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        Article::create($data);
-
-        try {
-            event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
-        } catch (\Exception $e) {
-            // 
+        $article = Article::create($data);
+        
+        if ($article->sales_rate > 0 && $article->category != null && $article->fabric_type != null) {
+            try {
+                event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
+            } catch (\Exception $e) {
+                // 
+            }   
         }
 
         return redirect()->route('articles.create')->with('success', 'Article added successfully');

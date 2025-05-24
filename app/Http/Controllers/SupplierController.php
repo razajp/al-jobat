@@ -82,9 +82,9 @@ class SupplierController extends Controller
             $categories_options[(int)$supplier_category->id] = [ 'text' => $supplier_category->title,];
         }
 
-        // return $categories_options;
+        $usernames = User::pluck('username')->toArray();
 
-        return view('suppliers.create', compact('categories_options', 'suppliers'));
+        return view('suppliers.create', compact('categories_options', 'suppliers', 'usernames'));
     }
 
     /**
@@ -101,7 +101,7 @@ class SupplierController extends Controller
             'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
             'urdu_title' => 'nullable|string|max:255',
             'person_name' => 'required|string|max:255',
-            'username' => 'required|string|min:6|max:255',
+            'username' => 'required|string|min:6|max:255|regex:/^[a-z0-9]+$/|unique:users,username',
             'password' => 'required|string|min:3',
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',

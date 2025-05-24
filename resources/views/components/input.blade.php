@@ -126,8 +126,8 @@
     @endif
 
     @error($name)
-        <div class="absolute -bottom-4 left-1 text-[var(--border-error)] text-xs mt-1 transition-all duration-300 ease-in-out">{{ $message }}</div>
+        <div class="absolute -bottom-5 left-1 text-[var(--border-error)] text-xs mt-1 transition-all duration-300 ease-in-out">{{ $message }}</div>
     @enderror
 
-    <div id="{{ $name }}-error" class="absolute -bottom-4 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
+    <div id="{{ $name }}-error" class="absolute -bottom-5 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
 </div>

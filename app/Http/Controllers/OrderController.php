@@ -98,7 +98,7 @@ class OrderController extends Controller
     
                 if ($customer->status == 'active') {
                     $customers_options[(int)$customer->id] = [
-                        'text' => $customer->customer_name . ' | ' . $customer->city,
+                        'text' => $customer->customer_name . ' | ' . $customer->city->title,
                         'data_option' => $customer
                     ];
                 }
@@ -144,6 +144,7 @@ class OrderController extends Controller
             'netAmount' => 'required|string',
             'articles' => 'required|json',
             'order_no' => 'required|string',
+            'generateInvoiceAfterSave' => 'integer|in:0,1',
         ]);
 
         if ($validator->fails()) {
@@ -179,7 +180,11 @@ class OrderController extends Controller
 
         $program->save();
         
-        return redirect()->route('orders.create')->with('success', 'Order generated successfully.');
+        if ($request->generateInvoiceAfterSave) {
+            return redirect()->route('invoices.create')->with('orderNumber', $order->order_no);
+        } else {
+            return redirect()->route('orders.create')->with('success', 'Order generated successfully.');
+        }
     }
 
     /**

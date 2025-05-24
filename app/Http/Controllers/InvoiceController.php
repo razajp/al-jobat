@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 use function PHPSTORM_META\type;
@@ -56,6 +57,14 @@ class InvoiceController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
+
+        $orderNumber = session('orderNumber');
+
+        if ($orderNumber) {
+            $user = Auth::user();
+            $user->invoice_type = 'order';
+            $user->save();
+        }
         
         $last_Invoice = invoice::orderby('id', 'desc')->first();
 
@@ -68,7 +77,7 @@ class InvoiceController extends Controller
             $query->where('status', 'active');
         })->get();
         
-        return view("invoices.generate", compact("last_Invoice", 'customers'));
+        return view("invoices.generate", compact("last_Invoice", 'customers', 'orderNumber'));
     }
 
     /**

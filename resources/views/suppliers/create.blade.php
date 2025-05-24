@@ -253,6 +253,7 @@
         }
         // Get DOM elements
         const suppliers = @json($suppliers);
+        const usernames = @json($usernames);
         const supplierNameDom = document.getElementById('supplier_name');
         const supplierNameError = document.getElementById('supplier_name-error');
         const urduTitleDom = document.getElementById('urdu_title');
@@ -330,7 +331,7 @@
         
         function validateUsername() {
             let usernameValue = usernameDom.value.trim(); // Remove leading and trailing spaces
-            let isDuplicate = suppliers.some(s => s.user.username === usernameValue);
+            let isDuplicate = usernames.some(u => u === usernameValue);
             let hasSpaces = /\s/.test(usernameValue); // Check for spaces using regex
             
             if (hasSpaces) {
@@ -344,6 +345,12 @@
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
+                return false;
+            } else if (usernameDom.value.length < 6) {
+                usernameDom.classList.remove("border-gray-600");
+                usernameDom.classList.add("border-[var(--border-error)]");
+                usernameError.classList.remove("hidden");
+                usernameError.textContent = "Username must be at least 6 characters.";
                 return false;
             } else if (isDuplicate) {
                 usernameDom.classList.remove("border-gray-600");

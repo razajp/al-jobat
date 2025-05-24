@@ -419,8 +419,6 @@
         const articleNoError = document.getElementById('article_no-error');
         const dateDom = document.getElementById('date');
         const dateError = document.getElementById('date-error');
-        const categoryDom = document.getElementById('category');
-        const categoryError = document.getElementById('category-error');
         const sizeDom = document.getElementById('size');
         const sizeError = document.getElementById('size-error');
         const seasonDom = document.getElementById('season');
@@ -429,12 +427,10 @@
         const quantityError = document.getElementById('quantity-error');
         const extraPcsDom = document.getElementById('extra_pcs');
         const extraPcsError = document.getElementById('extra_pcs-error');
-        const fabricTyprDom = document.getElementById('fabric_type');
-        const fabricTyprError = document.getElementById('fabric_type-error');
 
         function validateArticleNo() {
             let articleNoValue = parseFloat(articleNoDom.value);
-            let existingArticle = articles.some(a => a.article_no === articleNoValue)
+            let existingArticle = articles.some(a => a.article_no.slice(4).replace(/^0+/, '') == articleNoValue)
 
             if (!articleNoValue) {
                 articleNoDom.classList.add("border-[var(--border-error)]");
@@ -462,19 +458,6 @@
             } else {
                 dateDom.classList.remove("border-[var(--border-error)]");
                 dateError.classList.add("hidden");
-                return true;
-            }
-        }
-
-        function validateCategory() {
-            if (categoryDom.value === "") {
-                categoryDom.classList.add("border-[var(--border-error)]");
-                categoryError.classList.remove("hidden");
-                categoryError.textContent = "Category field is required.";
-                return false;
-            } else {
-                categoryDom.classList.remove("border-[var(--border-error)]");
-                categoryError.classList.add("hidden");
                 return true;
             }
         }
@@ -536,27 +519,12 @@
             }
         }
 
-        function validateFabricType() {
-            if (fabricTyprDom.value === "") {
-                fabricTyprDom.classList.add("border-[var(--border-error)]");
-                fabricTyprError.classList.remove("hidden");
-                fabricTyprError.textContent = "Quantity field is required.";
-                return false;
-            } else {
-                fabricTyprDom.classList.remove("border-[var(--border-error)]");
-                fabricTyprError.classList.add("hidden");
-                return true;
-            }
-        }
-
         articleNoDom.addEventListener("input", validateArticleNo);
         dateDom.addEventListener("change", validateDate);
-        categoryDom.addEventListener("input", validateCategory);
         sizeDom.addEventListener("input", validateSize);
         seasonDom.addEventListener("input", validateSeason);
         quantityDom.addEventListener("input", validateQuantity);
         extraPcsDom.addEventListener("input", validateExtraPcs);
-        fabricTyprDom.addEventListener("input", validateFabricType);
 
         function validateForNextStep() {
             let isValidArticleNo = validateArticleNo();
@@ -566,7 +534,7 @@
             let isValidQuantity = validateQuantity();
             let isValidExtraPcs = validateExtraPcs();
 
-            let isValid = isValidArticleNo || isValidDate || isValidCategory || isValidSize || isValidSeason || isValidQuantity || isValidExtraPcs || isValidFabricType;
+            let isValid = isValidArticleNo || isValidDate || isValidSize || isValidSeason || isValidQuantity || isValidExtraPcs;
 
             if (!isValid) {
                 messageBox.innerHTML = `
