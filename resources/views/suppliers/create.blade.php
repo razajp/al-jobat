@@ -93,7 +93,19 @@
                 <x-select 
                     label="Category"
                     id="category_select"
-                    :options="$categories_options"
+                    :options="[
+                        'al_jobat' => ['text' => 'Al Jobat'],
+                        'cmt' => ['text' => 'CMT'],
+                        'fabric' => ['text' => 'Fabric'],
+                        'fund' => ['text' => 'Fund'],
+                        'garments' => ['text' => 'Garments'],
+                        'machinery' => ['text' => 'Machinery'],
+                        'materials' => ['text' => 'Materials'],
+                        'office_supply' => ['text' => 'Office Supply'],
+                        'plot' => ['text' => 'Plot'],
+                        'private' => ['text' => 'Private'],
+                        'services' => ['text' => 'Services'],
+                    ]"
                     required
                     showDefault
                     class="grow"

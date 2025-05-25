@@ -25,7 +25,7 @@ class InvoiceController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $invoices = Invoice::with(['order', 'shipment', 'customer'])->get();
+        $invoices = Invoice::with(['order', 'shipment', 'customer.city'])->get();
     
         foreach ($invoices as $invoice) {
             $articles = [];

@@ -301,12 +301,6 @@
                     </span>
                 </div>
             </div>
-            {{-- <div class="left_actions absolute top-0 left-0 w-full flex p-2">
-                <div class="flex items-center gap-2 p-2.5 bg-[var(--secondary-bg-color)] rounded-2xl">
-                    <x-section-navigation-button id="refresh_button" title="Refersh" icon="fa-plus" direction="right" />
-                    <x-section-navigation-button id="go_back_button" title="Go Back" icon="fa-plus" direction="right" />
-                </div>
-            </div> --}}
             <div class="main-child grow">
                 @yield('content')
             </div>

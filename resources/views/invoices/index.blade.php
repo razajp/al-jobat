@@ -278,7 +278,7 @@
                                         <div class="left w-50 space-y-1">
                                             <div class="invoice-customer text-lg leading-none capitalize">M/s: ${customerData.customer_name}</div>
                                             <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
-                                            <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
+                                            <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city.title}</div>
                                             <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
                                         </div>
                                         <div class="right my-auto text-right text-sm text-black space-y-1.5">
