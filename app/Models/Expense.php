@@ -8,4 +8,23 @@ use Illuminate\Database\Eloquent\Model;
 class Expense extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'date',
+        'supplier_id',
+        'expense',
+        'reff_no',
+        'amount',
+        'lot_no',
+        'remarks'
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class);
+    }
 }

@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Payment | ' . app('company')->name)
+@section('title', 'Add Customer Payment | ' . app('company')->name)
 @section('content')
     @php
         $method_options = [
@@ -55,15 +55,15 @@
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
-        <x-search-header heading="Add Payment" link linkText="Show Payments" linkHref="{{ route('payments.index') }}"/>
+        <x-search-header heading="Add Customer Payment" link linkText="Show Payments" linkHref="{{ route('customer-payments.index') }}"/>
         <x-progress-bar :steps="['Select Customer', 'Enter Payment']" :currentStep="1" />
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('payments.store') }}" method="post"
+    <form id="form" action="{{ route('customer-payments.store') }}" method="post"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
-        <x-form-title-bar title="Add Payment" />
+        <x-form-title-bar title="Add Customer Payment" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

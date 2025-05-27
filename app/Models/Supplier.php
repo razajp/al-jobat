@@ -54,4 +54,9 @@ class Supplier extends Model
     {
         return $this->morphMany(BankAccount::class, 'sub_category');
     }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
+    }
 }

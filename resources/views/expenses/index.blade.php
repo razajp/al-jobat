@@ -1,18 +1,18 @@
 @extends('app')
-@section('title', 'Show Payments | ' . app('company')->name)
+@section('title', 'Show Expenses | ' . app('company')->name)
 @section('content')
     <!-- Modals -->
+    {{-- article details modal --}}
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Payments" :filter_items="[
+        <x-search-header heading="Expenses" :filter_items="[
             'all' => 'All',
-            'customer_name' => 'Customer Name',
-            'type' => 'Type',
-            'method' => 'Method',
-            'date' => 'Date',
+            'expense' => 'Expense',
+            'supplier' => 'Supplier',
+            'reff_no' => 'Reff. No.',
         ]"/>
     </div>
     
@@ -20,12 +20,12 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <x-form-title-bar title="Show Payments" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar title="Show Expenses" changeLayoutBtn layout="{{ $authLayout }}" />
 
-            @if (count($payments) > 0)
+            @if (count($expenses) > 0)
                 <div
                     class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('payments.create') }}"
+                    <a href="{{ route('expenses.create') }}"
                         class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
                             class="fas fa-plus"></i></a>
                     <span
@@ -35,21 +35,21 @@
                 </div>
             @endif
 
-            @if (count($payments) > 0)
+            @if (count($expenses) > 0)
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container p-5 pr-3">
                             @if ($authLayout == 'grid')
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                                    @foreach ($payments as $payment)
-                                        <div id="{{ $payment->id }}" data-json='{{ $payment }}'
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+                                    @foreach ($expenses as $expense)
+                                        <div id="{{ $expense->id }}" data-json='{{ $expense }}'
                                             class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
                                             <x-card :data="[
-                                                'name' => 'Customer: ' . $payment->customer->customer_name,
+                                                'name' => 'Expense: ' . $expense->expense,
                                                 'details' => [
-                                                    'Type' => str_replace('_', ' ',$payment->type),
-                                                    'Date' => date('d-M-Y D', strtotime($payment->date)),
-                                                    'Amount' => number_format($payment->amount, 1),
+                                                    'Supplier' => $expense->supplier->supplier_name,
+                                                    'Reff. No' => $expense->reff_no,
+                                                    'Date' => $expense->date->format('d-M-Y, D'),
                                                 ],
                                             ]" />
                                         </div>
@@ -57,18 +57,18 @@
                                 </div>
                             @else
                                 <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Customer</div>
-                                    <div class="text-center">Type</div>
+                                    <div class="text-center">Expense</div>
+                                    <div class="text-center">Supplier Name</div>
+                                    <div class="text-center">Reff. No.</div>
                                     <div class="text-center">Date</div>
-                                    <div class="text-center">Amount</div>
                                 </div>
                                 <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($payments as $payment)
-                                        <div id="{{ $payment->id }}" data-json='{{ $payment }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $payment->customer->customer_name }}</span>
-                                            <span class="text-center">{{ str_replace('_', ' ',$payment->type) }}</span>
-                                            <span class="text-center">{{ date('d-M-Y D', strtotime($payment->date)) }}</span>
-                                            <span class="text-center">{{ number_format($payment->amount, 1) }}</span>
+                                    @forEach ($expenses as $expense)
+                                        <div id="{{ $expense->id }}" data-json='{{ $expense }}' class="contextMenuToggle modalToggle relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="text-center">{{ $expense->expense }}</span>
+                                            <span class="text-center">{{ $expense->supplier->supplier_name }}</span>
+                                            <span class="text-center">{{ $expense->reff_no }}</span>
+                                            <span class="text-center">{{ $expense->date->format('d-M-Y, D') }}</span>
                                         </div>
                                     @endforeach
                                 </div>
@@ -78,8 +78,8 @@
                 </div>
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Payment Found</h1>
-                    <a href="{{ route('payments.create') }}"
+                    <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Expense Found</h1>
+                    <a href="{{ route('expenses.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>
@@ -95,17 +95,13 @@
                             class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
-                    <li>
-                        <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
-                            Order</button>
-                    </li>
                 </ul>
             </div>
         </div>
     </section>
 
     <script>
+        let companyData = @json(app('company'));
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
 
@@ -122,19 +118,16 @@
             isContextMenuOpened = true;
         }
 
-        function addContextMenuListenerToCards() {
-            let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
+        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
 
-            contextMenuToggle.forEach(toggle => {
-                toggle.addEventListener('contextmenu', (e) => {
-                    generateContextMenu(e);
-                });
+        contextMenuToggle.forEach(toggle => {
+            toggle.addEventListener('contextmenu', (e) => {
+                generateContextMenu(e);
             });
-        }
-
-        addContextMenuListenerToCards();
+        });
 
         function generateContextMenu(e) {
+            contextMenu.classList.remove('fade-in');
             let item = e.target.closest('.modalToggle');
             let data = JSON.parse(item.dataset.json);
 
@@ -164,7 +157,13 @@
 
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "show-details") {
-                    generateModal(item);
+                    generateModal(item, 'openModal');
+                }
+            });
+
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "print-order") {
+                    generateModal(item, 'context');
                 }
             });
 
@@ -182,7 +181,7 @@
                 document.addEventListener('mousedown', removeContextMenu);
             }, 10);
         }
-
+        
         const close = document.querySelectorAll('#close');
 
         let isModalOpened = false;
@@ -220,15 +219,25 @@
             card.forEach(item => {
                 item.addEventListener('click', () => {
                     if (!isContextMenuOpened) {
-                        generateModal(item);
+                        generateModal(item, 'openModal');
                     }
                 });
             });
         }
 
-        function generateModal(item) {
+        function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
+            console.log(data);
+            
+
+            let totalAmount = 0;
+            let totalQuantity = 0;
+            let discount = data.discount;
+            let previousBalance = data.previous_balance;
+            let netAmount = data.netAmount;
+            let currentBalance = data.current_balance;
+            let cottonCount = data.cotton_count ? data.cotton_count : 0;
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" closeAction="closeModal">
@@ -236,16 +245,18 @@
                     <div class="flex items-start relative h-[15rem]">
                         <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
                             <div class="px-2">
-                                <h5 id="name" class="text-2xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">Customer: ${data.customer.customer_name}</h5>
+                                <h5 id="name" class="text-2xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">Expense: ${data.expense}</h5>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Supplier:</strong> <span>${data.supplier.supplier_name}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Reff. No:</strong> <span>${data.reff_no}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Lot No:</strong> <span>${data.lot_no}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${formatDate(data.date)}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Amount:</strong> <span>${formatNumbersWithDigits(data.amount)}</span></p>
-                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Type:</strong> <span>${data.type.replace('_', ' ')}</span></p>
                             </div>
                             
-                            <hr class="border-gray-600 my-3"/>
+                            <hr class="border-gray-600 my-3"/>  
 
                             <div id="paymentDetails" class="px-2">
-                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks || "No Remarks"}</span></p>
                             </div>
                         </div>
                     </div>
@@ -259,40 +270,19 @@
                     </x-slot>
                 </x-modal>
             `;
-
-            let paymentDetails = document.getElementById('paymentDetails');
-
-            if (data.type == 'cheque') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Cheque No.:</strong> <span>${data.cheque_no}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Cheque Date:</strong> <span>${data.cheque_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Clear Date:</strong> <span>${data.clear_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
-            } else if (data.type == 'slip') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Slip No.:</strong> <span>${data.slip_no}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Slip Date:</strong> <span>${data.slip_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Clear Date:</strong> <span>${data.clear_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
-            } else if (data.type == 'online') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Transition Id:</strong> <span>${data.transition_id}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
+            
+            if (context == 'context') {
+                document.getElementById('printOrder').click();
+            } else {
+                openModal();
             }
-
-            openModal();
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
         }
 
         addListenerToCards();
 
         function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
@@ -317,43 +307,35 @@
                 switch (filterType) {
                     case 'all':
                         return (
-                            item.customer.customer_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
+                            item.expense.toLowerCase().includes(search) ||
+                            item.supplier.supplier_name.toLowerCase().includes(search) ||
+                            item.reff_no.toString().includes(search)
                         );
                         break;
                         
-                    case 'customer_name':
+                    case 'expense':
                         return (
-                            item.customer.customer_name.toLowerCase().includes(search)
+                            item.expense.toLowerCase().includes(search)
                         );
                         break;
                         
-                    case 'type':
+                    case 'supplier':
                         return (
-                            item.type.toLowerCase().includes(search)
+                            item.supplier.supplier_name.toLowerCase().includes(search)
                         );
                         break;
                         
-                    case 'method':
+                    case 'reff_no':
                         return (
-                            item.method.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'date':
-                        return (
-                            item.date.toLowerCase().includes(search)
+                            item.reff_no.toString().includes(search)
                         );
                         break;
                 
                     default:
                         return (
-                            item.customer.customer_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
+                            item.expense.toLowerCase().includes(search) ||
+                            item.supplier.supplier_name.toLowerCase().includes(search) ||
+                            item.reff_no.toString().includes(search)
                         );
                         break;
                 }

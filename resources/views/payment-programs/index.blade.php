@@ -572,7 +572,7 @@
         }
         
         function goToAddPayment(program) {
-            const url = new URL("{{ route('payments.create') }}", window.location.origin);
+            const url = new URL("{{ route('customer-payments.create') }}", window.location.origin);
             url.searchParams.set("program_id", program.payment_programs?.id ?? program.id); // or send other keys like amount, customer_id, etc.
             window.location.href = url.toString();
         }

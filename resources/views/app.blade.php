@@ -171,6 +171,10 @@
             color: var(--primary-color) !important;
         }
 
+        .nav-link.active svg {
+            fill: var(--primary-color) !important;
+        }
+
         .nav-link.active:hover i {
             color: var(--h-primary-color) !important;
         }

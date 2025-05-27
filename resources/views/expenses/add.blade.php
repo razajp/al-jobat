@@ -4,11 +4,7 @@
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
-        <x-search-header heading="Add Expense" link linkText="Show Expenses" linkHref="{{ route('expenses.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Enter Rates', 'Upload Image']" 
-            :currentStep="1"
-        />
+        <x-search-header heading="Add Expense" link linkText="Show Expenses" linkHref="{{ route('expenses.index') }}" />
     </div>
 
     <div class="row max-w-5xl mx-auto flex gap-4">
@@ -21,151 +17,42 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- date -->
-                    <x-input 
-                        label="Date"
-                        name="date" 
-                        id="date"
-                        validateMin
-                        min="{{ now()->subDays('14')->toDateString() }}"
-                        validateMax
-                        max="{{ now()->toDateString() }}"
-                        type="date" 
-                        required 
-                    />
-                    
+                    <x-input label="Date" name="date" id="date" validateMin
+                        min="{{ now()->subDays('14')->toDateString() }}" validateMax max="{{ now()->toDateString() }}"
+                        type="date" required />
+
                     {{-- supplier --}}
-                    <x-select 
-                        label="Supplier"
-                        name="supplier"
-                        id="supplier"
-                        :options="$suppliers_options"
-                        required
-                        showDefault
-                        onchange="getSupplierData(this)"
-                    />
+                    <x-select label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
+                        onchange="supplierSelected(this)" />
 
                     <!-- balance -->
-                    <x-input 
-                        label="Balance"
-                        id="balance" 
-                        type="number"
-                        disabled
-                        placeholder="Balance"
-                    />
-                    
+                    <x-input label="Balance" id="balance" type="number" disabled placeholder="Balance" />
+
                     {{-- expense --}}
-                    <x-select 
-                        label="Expense"
-                        name="expense"
-                        id="expense"
-                        required
-                        showDefault
-                    />
+                    <x-select label="Expense" name="expense" id="expense" required showDefault />
 
                     <!-- expense_no -->
-                    <x-input 
-                        label="Reff. No."
-                        name="reff_no" 
-                        id="reff_no" 
-                        type="number" 
-                        placeholder="Enter reff no" 
-                        required
-                    />
+                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no"
+                        required />
 
                     <!-- amount -->
-                    <x-input 
-                        label="Amount"
-                        name="amount" 
-                        id="amount" 
-                        type="number"
-                        placeholder="Enter amount " 
-                        required
-                    />
+                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount "
+                        required />
 
                     <!-- lot_no -->
-                    <x-input 
-                        label="Lot No."
-                        name="lot_no" 
-                        id="lot_no" 
-                        type="number"
-                        placeholder="Enter lot no" 
-                        required
-                    />
+                    <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no"
+                        required />
 
                     {{-- remarks --}}
-                    <x-input 
-                        label="Remarks" 
-                        name="remarks" 
-                        id="remarks" 
-                        type="text"
-                        placeholder="Enter remarks" 
-                    />
+                    <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />
                 </div>
             </div>
 
-            <!-- Step 2: Production Details -->
-            <div class="step2 hidden space-y-4">
-                <div class="step2 hidden space-y-4 ">
-                    <div class="flex justify-between gap-4">
-                        {{-- title --}}
-                        <div class="grow">
-                            <x-input 
-                                id="title" 
-                                placeholder="Enter title" 
-                            />
-                        </div>
-                        
-                        {{-- rate --}}
-                        <x-input 
-                            id="rate" 
-                            type="number"
-                            placeholder="Enter rate" 
-                        />
-
-                        {{-- add rate button --}}
-                        <div class="form-group flex w-10 shrink-0">
-                            <input type="button" value="+"
-                                class="w-full bg-[var(--primary-color)] text-[var(--text-color)] rounded-lg cursor-pointer border border-[var(--primary-color)]"
-                                onclick="addRate()" />
-                        </div>
-                    </div>
-                    {{-- rate showing --}}
-                    <div id="rate-table" class="w-full text-left text-sm">
-                        <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
-                            <div class="grow ml-5">Title</div>
-                            <div class="w-1/4">Rate</div>
-                            <div class="w-[10%] text-center">Action</div>
-                        </div>
-                        <div id="rate-list" class="space-y-4 h-[250px] overflow-y-auto my-scrollbar-2">
-                            <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Rates Added</div>
-                        </div>
-                    </div>
-                    {{-- calc bottom --}}
-                    <div id="calc-bottom" class="flex w-full gap-4 text-sm">
-                        <div
-                            class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
-                            <div>Total - Rs.</div>
-                            <div class="text-right">0.00</div>
-                        </div>
-                        <div
-                            class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
-                            <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
-                            <input type="text" required name="sales_rate" id="sales_rate" value="0.00"
-                                class="text-right bg-transparent outline-none border-none w-[50%]" />
-                        </div>
-                    </div>
-                    <input type="hidden" name="rates_array" id="rates_array" value="[]" />
-                </div>
-            </div>
-
-            <!-- Step 3: Image -->
-            <div class="step3 hidden space-y-4">
-                <x-image-upload 
-                    id="image_upload"
-                    name="image_upload"
-                    placeholder="{{ asset('images/image_icon.png') }}"
-                    uploadText="Upload article image"
-                />
+            <div class="w-full flex justify-end mt-4">
+                <button type="submit"
+                    class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                    <i class='fas fa-save mr-1'></i> Save
+                </button>
             </div>
         </form>
 
@@ -175,24 +62,82 @@
 
             <!-- Step 1: Basic Information -->
             <div class="step1 space-y-4 ">
-                
-            </div>
+                @if ($lastExpense)
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- date -->
+                        <x-input label="Date" name="last_date" id="last_date" type="date" disabled
+                            value="{{ $lastExpense->date }}" />
 
-            <!-- Step 2: Production Details -->
-            <div class="step2 hidden space-y-6  h-full flex flex-col">
-                
-            </div>
+                        {{-- supplier --}}
+                        <x-input label="Supplier" name="last_supplier" id="last_supplier" type="text" disabled
+                            value="{{ $lastExpense->supplier->supplier_name }}" />
 
-            <!-- Step 3: Production Details -->
-            <div class="step3 hidden space-y-6  text-sm">
-                
+                        <!-- balance -->
+                        <x-input label="Balance" id="last_balance" type="number" disabled
+                            value="{{ $lastExpense->supplier->balance }}" />
+
+                        {{-- expense --}}
+                        <x-input label="Expense" name="last_expense" id="last_expense" type="text" disabled
+                            value="{{ $lastExpense->expense }}" />
+
+                        <!-- reff_no -->
+                        <x-input label="Reff. No." name="last_reff_no" id="last_reff_no" type="number" disabled
+                            value="{{ $lastExpense->reff_no }}" />
+
+                        <!-- amount -->
+                        <x-input label="Amount" name="last_amount" id="last_amount" type="number" disabled
+                            value="{{ $lastExpense->amount }}" />
+
+                        <!-- lot_no -->
+                        <x-input label="Lot No." name="last_lot_no" id="last_lot_no" type="number" disabled
+                            value="{{ $lastExpense->lot_no }}" />
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" name="last_remarks" id="last_remarks" type="text" disabled
+                            value="{{ $lastExpense->remarks }}" />
+                    </div>
+                @else
+                    <div class="text-center text-gray-500">
+                        <p>No last record found.</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
 
     <script>
-        function getSupplierData(supplierElem) {
-            console.log(supplierElem);
+        const subCategories = @json($subCategories);
+
+        const expenseSelect = document.getElementById('expense');
+        const balanceInput = document.getElementById('balance');
+
+        function supplierSelected(supplierElem) {
+            const selectedOptionDataset = supplierElem.options[supplierElem.selectedIndex].getAttribute('data-option');
+            if (selectedOptionDataset) {
+                const selectedSupplierData = JSON.parse(selectedOptionDataset);
+                
+                balanceInput.value = selectedSupplierData.balance || '0.00';
+
+                const supplierCategories = selectedSupplierData.categories;
+
+                let expenseOptions = "";
+                supplierCategories.forEach(category => {
+                    let subCatsOfCategory = subCategories[category.short_title] || {};
+                    // if more than 1, loop and push to expenseOptions
+                    for (const [subCatKey, subCatValue] of Object.entries(subCatsOfCategory)) {
+                        expenseOptions += `<option value="${subCatKey}">${subCatValue}</option>`;
+                    }
+                });
+                expenseOptions += `<option value="adjustment">Adjustment</option>`;
+
+                expenseSelect.innerHTML = expenseOptions;
+                expenseSelect.disabled = false;
+            } else {
+                expenseSelect.innerHTML = '<option value="">-- No options available --</option>';
+                expenseSelect.disabled = true;
+
+                balanceInput.value = 'Balance';
+            }
         }
     </script>
 @endsection

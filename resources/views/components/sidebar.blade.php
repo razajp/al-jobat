@@ -110,8 +110,8 @@
                                 'label' => 'Payment',
                                 'type' => 'group',
                                 'children' => [
-                                    ['type' => 'link', 'href' => route('payments.index'), 'label' => 'Show Payments'],
-                                    ['type' => 'link', 'href' => route('payments.create'), 'label' => 'Add Payment'],
+                                    ['type' => 'link', 'href' => route('customer-payments.index'), 'label' => 'Show Payments'],
+                                    ['type' => 'link', 'href' => route('customer-payments.create'), 'label' => 'Add Payment'],
                                 ]
                             ]
                         ]"
@@ -434,8 +434,8 @@
                     title="Payments" 
                     includesDropdown
                     :dropdown="[
-                        ['href' => route('payments.index'), 'title' => 'Show Payments'],
-                        ['href' => route('payments.create'), 'title' => 'Add Payment'],
+                        ['href' => route('customer-payments.index'), 'title' => 'Show Payments'],
+                        ['href' => route('customer-payments.create'), 'title' => 'Add Payment'],
                     ]"
                 />
 

@@ -37,7 +37,7 @@ class PaymentController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        return view("payments.index", compact("payments", "authLayout"));
+        return view("customer-payments.index", compact("payments", "authLayout"));
     }
 
     /**
@@ -71,11 +71,11 @@ class PaymentController extends Controller
                 $customers = $program->customer->toArray();
                 $program->customer['payment_programs'] = $program->toArray();
                 $customers_options = [(int)$program->customer->id => [
-                    'text' => $program->customer->customer_name . ' | ' . $program->customer->city,
+                    'text' => $program->customer->customer_name . ' | ' . $program->customer->city->title,
                     'data_option' => $program->customer,
                 ]];
         
-                return view("payments.create", compact("customers", "customers_options", "banks_options"));
+                return view("customer-payments.create", compact("customers", "customers_options", "banks_options"));
             }
         }
         
@@ -113,12 +113,12 @@ class PaymentController extends Controller
             $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
 
             $customers_options[(int)$customer->id] = [
-                'text' => $customer->customer_name . ' | ' . $customer->city,
+                'text' => $customer->customer_name . ' | ' . $customer->city->title,
                 'data_option' => $customer,
             ];
         }
 
-        return view("payments.create", compact("customers", "customers_options", 'banks_options'));
+        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options'));
         // return $customers;
     }
 
@@ -157,7 +157,7 @@ class PaymentController extends Controller
             Payment::create($paymentDetails);
         }
 
-        return redirect()->route('payments.create')->with('success', 'Payment Added successfully.');
+        return redirect()->route('customer-payments.create')->with('success', 'Payment Added successfully.');
     }
 
 

@@ -3,17 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Expense;
+use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ExpenseController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'guest'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $expenses = Expense::with('supplier')->with('supplier')->get();
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view('expenses.index', compact('expenses', 'authLayout'));
     }
 
     /**
@@ -21,9 +31,12 @@ class ExpenseController extends Controller
      */
     public function create()
     {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
         $subCategories = [
-            'material' => [
-                "adjustment" => "Adjustment",
+            'MTR' => [
                 "fusing" => "Fusing",
                 "garments_material" => "Garments Marital",
                 "oil_expense" => "Oil Expense",
@@ -31,14 +44,19 @@ class ExpenseController extends Controller
                 "rib/collar" => "Rib / Collar",
                 "thread" => "Thread",
             ],
-            'embroidery' => [
+            'EMB' => [
                 "embroidery" => "Embroidery",
             ],
-            'fabric' => [
+            'CMT' => [
+                "cmt" => "CMT",
+            ],
+            'FBR' => [
                 "fabric" => "Fabric",
             ],
         ];
-        
+
+        $lastExpense = Expense::latest()->with("supplier")->first();
+
         $suppliers = Supplier::whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
@@ -48,7 +66,19 @@ class ExpenseController extends Controller
             $suppliers_options[$supplier->id] = ["text" => $supplier->supplier_name, "data_option" => $supplier];
         }
 
-        return view('expenses.add', compact('suppliers_options', 'subCategories'));
+        foreach ($suppliers as $supplier) {
+            $categoriesIdArray = json_decode($supplier->categories_array, true);
+
+            $categories = Setup::whereIn('id', $categoriesIdArray)
+                ->where('type', 'supplier_category')
+                ->get();
+
+            $supplier["categories"] = $categories;
+
+            $supplier["balance"] = 0.00;
+        }
+
+        return view('expenses.add', compact('suppliers_options', 'subCategories', 'lastExpense'));
     }
 
     /**
@@ -56,7 +86,27 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'supplier_id' => 'required|exists:suppliers,id',
+            'expense' => 'required|string|max:255',
+            'reff_no' => 'required|integer',
+            'amount' => 'required|integer|min:0',
+            'lot_no' => 'required|integer',
+            'remarks' => 'nullable|string|max:255'
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $expense = Expense::create($request->all());
+
+        return redirect()->back()->with('success', 'Expense added successfully.');
     }
 
     /**
