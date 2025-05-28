@@ -20,18 +20,11 @@
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <x-form-title-bar title="Show Bank Accounts" changeLayoutBtn layout="{{ $authLayout }}" />
 
-                <div
-                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('bank-accounts.create') }}"
-                        class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
-                            class="fas fa-plus"></i></a>
-                    <span
-                        class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        Add
-                    </span>
-                </div>
-
                 @if (count($bankAccounts) > 0)
+                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                        <x-section-navigation-button link="{{ route('bank-accounts.create') }}" title="Add New Account" icon="fa-plus" />
+                    </div>
+                    
                     <div class="card_container">
                         @if ($authLayout == 'grid')
                             <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
