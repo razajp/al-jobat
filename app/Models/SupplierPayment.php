@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 
-class Payment extends Model
+class SupplierPayment extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        "customer_id",
+        "supplier_id",
         "date",
         "type",
         "method",
@@ -39,7 +39,7 @@ class Payment extends Model
         });
 
         // Always eager load the associated creator
-        static::addGlobalScope('withCreator', function (Builder $builder) {
+        static::addGlobalScope('withCreator', function (builder $builder) {
             $builder->with('creator');
         });
     }
@@ -49,10 +49,9 @@ class Payment extends Model
         return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
-    // Relationship with the Customer model
-    public function customer()
+    public function supplier()
     {
-        return $this->belongsTo(Customer::class, "customer_id");
+        return $this->belongsTo(Supplier::class, "supplier_id");
     }
     
     public function program()

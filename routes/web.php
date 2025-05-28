@@ -7,15 +7,16 @@ use App\Http\Controllers\BiltyController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,7 +66,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('invoices', InvoiceController::class);
     Route::get('print-invoices', [InvoiceController::class, 'print'])->name('invoices.print');
     
-    Route::resource('payments', PaymentController::class);
+    Route::resource('customer-payments', CustomerPaymentController::class);
+
+    Route::resource('supplier-payments', SupplierPaymentController::class);
     
     Route::resource('payment-programs', PaymentProgramController::class);
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');

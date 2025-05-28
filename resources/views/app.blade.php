@@ -279,7 +279,7 @@
                     message="Your card ending in 1122 is expiring soon. Please update your billing info."
                 /> --}}
             </div>
-            <div class="left_actions absolute top-5 left-5 w-full flex gap-2">
+            <div class="left_actions absolute top-5 left-5 flex gap-2">
                 <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
                     <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
                         <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 

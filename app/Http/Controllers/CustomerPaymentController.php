@@ -3,13 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
-use App\Models\Payment;
+use App\Models\CustomerPayment;
 use App\Models\PaymentProgram;
 use App\Models\Setup;
+use App\Models\SupplierPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class PaymentController extends Controller
+class CustomerPaymentController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,7 +22,7 @@ class PaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = Payment::with("customer")->get();
+        $payments = CustomerPayment::with("customer")->get();
 
         foreach ($payments as $payment) {
             if ($payment['clear_date'] == null) {
@@ -154,7 +155,15 @@ class PaymentController extends Controller
             $paymentDetails['program_id'] = $request->program_id;
 
             // return $paymentDetails;
-            Payment::create($paymentDetails);
+            CustomerPayment::create($paymentDetails);
+            
+            if ($paymentDetails['program_id']) {
+                $program = PaymentProgram::find($paymentDetails['program_id']);
+                if ($program) {
+                    $paymentDetails['supplier_id'] = $program->sub_category_id;
+                    SupplierPayment::create($paymentDetails);
+                }
+            }
         }
 
         return redirect()->route('customer-payments.create')->with('success', 'Payment Added successfully.');
@@ -164,7 +173,7 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Payment $payment)
+    public function show(CustomerPayment $customerPayment)
     {
         //
     }
@@ -172,7 +181,7 @@ class PaymentController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Payment $payment)
+    public function edit(CustomerPayment $customerPayment)
     {
         //
     }
@@ -180,7 +189,7 @@ class PaymentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Payment $payment)
+    public function update(Request $request, CustomerPayment $customerPayment)
     {
         //
     }
@@ -188,7 +197,7 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Payment $payment)
+    public function destroy(CustomerPayment $customerPayment)
     {
         //
     }

@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('payments', function (Blueprint $table) {
+        Schema::create('supplier_payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer_id');
+            $table->unsignedBigInteger('supplier_id');
             $table->date('date');
             $table->string('type');
             $table->string('method');
             $table->integer('amount');
-            $table->string('cheque_no')->nullable();
-            $table->string('slip_no')->nullable();
-            $table->string('transaction_id')->nullable();
+            $table->string('cheque_no')->nullable()->unique();
+            $table->string('slip_no')->nullable()->unique();
+            $table->string('transaction_id')->nullable()->unique();
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();
             $table->date('clear_date')->nullable();
@@ -30,10 +30,10 @@ return new class extends Migration
             $table->string('bank_account_id')->nullable();
 
             // Define foreign key constraint
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
+            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->foreign('bank_account_id')->references('id')->on('bank_accounts')->onDelete('cascade');
             $table->foreign('program_id')->references('id')->on('payment_programs')->onDelete('set null');
-            
+
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 
@@ -46,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('supplier_payments');
     }
 };

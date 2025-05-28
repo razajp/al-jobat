@@ -392,7 +392,7 @@
             dateInpDom.value  = data.date;
 
             customerSelectDom.innerHTML += `
-                <option value="${data.customer.id}" selected>${data.customer.customer_name} | ${data.customer.city}</option>
+                <option value="${data.customer.id}" selected>${data.customer.customer_name} | ${data.customer.city.title}</option>
             `;
             
             categorySelectDom.value = data.category;

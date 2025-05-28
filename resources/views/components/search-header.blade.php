@@ -12,7 +12,7 @@
 <div class="header w-full flex items-center justify-between">
     <h5 id="name" class="text-3xl text-[var(--text-color)] uppercase font-semibold leading-none ml-1">{{ $heading }}</h5>
 
-    <div class="flex justify-end gap-4 w-1/3">
+    <div class="">
         @if ($toFrom)
             <!-- toFrom -->
             <div id="toFrom" class="toFrom-box flex items-center gap-4 shrink-0 grow w-full">
@@ -33,7 +33,10 @@
             <div id="search-form" class="search-box shrink-0 grow w-full">
                 <!-- Search Input -->
                 <div class="search-input relative">
-                    <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search {{ $heading }}..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' />
+                    {{-- <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search {{ $heading }}..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' /> --}}
+                    <button id="filter-btn" type="button" class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
+                        <i class="text-xs fa-solid fa-filter"></i>
+                    </button>
                     <div class="dropdownMenu text-sm absolute mt-2 top-10 right-0 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50">
                         <ul class="p-2 space-y-1">
                             @foreach ($filter_items as $key => $filter_item)

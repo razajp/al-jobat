@@ -24,7 +24,10 @@ class PaymentProgramController extends Controller
         };
         
         // Fetch and sort orders by date and created_at
-        $orders = Order::with('customer', 'paymentPrograms.payments.bankAccount.bank', 'paymentPrograms.subCategory')
+        $orders = Order::with(['customer.city', 'paymentPrograms.subCategory', 'paymentPrograms' => function($query) {  // Eager load paymentPrograms with payments and bank
+        $query->withPayments();  // This will load customerPayments and supplierPayments with bank accounts
+    }]
+    )
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get()
@@ -44,10 +47,11 @@ class PaymentProgramController extends Controller
             }
         }
         // Fetch and sort payment programs by date and created_at
-        $paymentPrograms = PaymentProgram::with('customer', 'subCategory', 'payments.bankAccount.bank')
+        $paymentPrograms = PaymentProgram::with('customer.city', 'subCategory')
             ->where('order_no', null)
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
+            ->withPayments()
             ->get()
             ->map(function ($paymentPrograms) {
                 $paymentPrograms['document'] = 'Program';
@@ -108,7 +112,7 @@ class PaymentProgramController extends Controller
             $customer['status'] = $user->status;
             
             $customers_options[(int)$customer->id] = [
-                'text' => $customer->customer_name . ' | ' . $customer->city . ' | Balance: ' . number_format($customer->balance, 1),
+                'text' => $customer->customer_name . ' | ' . $customer->city->title . ' | Balance: ' . number_format($customer->balance, 1),
                 'data_option' => $customer
             ];
         }

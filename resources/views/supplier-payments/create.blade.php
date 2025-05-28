@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Customer Payment | ' . app('company')->name)
+@section('title', 'Add Supplier Payment | ' . app('company')->name)
 @section('content')
     @php
         $method_options = [
@@ -11,7 +11,6 @@
         $type_options = [
             'normal' => ['text' => 'Normal'],
             'payment_program' => ['text' => 'Payment Program'],
-            'recovery' => ['text' => 'Recovery'],
         ]
     @endphp
     <!-- Modal -->
@@ -55,31 +54,31 @@
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
-        <x-search-header heading="Add Customer Payment" link linkText="Show Payments" linkHref="{{ route('customer-payments.index') }}"/>
-        <x-progress-bar :steps="['Select Customer', 'Enter Payment']" :currentStep="1" />
+        <x-search-header heading="Add Supplier Payment" link linkText="Show Payments" linkHref="{{ route('supplier-payments.index') }}"/>
+        <x-progress-bar :steps="['Select Supplier', 'Enter Payment']" :currentStep="1" />
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('customer-payments.store') }}" method="post"
+    <form id="form" action="{{ route('supplier-payments.store') }}" method="post"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
         @csrf
-        <x-form-title-bar title="Add Customer Payment" />
+        <x-form-title-bar title="Add Supplier Payment" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {{-- customer --}}
+                {{-- supplier --}}
                 <x-select 
-                    label="Customer"
-                    name="customer_id"
-                    id="customer_id"
-                    :options="$customers_options"
+                    label="Supplier"
+                    name="supplier_id"
+                    id="supplier_id"
+                    :options="$suppliers_options"
                     required
                     showDefault
-                    onchange="trackCustomerState()" 
+                    onchange="trackSupplierState()" 
                 />
                 
                 {{-- balance --}}
-                <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
+                <x-input label="Balance" placeholder="Select supplier first" name="balance" id="balance" disabled />
                 
                 {{-- date --}}
                 <x-input label="Date" name="date" id="date" type="date" required disabled />
@@ -140,7 +139,7 @@
 
     <script>
         const modalDom = document.getElementById("modal");
-        let customerSelectDom = document.getElementById('customer_id');
+        let supplierSelectDom = document.getElementById('supplier_id');
         let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
@@ -152,7 +151,7 @@
         const programInpDom = document.getElementById("programInp");
         const paymentDetailsArrayDom = document.getElementById("payment_details_array");
 
-        selectedCustomerData = null;
+        selectedSupplierData = null;
         let totalPayment = 0;
         let selectedProgramData;
         
@@ -197,11 +196,11 @@
             }
         });
         
-        let selectedCustomer;
+        let selectedSupplier;
 
         const today = new Date().toISOString().split('T')[0];
 
-        function trackCustomerState() {
+        function trackSupplierState() {
             typeSelectDom.options[2].dataset.option = '';
             dateDom.value = '';
             balanceDom.value = '';
@@ -211,22 +210,20 @@
             paymentDetailsArray = [];
             renderList();
 
-            if (customerSelectDom.value != '') {
-                selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
+            if (supplierSelectDom.value != '') {
+                selectedSupplier = JSON.parse(supplierSelectDom.options[supplierSelectDom.selectedIndex].dataset.option);
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
-                dateDom.min = selectedCustomer.date.toString().split('T')[0];
+                dateDom.min = selectedSupplier.date.toString().split('T')[0];
                 dateDom.max = today;
-                balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
-                selectedCustomerData = selectedCustomer;
-                typeSelectDom.options[2].dataset.option = JSON.stringify(selectedCustomer.payment_programs) ?? '';
+                balanceDom.value = formatNumbersWithDigits(selectedSupplier.balance, 1, 1);
+                selectedSupplierData = selectedSupplier;
+                typeSelectDom.options[2].dataset.option = JSON.stringify(selectedSupplier.payment_programs) ?? '';
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
                 typeSelectDom.options[2].dataset.option = '';
             }
-
-            console.log(selectedCustomer);
         }
 
         window.addEventListener('DOMContentLoaded', () => {
@@ -238,14 +235,14 @@
                 url.search = ''; // remove all query parameters
                 window.history.replaceState({}, document.title, url.toString());
 
-                // select customer
-                for (const option of customerSelectDom.options) {
+                // select supplier
+                for (const option of supplierSelectDom.options) {
                     if (option.value.trim() !== '') {
-                        customerSelectDom.value = option.value;
+                        supplierSelectDom.value = option.value;
                         break; 
                     }
                 }
-                trackCustomerState();
+                trackSupplierState();
 
                 // set date today
                 const today = new Date();
@@ -257,7 +254,7 @@
                 // select type
                 for (const option of typeSelectDom.options) {
                     if (option.value.trim() === 'payment_program') {
-                        option.dataset.option = JSON.stringify(selectedCustomer.payment_programs);
+                        option.dataset.option = JSON.stringify(selectedSupplier.payment_programs);
                         typeSelectDom.value = option.value;
                         break; 
                     }
@@ -265,7 +262,7 @@
                 trackTypeState(typeSelectDom, true);
 
                 // select Program
-                selectThisProgram(selectedCustomer.payment_programs)
+                selectThisProgram(selectedSupplier.payment_programs)
             }
         });
 
@@ -417,8 +414,8 @@
             } else if (elem.value == 'slip') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- customer --}}
-                        <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
+                        {{-- supplier --}}
+                        <x-input label="Supplier" placeholder="Enter Supplier" name="supplier" id="customer" value="${selectedSupplier.customer_name}" disabled required/>
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
@@ -522,6 +519,8 @@
                     }
                 }
             }
+            console.log(selectedProgramData);
+            
         }
 
         function addPaymentDetails() {

@@ -64,7 +64,7 @@ class Customer extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class, 'customer_id');
+        return $this->hasMany(CustomerPayment::class, 'customer_id');
     }
 
     public function paymentPrograms()

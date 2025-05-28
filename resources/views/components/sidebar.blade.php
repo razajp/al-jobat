@@ -81,10 +81,25 @@
                     <x-nav-link-item 
                         label="Suppliers" 
                         icon="fas fa-truck"
+                        :activatorTags="['supplier-payments']"
                         includesDropdown
                         :items="[
-                            ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
-                            ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                            [
+                                'label' => 'Supplier',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                                    ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                                ]
+                            ],
+                            [
+                                'label' => 'Payment',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('supplier-payments.index'), 'label' => 'Show Payments'],
+                                    ['type' => 'link', 'href' => route('supplier-payments.create'), 'label' => 'Add Payment'],
+                                ]
+                            ]
                         ]"
                     />
                 </div>
@@ -94,7 +109,7 @@
                 <div class="relative group">
                     <x-nav-link-item 
                         label="Customers" 
-                        :activatorTags="['payments']"
+                        :activatorTags="['customer-payments']"
                         icon="fas fa-user-tag"
                         includesDropdown
                         :items="[

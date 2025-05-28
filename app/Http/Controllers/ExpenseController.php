@@ -96,7 +96,7 @@ class ExpenseController extends Controller
             'expense' => 'required|string|max:255',
             'reff_no' => 'required|integer',
             'amount' => 'required|integer|min:0',
-            'lot_no' => 'required|integer',
+            'lot_no' => 'nullable|integer',
             'remarks' => 'nullable|string|max:255'
         ]);
 

@@ -330,8 +330,6 @@
                         shipment_no: shipmentNoDom.value
                     },
                     success: function (response) {
-                        console.log(response);
-                        
                         if (!response.error) {
                             openModal();
 
@@ -886,8 +884,6 @@
                         order_no: orderNoDom.value
                     },
                     success: function (response) {
-                        console.log(response);
-                        
                         orderedArticles = response.articles;
                         discount = response.discount ?? 0;
                         customerData = response.customer;
@@ -977,7 +973,6 @@
                     }
                 })
                 articlesInInvoiceInpDom.value = JSON.stringify(finalArticlesArray);
-                console.log(finalArticlesArray);
             }
 
             function renderCalcBottom() {
@@ -1134,12 +1129,12 @@
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity / articles.article.pcs_per_packet}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.ordered_quantity / articles.article.pcs_per_packet}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.ordered_quantity}</div>
                                                             <div class="td text-sm font-semibold grow">${articles.description}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
                                                             <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
-                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.shipment_quantity, 1, 1)}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.ordered_quantity, 1, 1)}</div>
                                                         </div>
                                                     </div>
                                                 `;
