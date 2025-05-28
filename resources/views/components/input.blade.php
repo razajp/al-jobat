@@ -13,20 +13,23 @@
     'list' => '',
     'autocomplete' => 'on',
     'listOptions' => [],
-    'max' => "",
+    'max' => '',
     'validateMax' => false,
-    'min' => "",
+    'min' => '',
     'validateMin' => false,
     'readonly' => false,
     'withImg' => false,
-    'imgUrl' => "",
+    'imgUrl' => '',
     'withButton' => false,
-    'btnId' => "",
+    'btnId' => '',
     'btnText' => "+",
-    'btnClass' => "",
-    'onchange' => "",
-    'oninput' => "",
-    'minlength' => "",
+    'btnClass' => '',
+    'onchange' => '',
+    'oninput' => '',
+    'minlength' => '',
+    'dualInput' => '',
+    'type2' => '',
+    'id2' => '',
 ])
 
 @if ($uppercased)
@@ -109,6 +112,19 @@
             {{ $onchange ? 'onchange='.$onchange : '' }}
             {{ $oninput ? 'oninput='.$oninput : '' }}
         />
+        @if ($dualInput)
+            <input 
+                id="{{ $id2 }}"
+                type="{{ $type2 }}"
+                {{ $attributes->merge([
+                    'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
+                        ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
+                        ' text-[var(--text-color)] px-3 ' . 
+                        ($type == 'date' ? 'py-[7px]' : 'py-2') .
+                        ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
+                ]) }}
+            />
+        @endif
         @if ($withImg)
             <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">
         @endif

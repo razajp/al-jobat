@@ -240,6 +240,7 @@
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${formatDate(data.date)}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Amount:</strong> <span>${formatNumbersWithDigits(data.amount)}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Type:</strong> <span>${data.type.replace('_', ' ')}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Method:</strong> <span>${data.method}</span></p>
                             </div>
                             
                             <hr class="border-gray-600 my-3"/>
