@@ -20,59 +20,38 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
-            <x-form-title-bar title="Show Expenses" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar title="Show Expenses"/>
 
             @if (count($expenses) > 0)
-                <div
-                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('expenses.create') }}"
-                        class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
-                            class="fas fa-plus"></i></a>
-                    <span
-                        class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        Add
-                    </span>
+                <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <x-section-navigation-button link="{{ route('expenses.create') }}" title="Add New Expense" icon="fa-plus" />
                 </div>
-            @endif
-
-            @if (count($expenses) > 0)
+                
                 <div class="details h-full">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container p-5 pr-3">
-                            @if ($authLayout == 'grid')
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                    @foreach ($expenses as $expense)
-                                        <div id="{{ $expense->id }}" data-json='{{ $expense }}'
-                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                            <x-card :data="[
-                                                'name' => 'Expense: ' . $expense->expense,
-                                                'details' => [
-                                                    'Supplier' => $expense->supplier->supplier_name,
-                                                    'Reff. No' => $expense->reff_no,
-                                                    'Date' => $expense->date->format('d-M-Y, D'),
-                                                ],
-                                            ]" />
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @else
-                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Expense</div>
-                                    <div class="text-center">Supplier Name</div>
-                                    <div class="text-center">Reff. No.</div>
-                                    <div class="text-center">Date</div>
-                                </div>
-                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($expenses as $expense)
-                                        <div id="{{ $expense->id }}" data-json='{{ $expense }}' class="contextMenuToggle modalToggle relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $expense->expense }}</span>
-                                            <span class="text-center">{{ $expense->supplier->supplier_name }}</span>
-                                            <span class="text-center">{{ $expense->reff_no }}</span>
-                                            <span class="text-center">{{ $expense->date->format('d-M-Y, D') }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                            <div class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                <div class="text-center">Date</div>
+                                <div class="text-center">Supplier Name</div>
+                                <div class="text-center">Reff. No.</div>
+                                <div class="text-center">Expense</div>
+                                <div class="text-center">Lot No.</div>
+                                <div class="text-center">Amount</div>
+                                <div class="text-center">Remarks</div>
+                            </div>
+                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                @forEach ($expenses as $expense)
+                                    <div id="{{ $expense->id }}" data-json='{{ $expense }}' class="contextMenuToggle modalToggle relative group grid grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                        <span class="text-center">{{ $expense->date->format('d-M-Y, D') }}</span>
+                                        <span class="text-center">{{ $expense->supplier->supplier_name }}</span>
+                                        <span class="text-center">{{ $expense->reff_no }}</span>
+                                        <span class="text-center capitalize">{{ $expense->expense }}</span>
+                                        <span class="text-center">{{ $expense->lot_no ?? '-' }}</span>
+                                        <span class="text-center">{{ number_format($expense->amount, 1) }}</span>
+                                        <span class="text-center capitalize">{{ $expense->remarks ?? '-' }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>

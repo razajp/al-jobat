@@ -65,8 +65,8 @@
                 @if ($lastExpense)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <!-- date -->
-                        <x-input label="Date" name="last_date" id="last_date" type="date" disabled
-                            value="{{ $lastExpense->date }}" />
+                        <x-input label="Date" name="last_date" id="last_date" disabled
+                            value="{{ $lastExpense->date->format('d-M-Y, D') }}" />
 
                         {{-- supplier --}}
                         <x-input label="Supplier" name="last_supplier" id="last_supplier" type="text" disabled
@@ -94,7 +94,7 @@
 
                         {{-- remarks --}}
                         <x-input label="Remarks" name="last_remarks" id="last_remarks" type="text" disabled
-                            value="{{ $lastExpense->remarks }}" />
+                            value="{{ $lastExpense->remarks ?? 'No Remarks' }}" />
                     </div>
                 @else
                     <div class="text-center text-gray-500">

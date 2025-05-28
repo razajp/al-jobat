@@ -25,18 +25,11 @@
                 class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
                 <x-form-title-bar title="Show Suppliers" changeLayoutBtn layout="{{ $authLayout }}" />
 
-                <div
-                    class="add-new-article-btn absolute z-[999] bottom-8 right-5 hover:scale-105 hover:bottom-9 transition-all group duration-300 ease-in-out">
-                    <a href="{{ route('suppliers.create') }}"
-                        class="bg-[var(--primary-color)] text-[var(--text-color)] px-3 py-2 rounded-full hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out"><i
-                            class="fas fa-plus"></i></a>
-                    <span
-                        class="absolute shadow-xl right-7 top-0 border border-gray-600 transform -translate-x-1/2 bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-xs rounded px-2 py-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                        Add
-                    </span>
-                </div>
-
                 @if (count($Suppliers) > 0)
+                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                        <x-section-navigation-button link="{{ route('suppliers.create') }}" title="Add New Supplier" icon="fa-plus" />
+                    </div>
+                    
                     <div class="card_container">
                         @if ($authLayout == 'grid')
                             <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -53,7 +46,7 @@
                                             'details' => [
                                                 'Urdu Title' => $supplier->urdu_title,
                                                 'Phone' => $supplier->phone_number,
-                                                'Balance' => $supplier->balance,
+                                                'Balance' => number_format($supplier->balance, 1),
                                             ],
                                         ]" />
                                     </div>
@@ -73,7 +66,7 @@
                                         <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
                                         <span class="text-center">{{ $supplier->urdu_title }}</span>
                                         <span class="text-center">{{ $supplier->phone_number }}</span>
-                                        <span class="text-right">{{ $supplier->balance }}</span>
+                                        <span class="text-right">{{ number_format($supplier->balance, 1) }}</span>
                                         <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $supplier->user->status }}</span>
                                     </div>
                                 @endforeach
@@ -284,7 +277,7 @@
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${data.balance}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
                             
                             <hr class="border-gray-600 my-3">
                 

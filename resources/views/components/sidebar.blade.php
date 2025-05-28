@@ -1,5 +1,5 @@
 <!-- Logout Modal -->
-<div id="logoutModal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-[var(--overlay-color)] text-xs md:text-sm fade-in">
+<div id="logoutModal" class="hidden fixed inset-0 z-[99] flex items-center justify-center bg-[var(--overlay-color)] text-xs md:text-sm fade-in">
     <!-- Modal Content -->
     <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg w-80 md:w-full md:max-w-lg p-6 relative">
         <!-- Close Button -->
@@ -211,7 +211,7 @@
                     <x-nav-link-item 
                         label="Expenses"
                         svgIcon='
-                            <svg class="fill-white" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            <svg class="fill-[var(--text-color)]" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                 x="0px" y="0px" viewBox="0 0 578 578" style="enable-background:new 0 0 578 578;" xml:space="preserve">
                                 <g>
                                     <path d="M523.7,308.6c-30.7,0-59.6,0-88.6,0c-36.9,0-51.8,11.3-56.3,47.9c-2.2,18.2-0.6,37.5,3.2,55.5
