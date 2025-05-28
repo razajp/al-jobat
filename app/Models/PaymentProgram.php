@@ -13,7 +13,7 @@ class PaymentProgram extends Model
 
     protected $fillable = ['program_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
-    protected $appends = ['payments'];
+    protected $appends = ['payments', 'balance', 'payment'];
 
     protected static function booted()
     {
@@ -52,25 +52,32 @@ class PaymentProgram extends Model
     {
         return $this->hasMany(CustomerPayment::class, 'program_id');
     }
-
-    public function supplierPayments()
-    {
-        return $this->hasMany(SupplierPayment::class, 'program_id');
-    }
-
     // Custom accessor to merge both types of payments
     public function getPaymentsAttribute()
     {
-        // Return merged customerPayments and supplierPayments with their bank account relations
-        return $this->customerPayments->merge($this->supplierPayments);
+        return $this->customerPayments;
     }
-
+    public function getBalanceAttribute()
+    {
+        $totalpayment = 0;
+        foreach($this['payments'] as $payment) {
+            $totalpayment += $payment->amount;
+        }
+        return $this['amount'] - $totalpayment;
+    }
+    public function getPaymentAttribute()
+    {
+        $totalpayment = 0;
+        foreach($this['payments'] as $payment) {
+            $totalpayment += $payment->amount;
+        }
+        return $totalpayment;
+    }
     // Custom method to eager load payments along with their bank account and bank relations
-    public function scopeWithPayments($query)
+    public function scopeWithPaymentDetails($query)
     {
         return $query->with([
-            'customerPayments.bankAccount.bank',  // Eager load bankAccount -> bank for customerPayments
-            'supplierPayments.bankAccount.bank',  // Eager load bankAccount -> bank for supplierPayments
+            'customerPayments.bankAccount.bank',
         ]);
     }
 }

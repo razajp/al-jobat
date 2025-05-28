@@ -5,13 +5,13 @@
 ])
 
 {{-- Title bar for the form --}}
-<div class="form-title absolute top-0 left-0 w-full p-1.5 flex items-center gap-1.5 z-50">
+<div class="form-title absolute top-0 left-0 w-full p-1.5 flex items-center gap-1.5 z-40">
     <div class="absolute top-0 left-0 w-full h-12 bg-[var(--secondary-bg-color)] blur-sm z-0"></div>
-    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg grow relative z-50">
+    <div class="text-center bg-[var(--primary-color)] py-1 shadow-lg uppercase font-semibold text-sm rounded-lg grow relative z-40">
         <h4>{{ $title }}</h4>
     </div>
     @if ($changeLayoutBtn)
-        <div class="text-center bg-[var(--primary-color)] h-7 shadow-lg uppercase font-semibold text-sm rounded-lg relative z-50">
+        <div class="text-center bg-[var(--primary-color)] h-7 shadow-lg uppercase font-semibold text-sm rounded-lg relative z-40">
             <div class="buttons top-0 right-4.5 text-sm h-full flex items-center px-2">
                 <div class="relative group flex items-center justify-between">
                     <form method="POST" action="{{ route('change-data-layout') }}">

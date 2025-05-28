@@ -41,8 +41,8 @@
                         <i class="text-xs fa-solid fa-filter"></i>
                     </button>
                     <div
-                        class="dropdownMenu text-sm absolute mt-2 top-2 left-1/2 -translate-x-1/2 hidden border border-gray-600 w-[50%] bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50 p-4">
-                        <h6 class="text-xl text-[var(--text-color)] uppercase font-semibold leading-none ml-1">Search And Filter</h6>
+                        class="dropdownMenu text-sm absolute mt-2 top-2 left-1/2 -translate-x-1/2 hidden border border-gray-600 w-[50%] bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50 p-4">
+                        <h6 class="text-xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
                         <hr class="border-gray-600 my-4 w-full">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <x-input label="Supplier Name" id="supplier_name" type="text"

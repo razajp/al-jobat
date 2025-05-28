@@ -156,27 +156,29 @@
 
             ac_in_context.classList.add('hidden');
 
-            if (ac_in_btn_context) {
-                ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                    if (data.user.status === 'active') {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.textContent = 'In Active';
-                    } else {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.textContent = 'Active';
+            if (data.balance == 0.00) {
+                if (ac_in_btn_context) {
+                    ac_in_btn_context.classList.add('text-[var(--border-error)]');
+                    if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
+                        if (data.user.status === 'active') {
+                            ac_in_context.classList.remove('hidden');
+                            ac_in_btn_context.classList.remove('text-[var(--border-success)]');
+                            ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
+                            ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
+                            ac_in_btn_context.classList.add('text-[var(--border-error)]');
+                            ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
+                            ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
+                            ac_in_btn_context.textContent = 'In Active';
+                        } else {
+                            ac_in_context.classList.remove('hidden');
+                            ac_in_btn_context.classList.remove('text-[var(--border-error)]');
+                            ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
+                            ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
+                            ac_in_btn_context.classList.add('text-[var(--border-success)]');
+                            ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
+                            ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
+                            ac_in_btn_context.textContent = 'Active';
+                        }
                     }
                 }
             }
@@ -324,8 +326,10 @@
 
             ac_in_modal.classList.add("hidden");
 
-            if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                ac_in_modal.classList.remove("hidden");
+            if (data.balance == 0.00) {
+                if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
+                    ac_in_modal.classList.remove("hidden");
+                }
             }
 
             if (data.user.profile_picture == "default_avatar.png") {

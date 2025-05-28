@@ -316,9 +316,9 @@
                                         <div>
                                             <ul class="text-sm">
                                                 <li class="capitalize"><strong>Date:</strong> ${program.date}</li>
-                                                <li class="capitalize"><strong>Category:</strong> ${program.category}</li>
-                                                <li><strong>Beneficiary:</strong> ${beneficiary}</li>
+                                                <li class="capitalize"><strong>Beneficiary:</strong> ${beneficiary} | ${program.category.replace('_', " ")}</li>
                                                 <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
+                                                <li><strong>Balance:</strong> ${formatNumbersWithDigits(program.balance, 1, 1)}</li>
                                             </ul>
                                         </div>
                                         <button type="button"
@@ -459,7 +459,7 @@
                         <x-input label="Program Date" value="${selectedProgramData.date}" id="program_date" disabled required/>
 
                         {{-- program amount --}}
-                        <x-input label="Program Amount" type="number" value="${selectedProgramData.amount}" id="program_amount" disabled required/>
+                        <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" id="program_amount" disabled required/>
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>

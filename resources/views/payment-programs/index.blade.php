@@ -35,7 +35,7 @@
 
                 @if (count($finalData) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
-                        <x-section-navigation-button link="{{ route('paymen-programs.create') }}" title="Add New Program" icon="fa-plus" />
+                        <x-section-navigation-button link="{{ route('payment-programs.create') }}" title="Add New Program" icon="fa-plus" />
                     </div>
                     
                     <div class="data_container">

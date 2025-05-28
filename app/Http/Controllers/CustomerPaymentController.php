@@ -66,11 +66,12 @@ class CustomerPaymentController extends Controller
         $programId = $request->query('program_id');
 
         if (!empty($programId)) {
-            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->find($programId);
-        
+            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->find($programId);
+
             if ($program && $program->customer) {
                 $customers = $program->customer->toArray();
                 $program->customer['payment_programs'] = $program->toArray();
+                
                 $customers_options = [(int)$program->customer->id => [
                     'text' => $program->customer->customer_name . ' | ' . $program->customer->city->title,
                     'data_option' => $program->customer,
@@ -111,7 +112,7 @@ class CustomerPaymentController extends Controller
                 $customer['totalPayment'] += $payment->amount;
             }
 
-            $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
+            // $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
 
             $customers_options[(int)$customer->id] = [
                 'text' => $customer->customer_name . ' | ' . $customer->city->title,

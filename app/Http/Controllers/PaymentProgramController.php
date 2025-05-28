@@ -24,10 +24,7 @@ class PaymentProgramController extends Controller
         };
         
         // Fetch and sort orders by date and created_at
-        $orders = Order::with(['customer.city', 'paymentPrograms.subCategory', 'paymentPrograms' => function($query) {  // Eager load paymentPrograms with payments and bank
-        $query->withPayments();  // This will load customerPayments and supplierPayments with bank accounts
-    }]
-    )
+        $orders = Order::with(['customer.city', 'paymentPrograms.subCategory'])
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get()
@@ -51,21 +48,12 @@ class PaymentProgramController extends Controller
             ->where('order_no', null)
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
-            ->withPayments()
+            ->withPaymentDetails()
             ->get()
             ->map(function ($paymentPrograms) {
                 $paymentPrograms['document'] = 'Program';
                 return $paymentPrograms;
             });
-
-        foreach($paymentPrograms as $paymentProgram) {
-            $paymentProgram['payment'] = 0;
-            $paymentProgram['balance'] = 0;
-            foreach($paymentProgram['payments'] as $payment) {
-                $paymentProgram['payment'] += $payment['amount'];
-            }
-            $paymentProgram['balance'] = $paymentProgram['amount'] - $paymentProgram['payment'];
-        }
 
         // Convert collections to arrays
         $ordersArray = $orders->toArray();
