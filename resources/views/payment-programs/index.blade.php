@@ -39,26 +39,27 @@
                     </div>
                     
                     <div class="data_container">
-                        <div class="grid grid-cols-9 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                            <div class="text-center">Date</div>
-                            <div class="text-center">Customer</div>
-                            <div class="text-center">O/P No.</div>
-                            <div class="text-center">Category</div>
-                            <div class="text-center">Beneficiary</div>
-                            <div class="text-center">Amount</div>
-                            <div class="text-center">Document</div>
-                            <div class="text-center">Payment</div>
-                            <div class="text-center">Balance</div>
+                        <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                            <div class="text-center w-[10%]">Date</div>
+                            <div class="text-center w-[15%]">Customer</div>
+                            <div class="text-center w-[10%]">O/P No.</div>
+                            <div class="text-center w-[10%]">Category</div>
+                            <div class="text-center w-[10%]">Beneficiary</div>
+                            <div class="text-center w-[10%]">Amount</div>
+                            <div class="text-center w-[10%]">Document</div>
+                            <div class="text-center w-[10%]">Payment</div>
+                            <div class="text-center w-[10%]">Balance</div>
+                            <div class="text-center w-[10%]">Status</div>
                         </div>
                         
                         <div class="search_container overflow-y-auto grow my-scrollbar-2">
                             @foreach ($finalData as $data)
-                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group grid grid-cols-9 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                    <span class="text-center">{{ date('d-M-Y D', strtotime($data['date'])) }}</span>
-                                    <span class="text-center capitalize">{{ $data['customer']['customer_name'] }}</span>
-                                    <span class="text-center">{{ $data['order_no'] ?? $data['program_no'] }}</span>
-                                    <span class="text-center capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category']) ?? '-') }}</span>
-                                    <span class="text-center">
+                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                    <span class="text-center w-[10%]">{{ date('d-M-Y', strtotime($data['date'])) }}</span>
+                                    <span class="text-center w-[15%] capitalize">{{ $data['customer']['customer_name'] }}</span>
+                                    <span class="text-center w-[10%]">{{ $data['order_no'] ?? $data['program_no'] }}</span>
+                                    <span class="text-center w-[10%] capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category']) ?? '-') }}</span>
+                                    <span class="text-center w-[10%]">
                                         @php
                                             $beneficiary = '-';
                                             if (isset($data['category'])) {
@@ -85,10 +86,11 @@
                                         @endphp
                                         {{ $beneficiary }}
                                     </span>
-                                    <span class="text-center">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
-                                    <span class="text-center">{{ $data['document'] ?? '-' }}</span>
-                                    <span class="text-center">{{ number_format($data['payment'] ?? '0', 1) }}</span>
-                                    <span class="text-center">{{ number_format($data['balance'] ?? '0', 1) }}</span>
+                                    <span class="text-center w-[10%]">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
+                                    <span class="text-center w-[10%]">{{ $data['document'] ?? '-' }}</span>
+                                    <span class="text-center w-[10%]">{{ number_format($data['payment'] ?? '0', 1) }}</span>
+                                    <span class="text-center w-[10%]">{{ number_format($data['balance'] ?? '0', 1) }}</span>
+                                    <span class="text-center w-[10%]">{{ $data['status'] ?? '-' }}</span>
                                 </div>
                             @endforeach
                         </div>
