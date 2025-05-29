@@ -167,6 +167,22 @@ class CustomerPaymentController extends Controller
             }
         }
 
+        $currentProgram = PaymentProgram::find($request->program_id);
+        
+        if ($currentProgram->balance <= 1000.0 && $currentProgram->balance > 0.0) {
+            $currentProgram->status = 'Nominal Due';
+            $currentProgram->save();
+        } else if ($currentProgram->balance == 0.0) {
+            $currentProgram->status = 'Paid';
+            $currentProgram->save();
+        } else if ($currentProgram->balance < 0.0) {
+            $currentProgram->status = 'Overpaid';
+            $currentProgram->save();
+        } else {
+            $currentProgram->status = 'Unpaid';
+            $currentProgram->save();
+        }
+
         return redirect()->route('customer-payments.create')->with('success', 'Payment Added successfully.');
     }
 
