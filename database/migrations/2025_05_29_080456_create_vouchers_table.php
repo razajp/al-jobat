@@ -11,15 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('expenses', function (Blueprint $table) {
+        Schema::create('vouchers', function (Blueprint $table) {
             $table->id();
+            $table->integer('voucher_no')->unique();
             $table->date('date');
             $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
-            $table->foreignId('expense')->constrained('setups')->onDelete('cascade');
-            $table->integer('reff_no');
-            $table->integer('amount');
-            $table->integer('lot_no');
-            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }
@@ -29,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('expenses');
+        Schema::dropIfExists('vouchers');
     }
 };

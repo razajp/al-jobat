@@ -27,6 +27,7 @@ class SupplierPayment extends Model
         "remarks",
         "program_id",
         "bank_account_id",
+        "voucher_id",
     ];
 
     protected static function booted()
@@ -62,5 +63,9 @@ class SupplierPayment extends Model
     public function bankAccount()
     {
         return $this->belongsTo(BankAccount::class, "bank_account_id");
+    }
+
+    public function voucher() {
+        return $this->belongsTo(Voucher::class, "voucher_id");
     }
 }

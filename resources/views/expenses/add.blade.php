@@ -106,8 +106,6 @@
     </div>
 
     <script>
-        const subCategories = @json($subCategories);
-
         const expenseSelect = document.getElementById('expense');
         const balanceInput = document.getElementById('balance');
 
@@ -122,11 +120,8 @@
 
                 let expenseOptions = "";
                 supplierCategories.forEach(category => {
-                    let subCatsOfCategory = subCategories[category.short_title] || {};
-                    // if more than 1, loop and push to expenseOptions
-                    for (const [subCatKey, subCatValue] of Object.entries(subCatsOfCategory)) {
-                        expenseOptions += `<option value="${subCatKey}">${subCatValue}</option>`;
-                    }
+                    console.log(category);
+                    expenseOptions += `<option value="${category.id}">${category.title}</option>`;
                 });
                 expenseOptions += `<option value="adjustment">Adjustment</option>`;
 
