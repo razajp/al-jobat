@@ -35,26 +35,6 @@ class ExpenseController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $subCategories = [
-            'MTR' => [
-                "fusing" => "Fusing",
-                "garments_material" => "Garments Marital",
-                "oil_expense" => "Oil Expense",
-                "poly_bag" => "Poly Bag",
-                "rib/collar" => "Rib / Collar",
-                "thread" => "Thread",
-            ],
-            'EMB' => [
-                "embroidery" => "Embroidery",
-            ],
-            'CMT' => [
-                "cmt" => "CMT",
-            ],
-            'FBR' => [
-                "fabric" => "Fabric",
-            ],
-        ];
-
         $lastExpense = Expense::latest()->with("supplier")->first();
 
         $suppliers = Supplier::whereHas('user', function ($query) {
@@ -78,7 +58,7 @@ class ExpenseController extends Controller
             $supplier["balance"] = 0.00;
         }
 
-        return view('expenses.add', compact('suppliers_options', 'subCategories', 'lastExpense'));
+        return view('expenses.add', compact('suppliers_options', 'lastExpense'));
     }
 
     /**
@@ -93,7 +73,7 @@ class ExpenseController extends Controller
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
-            'expense' => 'required|string|max:255',
+            'expense' => 'required|exists:setups,id',
             'reff_no' => 'required|integer',
             'amount' => 'required|integer|min:0',
             'lot_no' => 'nullable|integer',

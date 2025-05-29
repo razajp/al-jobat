@@ -27,4 +27,9 @@ class Expense extends Model
     {
         return $this->belongsTo(Supplier::class);
     }
+
+    public function expenseSetups()
+    {
+        return $this->belongsTo(Setup::class, 'expense')->where('type', 'supplier_category');
+    }
 }

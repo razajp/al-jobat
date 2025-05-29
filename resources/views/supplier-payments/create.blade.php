@@ -6,12 +6,13 @@
             'cash' => ['text' => 'Cash'],
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
+            'payment_program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
         ];
         $type_options = [
             'normal' => ['text' => 'Normal'],
             'payment_program' => ['text' => 'Payment Program'],
-        ]
+        ];
     @endphp
     <!-- Modal -->
     <div id="modal"
@@ -34,83 +35,41 @@
             </x-slot>
         </x-modal>
     </div>
-    <!-- Payment Program Modal -->
-    <div id="paymentpaProgramModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-        <x-modal id="paymentProgramsModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeProgramModal">
-            <div class="flex items-start relative h-full">
-                <div id="paymentProgramsContainer" class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeProgramModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
-                    Close
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
 
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-3xl mx-auto">
-        <x-search-header heading="Add Supplier Payment" link linkText="Show Payments" linkHref="{{ route('supplier-payments.index') }}"/>
-        <x-progress-bar :steps="['Select Supplier', 'Enter Payment']" :currentStep="1" />
+    <div class="mb-5 max-w-4xl mx-auto">
+        <x-search-header heading="Add Supplier Payment" link linkText="Show Payments"
+            linkHref="{{ route('supplier-payments.index') }}" />
+        <x-progress-bar :steps="['Select Supplier', 'Enter Payment', 'Preview']" :currentStep="1" />
     </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('supplier-payments.store') }}" method="post"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Supplier Payment" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- supplier --}}
-                <x-select 
-                    label="Supplier"
-                    name="supplier_id"
-                    id="supplier_id"
-                    :options="$suppliers_options"
-                    required
-                    showDefault
-                    onchange="trackSupplierState()" 
-                />
-                
+                <x-select label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
+                    onchange="trackSupplierState()" />
+
                 {{-- balance --}}
                 <x-input label="Balance" placeholder="Select supplier first" name="balance" id="balance" disabled />
-                
-                {{-- date --}}
-                <x-input label="Date" name="date" id="date" type="date" required disabled />
 
-                {{-- type --}}
-                <x-select 
-                    label="Type"
-                    name="type"
-                    id="type"
-                    :options="$type_options"
-                    required
-                    showDefault
-                    onchange="trackTypeState(this)" 
-                />
+                {{-- date --}}
+                <x-input label="Date" name="date" id="date" type="date" required disabled
+                    onchange="trackDateState(this)" />
             </div>
         </div>
 
         <div class="step2 space-y-4 hidden">
             <div class="flex flex-col space-y-4 gap-4">
                 {{-- method --}}
-                <x-select 
-                    label="Method"
-                    id="method"
-                    :options="$method_options"
-                    required
-                    showDefault
-                    onchange="trackMethodState(this)"
-                    withButton
-                    btnId="enterDetailsBtn"
-                    btnText="Enter Details"
-                    btnOnclick="trackMethodState(this.previousElementSibling)"
-                />
+                <x-select label="Method" id="method" :options="$method_options" required showDefault
+                    onchange="trackMethodState(this)" withButton btnId="enterDetailsBtn" btnText="Enter Details"
+                    btnOnclick="trackMethodState(this.previousElementSibling)" />
             </div>
             {{-- payment showing --}}
             <div id="payment-table" class="w-full text-left text-sm">
@@ -127,11 +86,19 @@
                 <input type="hidden" name="payment_details_array" id="payment_details_array">
             </div>
 
-            <input type="hidden" name="program_id" id="programInp">
             <div class="flex w-full text-sm mt-5 text-nowrap">
-                <div class="total-payment flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                <div
+                    class="total-payment flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Payment - Rs.</div>
                     <div id="finalTotalPayment">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step3 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
+            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
+                <div id="preview" class="preview flex flex-col h-full">
+                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
                 </div>
             </div>
         </div>
@@ -141,23 +108,18 @@
         const modalDom = document.getElementById("modal");
         let supplierSelectDom = document.getElementById('supplier_id');
         let methodSelectDom = document.getElementById('method');
-        let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
         let balanceDom = document.getElementById('balance');
         let paymentDetailsDom = document.getElementById('paymentDetails');
         let finalTotalPaymentDom = document.getElementById('finalTotalPayment');
         let paymentListDom = document.getElementById('payment-list');
-        const paymentProgramsContainer = document.getElementById("paymentProgramsContainer");
-        const programInpDom = document.getElementById("programInp");
         const paymentDetailsArrayDom = document.getElementById("payment_details_array");
 
         selectedSupplierData = null;
         let totalPayment = 0;
-        let selectedProgramData;
-        
+
         let paymentDetailsArray = [];
         let isModalOpened = false;
-        let isProgramModalOpened = false;
 
         function openModal() {
             isModalOpened = true;
@@ -184,28 +146,23 @@
             } = e.target;
             if (id === 'modalForm') {
                 closeModal();
-            } else if (id == "paymentProgramsModalForm") {
-                closeProgramModal();
             }
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isModalOpened) {
                 closeModal();
-                closeProgramModal();
             }
         });
-        
+
         let selectedSupplier;
 
         const today = new Date().toISOString().split('T')[0];
 
         function trackSupplierState() {
-            typeSelectDom.options[2].dataset.option = '';
             dateDom.value = '';
             balanceDom.value = '';
             methodSelectDom.value = '';
-            typeSelectDom.value = '';
 
             paymentDetailsArray = [];
             renderList();
@@ -218,149 +175,20 @@
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedSupplier.balance, 1, 1);
                 selectedSupplierData = selectedSupplier;
-                typeSelectDom.options[2].dataset.option = JSON.stringify(selectedSupplier.payment_programs) ?? '';
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
-                typeSelectDom.options[2].dataset.option = '';
             }
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            const url = new URL(window.location.href);
-
-            // Clean the URL after initial load (remove query params)
-            if (url.searchParams.has('program_id') || url.searchParams.has('source')) {
-                // reset url
-                url.search = ''; // remove all query parameters
-                window.history.replaceState({}, document.title, url.toString());
-
-                // select supplier
-                for (const option of supplierSelectDom.options) {
-                    if (option.value.trim() !== '') {
-                        supplierSelectDom.value = option.value;
-                        break; 
-                    }
-                }
-                trackSupplierState();
-
-                // set date today
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                dateDom.value = `${yyyy}-${mm}-${dd}`;
-
-                // select type
-                for (const option of typeSelectDom.options) {
-                    if (option.value.trim() === 'payment_program') {
-                        option.dataset.option = JSON.stringify(selectedSupplier.payment_programs);
-                        typeSelectDom.value = option.value;
-                        break; 
-                    }
-                }
-                trackTypeState(typeSelectDom, true);
-
-                // select Program
-                selectThisProgram(selectedSupplier.payment_programs)
-            }
-        });
-
-        function trackTypeState(elem, isNoModal) {
+        function trackDateState(elem) {
             paymentDetailsArray = [];
             methodSelectDom.value = '';
-            methodSelectDom.querySelector("option[value='program']")?.remove();
             renderList();
 
-            if (elem.value != '' && elem.value != 'payment_program') {
+            if (elem.value != '') {
                 gotoStep(2);
             }
-            
-            if (elem.value == "payment_program" && !isNoModal) {
-                generatePaymentProgramModal(elem.options[elem.selectedIndex]);
-            }
-
-            if (isNoModal) {
-                gotoStep(2);
-            }
-        }
-
-        function generatePaymentProgramModal(item) {
-            let programs = JSON.parse(item.dataset.option);
-            let programHTML;
-
-            if (programs.length > 0) {
-                programHTML = `
-                    <x-search-header heading="Payment Programs"/>
-                    <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                        <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                            ${programs.map((program) => {
-                                let beneficiary = '-';
-                                if (program.category) {
-                                    if (program.category === 'supplier' && program.sub_category?.supplier_name) {
-                                        beneficiary = program.sub_category.supplier_name;
-                                    } else if (program.category === 'customer' && program.sub_category?.customer_name) {
-                                        beneficiary = program.sub_category.customer_name;
-                                    } else if (program.category === 'self_account' && program.sub_category?.account_title) {
-                                        beneficiary = program.sub_category.account_title;
-                                    } else if (program.category === 'waiting' && program.remarks) {
-                                        beneficiary = program.remarks;
-                                    }
-                                }
-                                return `
-                                    <div data-json='${JSON.stringify(program)}' id='${program.id}' onclick='selectThisProgram(JSON.parse(this.dataset.json))'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                        <div>
-                                            <ul class="text-sm">
-                                                <li class="capitalize"><strong>Date:</strong> ${program.date}</li>
-                                                <li class="capitalize"><strong>Category:</strong> ${program.category}</li>
-                                                <li><strong>Beneficiary:</strong> ${beneficiary}</li>
-                                                <li><strong>Amount:</strong> ${formatNumbersWithDigits(program.amount, 1, 1)}</li>
-                                            </ul>
-                                        </div>
-                                        <button type="button"
-                                            class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
-                                            <div class="absolute top-0 left-0 bg-[var(--h-bg-color)] blur-md rounded-full h-50 aspect-square"></div>
-                                            <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
-                                        </button>
-                                    </div>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                `;
-                gotoStep(2)
-            } else {
-                programHTML = `
-                    <x-search-header heading="Payment Programs"/>
-                    <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                        <div class="text-center text-[var(--border-error)]">Program Not Found.</div>
-                    </div>
-                `;
-            }
-
-            paymentProgramsContainer.innerHTML = programHTML;
-
-            openProgramModal();
-        }
-        
-        function openProgramModal() {
-            isProgramModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('paymentpaProgramModal').classList.remove('hidden');
-        }
-
-        function closeProgramModal() {
-            isProgramModalOpened = false;
-            let modal = document.getElementById('paymentpaProgramModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
         }
 
         const enterDetailsBtn = document.getElementById("enterDetailsBtn");
@@ -375,10 +203,10 @@
                 `;
             } else {
                 paymentDetailsDom.innerHTML = '';
-                
+
                 enterDetailsBtn.disabled = true;
             }
-            
+
             if (elem.value == 'cash') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
@@ -392,47 +220,81 @@
             } else if (elem.value == 'cheque') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- bank --}}
-                        <x-select label="Bank" name="bank" id="bank" :options="$banks_options" required showDefault />
+                        {{-- cheque_id --}}
+                        <x-select label="Cheque" name="cheque_id" id="cheque_id" :options="$cheques_options" required showDefault />
 
                         {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                        {{-- cheque_date --}}
-                        <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
-
-                        {{-- cheque_no --}}
-                        <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
 
                         {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-
-                        {{-- clear_date --}}
-                        <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                        <div class="col-span-full">
+                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                        </div>
                     </div>
                 `;
+
+                let chequeSelectDom = document.getElementById('cheque_id');
+                chequeSelectDom.addEventListener('change', () => {
+                    let selectedOption = chequeSelectDom.options[chequeSelectDom.selectedIndex];
+                    let selectedCheque = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                    document.getElementById('amount').value = selectedCheque.amount;
+                })
             } else if (elem.value == 'slip') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- supplier --}}
-                        <x-input label="Supplier" placeholder="Enter Supplier" name="supplier" id="customer" value="${selectedSupplier.customer_name}" disabled required/>
+                        {{-- slip_id --}}
+                        <x-select label="Slip" name="slip_id" id="slip_id" :options="$slips_options" required showDefault />
 
                         {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                        {{-- slip_date --}}
-                        <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
-
-                        {{-- slip_no --}}
-                        <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
 
                         {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-
-                        {{-- clear_date --}}
-                        <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                        <div class="col-span-full">
+                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                        </div>
                     </div>
                 `;
+
+                let slipSelectDom = document.getElementById('slip_id');
+                slipSelectDom.addEventListener('change', () => {
+                    let selectedOption = slipSelectDom.options[slipSelectDom.selectedIndex];
+                    let selectedSlip = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                    document.getElementById('amount').value = selectedSlip.amount;
+                })
+            } else if (elem.value == 'payment_program') {
+                paymentDetailsDom.innerHTML += `
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                        {{-- program --}}
+                        <x-select label="Program" name="program" id="program" required showDefault />
+
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+
+                        {{-- remarks --}}
+                        <div class="col-span-full">
+                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
+                        </div>
+                    </div>
+                `;
+
+                let programSelectDom = document.getElementById('program');
+
+                selectedSupplier.payments.forEach(payment => {
+                    programSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
+                })
+
+                if (selectedSupplier.payments.length > 0) {
+                    programSelectDom.disabled = false;
+                }
+
+                programSelectDom.addEventListener('change', () => {
+                    let selectedOption = programSelectDom.options[programSelectDom.selectedIndex];
+                    let selectedProgram = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                    document.getElementById('amount').value = selectedProgram.amount;
+                })
             } else if (elem.value == 'adjustment') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
@@ -443,84 +305,16 @@
                         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
                     </div>
                 `;
-            } else if (elem.value == 'program') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- category --}}
-                        <x-input label="Category" value="${selectedProgramData.category}" id="category" disabled required/>
-                        
-                        {{-- beneficiary --}}
-                        <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" id="beneficiary" disabled required/>
-
-                        {{-- program date --}}
-                        <x-input label="Program Date" value="${selectedProgramData.date}" id="program_date" disabled required/>
-
-                        {{-- program amount --}}
-                        <x-input label="Program Amount" type="number" value="${selectedProgramData.amount}" id="program_amount" disabled required/>
-
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-                        
-                        {{-- bank account --}}
-                        <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
-                        
-                        {{-- transaction id --}}
-                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />
-
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" required/>
-                    </div>
-                `;
             } else {
                 paymentDetailsDom.innerHTML += `
                     <div class="text-center text-[var(--border-error)]">Select Payment Type.</div>
                 `;
             }
-            
+
             if (elem.value != '') {
                 gotoStep(2)
                 openModal()
             }
-        }
-
-        function selectThisProgram(programDate) {
-            closeProgramModal();
-            selectedProgramData = programDate;
-            programInpDom.value = selectedProgramData.id;
-            if (selectedProgramData.category != 'waiting') {
-                methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
-                methodSelectDom.value = 'program';
-                let beneficiary = '-';
-                if (selectedProgramData.category) {
-                    if (selectedProgramData.category === 'supplier' && selectedProgramData.sub_category?.supplier_name) {
-                        beneficiary = selectedProgramData.sub_category.supplier_name;
-                    } else if (selectedProgramData.category === 'customer' && selectedProgramData.sub_category?.customer_name) {
-                        beneficiary = selectedProgramData.sub_category.customer_name;
-                    } else if (selectedProgramData.category === 'self_account' && selectedProgramData.sub_category?.account_title) {
-                        beneficiary = selectedProgramData.sub_category.account_title;
-                    } else if (selectedProgramData.category === 'waiting' && selectedProgramData.remarks) {
-                        beneficiary = selectedProgramData.remarks;
-                    }
-                }
-                selectedProgramData.beneficiary = beneficiary
-                trackMethodState(methodSelectDom);
-                let bankAccountData = selectedProgramData.sub_category.bank_accounts;
-                
-                if (bankAccountData) {
-                    let bankAccountsSelect = document.getElementById('bank_accounts');
-                    bankAccountsSelect.disabled = false;
-                    bankAccountsSelect.innerHTML = '<option value="">-- Select Bank Account --</option>';
-                    if (bankAccountData.length > 0) {
-                        bankAccountData.forEach(account => {
-                            bankAccountsSelect.innerHTML += `<option value="${account.id}">${account.account_title} | ${account.bank.short_title}</option>`;
-                        });
-                    } else {
-                        bankAccountsSelect.innerHTML += `<option value="${bankAccountData.id}">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</option>`;
-                    }
-                }
-            }
-            console.log(selectedProgramData);
-            
         }
 
         function addPaymentDetails() {
@@ -531,7 +325,7 @@
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
                 const value = input.value;
-                
+
                 if (name == "amount") {
                     detail[name] = parseInt(value);
                 } else {
@@ -547,7 +341,7 @@
             if (isNaN(detail.amount) || detail.amount <= 0) {
                 detail = {};
             }
-            
+
             if (Object.keys(detail).length > 0) {
                 totalPayment += detail.amount;
                 detail['method'] = methodSelectDom.value;
@@ -580,7 +374,7 @@
                 paymentDetailsArrayDom.value = JSON.stringify(paymentDetailsArray);
             } else {
                 paymentListDom.innerHTML =
-                `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Yet</div>`;
+                    `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Yet</div>`;
             }
             finalTotalPaymentDom.textContent = formatNumbersWithDigits(totalPayment, 1, 1);
         }
@@ -590,8 +384,136 @@
             paymentDetailsArray.splice(index, 1);
             renderList();
         }
-        
+
+        let lastVoucher = @json($last_voucher);
+
+        function generateVoucherNo() {
+            // Split the voucher string into left and right parts
+            let parts = lastVoucher.voucher_no.split('/');
+            let left = parseInt(parts[0], 10);
+            let right = parseInt(parts[1], 10);
+
+            // Increment logic
+            left += 1;
+            if (parseInt(parts[0], 10) === 100) {
+                right += 1;
+                left = 1; // not 01 - we format it later
+            }
+
+            // Format with leading zeros
+            let newLeft = left.toString().padStart(2, '0');   // Always 2 digits
+            let newRight = right.toString().padStart(3, '0'); // Always 3 digits
+
+            // Return formatted voucher number
+            return `${newLeft}/${newRight}`;
+        }
+
+        let companyData = @json(app('company'));
+        const previewDom = document.getElementById('preview');
+        function generateVoucherPreview() {
+            let voucherNo = generateVoucherNo();
+            const dateInpDom = document.getElementById("date");
+
+            if (paymentDetailsArray.length > 0) {
+                previewDom.innerHTML = `
+                    <div id="preview-document" class="preview-document flex flex-col h-full">
+                        <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                            <div class="left">
+                                <div class="company-logo">
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                        class="w-[12rem]" />
+                                </div>
+                            </div>
+                            <div class="right">
+                                <div>
+                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Payment Voucher</h1>
+                                    <div class='mt-1'>${ companyData.phone_number }</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div id="preview-header" class="preview-header w-full flex justify-between px-5">
+                            <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="voucher-date leading-none">Date: ${formatDate(dateInpDom.value)}</div>
+                                <div class="voucher-number leading-none">Voucher No.: ${voucherNo}</div>
+                                <input type="hidden" name="voucher_no" value="${voucherNo}" />
+                            </div>
+                            <div class="center my-auto">
+                                <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${selectedSupplier.supplier_name}</div>
+                            </div>
+                            <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="preview-copy leading-none">Voucher Copy: Supplier</div>
+                                <div class="preview-doc leading-none">Document: Payment Voucher</div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                            <div class="preview-table w-full">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
+                                    <div class="thead w-full">
+                                        <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                            <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                            <div class="th text-sm font-medium w-1/6">Method</div>
+                                            <div class="th text-sm font-medium w-1/6">C./S. NO.</div>
+                                            <div class="th text-sm font-medium w-1/6">C./S. Date</div>
+                                            <div class="th text-sm font-medium grow">-</div>
+                                            <div class="th text-sm font-medium w-1/6">Amount</div>
+                                        </div>
+                                    </div>
+                                    <div id="tbody" class="tbody w-full">
+                                        ${paymentDetailsArray.map((payment, index) => {
+                                            const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+                                            return `
+                                                    <div>
+                                                        <hr class="w-full ${hrClass} border-gray-600">
+                                                        <div class="tr flex justify-between w-full px-4">
+                                                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                                            <div class="td text-sm font-semibold w-1/6">${payment.method ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/6">${payment.cheque_no ?? payment.slip_no ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/6">${payment.cheque_date ?? payment.slip_date ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold grow">${'-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/6">${payment.amount ?? '-'}</div>
+                                                        </div>
+                                                    </div>
+                                                `;
+                                        }).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div class="flex flex-col space-y-2">
+                            <div id="total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Previous Balance - Rs</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance, 1, 1)}</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Total Payment - Rs</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalPayment, 1, 1)}</div>
+                                </div>
+                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                    <div class="text-nowrap">Current Balance - Rs</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance - totalPayment, 1, 1)}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
+                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                previewDom.innerHTML = `
+                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
+                `;
+            }
+        }
+
         function validateForNextStep() {
+            generateVoucherPreview();
             return true;
         }
     </script>

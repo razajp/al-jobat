@@ -29,6 +29,13 @@ class CustomerPayment extends Model
         "bank_account_id",
     ];
 
+    protected $casts = [
+        'date' => 'date',
+        'cheque_date' => 'date',
+        'slip_date' => 'date',
+        'clear_date' => 'date',
+    ];
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article

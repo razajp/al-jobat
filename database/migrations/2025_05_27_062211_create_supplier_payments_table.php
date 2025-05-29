@@ -18,21 +18,16 @@ return new class extends Migration
             $table->string('type');
             $table->string('method');
             $table->integer('amount');
-            $table->string('cheque_no')->nullable()->unique();
-            $table->string('slip_no')->nullable()->unique();
-            $table->string('transaction_id')->nullable()->unique();
-            $table->date('cheque_date')->nullable();
-            $table->date('slip_date')->nullable();
-            $table->date('clear_date')->nullable();
-            $table->string('bank')->nullable();
+            $table->string('cheque_id')->nullable()->unique();
+            $table->string('slip_id')->nullable()->unique();
             $table->string('remarks')->nullable();
             $table->string('program_id')->nullable();
-            $table->string('bank_account_id')->nullable();
 
             // Define foreign key constraint
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
             $table->foreign('bank_account_id')->references('id')->on('bank_accounts')->onDelete('cascade');
             $table->foreign('program_id')->references('id')->on('payment_programs')->onDelete('set null');
+            $table->foreignId('voucher_id')->constrained('vouchers')->onDelete('cascade');
 
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');

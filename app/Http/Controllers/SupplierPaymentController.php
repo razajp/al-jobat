@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\PaymentProgram;
 use App\Models\Setup;
 use App\Models\Supplier;
@@ -50,22 +51,37 @@ class SupplierPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $banks_options = [];
-        $banks = Setup::where('type', 'bank_name')->get();
-        foreach ($banks as $bank) {
-            if ($bank) {
-                $banks_options[$bank->title] = [
-                    'text' => $bank->title,
-                    'data_option' => $bank,
+        $cheques_options = [];
+        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer')->get();
+        foreach ($cheques as $cheque) {
+            if ($cheque) {
+                $cheques_options[$cheque->id] = [
+                    'text' => $cheque->cheque_no . ' | ' . $cheque->customer->customer_name . ' | ' . $cheque->cheque_date->format('d-M-Y, D'),
+                    'data_option' => $cheque,
+                ];
+            }
+        }
+
+        $slips_options = [];
+        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer')->get();
+        foreach ($slips as $slip) {
+            if ($slip) {
+                $slips_options[$slip->id] = [
+                    'text' => $slip->slip_no . ' | ' . $slip->customer->customer_name . ' | ' . $slip->slip_date->format('d-M-Y, D'),
+                    'data_option' => $slip,
                 ];
             }
         }
 
         $suppliers_options = [];
 
-        $suppliers = Supplier::with('paymentPrograms.customer', 'paymentPrograms.subCategory.bankAccounts.bank')->whereHas('user', function ($query) {
-            $query->where('status', 'active');
-        })->get();
+        $suppliers = Supplier::with(['user', 'payments.program.customer', 'payments' => function ($query) {
+            $query->where('method', 'program'); // Only eager load payments with method = 'program'
+        }])
+        ->whereHas('user', function ($query) {
+            $query->where('status', 'active'); // Supplier's user must be active
+        })
+        ->get();
 
         foreach ($suppliers as $supplier) {
             foreach ($supplier->paymentPrograms as $program) {
@@ -94,7 +110,10 @@ class SupplierPaymentController extends Controller
             ];
         }
 
-        return view("supplier-payments.create", compact("suppliers", "suppliers_options", 'banks_options'));
+        $last_voucher = [];
+        $last_voucher['voucher_no'] = '00/101';
+
+        return view("supplier-payments.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'last_voucher'));
     }
 
     /**
@@ -105,6 +124,8 @@ class SupplierPaymentController extends Controller
         if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
+
+        return $request;
 
         $validator = Validator::make($request->all(), [
             "supplier_id" => "required|integer|exists:suppliers,id",
@@ -122,13 +143,15 @@ class SupplierPaymentController extends Controller
 
         $paymentDetailsArray = json_decode($data['payment_details_array'], true);
 
+        
+
         foreach ($paymentDetailsArray as $paymentDetails) {
             $paymentDetails['supplier_id'] = $request->supplier_id;
             $paymentDetails['date'] = $request->date;
             $paymentDetails['type'] = $request->type;
             $paymentDetails['program_id'] = $request->program_id;
 
-            SupplierPayment::create($paymentDetails);
+            $supplierPayment = SupplierPayment::create($paymentDetails);
         }
 
         return redirect()->route('supplier-payments.create')->with('success', 'Payment Added successfully.');
