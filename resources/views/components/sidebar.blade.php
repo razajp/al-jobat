@@ -81,7 +81,7 @@
                     <x-nav-link-item 
                         label="Suppliers" 
                         icon="fas fa-truck"
-                        :activatorTags="['supplier-payments']"
+                        :activatorTags="['vouchers']"
                         includesDropdown
                         :items="[
                             [
@@ -93,11 +93,11 @@
                                 ]
                             ],
                             [
-                                'label' => 'Payment',
+                                'label' => 'Voucher',
                                 'type' => 'group',
                                 'children' => [
-                                    ['type' => 'link', 'href' => route('supplier-payments.index'), 'label' => 'Show Payments'],
-                                    ['type' => 'link', 'href' => route('supplier-payments.create'), 'label' => 'Add Payment'],
+                                    ['type' => 'link', 'href' => route('vouchers.index'), 'label' => 'Show Vouchers'],
+                                    ['type' => 'link', 'href' => route('vouchers.create'), 'label' => 'Generater Voucher'],
                                 ]
                             ]
                         ]"

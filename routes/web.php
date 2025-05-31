@@ -18,6 +18,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,6 +81,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('bilties', BiltyController::class);
 
     Route::resource('expenses', ExpenseController::class);
+    
+    Route::resource('vouchers', VoucherController::class);
     
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');

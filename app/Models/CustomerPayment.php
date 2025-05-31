@@ -71,4 +71,14 @@ class CustomerPayment extends Model
     {
         return $this->belongsTo(BankAccount::class, "bank_account_id");
     }
+    
+    public function cheque()
+    {
+        return $this->hasOne(SupplierPayment::class, "cheque_id");
+    }
+    
+    public function slip()
+    {
+        return $this->hasOne(SupplierPayment::class, "slip_id");
+    }
 }
