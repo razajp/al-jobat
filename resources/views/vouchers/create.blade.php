@@ -39,20 +39,20 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"
-            linkHref="{{ route('supplier-payments.index') }}" />
+            linkHref="{{ route('vouchers.index') }}" />
         <x-progress-bar :steps="['Select Supplier', 'Enter Payment', 'Preview']" :currentStep="1" />
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('supplier-payments.store') }}" method="post"
+    <form id="form" action="{{ route('vouchers.store') }}" method="post"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
-        <x-form-title-bar title="Add Supplier Payment" />
+        <x-form-title-bar title="Generate Voucher" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- supplier --}}
-                <x-select label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
+                <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
                     onchange="trackSupplierState()" />
 
                 {{-- balance --}}
@@ -267,10 +267,12 @@
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- program --}}
-                        <x-select label="Program" name="program" id="program" required showDefault />
+                        <x-select label="Program" name="program_id" id="program" required showDefault />
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+
+                        <input type="hidden" name="payment_id" id="payment_id" />
 
                         {{-- remarks --}}
                         <div class="col-span-full">
@@ -279,21 +281,22 @@
                     </div>
                 `;
 
-                let programSelectDom = document.getElementById('program');
+                let paymentSelectDom = document.getElementById('program');
 
                 selectedSupplier.payments.forEach(payment => {
-                    programSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
+                    paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
                 })
 
                 if (selectedSupplier.payments.length > 0) {
-                    programSelectDom.disabled = false;
+                    paymentSelectDom.disabled = false;
                 }
 
-                programSelectDom.addEventListener('change', () => {
-                    let selectedOption = programSelectDom.options[programSelectDom.selectedIndex];
-                    let selectedProgram = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+                paymentSelectDom.addEventListener('change', () => {
+                    let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
+                    let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
-                    document.getElementById('amount').value = selectedProgram.amount;
+                    document.getElementById('amount').value = selectedPayment.amount;
+                    document.getElementById('payment_id').value = selectedPayment.id;
                 })
             } else if (elem.value == 'adjustment') {
                 paymentDetailsDom.innerHTML += `

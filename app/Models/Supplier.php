@@ -71,7 +71,7 @@ class Supplier extends Model
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $ordersQuery = $this->expenses();
-        $paymentsQuery = $this->payments();
+        $paymentsQuery = $this->payments()->whereNotNull('voucher_id');
     
         // Handle different date scenarios
         if ($fromDate && $toDate) {

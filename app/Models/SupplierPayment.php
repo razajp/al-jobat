@@ -14,19 +14,12 @@ class SupplierPayment extends Model
     protected $fillable = [
         "supplier_id",
         "date",
-        "type",
         "method",
         "amount",
-        "cheque_no",
-        "slip_no",
-        "transaction_id",
-        "cheque_date",
-        "slip_date",
-        "clear_date",
-        "bank",
-        "remarks",
+        "cheque_id",
+        "slip_id",
         "program_id",
-        "bank_account_id",
+        "remarks",
         "voucher_id",
     ];
 
@@ -60,9 +53,14 @@ class SupplierPayment extends Model
         return $this->belongsTo(PaymentProgram::class, "program_id");
     }
     
-    public function bankAccount()
+    public function cheque()
     {
-        return $this->belongsTo(BankAccount::class, "bank_account_id");
+        return $this->belongsTo(CustomerPayment::class, "cheque_id");
+    }
+    
+    public function slip()
+    {
+        return $this->belongsTo(CustomerPayment::class, "slip_id");
     }
 
     public function voucher() {
