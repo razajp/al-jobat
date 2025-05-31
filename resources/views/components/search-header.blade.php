@@ -1,6 +1,6 @@
 @props([
     'heading' => '',
-    'filter_items' => [],
+    'search_fields' => [],
     'toFrom' => false,
     'toFrom_type' => 'text',
     'toFrom_label' => 'text',
@@ -26,11 +26,11 @@
             </div>
         @endif
 
-        @if ($toFrom && !empty($filter_items))
+        @if ($toFrom && !empty($search_fields))
             <div class="separator w-0 border-r border-gray-600"></div>
         @endif
 
-        @if (!empty($filter_items))
+        @if (!empty($search_fields))
             <!-- Search Form -->
             <div id="search-form" class="search-box shrink-0 grow w-full">
                 <!-- Search Input -->
@@ -45,27 +45,22 @@
                         <h6 class="text-xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
                         <hr class="border-gray-600 my-4 w-full">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <x-input label="Supplier Name" id="supplier_name" type="text"
-                                placeholder="Enter supplier name" required />
-
-                            <x-select label="Type" id="type" :options="[
-                                'normal' => ['text' => 'Normal'],
-                                'payment_program' => ['text' => 'Payment Program'],
-                            ]" required showDefault />
-
-                            <x-select label="Method" id="method" :options="[
-                                'cash' => ['text' => 'Cash'],
-                                'cheque' => ['text' => 'Cheque'],
-                                'slip' => ['text' => 'Slip'],
-                                'adjustment' => ['text' => 'Adjustment'],
-                            ]" required showDefault />
-
-                            <x-input label="Date Range" dualInput id="date_range_start" id2="date_range_end" type="date" type2="date" required />
+                            @foreach ($search_fields as $search_field => $value)
+                                @if ($value['type'] == "select")
+                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" required showDefault />
+                                @elseif ($value['type'] == "text")
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                                @elseif (isset($value['type2']) && isset($value['id2']))
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" required/>
+                                @else
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" required/>
+                                @endif
+                            @endforeach
                         </div>
                     </div>
                     {{-- <div class="dropdownMenu text-sm absolute mt-2 top-10 right-0 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50">
                         <ul class="p-2 space-y-1">
-                            @foreach ($filter_items as $key => $filter_item)
+                            @foreach ($search_fields as $key => $filter_item)
                                 <li>
                                     <label 
                                         class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out relative overflow-hidden"

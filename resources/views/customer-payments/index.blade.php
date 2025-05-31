@@ -1,19 +1,46 @@
 @extends('app')
 @section('title', 'Show Customer Payments | ' . app('company')->name)
 @section('content')
+@php
+    $searchFields = [
+        "Customer Name" => [
+            "id" => "customer_name",
+            "type" => "text",
+            "placeholder" => "Enter customer name",
+        ],
+        "Type" => [
+            "id" => "type",
+            "type" => "select",
+            "options" => [
+                        'normal' => ['text' => 'Normal'],
+                        'payment_program' => ['text' => 'Payment Program'],
+                    ],
+        ],
+        "Method" => [
+            "id" => "method",
+            "type" => "select",
+            "options" => [
+                        'cash' => ['text' => 'Cash'],
+                        'cheque' => ['text' => 'Cheque'],
+                        'slip' => ['text' => 'Slip'],
+                        'adjustment' => ['text' => 'Adjustment'],
+                    ],
+        ],
+        "Date Range" => [
+            "id" => "date_range_start",
+            "type" => "date",
+            "id2" => "date_range_end",
+            "type2" => "date",
+        ]
+    ];
+@endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Customer Payments" :filter_items="[
-            'all' => 'All',
-            'customer_name' => 'Customer Name',
-            'type' => 'Type',
-            'method' => 'Method',
-            'date' => 'Date',
-        ]"/>
+        <x-search-header heading="Customer Payments" :search_fields=$searchFields/>
     </div>
     
     <!-- Main Content -->
@@ -301,6 +328,28 @@
                 once: true
             });
         }
+
+        document.getElementById("customer_name").addEventListener("input", function () {
+            const inputValue = this.value.toLowerCase().trim();
+            const items = document.querySelectorAll(".search_container > div");
+
+            items.forEach(item => {
+                const jsonData = item.getAttribute("data-json");
+                if (!jsonData) return;
+
+                const parsed = JSON.parse(jsonData);
+                const customerName = parsed.customer?.customer_name?.toLowerCase() || "";
+
+                if (customerName.includes(inputValue)) {
+                    item.style.display = ""; // show
+                    item.classList.remove("opacity-50", "pointer-events-none"); // re-enable
+                } else {
+                    item.style.display = "none"; // hide
+                    // Alternatively: 
+                    // item.classList.add("opacity-50", "pointer-events-none"); // disable visually
+                }
+            });
+        });
 
         // Function for Search
         function filterData(search) {
