@@ -45,7 +45,7 @@
                                         <span class="text-center">{{ $expense->date->format('d-M-Y, D') }}</span>
                                         <span class="text-center">{{ $expense->supplier->supplier_name }}</span>
                                         <span class="text-center">{{ $expense->reff_no }}</span>
-                                        <span class="text-center capitalize">{{ $expense->expenseSetups->title }}</span>
+                                        <span class="text-center capitalize">{{ $expense->expense }}</span>
                                         <span class="text-center">{{ $expense->lot_no ?? '-' }}</span>
                                         <span class="text-center">{{ number_format($expense->amount, 1) }}</span>
                                         <span class="text-center capitalize">{{ $expense->remarks ?? '-' }}</span>
