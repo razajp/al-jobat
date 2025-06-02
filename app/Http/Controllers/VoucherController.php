@@ -14,9 +14,23 @@ class VoucherController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+        };
+        
+        $vouchers = Voucher::with("supplier", "supplierPayments")->get();
+
+        foreach ($vouchers as $voucher) {
+            $voucher['previous_balance'] = $voucher['supplier']->calculateBalance(null, $voucher->date, false, false);
+            $voucher['total_payment'] = $voucher['supplierPayments']->sum('amount');
+        }
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view("vouchers.index", compact("vouchers", "authLayout"));
     }
 
     /**
@@ -94,7 +108,7 @@ class VoucherController extends Controller
         $last_voucher = Voucher::orderBy('id', 'desc')->first();
 
         if (!$last_voucher) {
-            $last_voucher['voucher_no'] = '00/100';
+            $last_voucher['voucher_no'] = '00/101';
         }
 
         return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'last_voucher'));
