@@ -123,6 +123,7 @@
                         ($type == 'date' ? 'py-[7px]' : 'py-2') .
                         ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
                 ]) }}
+                {{ $oninput ? 'oninput='.$oninput : '' }}
             />
         @endif
         @if ($withImg)

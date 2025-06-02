@@ -1,19 +1,51 @@
 @extends('app')
 @section('title', 'Show Customer Payments | ' . app('company')->name)
 @section('content')
+@php
+    $searchFields = [
+        "Customer Name" => [
+            "id" => "customer_name",
+            "type" => "text",
+            "placeholder" => "Enter customer name",
+            "oninput" => "filterByText(this.value)",
+        ],
+        "Type" => [
+            "id" => "type",
+            "type" => "select",
+            "options" => [
+                        'normal' => ['text' => 'Normal'],
+                        'payment_program' => ['text' => 'Payment Program'],
+                    ],
+            "onchange" => "filterItems()",
+        ],
+        "Method" => [
+            "id" => "method",
+            "type" => "select",
+            "options" => [
+                        'cash' => ['text' => 'Cash'],
+                        'cheque' => ['text' => 'Cheque'],
+                        'slip' => ['text' => 'Slip'],
+                        'program' => ['text' => 'Program'],
+                        'adjustment' => ['text' => 'Adjustment'],
+                    ],
+            "onchange" => "filterItems()",
+        ],
+        "Date Range" => [
+            "id" => "date_range_start",
+            "type" => "date",
+            "id2" => "date_range_end",
+            "type2" => "date",
+            "oninput" => "filterItems()",
+        ]
+    ];
+@endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Customer Payments" :filter_items="[
-            'all' => 'All',
-            'customer_name' => 'Customer Name',
-            'type' => 'Type',
-            'method' => 'Method',
-            'date' => 'Date',
-        ]"/>
+        <x-search-header heading="Customer Payments" :search_fields=$searchFields/>
     </div>
     
     <!-- Main Content -->
@@ -65,6 +97,7 @@
                                 </div>
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else
@@ -231,6 +264,7 @@
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Date:</strong> <span>${formatDate(data.date)}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Amount:</strong> <span>${formatNumbersWithDigits(data.amount)}</span></p>
                                 <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Type:</strong> <span>${data.type.replace('_', ' ')}</span></p>
+                                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Method:</strong> <span>${data.method}</span></p>
                             </div>
                             
                             <hr class="border-gray-600 my-3"/>
@@ -302,55 +336,66 @@
             });
         }
 
-        // Function for Search
-        function filterData(search) {
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.customer.customer_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'customer_name':
-                        return (
-                            item.customer.customer_name.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'type':
-                        return (
-                            item.type.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'method':
-                        return (
-                            item.method.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'date':
-                        return (
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
-                
-                    default:
-                        return (
-                            item.customer.customer_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
+        const items = document.querySelectorAll(".search_container > div");
+        function filterByText(searchValue) {
+            searchValue = searchValue.toLowerCase().trim();
+            
+            items.forEach(item => {
+                const jsonData = item.getAttribute("data-json");
+                if (!jsonData) return;
+
+                const parsed = JSON.parse(jsonData);
+            });
+        }
+
+        function filterItems() {
+            const nameInput = document.getElementById("customer_name")?.value.toLowerCase().trim();
+            const typeSelect = document.getElementById("type")?.value;
+            const methodSelect = document.getElementById("method")?.value;
+            const startDate = document.getElementById("date_range_start")?.value;
+            const endDate = document.getElementById("date_range_end")?.value;
+
+            const items = document.querySelectorAll(".search_container > div");
+            let visibleCount = 0;
+
+            items.forEach(item => {
+                const jsonData = item.getAttribute("data-json");
+                if (!jsonData) return;
+
+                const parsed = JSON.parse(jsonData);
+                const customerName = parsed.customer?.customer_name?.toLowerCase() || "";
+                const type = parsed.type || "";
+                const method = parsed.method || "";
+                const date = parsed.date || "";
+
+                const matchesName = !nameInput || customerName.includes(nameInput);
+                const matchesType = !typeSelect || type === typeSelect;
+                const matchesMethod = !methodSelect || method === methodSelect;
+
+                const matchesDate = (() => {
+                    if (!startDate && !endDate) return true;
+                    const itemDate = new Date(date).setHours(0, 0, 0, 0);
+                    const start = startDate ? new Date(startDate).setHours(0, 0, 0, 0) : null;
+                    const end = endDate ? new Date(endDate).setHours(0, 0, 0, 0) : null;
+
+                    if (start && itemDate < start) return false;
+                    if (end && itemDate > end) return false;
+                    return true;
+                })();
+
+                const shouldShow = matchesName && matchesType && matchesMethod && matchesDate;
+
+                if (shouldShow) {
+                    item.style.display = "";
+                    item.classList.remove("opacity-50", "pointer-events-none");
+                    visibleCount++;
+                } else {
+                    item.style.display = "none";
                 }
             });
 
-            return filteredData;
+            const noItemsError = document.getElementById("noItemsError");
+            noItemsError.style.display = visibleCount === 0 ? "block" : "none";
         }
     </script>
 @endsection
