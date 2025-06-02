@@ -11,6 +11,7 @@
     'btnText' => '+', 
     'onchange' => '',
     'btnOnclick' => '',
+    'data_filter_field' => '',
 ])
 
 @php
@@ -35,6 +36,7 @@
             ]) }}
 
             {{ $onchange ? 'onchange='.$onchange : '' }}
+            {{ $data_filter_field ? 'data_filter_field='.$data_filter_field : '' }}
         >
             @if ($showDefault == "true" && $haveOptions)
                 <option value="">
