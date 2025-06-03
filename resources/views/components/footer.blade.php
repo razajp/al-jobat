@@ -10,9 +10,9 @@
             <div class="md:flex hidden justify-between items-center mx-auto">
                 <span class="text-center text-sm mx-3">Copyright  &copy; 2024-<span class="opacity-100" id="year">2025</span> Spark Pair All rights reserved.</span>
                 <div class="flex justify-center mx-3 ">
-                    <a href="https://wa.me/+923165825495?text=Dear%20Spark%20Pair%20Team,%20I%20would%20like%20to%20learn%20more%20about%20your%20services.%0A%0APlease%20provide%20details%20on%20how%20your%20solutions%20can%20help%20with%20business%20management%20and%20the%20features%20that%20might%20be%20beneficial.%0A%0ARegards,%0AHasan%20Raza%0A%2B92-316-5825495" target="_blank" class="text-[var(--primary-color)] hover:underline">+92 316 5825495</a>
+                    <a href="https://wa.me/+923165825495" target="_blank" class="text-[var(--primary-color)] hover:underline">+92 316 5825495</a>
                     <span class="mx-2">|</span>
-                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to=sparkpair15@gmail.com&su=Subject&body=Message%20content" target="_blank" class="text-[var(--primary-color)] hover:underline">sparkpair15@gmail.com</a>
+                    <a href="https://sparkpair.vercel.app" target="_blank" class="text-[var(--primary-color)] hover:underline">sparkpair.vercel.app</a>
                 </div>
             </div>
             <div class="md:hidden flex justify-between items-center mx-auto">

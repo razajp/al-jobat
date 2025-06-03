@@ -64,6 +64,10 @@
             <div class="step1 space-y-4 ">
                 @if ($lastExpense)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- id -->
+                        <x-input label="ID No." name="id_no" id="id_no" disabled
+                            value="{{ $lastExpense->id }}" />
+
                         <!-- date -->
                         <x-input label="Date" name="last_date" id="last_date" disabled
                             value="{{ $lastExpense->date->format('d-M-Y, D') }}" />
@@ -72,13 +76,9 @@
                         <x-input label="Supplier" name="last_supplier" id="last_supplier" type="text" disabled
                             value="{{ $lastExpense->supplier->supplier_name }}" />
 
-                        <!-- balance -->
-                        <x-input label="Balance" id="last_balance" type="number" disabled
-                            value="{{ $lastExpense->supplier->balance }}" />
-
                         {{-- expense --}}
                         <x-input label="Expense" name="last_expense" id="last_expense" type="text" disabled
-                            value="{{ $lastExpense->expense }}" />
+                            value="{{ $lastExpense->expenseSetups->title }}" />
 
                         <!-- reff_no -->
                         <x-input label="Reff. No." name="last_reff_no" id="last_reff_no" type="number" disabled

@@ -19,7 +19,7 @@ class ExpenseController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $expenses = Expense::with('supplier')->with('supplier')->get();
+        $expenses = Expense::with('supplier', 'expenseSetups')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
@@ -35,7 +35,7 @@ class ExpenseController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $lastExpense = Expense::latest()->with("supplier")->first();
+        $lastExpense = Expense::latest()->with('supplier', 'expenseSetups')->first();
 
         $suppliers = Supplier::whereHas('user', function ($query) {
             $query->where('status', 'active');
@@ -86,7 +86,7 @@ class ExpenseController extends Controller
 
         $expense = Expense::create($request->all());
 
-        return redirect()->back()->with('success', 'Expense added successfully.');
+        return redirect()->back()->with('success', 'Expense added successfully! ID: ' . $expense->id);
     }
 
     /**

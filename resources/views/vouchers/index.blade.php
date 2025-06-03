@@ -87,9 +87,9 @@
                             Details</button>
                     </li>
                     <li>
-                        <button id="show-details" type="button"
+                        <button id="print" type="button"
                             class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
-                            Order</button>
+                            Voucher</button>
                     </li>
                 </ul>
             </div>
@@ -159,6 +159,12 @@
                 }
             });
 
+            document.addEventListener('mousedown', (e) => {
+                if (e.target.id === "print") {
+                    generateModal(item, 'context');
+                }
+            });
+
             // Function to remove context menu
             const removeContextMenu = (event) => {
                 if (!contextMenu.contains(event.target)) {
@@ -211,14 +217,14 @@
             card.forEach(item => {
                 item.addEventListener('click', () => {
                     if (!isContextMenuOpened) {
-                        generateModal(item);
+                        generateModal(item, 'open');
                     }
                 });
             });
         }
         
         let companyData = @json(app('company'));
-        function generateModal(item) {
+        function generateModal(item, context) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
@@ -322,6 +328,10 @@
                             class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                             Cancel
                         </button>
+                        <button id="print-in-modal" type="button"
+                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            Print Voucher
+                        </button>
                     </x-slot>
                 </x-modal>
             `;
@@ -351,14 +361,19 @@
                 `;
             }
 
-            openModal();
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
+            addListenerToPrintVoucher();
+            if (context == 'context') {
+                document.getElementById('print-in-modal').click();
+            } else {
+                openModal();
+            }
         }
 
         addListenerToCards();
 
         function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
             isModalOpened = true;
             closeAllDropdowns();
             closeContextMenu();
@@ -374,6 +389,86 @@
                 modal.classList.remove('fade-out');
             }, {
                 once: true
+            });
+        }
+
+        function addListenerToPrintVoucher() {
+            document.getElementById('print-in-modal').addEventListener('click', (e) => {
+                e.preventDefault();
+                closeAllDropdowns();
+                const preview = document.getElementById('preview-container'); // preview content
+
+                // Pehle se agar koi iframe hai to usko remove karein
+                let oldIframe = document.getElementById('printIframe');
+                if (oldIframe) {
+                    oldIframe.remove();
+                }
+
+                // Naya iframe banayein
+                let printIframe = document.createElement('iframe');
+                printIframe.id = "printIframe";
+                printIframe.style.position = "absolute";
+                printIframe.style.width = "0px";
+                printIframe.style.height = "0px";
+                printIframe.style.border = "none";
+                printIframe.style.display = "none"; // ✅ Hide iframe
+
+                // Iframe ko body me add karein
+                document.body.appendChild(printIframe);
+
+                let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+                printDocument.open();
+
+                // ✅ Current page ke CSS styles bhi iframe me inject karenge
+                const headContent = document.head.innerHTML;
+
+                printDocument.write(`
+                    <html>
+                        <head>
+                            <title>Print Voucher</title>
+                            ${headContent} <!-- Copy current styles -->
+                            <style>
+                                @media print {
+
+                                    body {
+                                        margin: 0;
+                                        padding: 0;
+                                        width: 210mm; /* A4 width */
+                                        height: 297mm; /* A4 height */
+                                        
+                                    }
+
+                                    .preview-container, .preview-container * {
+                                        page-break-inside: avoid;
+                                    }
+                                }
+                            </style>
+                        </head>
+                        <body>
+                            <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                            <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        </body>
+                    </html>
+                `);
+
+                printDocument.close();
+
+                // Wait for iframe to load and print
+                printIframe.onload = () => {
+
+                    // Select the preview-copy div and update its text
+                    let previewCopy = printDocument.querySelector('#preview-container .preview-copy');
+
+                    if (previewCopy) {
+                        previewCopy.textContent = "Voucher Copy: Office"; // Change text to "order Copy: Office"
+                    }
+
+                    setTimeout(() => {
+                        printIframe.contentWindow.focus();
+                        printIframe.contentWindow.print();
+                        document.body.removeChild(printIframe); // Remove iframe after printing
+                    }, 1000);
+                }
             });
         }
 
