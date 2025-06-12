@@ -1,6 +1,55 @@
 @extends('app')
 @section('title', 'Show Articles | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Article" => [
+                "id" => "article",
+                "type" => "text",
+                "placeholder" => "Enter article no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "article_no",
+            ],
+            "Category" => [
+                "id" => "category",
+                "type" => "select",
+                "options" => [
+                            'normal' => ['text' => 'Normal'],
+                            'payment_program' => ['text' => 'Payment Program'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "category",
+            ],
+            "Season" => [
+                "id" => "season",
+                "type" => "select",
+                "options" => [
+                            'normal' => ['text' => 'Normal'],
+                            'payment_program' => ['text' => 'Payment Program'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "season",
+            ],
+            "Size" => [
+                "id" => "size",
+                "type" => "select",
+                "options" => [
+                            'normal' => ['text' => 'Normal'],
+                            'payment_program' => ['text' => 'Payment Program'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "size",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
@@ -17,6 +66,10 @@
     
     {{-- header --}}
     <div class="w-[80%] mx-auto">
+        <x-search-header heading="Articles" :search_fields=$searchFields/>
+    </div>
+
+    {{-- <div class="w-[80%] mx-auto">
         <x-search-header heading="Articles" :filter_items="[
             'all' => 'All',
             '#' => 'Article No.',
@@ -24,7 +77,7 @@
             'season' => 'Season',
             'size' => 'Size',
         ]"/>
-    </div>
+    </div> --}}
 
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -80,6 +133,7 @@
                                     </div>
                                 @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

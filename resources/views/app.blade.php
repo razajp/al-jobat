@@ -650,6 +650,7 @@
         }, error => {
             hideLoader();
             return Promise.reject(error);
+
         });
 
         axios.interceptors.response.use(response => {
@@ -688,6 +689,131 @@
     //     window.location.reload(); // Optional: reload the page
     // });
     // }
+
+    // const items = document.querySelectorAll(".search_container > div");
+    // function filterByText(inputValue, jsonPath) {
+    //     inputValue = inputValue.toLowerCase().trim();
+
+    //     items.forEach(item => {
+    //         const jsonData = item.getAttribute("data-json");
+    //         if (!jsonData) return;
+
+    //         const parsed = JSON.parse(jsonData);
+    //         const fieldValue = getNestedValue(parsed, jsonPath)?.toString().toLowerCase() || "";
+
+    //         const match = fieldValue.includes(inputValue);
+    //         item.style.display = match ? "" : "none";
+    //     });
+
+    //     const noItemsError = document.getElementById("noItemsError");
+    //     noItemsError.style.display = Array.from(items).every(item => item.style.display === "none") ? "block" : "none";
+    // }
+
+    // function filterBySelect(inputValue, jsonPath) {
+    //     inputValue = inputValue.toLowerCase().trim();
+
+    //     items.forEach(item => {
+    //         const jsonData = item.getAttribute("data-json");
+    //         if (!jsonData) return;
+
+    //         const parsed = JSON.parse(jsonData);
+    //         const fieldValue = getNestedValue(parsed, jsonPath)?.toString().toLowerCase() || "";
+
+    //         const match = fieldValue == inputValue;
+    //         item.style.display = match ? "" : "none";
+    //     });
+
+    //     const noItemsError = document.getElementById("noItemsError");
+    //     noItemsError.style.display = Array.from(items).every(item => item.style.display === "none") ? "block" : "none";
+    // }
+
+    // function getNestedValue(obj, path) {
+    //     return path.split('.').reduce((acc, part) => acc?.[part], obj);
+    // }
+
+    function getNestedValue(obj, path) {
+        return path.split('.').reduce((acc, part) => acc?.[part], obj);
+    }
+
+    const items = document.querySelectorAll(".search_container > div");
+    function runDynamicFilter() {
+        const filters = document.querySelectorAll('[data-filter-path]');
+        const noItemsError = document.getElementById("noItemsError");
+
+        // Group filters by path
+        const filterGroups = {};
+
+        filters.forEach(filter => {
+            const path = filter.dataset.filterPath;
+            if (!filterGroups[path]) filterGroups[path] = [];
+            filterGroups[path].push(filter);
+        });
+
+        const items = document.querySelectorAll(".search_container > div");
+
+        items.forEach(item => {
+            const jsonData = item.getAttribute("data-json");
+            if (!jsonData) return;
+
+            const parsed = JSON.parse(jsonData);
+            let visible = true;
+
+            for (const path in filterGroups) {
+                const group = filterGroups[path];
+                const jsonVal = (getNestedValue(parsed, path) || "").toString().toLowerCase();
+
+                // Handle date range
+                if (group.length === 2 && group[0].type === "date" && group[1].type === "date") {
+                    const startInput = group.find(i => i.id.includes("start"));
+                    const endInput = group.find(i => i.id.includes("end"));
+
+                    const startVal = startInput?.value;
+                    const endVal = endInput?.value;
+
+                    const jsonDate = new Date(jsonVal);
+
+                    if (startVal) {
+                        const startDate = new Date(startVal);
+                        if (jsonDate < startDate) visible = false;
+                    }
+
+                    if (endVal) {
+                        const endDate = new Date(endVal);
+                        if (jsonDate > endDate) visible = false;
+                    }
+                } else {
+                    for (const input of group) {
+                        const value = (input.value || "").trim().toLowerCase();
+
+                        if (!value) continue;
+
+                        if (input.type === "text") {
+                            if (!jsonVal.includes(value)) visible = false;
+                        } else if (input.type === "select-one") {
+                            if (jsonVal !== value) visible = false;
+                        } else if (input.type === "number") {
+                            const inputNumber = Number(value);
+                            const jsonNumber = Number(jsonVal);
+
+                            if (isNaN(jsonNumber) || jsonNumber !== inputNumber) visible = false;
+                        } else if (input.type === "date") {
+                            const inputDate = new Date(value);
+                            const jsonDate = new Date(jsonVal);
+
+                            if (input.id.includes("start") && jsonDate < inputDate) visible = false;
+                            if (input.id.includes("end") && jsonDate > inputDate) visible = false;
+                        }
+                    }
+                }
+
+                if (!visible) break;
+            }
+
+            item.style.display = visible ? "" : "none";
+        });
+
+        noItemsError.style.display = Array.from(items).every(i => i.style.display === "none") ? "block" : "none";
+    }
 </script>
 
 </html>

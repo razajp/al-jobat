@@ -99,5 +99,5 @@ class Supplier extends Model
         $balance = $totalOrders - $totalPayments;
     
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
-    }    
+    }
 }

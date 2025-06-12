@@ -169,7 +169,7 @@ class CustomerPaymentController extends Controller
 
         $currentProgram = PaymentProgram::find($request->program_id);
         
-        if ($currentProgram->balance >= 1000 & $currentProgram->balance <= 0.0) {
+        if ($currentProgram->balance >= 1000 || $currentProgram->balance <= 0.0) {
             $currentProgram->status = 'Paid';
             $currentProgram->save();
         } else if ($currentProgram->balance < 0.0) {

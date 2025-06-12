@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('expense')->constrained('setups')->onDelete('cascade');
             $table->integer('reff_no');
             $table->integer('amount');
-            $table->integer('lot_no');
+            $table->integer('lot_no')->nullable();
             $table->string('remarks')->nullable();
             $table->timestamps();
         });

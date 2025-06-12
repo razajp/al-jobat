@@ -450,7 +450,6 @@
                                     <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                     <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
                                     <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
-                                    <div class="w-[15%] text-right">${formatNumbersWithDigits(articleAmount, 1, 1)}</div>
                                 </div>
                             `;
 
@@ -681,16 +680,13 @@
                 return `${day}-${month}-${year}, ${weekDays[dayOfWeek]}`;
             }
 
-            function getCottonCount() {
-                return ++cottonCount;
-            }
-
             function generateInvoice() {
                 customerData = selectedCustomersArray[0];
                 invoiceNo = generateInvoiceNo();
                 invoiceDate = getInvoiceDate();
-                cottonCount = getCottonCount();
+                cottonCount = customerData.cotton_count || 1;
                 let totalQuantity = 0;
+                let totalAmountOfThisInvoice = 0;
                 if (shipmentArticles.length > 0) {  
                     previewDom.innerHTML = `
                         <div id="invoice" class="invoice flex flex-col h-full">
@@ -747,19 +743,19 @@
                                         <div id="tbody" class="tbody w-full">
                                             ${shipmentArticles.map((articles, index) => {
                                                 const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-
+                                                totalAmountOfThisInvoice += parseInt(articles.article.sales_rate) * (articles.shipment_quantity * cottonCount)
                                                 return `
                                                     <div>
                                                         <hr class="w-full ${hrClass} border-black">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity / articles.article.pcs_per_packet}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${(articles.shipment_quantity / articles.article.pcs_per_packet) * cottonCount}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity * cottonCount}</div>
                                                             <div class="td text-sm font-semibold grow">${articles.description}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
                                                             <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
-                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * articles.shipment_quantity, 1, 1)}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * (articles.shipment_quantity * cottonCount), 1, 1)}</div>
                                                         </div>
                                                     </div>
                                                 `;
@@ -777,7 +773,7 @@
                                     </div>
                                     <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                         <div class="text-nowrap">Gross Amount</div>
-                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmountOfThisInvoice, 1, 1)}</div>
                                     </div>
                                 </div>
                                 <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
@@ -788,7 +784,7 @@
                                     <div
                                         class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                         <div class="text-nowrap">Net Amount</div>
-                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
+                                        <div class="w-1/2 text-right grow">${formatNumbersWithDigits(totalAmountOfThisInvoice - ((totalAmountOfThisInvoice / 100) * discount), 1, 1)}</div>
                                     </div>
                                 </div>
                             </div>

@@ -21,7 +21,7 @@ class VoucherController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $vouchers = Voucher::with("supplier", "supplierPayments")->get();
+        $vouchers = Voucher::with("supplier", 'supplierPayments.cheque', 'supplierPayments.slip', 'supplierPayments.program.customer', "supplierPayments.bankAccount.bank")->get();
 
         foreach ($vouchers as $voucher) {
             $voucher['previous_balance'] = $voucher['supplier']->calculateBalance(null, $voucher->date, false, false);
@@ -70,7 +70,7 @@ class VoucherController extends Controller
             $query->where('method', 'program')
                 ->whereNull('voucher_id')
                 ->with(['program.customer']); // nested eager load
-        },])
+        }, 'payments.program.customer', 'payments.bankAccount.bank'])
         ->whereHas('user', function ($query) {
             $query->where('status', 'active'); // Supplier's user must be active
         })

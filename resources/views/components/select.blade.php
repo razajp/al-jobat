@@ -11,7 +11,7 @@
     'btnText' => '+', 
     'onchange' => '',
     'btnOnclick' => '',
-    'data_filter_field' => '',
+    'dataFilterPath' => '',
 ])
 
 @php
@@ -35,8 +35,8 @@
                 'class' => 'w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent'
             ]) }}
 
-            {{ $onchange ? 'onchange='.$onchange : '' }}
-            {{ $data_filter_field ? 'data_filter_field='.$data_filter_field : '' }}
+            {!! $onchange ? 'onchange="'.$onchange.'"' : '' !!}
+            {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
         >
             @if ($showDefault == "true" && $haveOptions)
                 <option value="">

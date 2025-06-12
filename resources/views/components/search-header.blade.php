@@ -47,13 +47,13 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach ($search_fields as $search_field => $value)
                                 @if ($value['type'] == "select")
-                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" onchange="{{ $value['onchange'] }}" required showDefault />
+                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" dataFilterPath="{{ $value['dataFilterPath'] }}" onchange="{!! $value['onchange'] !!}" required showDefault />
                                 @elseif ($value['type'] == "text")
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" oninput="{{ $value['oninput'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required placeholder="{{ $value['placeholder'] }}" />
                                 @elseif (isset($value['type2']) && isset($value['id2']))
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" oninput="{{ $value['oninput'] }}" required/>
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required/>
                                 @else
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" oninput="{{ $value['oninput'] }}" required/>
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required/>
                                 @endif
                             @endforeach
                         </div>

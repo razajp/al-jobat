@@ -1,6 +1,25 @@
 @extends('app')
 @section('title', 'Show Suppliers | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Supplier Name" => [
+                "id" => "supplier_name",
+                "type" => "text",
+                "placeholder" => "Enter supplier name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "supplier_name",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
@@ -10,6 +29,10 @@
     </div>
     <div>
         <div class="w-[80%] mx-auto">
+            <x-search-header heading="Suppliers" :search_fields=$searchFields/>
+        </div>
+
+        {{-- <div class="w-[80%] mx-auto">
             <x-search-header heading="Suppliers" :filter_items="[
                 'all' => 'All',
                 'supplier_name' => 'Supplier Name',
@@ -17,7 +40,7 @@
                 'person_name' => 'Person Name',
                 'username' => 'Username',
             ]"/>
-        </div>
+        </div> --}}
         <!-- Main Content -->
 
         <section class="text-center mx-auto ">
@@ -73,6 +96,7 @@
                             </div>
                         @endif
                     </div>
+                    <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Suppliers yet</h1>

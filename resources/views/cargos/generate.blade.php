@@ -315,7 +315,7 @@
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.invoice_no}</div>
                                                         <div class="td text-sm font-semibold w-1/6">${invoice.cotton_count}</div>
                                                         <div class="td text-sm font-semibold grow">${invoice.customer.customer_name}</div>
-                                                        <div class="td text-sm font-semibold w-1/6">${invoice.customer.city}</div>
+                                                        <div class="td text-sm font-semibold w-1/6">${invoice.customer.city.title}</div>
                                                     </div>
                                                 </div>
                                             `;

@@ -31,7 +31,7 @@
                     {{-- expense --}}
                     <x-select label="Expense" name="expense" id="expense" required showDefault />
 
-                    <!-- expense_no -->
+                    <!-- reff_no -->
                     <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no"
                         required />
 
@@ -40,8 +40,7 @@
                         required />
 
                     <!-- lot_no -->
-                    <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no"
-                        required />
+                    <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no" />
 
                     {{-- remarks --}}
                     <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />

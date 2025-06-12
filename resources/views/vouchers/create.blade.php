@@ -6,12 +6,8 @@
             'cash' => ['text' => 'Cash'],
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
-            'payment_program' => ['text' => 'Payment Program'],
+            'program' => ['text' => 'Payment Program'],
             'adjustment' => ['text' => 'Adjustment'],
-        ];
-        $type_options = [
-            'normal' => ['text' => 'Normal'],
-            'payment_program' => ['text' => 'Payment Program'],
         ];
     @endphp
     <!-- Modal -->
@@ -119,6 +115,7 @@
         let totalPayment = 0;
 
         let paymentDetailsArray = [];
+        let allPayments = [];
         let isModalOpened = false;
 
         function openModal() {
@@ -225,6 +222,7 @@
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+                        <input type="hidden" id="selected" />
 
                         {{-- remarks --}}
                         <div class="col-span-full">
@@ -234,10 +232,13 @@
                 `;
 
                 let chequeSelectDom = document.getElementById('cheque_id');
+                let selectedDom = document.getElementById('selected');
+
                 chequeSelectDom.addEventListener('change', () => {
                     let selectedOption = chequeSelectDom.options[chequeSelectDom.selectedIndex];
                     let selectedCheque = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
+                    selectedDom.value = JSON.stringify(selectedCheque);
                     document.getElementById('amount').value = selectedCheque.amount;
                 })
             } else if (elem.value == 'slip') {
@@ -248,6 +249,7 @@
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+                        <input type="hidden" id="selected" />
 
                         {{-- remarks --}}
                         <div class="col-span-full">
@@ -257,13 +259,16 @@
                 `;
 
                 let slipSelectDom = document.getElementById('slip_id');
+                let selectedDom = document.getElementById('selected');
+                
                 slipSelectDom.addEventListener('change', () => {
                     let selectedOption = slipSelectDom.options[slipSelectDom.selectedIndex];
                     let selectedSlip = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
+                    selectedDom.value = JSON.stringify(selectedSlip);
                     document.getElementById('amount').value = selectedSlip.amount;
                 })
-            } else if (elem.value == 'payment_program') {
+            } else if (elem.value == 'program') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- program --}}
@@ -273,6 +278,7 @@
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
 
                         <input type="hidden" name="payment_id" id="payment_id" />
+                        <input type="hidden" id="selected" />
 
                         {{-- remarks --}}
                         <div class="col-span-full">
@@ -282,6 +288,7 @@
                 `;
 
                 let paymentSelectDom = document.getElementById('program');
+                let selectedDom = document.getElementById('selected');
 
                 selectedSupplier.payments.forEach(payment => {
                     paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
@@ -295,6 +302,7 @@
                     let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
                     let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
+                    selectedDom.value = JSON.stringify(selectedPayment);
                     document.getElementById('amount').value = selectedPayment.amount;
                     document.getElementById('payment_id').value = selectedPayment.id;
                 })
@@ -323,16 +331,25 @@
         function addPaymentDetails() {
             closeModal();
             let detail = {};
+            let allDetail = {};
             const inputs = paymentDetailsDom.querySelectorAll('input:not([disabled])');
 
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
-                const value = input.value;
+                if (name != null) {
+                    const value = input.value;
 
-                if (name == "amount") {
-                    detail[name] = parseInt(value);
+                    if (name == "amount") {
+                        detail[name] = parseInt(value);
+                        allDetail[name] = parseInt(value);
+                    } else {
+                        detail[name] = value;
+                        allDetail[name] = value;
+                    }
                 } else {
-                    detail[name] = value;
+                    const value = JSON.parse(input.value);
+
+                    allDetail[name ?? 'selected'] = value;
                 }
             });
 
@@ -348,7 +365,9 @@
             if (Object.keys(detail).length > 0) {
                 totalPayment += detail.amount;
                 detail['method'] = methodSelectDom.value;
+                allDetail['method'] = methodSelectDom.value;
                 paymentDetailsArray.push(detail);
+                allPayments.push(allDetail);
                 renderList();
             }
         }
@@ -417,7 +436,7 @@
             let voucherNo = generateVoucherNo();
             const dateInpDom = document.getElementById("date");
 
-            if (paymentDetailsArray.length > 0) {
+            if (allPayments.length > 0) {
                 previewDom.innerHTML = `
                     <div id="preview-document" class="preview-document flex flex-col h-full">
                         <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
@@ -456,26 +475,28 @@
                                     <div class="thead w-full">
                                         <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                             <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                            <div class="th text-sm font-medium w-1/6">Method</div>
-                                            <div class="th text-sm font-medium w-1/6">C./S. NO.</div>
-                                            <div class="th text-sm font-medium w-1/6">C./S. Date</div>
-                                            <div class="th text-sm font-medium grow">-</div>
-                                            <div class="th text-sm font-medium w-1/6">Amount</div>
+                                            <div class="th text-sm font-medium w-[11%]">Method</div>
+                                            <div class="th text-sm font-medium w-1/5">Customer</div>
+                                            <div class="th text-sm font-medium w-1/4">Account</div>
+                                            <div class="th text-sm font-medium w-[17%]">Date</div>
+                                            <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
+                                            <div class="th text-sm font-medium w-[10%]">Amount</div>
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
-                                        ${paymentDetailsArray.map((payment, index) => {
+                                        ${allPayments.map((payment, index) => {
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             return `
                                                     <div>
                                                         <hr class="w-full ${hrClass} border-gray-600">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                            <div class="td text-sm font-semibold w-1/6">${payment.method ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/6">${payment.cheque_no ?? payment.slip_no ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/6">${payment.cheque_date ?? payment.slip_date ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold grow">${'-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/6">${payment.amount ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/5">${payment.selected?.program?.customer.customer_name ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/4">${(payment.selected?.bank_account?.account_title ?? '-') + ' | ' + (payment.selected?.bank_account?.bank.short_title ?? '-')}</div>
+                                                            <div class="td text-sm font-semibold w-[17%]">${formatDate(dateInpDom.value) ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${payment.selected?.cheque_no ?? payment.selected?.slip_no ?? payment.selected?.transaction_id ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                         </div>
                                                     </div>
                                                 `;

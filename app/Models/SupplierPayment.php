@@ -19,6 +19,8 @@ class SupplierPayment extends Model
         "cheque_id",
         "slip_id",
         "program_id",
+        "bank_account_id",
+        "transaction_id",
         "remarks",
         "voucher_id",
     ];
@@ -65,5 +67,9 @@ class SupplierPayment extends Model
 
     public function voucher() {
         return $this->belongsTo(Voucher::class, "voucher_id");
+    }
+
+    public function bankAccount() {
+        return $this->belongsTo(BankAccount::class, 'bank_account_id');
     }
 }

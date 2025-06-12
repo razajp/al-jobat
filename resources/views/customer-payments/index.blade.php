@@ -7,7 +7,8 @@
             "id" => "customer_name",
             "type" => "text",
             "placeholder" => "Enter customer name",
-            "oninput" => "filterByText(this.value)",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "customer.customer_name",
         ],
         "Type" => [
             "id" => "type",
@@ -16,7 +17,8 @@
                         'normal' => ['text' => 'Normal'],
                         'payment_program' => ['text' => 'Payment Program'],
                     ],
-            "onchange" => "filterItems()",
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "type",
         ],
         "Method" => [
             "id" => "method",
@@ -28,14 +30,16 @@
                         'program' => ['text' => 'Program'],
                         'adjustment' => ['text' => 'Adjustment'],
                     ],
-            "onchange" => "filterItems()",
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "method",
         ],
         "Date Range" => [
             "id" => "date_range_start",
             "type" => "date",
             "id2" => "date_range_end",
             "type2" => "date",
-            "oninput" => "filterItems()",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "date",
         ]
     ];
 @endphp
@@ -336,17 +340,6 @@
             });
         }
 
-        const items = document.querySelectorAll(".search_container > div");
-        function filterByText(searchValue) {
-            searchValue = searchValue.toLowerCase().trim();
-            
-            items.forEach(item => {
-                const jsonData = item.getAttribute("data-json");
-                if (!jsonData) return;
-
-                const parsed = JSON.parse(jsonData);
-            });
-        }
 
         function filterItems() {
             const nameInput = document.getElementById("customer_name")?.value.toLowerCase().trim();

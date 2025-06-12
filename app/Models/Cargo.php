@@ -52,7 +52,7 @@ class Cargo extends Model
         $invoices = [];
 
         foreach ($RawInvoices as $RawInvoice) {
-            $invoice = Invoice::with('customer')->where('id', $RawInvoice['id'])->first();
+            $invoice = Invoice::with('customer.city')->where('id', $RawInvoice['id'])->first();
     
             if ($invoice) {
                 $invoices[] = $invoice;

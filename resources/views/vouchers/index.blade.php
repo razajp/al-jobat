@@ -268,26 +268,30 @@
                                             <div class="thead w-full">
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                                     <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                    <div class="th text-sm font-medium w-1/6">Method</div>
-                                                    <div class="th text-sm font-medium w-1/6">C./S. NO.</div>
-                                                    <div class="th text-sm font-medium w-1/6">C./S. Date</div>
-                                                    <div class="th text-sm font-medium grow">-</div>
-                                                    <div class="th text-sm font-medium w-1/6">Amount</div>
+                                                    <div class="th text-sm font-medium w-[11%]">Method</div>
+                                                    <div class="th text-sm font-medium w-1/5">Customer</div>
+                                                    <div class="th text-sm font-medium w-1/4">Account</div>
+                                                    <div class="th text-sm font-medium w-[17%]">Date</div>
+                                                    <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
+                                                    <div class="th text-sm font-medium w-[10%]">Amount</div>
                                                 </div>
                                             </div>
                                             <div id="tbody" class="tbody w-full">
                                                 ${data.supplier_payments.map((payment, index) => {
+                                                    console.log(data);
+                                                    
                                                     const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                                     return `
                                                             <div>
                                                                 <hr class="w-full ${hrClass} border-gray-600">
                                                                 <div class="tr flex justify-between w-full px-4">
                                                                     <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                    <div class="td text-sm font-semibold w-1/6">${payment.method ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-1/6">${payment.cheque_no ?? payment.slip_no ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-1/6">${payment.cheque_date ?? payment.slip_date ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold grow">${'-'}</div>
-                                                                    <div class="td text-sm font-semibold w-1/6">${payment.amount ?? '-'}</div>
+                                                                    <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
+                                                                    <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>
+                                                                    <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>
+                                                                    <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
+                                                                    <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.slip?.slip_no ?? payment.transaction_id ?? '-'}</div>
+                                                                    <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                                 </div>
                                                             </div>
                                                         `;

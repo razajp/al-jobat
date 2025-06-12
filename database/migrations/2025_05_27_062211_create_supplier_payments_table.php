@@ -13,21 +13,17 @@ return new class extends Migration
     {
         Schema::create('supplier_payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('supplier_id');
+            $table->foreignId('supplier_id')->constrained('suppliers')->onDelete('cascade');
             $table->date('date');
             $table->string('method');
             $table->integer('amount');
-            $table->unsignedBigInteger('cheque_id')->nullable()->unique();
-            $table->unsignedBigInteger('slip_id')->nullable()->unique();
-            $table->string('remarks')->nullable();
-            $table->unsignedBigInteger('program_id')->nullable();
-
-            // Define foreign key constraint
-            $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('cascade');
-            $table->foreign('program_id')->references('id')->on('payment_programs')->onDelete('set null');
-            $table->foreign('slip_id')->references('id')->on('customer_payments')->onDelete('set null');
-            $table->foreign('cheque_id')->references('id')->on('customer_payments')->onDelete('set null');
+            $table->string('transaction_id')->nullable();
+            $table->foreignId('cheque_id')->nullable()->constrained('customer_payments')->onDelete('cascade');
+            $table->foreignId('slip_id')->nullable()->constrained('customer_payments')->onDelete('cascade');
+            $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
+            $table->foreignId('program_id')->nullable()->constrained('payment_programs')->onDelete('cascade');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->onDelete('cascade');
+            $table->string('remarks')->nullable();
 
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
