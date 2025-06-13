@@ -24,8 +24,15 @@ class CustomerController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
+        $cities_options = [];
+        $allCities = Setup::where('type', 'city')->get();
+
+        foreach ($allCities as $city) {
+            $cities_options[$city->id] = ['text' => $city->title];
+        }
+
         // return $customers;
-        return view("customers.index", compact('customers', 'authLayout'));
+        return view("customers.index", compact('customers', 'authLayout', 'cities_options'));
     }
 
     /**

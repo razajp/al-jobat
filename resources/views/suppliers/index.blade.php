@@ -10,6 +10,27 @@
                 "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "supplier_name",
             ],
+            "Urdu Title" => [
+                "id" => "urdu_title",
+                "type" => "text",
+                "placeholder" => "Enter urdu title",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "urdu_title",
+            ],
+            "Username" => [
+                "id" => "username",
+                "type" => "text",
+                "placeholder" => "Enter username",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "user.username",
+            ],
+            "Phone" => [
+                "id" => "phone",
+                "type" => "text",
+                "placeholder" => "Enter phone number",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "phone_number",
+            ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",

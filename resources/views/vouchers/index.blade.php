@@ -1,12 +1,42 @@
 @extends('app')
 @section('title', 'Show Vouchers | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Supplier Name" => [
+                "id" => "supplier_name",
+                "type" => "text",
+                "placeholder" => "Enter supplier name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "supplier.supplier_name",
+            ],
+            "Voucher No" => [
+                "id" => "voucher_no",
+                "type" => "text",
+                "placeholder" => "Enter voucher number",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "voucher_no",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
-    
+
     <div class="w-[80%] mx-auto">
+        <x-search-header heading="Vouchers" :search_fields=$searchFields/>
+    </div>
+    
+    {{-- <div class="w-[80%] mx-auto">
         <x-search-header heading="Vouchers" :filter_items="[
             'all' => 'All',
             'supplier_name' => 'Supplier Name',
@@ -14,7 +44,7 @@
             'method' => 'Method',
             'date' => 'Date',
         ]"/>
-    </div>
+    </div> --}}
     
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -65,6 +95,7 @@
                                 </div>
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

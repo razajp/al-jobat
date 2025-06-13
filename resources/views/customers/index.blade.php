@@ -1,12 +1,75 @@
 @extends('app')
 @section('title', 'Show Customers | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "customer_name",
+            ],
+            "Urdu Title" => [
+                "id" => "urdu_title",
+                "type" => "text",
+                "placeholder" => "Enter urdu title",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "urdu_title",
+            ],
+            "Username" => [
+                "id" => "username",
+                "type" => "text",
+                "placeholder" => "Enter username",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "user.username",
+            ],
+            "Phone" => [
+                "id" => "phone",
+                "type" => "text",
+                "placeholder" => "Enter phone number",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "phone_number",
+            ],
+            "Category" => [
+                "id" => "category",
+                "type" => "select",
+                "options" => [
+                            'cash' => ['text' => 'Cash'],
+                            'regular' => ['text' => 'Regular'],
+                            'site' => ['text' => 'Site'],
+                            'other' => ['text' => 'Other'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "category",
+            ],
+            "City" => [
+                "id" => "method",
+                "type" => "select",
+                "options" => $cities_options,
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "method",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <div>
         <div class="w-[80%] mx-auto">
+            <x-search-header heading="Customers" :search_fields=$searchFields/>
+        </div>
+        
+        {{-- <div class="w-[80%] mx-auto">
             <x-search-header heading="Customers" :filter_items="[
                 'all' => 'All',
                 'customer_name' => 'Customer Name',
@@ -15,7 +78,7 @@
                 'category' => 'Category',
                 'username' => 'Username',
             ]"/>
-        </div>
+        </div> --}}
 
         <!-- Main Content -->
         <section class="text-center mx-auto">
@@ -71,6 +134,7 @@
                             </div>
                         @endif
                     </div>
+                    <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Customer yet</h1>
@@ -247,6 +311,9 @@
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
+
+            console.log(data);
+            
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">

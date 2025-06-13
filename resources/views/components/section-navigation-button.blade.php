@@ -13,10 +13,6 @@
             </span>
         @endif
         <div class="flex items-center justify-center bg-[var(--bg-color)] border border-[var(--glass-border-color)]/20 rounded-lg p-2">
-            {{-- <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 stroke-[var(--secondary-text)]"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-            </svg> --}}
             <div class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 relative">
                 <i class="fas {{ $icon }} text-xs absolute top-1/2 left-1/2 -translate-1/2"></i>
             </div>
@@ -35,10 +31,6 @@
             </span>
         @endif
         <div class="flex items-center justify-center bg-[var(--bg-color)] border border-[var(--glass-border-color)]/20 rounded-lg p-2">
-            {{-- <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 stroke-[var(--secondary-text)]"
-                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3" fill="none" stroke-linecap="round"/>
-            </svg> --}}
             <div class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 relative">
                 <i class="fas {{ $icon }} text-xs absolute top-1/2 left-1/2 -translate-1/2"></i>
             </div>

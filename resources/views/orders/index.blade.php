@@ -1,6 +1,32 @@
 @extends('app')
 @section('title', 'Show Orders | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Order No" => [
+                "id" => "order_no",
+                "type" => "text",
+                "placeholder" => "Enter order no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "order_no",
+            ],
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "customer.customer_name",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
@@ -8,13 +34,17 @@
     </div>
     
     <div class="w-[80%] mx-auto">
+        <x-search-header heading="Orders" :search_fields=$searchFields/>
+    </div>
+
+    {{-- <div class="w-[80%] mx-auto">
         <x-search-header heading="Orders" :filter_items="[
             'all' => 'All',
             'order_no' => 'Order No.',
             'customer_name' => 'Customer Name',
             'date' => 'Date',
         ]"/>
-    </div>
+    </div> --}}
     
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -76,6 +106,7 @@
                                 </div> --}}
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else
