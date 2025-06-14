@@ -1,6 +1,46 @@
 @extends('app')
 @section('title', 'Show Expenses | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Supplier Name" => [
+                "id" => "supplier_name",
+                "type" => "text",
+                "placeholder" => "Enter supplier name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "supplier.supplier_name",
+            ],
+            "Reff. No" => [
+                "id" => "reff_no",
+                "type" => "text",
+                "placeholder" => "Enter reff. no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "reff_no",
+            ],
+            "Expense" => [
+                "id" => "expense",
+                "type" => "select",
+                "options" => $expenseOptions,
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "expense_setups.title",
+            ],
+            "Remarks" => [
+                "id" => "remarks",
+                "type" => "text",
+                "placeholder" => "Enter remarks",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "remarks",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     {{-- article details modal --}}
     <div id="modal"
@@ -8,12 +48,7 @@
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Expenses" :filter_items="[
-            'all' => 'All',
-            'expense' => 'Expense',
-            'supplier' => 'Supplier',
-            'reff_no' => 'Reff. No.',
-        ]"/>
+        <x-search-header heading="Expenses" :search_fields=$searchFields/>
     </div>
     
     <!-- Main Content -->
@@ -53,6 +88,7 @@
                                 @endforeach
                             </div>
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

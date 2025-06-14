@@ -23,7 +23,12 @@ class ExpenseController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        return view('expenses.index', compact('expenses', 'authLayout'));
+        $expenseOptions = Setup::where('type', 'supplier_category')
+            ->pluck('title')
+            ->mapWithKeys(fn($title) => [$title => ['text' => $title]])
+            ->toArray();
+
+        return view('expenses.index', compact('expenses', 'authLayout', 'expenseOptions'));
     }
 
     /**

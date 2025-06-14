@@ -1,18 +1,40 @@
 @extends('app')
 @section('title', 'Show Cargo Lists | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Cargo No" => [
+                "id" => "cargo_no",
+                "type" => "text",
+                "placeholder" => "Enter cargo no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "cargo_no",
+            ],
+            "Cargo Name" => [
+                "id" => "cargo_name",
+                "type" => "text",
+                "placeholder" => "Enter cargo name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "cargo_name",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
+
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Cargo Lists" :filter_items="[
-            'all' => 'All',
-            'cargo_no' => 'Shipment No.',
-            'customer_name' => 'Customer Name',
-            'date' => 'Date',
-        ]"/>
+        <x-search-header heading="Cargo Lists" :search_fields=$searchFields/>
     </div>
     
     <!-- Main Content -->
@@ -37,6 +59,7 @@
                                             <x-card :data="[
                                                 'name' => 'Cargo No: ' . $cargo->cargo_no,
                                                 'details' => [
+                                                    'Cargo Name' => $cargo->cargo_name,
                                                     'Date' => $cargo->date->format('d-M-Y, D'),
                                                 ],
                                             ]" />
@@ -58,6 +81,7 @@
                                 </div>
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

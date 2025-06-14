@@ -1,19 +1,53 @@
 @extends('app')
 @section('title', 'Show Articles | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Invoice No" => [
+                "id" => "invoice_no",
+                "type" => "text",
+                "placeholder" => "Enter invoice no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "invoice_no",
+            ],
+            "Order No" => [
+                "id" => "order_no",
+                "type" => "text",
+                "placeholder" => "Enter order no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "order_no",
+            ],
+            "Shipment No" => [
+                "id" => "shipment_no",
+                "type" => "text",
+                "placeholder" => "Enter shipment no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "shipment_no",
+            ],
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "customer.customer_name",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Invoices" :filter_items="[
-            'all' => 'All',
-            'invoice_no' => 'Invoice No.',
-            'order_no' => 'Order No.',
-            'customer_name' => 'Customer Name',
-            'date' => 'Date',
-        ]"/>
+        <x-search-header heading="Invoices" :search_fields=$searchFields/>
     </div>
 
     <!-- Main Content -->
@@ -65,6 +99,7 @@
                                 </div>
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else
