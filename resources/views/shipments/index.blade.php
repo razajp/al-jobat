@@ -1,19 +1,49 @@
 @extends('app')
 @section('title', 'Show Shipments | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Shipment No" => [
+                "id" => "shipment_no",
+                "type" => "number",
+                "placeholder" => "Enter shipment no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "shipment_no",
+            ],
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "customer.customer_name",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modals -->
     <div id="modal"
         class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     
     <div class="w-[80%] mx-auto">
+        <x-search-header heading="Shipments" :search_fields=$searchFields/>
+    </div>
+    
+    {{-- <div class="w-[80%] mx-auto">
         <x-search-header heading="Shipments" :filter_items="[
             'all' => 'All',
             'shipment_no' => 'Shipment No.',
             'customer_name' => 'Customer Name',
             'date' => 'Date',
         ]"/>
-    </div>
+    </div> --}}
     
     <!-- Main Content -->
     <section class="text-center mx-auto ">
@@ -74,6 +104,7 @@
                                 </div> --}}
                             @endif
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

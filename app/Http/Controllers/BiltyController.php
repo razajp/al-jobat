@@ -13,7 +13,7 @@ class BiltyController extends Controller
      */
     public function index()
     {
-        $bilties = Bilty::with('invoice')->get();
+        $bilties = Bilty::with('invoice.customer')->get();
 
         return view('bilties.show', compact('bilties'));
     }

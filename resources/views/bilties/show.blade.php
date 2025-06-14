@@ -1,15 +1,50 @@
 @extends('app')
 @section('title', 'Show Bilties | ' . app('company')->name)
 @section('content')
-    
+    @php
+        $searchFields = [
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "invoice.customer.customer_name",
+            ],
+            "Invoice No" => [
+                "id" => "invoice_no",
+                "type" => "text",
+                "placeholder" => "Enter invoice no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "invoice.invoice_no",
+            ],
+            "Cargo Name" => [
+                "id" => "cargo_name",
+                "type" => "text",
+                "placeholder" => "Enter cargo name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "invoice.cargo_name",
+            ],
+            "Bilty No" => [
+                "id" => "bilty_no",
+                "type" => "text",
+                "placeholder" => "Enter bilty no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "bilty_no",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
+
     {{-- header --}}
     <div class="w-[80%] mx-auto">
-        <x-search-header heading="Bilties" :filter_items="[
-            'all' => 'All',
-            'bilty_no' => 'Bilty No.',
-            'date' => 'Date',
-            'invoice_no' => 'Invoice No.',
-        ]"/>
+        <x-search-header heading="Bilties" :search_fields=$searchFields/>
     </div>
 
     <!-- Main Content -->
@@ -47,6 +82,7 @@
                                 </div>
                             </div>
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>
             @else

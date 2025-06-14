@@ -1,17 +1,64 @@
 @extends('app')
 @section('title', 'Show Bank Accounts | ' . app('company')->name)
 @section('content')
+    @php
+        $searchFields = [
+            "Account Title" => [
+                "id" => "account_title",
+                "type" => "text",
+                "placeholder" => "Enter account title",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_title",
+            ],
+            "Category" => [
+                "id" => "category",
+                "type" => "select",
+                "options" => [
+                            'self' => ['text' => 'Self'],
+                            'customer' => ['text' => 'Customer'],
+                            'supplier' => ['text' => 'Supplier'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "category",
+            ],
+            "Name" => [
+                "id" => "name",
+                "type" => "text",
+                "placeholder" => "Enter name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "name",
+            ],
+            "Account No" => [
+                "id" => "account_no",
+                "type" => "text",
+                "placeholder" => "Enter account no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_no",
+            ],
+            "Bank" => [
+                "id" => "bank",
+                "type" => "text",
+                "placeholder" => "Enter bank",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "bank",
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
     <div>
         <div class="w-[80%] mx-auto">
-            <x-search-header heading="Bank Accounts" :filter_items="[
-                'all' => 'All',
-                'title' => 'Title',
-                'category' => 'Category',
-            ]"/>
+            <x-search-header heading="Bank Accounts" :search_fields=$searchFields/>
         </div>
 
         <!-- Main Content -->
@@ -88,6 +135,7 @@
                             </div>
                         @endif
                     </div>
+                    <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Bank Account yet</h1>

@@ -1,14 +1,55 @@
 @extends('app')
 @section('title', 'Show Payment Programs | ' . app('company')->name)
 @section('content')
-@php
-    $categories_options = [
-        'self_account' => ['text' => 'Self Account'],
-        'supplier' => ['text' => 'Supplier'],
-        'customer' => ['text' => 'Customer'],
-        'waiting' => ['text' => 'Waiting'],
-    ]
-@endphp
+    @php
+        $categories_options = [
+            'self_account' => ['text' => 'Self Account'],
+            'supplier' => ['text' => 'Supplier'],
+            'customer' => ['text' => 'Customer'],
+            'waiting' => ['text' => 'Waiting'],
+        ];
+
+        $searchFields = [
+            'Customer Name' => [
+                'id' => 'customer_name',
+                'type' => 'text',
+                'placeholder' => 'Enter customer name',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'customer.customer_name',
+            ],
+            'Category' => [
+                'id' => 'category',
+                'type' => 'select',
+                'options' => [
+                    'supplier' => ['text' => 'Supplier'],
+                    'self_account' => ['text' => 'Self Account'],
+                    'customer' => ['text' => 'Customer'],
+                    'waiting' => ['text' => 'Waiting'],
+                ],
+                'onchange' => 'runDynamicFilter()',
+                'dataFilterPath' => 'Category',
+            ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'paid' => ['text' => 'Paid'],
+                    'unpaid' => ['text' => 'Unpaid'],
+                    'overpaid' => ['text' => 'Overpaid'],
+                ],
+                'onchange' => 'runDynamicFilter()',
+                'dataFilterPath' => 'status',
+            ],
+            'Date Range' => [
+                'id' => 'date_range_start',
+                'type' => 'date',
+                'id2' => 'date_range_end',
+                'type2' => 'date',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'date',
+            ],
+        ];
+    @endphp
     <!-- Modal -->
     <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
@@ -19,13 +60,17 @@
     </div>
     <div>
         <div class="w-[80%] mx-auto">
+            <x-search-header heading="Payment Programs" :search_fields=$searchFields />
+        </div>
+
+        {{-- <div class="w-[80%] mx-auto">
             <x-search-header heading="Payment Programs" :filter_items="[
                 'all' => 'All',
                 'title' => 'Title',
                 'category' => 'Category',
                 'name' => 'Name',
-            ]"/>
-        </div>
+            ]" />
+        </div> --}}
 
         <!-- Main Content -->
         <section class="text-center mx-auto">
@@ -35,9 +80,10 @@
 
                 @if (count($finalData) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
-                        <x-section-navigation-button link="{{ route('payment-programs.create') }}" title="Add New Program" icon="fa-plus" />
+                        <x-section-navigation-button link="{{ route('payment-programs.create') }}" title="Add New Program"
+                            icon="fa-plus" />
                     </div>
-                    
+
                     <div class="data_container">
                         <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                             <div class="text-center w-[10%]">Date</div>
@@ -51,55 +97,86 @@
                             <div class="text-center w-[10%]">Balance</div>
                             <div class="text-center w-[10%]">Status</div>
                         </div>
-                        
+
                         <div class="search_container overflow-y-auto grow my-scrollbar-2">
                             @foreach ($finalData as $data)
-                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}" class="contextMenuToggle modalToggle relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}"
+                                    class="contextMenuToggle modalToggle relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                     <span class="text-center w-[10%]">{{ date('d-M-Y', strtotime($data['date'])) }}</span>
-                                    <span class="text-center w-[15%] capitalize">{{ $data['customer']['customer_name'] }}</span>
+                                    <span
+                                        class="text-center w-[15%] capitalize">{{ $data['customer']['customer_name'] }}</span>
                                     <span class="text-center w-[10%]">{{ $data['order_no'] ?? $data['program_no'] }}</span>
-                                    <span class="text-center w-[10%] capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category']) ?? '-') }}</span>
+                                    <span
+                                        class="text-center w-[10%] capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category'] ?? '-')) }}</span>
                                     <span class="text-center w-[10%]">
                                         @php
                                             $beneficiary = '-';
                                             if (isset($data['category'])) {
-                                                if ($data['category'] == 'supplier' && isset($data['sub_category']['supplier_name'])) {
+                                                if (
+                                                    $data['category'] == 'supplier' &&
+                                                    isset($data['sub_category']['supplier_name'])
+                                                ) {
                                                     $beneficiary = $data['sub_category']['supplier_name'];
-                                                } elseif ($data['category'] == 'customer' && isset($data['sub_category']['customer_name'])) {
+                                                } elseif (
+                                                    $data['category'] == 'customer' &&
+                                                    isset($data['sub_category']['customer_name'])
+                                                ) {
                                                     $beneficiary = $data['sub_category']['customer_name'];
                                                 } elseif ($data['category'] == 'waiting' && isset($data['remarks'])) {
                                                     $beneficiary = $data['remarks'];
-                                                } elseif ($data['category'] == 'self_account' && isset($data['sub_category']['account_title'])) {
+                                                } elseif (
+                                                    $data['category'] == 'self_account' &&
+                                                    isset($data['sub_category']['account_title'])
+                                                ) {
                                                     $beneficiary = $data['sub_category']['account_title'];
                                                 }
-                                            } else if (isset($data['payment_programs']['category'])) {
-                                                if ($data['payment_programs']['category'] == 'supplier' && isset($data['payment_programs']['sub_category']['supplier_name'])) {
-                                                    $beneficiary = $data['payment_programs']['sub_category']['supplier_name'];
-                                                } elseif ($data['payment_programs']['category'] == 'customer' && isset($data['payment_programs']['sub_category']['customer_name'])) {
-                                                    $beneficiary = $data['payment_programs']['sub_category']['customer_name'];
-                                                } elseif ($data['payment_programs']['category'] == 'waiting' && isset($data['payment_programs']['remarks'])) {
+                                            } elseif (isset($data['payment_programs']['category'])) {
+                                                if (
+                                                    $data['payment_programs']['category'] == 'supplier' &&
+                                                    isset($data['payment_programs']['sub_category']['supplier_name'])
+                                                ) {
+                                                    $beneficiary =
+                                                        $data['payment_programs']['sub_category']['supplier_name'];
+                                                } elseif (
+                                                    $data['payment_programs']['category'] == 'customer' &&
+                                                    isset($data['payment_programs']['sub_category']['customer_name'])
+                                                ) {
+                                                    $beneficiary =
+                                                        $data['payment_programs']['sub_category']['customer_name'];
+                                                } elseif (
+                                                    $data['payment_programs']['category'] == 'waiting' &&
+                                                    isset($data['payment_programs']['remarks'])
+                                                ) {
                                                     $beneficiary = $data['payment_programs']['remarks'];
-                                                } elseif ($data['payment_programs']['category'] == 'self_account' && isset($data['payment_programs']['sub_category']['account_title'])) {
-                                                    $beneficiary = $data['payment_programs']['sub_category']['account_title'];
+                                                } elseif (
+                                                    $data['payment_programs']['category'] == 'self_account' &&
+                                                    isset($data['payment_programs']['sub_category']['account_title'])
+                                                ) {
+                                                    $beneficiary =
+                                                        $data['payment_programs']['sub_category']['account_title'];
                                                 }
                                             }
                                         @endphp
                                         {{ $beneficiary }}
                                     </span>
-                                    <span class="text-center w-[10%]">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
+                                    <span
+                                        class="text-center w-[10%]">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
                                     <span class="text-center w-[10%]">{{ $data['document'] ?? '-' }}</span>
-                                    <span class="text-center w-[10%]">{{ number_format($data['payment'] ?? '0', 1) }}</span>
-                                    <span class="text-center w-[10%]">{{ number_format($data['balance'] ?? '0', 1) }}</span>
+                                    <span
+                                        class="text-center w-[10%]">{{ number_format($data['payment'] ?? '0', 1) }}</span>
+                                    <span
+                                        class="text-center w-[10%]">{{ number_format($data['balance'] ?? '0', 1) }}</span>
                                     <span class="text-center w-[10%]">{{ $data['status'] ?? '-' }}</span>
                                 </div>
                             @endforeach
                         </div>
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Payment Programs yet</h1>
                         <a href="{{ route('payment-programs.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
+                            class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>
                 @endif
@@ -189,13 +266,13 @@
                     generateModal(item)
                 }
             });
-            
+
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "add-payment") {
                     goToAddPayment(data);
                 }
             });
-            
+
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "update-program") {
                     generateUpdateProgramModal(data);
@@ -233,7 +310,7 @@
             let cardsHTML = '';
             if (data && (data.payments?.length > 0 || data.payment_programs?.payments?.length > 0)) {
                 let paymentsArray = data.payments ?? data.payment_programs.payments ?? [];
-                paymentsArray.forEach(function (payment) {
+                paymentsArray.forEach(function(payment) {
                     cardsHTML += `
                         <div class="card relative border flex items-center justify-between border-gray-600 shadow rounded-xl min-w-[100px] py-3 px-4 cursor-pointer overflow-hidden fade-in">
                             <div class="text-start">
@@ -378,18 +455,18 @@
             let subCategoryLabelDom = document.querySelector('[for=sub_category]');
             let subCategorySelectDom = document.getElementById('subCategory');
             let subCategoryFirstOptDom = subCategorySelectDom.children[0];
-            
+
             let remarksInputDom = document.getElementById('remarks');
             remarksInputDom.parentElement.parentElement.classList.add("hidden");
 
-            programIdDom.value  = data.id;
+            programIdDom.value = data.id;
 
-            dateInpDom.value  = data.date;
+            dateInpDom.value = data.date;
 
             customerSelectDom.innerHTML += `
                 <option value="${data.customer.id}" selected>${data.customer.customer_name} | ${data.customer.city.title}</option>
             `;
-            
+
             categorySelectDom.value = data.category;
             getCategoryData(categorySelectDom.value)
 
@@ -411,13 +488,13 @@
                             _token: "{{ csrf_token() }}",
                             category: value,
                         },
-                        success: function (response) {
+                        success: function(response) {
                             let clutter = `
                                 <option value='' selected>
                                     -- No option avalaible --
                                 </option>
                             `;
-                            switch (value) {   
+                            switch (value) {
                                 case 'self_account':
                                     if (response.length > 0) {
                                         clutter = '';
@@ -431,7 +508,7 @@
                                         subCategorySelectDom.disabled = true;
                                         subCategoryFirstOptDom.textContent = '-- No options available --';
                                     }
-                            
+
                                     response.forEach(subCat => {
                                         clutter += `
                                             <option value='${subCat.id}'>
@@ -439,11 +516,11 @@
                                             </option>
                                         `;
                                     });
-                                    
+
                                     subCategoryLabelDom.textContent = 'Self Account';
                                     subCategoryFirstOptDom.textContent = '-- Select Self Account --';
                                     break;
-                                    
+
                                 case 'supplier':
                                     if (response.length > 0) {
                                         clutter = '';
@@ -457,7 +534,7 @@
                                         subCategorySelectDom.disabled = true;
                                         subCategoryFirstOptDom.textContent = '-- No options available --';
                                     }
-                            
+
                                     response.forEach(subCat => {
                                         clutter += `
                                             <option value='${subCat.id}'>
@@ -465,11 +542,11 @@
                                             </option>
                                         `;
                                     });
-                                    
+
                                     subCategoryLabelDom.textContent = 'Supplier';
                                     subCategoryFirstOptDom.textContent = '-- Select Supplier --';
                                     break;
-                                
+
                                 case 'customer':
                                     clutter = '';
                                     clutter += `
@@ -477,7 +554,7 @@
                                             -- Select Customer --
                                         </option>
                                     `;
-                            
+
                                     response.forEach(subCat => {
                                         if (subCat.id != customerSelectDom.value) {
                                             clutter += `
@@ -488,11 +565,11 @@
                                             subCategorySelectDom.disabled = false;
                                         }
                                     });
-                                    
+
                                     subCategoryLabelDom.textContent = 'Customer';
                                     subCategoryFirstOptDom.textContent = '-- Select Customer --';
                                     break;
-                            
+
                                 default:
                                     break;
                             }
@@ -512,7 +589,9 @@
         }
 
         document.addEventListener('mousedown', (e) => {
-            const { id } = e.target;
+            const {
+                id
+            } = e.target;
             if (id === 'modalForm') {
                 closeModal();
             } else if (id === 'updateModalForm') {
@@ -565,10 +644,11 @@
                 once: true
             });
         }
-        
+
         function goToAddPayment(program) {
             const url = new URL("{{ route('customer-payments.create') }}", window.location.origin);
-            url.searchParams.set("program_id", program.payment_programs?.id ?? program.id); // or send other keys like amount, customer_id, etc.
+            url.searchParams.set("program_id", program.payment_programs?.id ?? program
+                .id); // or send other keys like amount, customer_id, etc.
             window.location.href = url.toString();
         }
 
@@ -579,7 +659,7 @@
                 switch (filterType) {
                     case 'all':
                         switch (item.category) {
-                            
+
                             case 'supplier':
                                 name = item.sub_category.supplier_name;
                                 break;
@@ -599,19 +679,19 @@
                             name.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'title':
                         return (
                             item.account_title.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'category':
                         return (
                             item.category.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'name':
                         // let name = '';
                         switch (item.category) {
@@ -632,7 +712,7 @@
                             name.toLowerCase().includes(search)
                         );
                         break;
-                
+
                     default:
                         // let name = '';
                         switch (item.category) {
