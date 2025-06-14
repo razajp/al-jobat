@@ -313,6 +313,20 @@
                     />
                 </div>
             @endif
+            
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Fabrics" 
+                        icon="fas fa-university"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('fabrics.index'), 'label' => 'Show Fabrics'],
+                            ['type' => 'link', 'href' => route('fabrics.create'), 'label' => 'Add Fabric'],
+                        ]"
+                    />
+                </div>
+            @endif
         </nav>
     
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">

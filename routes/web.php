@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FabricController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PhysicalQuantityController;
@@ -83,6 +84,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('expenses', ExpenseController::class);
     
     Route::resource('vouchers', VoucherController::class);
+    
+    Route::resource('fabrics', FabricController::class);
     
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
