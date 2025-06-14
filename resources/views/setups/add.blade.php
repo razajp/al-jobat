@@ -25,6 +25,8 @@
                         'supplier_category' => ['text' => 'Supplier Category'],
                         'bank_name' => ['text' => 'Bank Name'],
                         'city' => ['text' => 'City'],
+                        'fabric' => ['text' => 'Fabric'],
+                        'fabric_color' => ['text' => 'Fabric Color'],
                     ]"
                     showDefault='true'
                 />
