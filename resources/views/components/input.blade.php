@@ -84,7 +84,7 @@
 
 <div class="form-group relative">
     @if($label)
-        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}</label>
+        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}{{ $required ? ' *' : '' }}</label>
     @endif
 
     <div class="relative flex gap-4">

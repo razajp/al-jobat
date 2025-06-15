@@ -20,7 +20,7 @@
 
 <div class="{{ $class }} form-group">
     @if($label)
-        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}</label>
+        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label . ' *' }}</label>
     @endif
 
     <div class="relative flex gap-4">

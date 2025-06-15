@@ -53,7 +53,7 @@
         </button>
 
         <!-- Navigation Menu -->
-        <nav class="space-y-4 hidden md:flex flex-col">
+        <nav class="space-y-4 hidden md:flex flex-col ">
             <div class="relative group">
                 <x-nav-link-item 
                     label="Home" 
@@ -323,6 +323,20 @@
                         :items="[
                             ['type' => 'link', 'href' => route('fabrics.index'), 'label' => 'Show Fabrics'],
                             ['type' => 'link', 'href' => route('fabrics.create'), 'label' => 'Add Fabric'],
+                        ]"
+                    />
+                </div>
+            @endif
+            
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item 
+                        label="Employees" 
+                        icon="fas fa-university"
+                        includesDropdown
+                        :items="[
+                            ['type' => 'link', 'href' => route('employees.index'), 'label' => 'Show Employees'],
+                            ['type' => 'link', 'href' => route('employees.create'), 'label' => 'Add Employee'],
                         ]"
                     />
                 </div>

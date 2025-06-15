@@ -1,0 +1,196 @@
+@extends('app')
+@section('title', 'Add Employee | ' . app('company')->name)
+@section('content')
+@php
+    $categories_options = [
+        'staff' => ['text' => 'Staff'],
+        'worker' => ['text' => 'Worker'],
+    ]
+@endphp
+    <!-- Progress Bar -->
+    <div class="mb-5 max-w-3xl mx-auto">
+        <x-search-header heading="Add Employee" link linkText="Show Employees" linkHref="{{ route('employees.index') }}"/>
+    </div>
+
+    <!-- Form -->
+    <form id="form" action="{{ route('employees.store') }}" method="post" enctype="multipart/form-data"
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        @csrf
+        <x-form-title-bar title="Add Employee" />
+
+        <!-- Step : Basic Information -->
+        <div class="step space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- employee_category --}}
+                <x-select 
+                    label="Category"
+                    name="category"
+                    id="category"
+                    :options="$categories_options"
+                    required
+                    showDefault
+                />
+
+                {{-- employee_type --}}
+                <x-select 
+                    label="Type"
+                    name="type_id"
+                    id="type"
+                    required
+                />
+
+                <!-- employee_name -->
+                <x-input 
+                    label="Employee Name"
+                    name="employee_name" 
+                    id="employee_name" 
+                    placeholder="Enter employee name" 
+                    required 
+                    capitalized
+                />
+                
+                <!-- urdu_title -->
+                <x-input 
+                    label="Urdu Title"
+                    name="urdu_title" 
+                    id="urdu_title" 
+                    placeholder="Enter urdu title" 
+                    required 
+                />
+                
+                {{-- employee_phone_number --}}
+                <x-input 
+                    label="Phone Number" 
+                    name="phone_number" 
+                    id="phone_number" 
+                    placeholder="Enter phone number"
+                    required
+                />
+
+                {{-- employee_joining_date --}}
+                <x-input 
+                    label="Joining Date" 
+                    name="joining_date" 
+                    id="joining_date" 
+                    min="{{ now()->subMonth()->toDateString() }}"
+                    validateMin
+                    max="{{ now()->toDateString() }}"
+                    validateMax
+                    type="date"
+                    required
+                />
+
+                {{-- employee_cnic --}}
+                <x-input 
+                    label="C.N.I.C No." 
+                    name="cnic_no" 
+                    id="cnic_no"
+                    placeholder="Enter C.N.I.C No."
+                    capitalized
+                />
+
+                {{-- employee_salary --}}
+                <x-input 
+                    label="Salary" 
+                    name="salary" 
+                    id="salary"
+                    placeholder="Enter salary"
+                    type="number"
+                    disabled
+                    capitalized
+                />
+            </div>
+        </div>
+
+        <div class="w-full flex justify-end mt-4">
+            <button type="submit"
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                <i class='fas fa-save mr-1'></i> Save
+            </button>
+        </div>
+    </form>
+
+    <script>
+        function formatPhoneNo(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (value.length > 4) {
+                value = value.slice(0, 4) + '-' + value.slice(4, 11); // Insert hyphen after 4 digits
+            }
+
+            input.value = value; // Update the input field
+        }
+
+        document.getElementById('phone_number').addEventListener('input', function() {
+            formatPhoneNo(this);
+        });
+
+        function formatCnicNo(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (value.length > 5 && value.length <= 12) {
+                value = value.slice(0, 5) + '-' + value.slice(5);
+            }
+            if (value.length > 12) {
+                value = value.slice(0, 5) + '-' + value.slice(5, 12) + '-' + value.slice(12, 13);
+            }
+
+            input.value = value; // Update the input field
+        }
+
+        document.getElementById('cnic_no').addEventListener('input', function () {
+            formatCnicNo(this);
+        });
+
+
+        const allTypes = @json($all_types);
+        const categorySelectDom = document.getElementById('category');
+        const typeSelectDom = document.getElementById('type');
+        const salaryInpDom = document.getElementById('salary');
+        const salaryLabelDom = document.querySelector(`label[for="${salaryInpDom.id}"]`);
+
+        categorySelectDom.addEventListener('change', function() {
+            if (categorySelectDom.value == 'staff') {
+                const typeArray = allTypes.staff_type
+                
+                if (typeArray.length > 0) {
+                    typeSelectDom.innerHTML = `<option value="" >-- Select Type --</option>`;
+                    typeSelectDom.disabled = false;
+                }
+
+                salaryInpDom.disabled = false;
+                salaryInpDom.required = true;
+                salaryLabelDom.textContent = "Salary *"
+
+                typeArray.forEach(type => {
+                    typeSelectDom.innerHTML += `<option value="${type.id}" >${type.title}</option>`;
+                });
+            } else if (categorySelectDom.value == 'worker') {
+                const typeArray = allTypes.worker_type
+                
+                if (typeArray.length > 0) {
+                    typeSelectDom.innerHTML = `<option value="" >-- Select Type --</option>`;
+                    typeSelectDom.disabled = false;
+                }
+                
+                salaryInpDom.disabled = true;
+                salaryInpDom.required = false;
+                salaryLabelDom.textContent = "Salary"
+
+                typeArray.forEach(type => {
+                    typeSelectDom.innerHTML += `<option value="${type.id}" >${type.title}</option>`;
+                });
+            } else {
+                salaryInpDom.disabled = true;
+                salaryInpDom.required = false;
+                salaryLabelDom.textContent = "Salary"
+                typeSelectDom.innerHTML = '<option value="" >-- No options available --</option>';
+                typeSelectDom.disabled = true;
+            }
+        });
+
+        function validateForNextStep() {
+            return true;
+        }
+    </script>
+@endsection
