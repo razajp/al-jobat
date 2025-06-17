@@ -323,6 +323,7 @@
                         :items="[
                             ['type' => 'link', 'href' => route('fabrics.index'), 'label' => 'Show Fabrics'],
                             ['type' => 'link', 'href' => route('fabrics.create'), 'label' => 'Add Fabric'],
+                            ['type' => 'link', 'href' => route('fabrics.issue'), 'label' => 'Issue Fabric'],
                         ]"
                     />
                 </div>
@@ -332,7 +333,7 @@
                 <div class="relative group">
                     <x-nav-link-item 
                         label="Employees" 
-                        icon="fas fa-university"
+                        icon="fas fa-users"
                         includesDropdown
                         :items="[
                             ['type' => 'link', 'href' => route('employees.index'), 'label' => 'Show Employees'],

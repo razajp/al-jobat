@@ -36,10 +36,10 @@
                     ]" required showDefault onchange="generateTagNo()" />
 
                     <!-- quantity -->
-                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" />
+                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required />
 
                     <!-- reff_no -->
-                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no" required />
+                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no" />
 
                     {{-- remarks --}}
                     <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />

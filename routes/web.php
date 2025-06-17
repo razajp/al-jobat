@@ -87,6 +87,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('vouchers', VoucherController::class);
     
     Route::resource('fabrics', FabricController::class);
+    Route::get('fabrics/issue', [FabricController::class, 'issue'])->name('fabrics.issue');
+    Route::post('fabrics/issuePost', [FabricController::class, 'issuePost'])->name('fabrics.issuePost');
     
     Route::resource('employees', EmployeeController::class);
     

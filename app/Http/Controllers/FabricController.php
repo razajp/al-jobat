@@ -110,4 +110,13 @@ class FabricController extends Controller
     {
         //
     }
+
+    public function issue()
+    {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        return view('fabrics.issue');
+    }
 }

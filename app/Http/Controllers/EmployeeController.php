@@ -11,9 +11,36 @@ class EmployeeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $employees = Employee::with('type')->get();
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        $all_types = collect()
+        ->merge(
+            Setup::where('type', 'staff_type')->get()->mapWithKeys(fn($type) => [
+                $type->id => [
+                    'text' => $type->title,
+                    'category' => 'staff',
+                ]
+            ])
+        )
+        ->merge(
+            Setup::where('type', 'worker_type')->get()->mapWithKeys(fn($type) => [
+                $type->id => [
+                    'text' => $type->title,
+                    'category' => 'worker',
+                ]
+            ])
+        )
+        ->toArray();
+
+        return view("employees.index", compact('employees', 'authLayout', 'all_types'));
     }
 
     /**
