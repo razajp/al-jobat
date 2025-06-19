@@ -13,7 +13,7 @@ class Fabric extends Model
         'date',
         'supplier_id',
         'fabric_id',
-        'color_id',
+        'color',
         'unit',
         'quantity',
         'reff_no',
@@ -32,9 +32,5 @@ class Fabric extends Model
     public function fabric()
     {
         return $this->belongsTo(Setup::class, 'fabric_id');
-    }
-    public function color()
-    {
-        return $this->belongsTo(Setup::class, 'color_id');
     }
 }

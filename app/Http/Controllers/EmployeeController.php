@@ -81,7 +81,7 @@ class EmployeeController extends Controller
 
         Employee::create($request->all());
 
-        return redirect()->route('employees.index')->with('success', 'Employee added successfully.');
+        return redirect()->route('employees.create')->with('success', 'Employee added successfully.');
     }
 
     /**

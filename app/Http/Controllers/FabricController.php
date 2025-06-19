@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Fabric;
+use App\Models\IssuedFabric;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -25,7 +27,7 @@ class FabricController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $lastRecord = Fabric::latest()->with('supplier', 'fabric', 'color')->first();
+        $lastRecord = Fabric::latest()->with('supplier', 'fabric')->first();
 
         $suppliers = Supplier::whereHas('user', function ($query) {
             $query->where('status', 'active');
@@ -43,14 +45,7 @@ class FabricController extends Controller
             $fabrics_options[$fabric->id] = ["text" => $fabric->title, "data_option" => $fabric];
         }
 
-        $colors_options = [];
-
-        $fabric_colors = Setup::where('type', 'fabric_color')->get();
-        foreach ($fabric_colors as $fabric_color) {
-            $colors_options[$fabric_color->id] = ["text" => $fabric_color->title, "data_option" => $fabric_color];
-        }
-
-        return view('fabrics.add', compact('lastRecord', 'suppliers_options', 'fabrics_options', 'colors_options'));
+        return view('fabrics.add', compact('lastRecord', 'suppliers_options', 'fabrics_options'));
     }
 
     /**
@@ -66,7 +61,7 @@ class FabricController extends Controller
             'date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
             'fabric_id' => 'required|exists:setups,id',
-            'color_id' => 'required|exists:setups,id',
+            'color' => 'required|string',
             'unit' => 'required|string|max:255',
             'quantity' => 'required|integer|min:1',
             'reff_no' => 'nullable|integer',
@@ -76,7 +71,7 @@ class FabricController extends Controller
 
         Fabric::create($request->all());
 
-        return redirect()->route('fabrics.index')->with('success', 'Fabric added successfully.');
+        return redirect()->route('fabrics.create')->with('success', 'Fabric added successfully.');
     }
 
     /**
@@ -117,6 +112,55 @@ class FabricController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        return view('fabrics.issue');
+        $tags_options = [];
+
+        $all_fabrics = Fabric::all()
+            ->groupBy('tag')
+            ->map(function ($items) {
+                return [ 
+                    'tag' => $items->first()->tag,
+                    'unit' => $items->first()->unit,
+                    'quantity' => $items->sum('quantity'),
+                ];
+            })
+            ->values();
+
+        foreach($all_fabrics as $fabric) {
+            $total_issued = IssuedFabric::where('tag', $fabric['tag'])->sum('quantity') ?? 0;
+            $fabric['avalaible_sock'] = $fabric['quantity'] - $total_issued;
+            $tags_options[$fabric['tag']] = ['text' => $fabric['tag'], "data_option" => json_encode($fabric)];
+        }
+
+        $workers_options = [];
+
+        $all_workers = Employee::with('type')
+            ->whereHas('type', function ($query) {
+                $query->where('title', 'Cutting');
+            })
+            ->get();
+
+        foreach ($all_workers as $worker) {
+            $workers_options[$worker->id] = ['text' => $worker->employee_name];
+        }
+
+        return view('fabrics.issue', compact('tags_options', 'workers_options'));
+    }
+
+    public function issuePost(Request $request) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $request->validate([
+            'date' => 'required|date',
+            'tag' => 'required|string|max:255',
+            'worker_id' => 'required|exists:employees,id',
+            'quantity' => 'required|integer|min:1',
+            'remarks' => 'nullable|string|max:255',
+        ]);
+
+        IssuedFabric::create($request->all());
+
+        return redirect()->route('fabrics.issue')->with('success', 'Fabric added successfully.');
     }
 }

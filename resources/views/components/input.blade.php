@@ -93,7 +93,7 @@
             type="{{ $type }}" 
             name="{{ $name }}" 
             @if ($value != '')
-                value="{{ $value }}"
+                value="{{ old($name, $value) }}"
             @endif
             placeholder="{{ $placeholder }}"
             autocomplete="{{ $autocomplete }}"

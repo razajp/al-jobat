@@ -1,6 +1,23 @@
 @extends('app')
 @section('title', 'Add Fabric | ' . app('company')->name)
 @section('content')
+@php
+    $colors_options = [
+        'black' => ['text' => 'Black', 'data_option' => 'blk'],
+        'blue' => ['text' => 'Blue', 'data_option' => 'blu'],
+        'goldern' => ['text' => 'Goldern', 'data_option' => 'gld'],
+        'green' => ['text' => 'Green', 'data_option' => 'grn'],
+        'grey' => ['text' => 'Grey', 'data_option' => 'gry'],
+        'meroon' => ['text' => 'Meroon', 'data_option' => 'mrn'],
+        'multi' => ['text' => 'Multi', 'data_option' => 'mlt'],
+        'nevy_blue' => ['text' => 'Nevy Blue', 'data_option' => 'nvy'],
+        'off_white' => ['text' => 'Off White', 'data_option' => 'ofw'],
+        'printed' => ['text' => 'Printed', 'data_option' => 'prt'],
+        'red' => ['text' => 'Red', 'data_option' => 'red'],
+        'skin' => ['text' => 'Skin', 'data_option' => 'skn'],
+        'white' => ['text' => 'White', 'data_option' => 'wht'],
+    ]
+@endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
@@ -26,7 +43,7 @@
                     <x-select label="Fabric" name="fabric_id" id="fabric_id" :options="$fabrics_options" required showDefault onchange="generateTagNo()" />
 
                     {{-- color --}}
-                    <x-select label="Color" name="color_id" id="color_id" :options="$colors_options" required showDefault />
+                    <x-select label="Color" name="color" id="color" :options="$colors_options" required showDefault onchange="generateTagNo()" />
 
                     {{-- unit --}}
                     <x-select label="Unit" name="unit" id="unit" :options="[
@@ -81,7 +98,7 @@
 
                         {{-- color --}}
                         <x-input label="Color" id="last_color" disabled
-                            value="{{ $lastRecord->color->title }}" />
+                            value="{{ $lastRecord->color }}" />
 
                         <!-- unit -->
                         <x-input label="Unit" id="last_unit" disabled capitalized
@@ -118,27 +135,31 @@
         function generateTagNo() {
             const supplierSelect = document.getElementById('supplier_id');
             const fabricSelect = document.getElementById('fabric_id');
+            const colorSelect = document.getElementById('color');
             const unitSelect = document.getElementById('unit');
             const tagInput = document.getElementById('tag');
 
             const selectedSupplier = JSON.parse(supplierSelect.options[supplierSelect.selectedIndex].getAttribute('data-option') ?? '{}');
             const selectedFabric = JSON.parse(fabricSelect.options[fabricSelect.selectedIndex].getAttribute('data-option') ?? '{}');
-
+            const selectedColor = colorSelect.options[colorSelect.selectedIndex].getAttribute('data-option') ?? '';
+            
             // Generate supplier code
             const supplierName = selectedSupplier.supplier_name ?? '';
             const supplierCode = supplierName
                 .split(' ')
                 .map(word => word.slice(0, 3).toUpperCase())
                 .join('.');
-
             // Generate unit code
             const unitCode = (unitSelect.value ?? '').charAt(0).toUpperCase();
+
+            // Get color title
+            const colorTitle = selectedColor.toUpperCase() ?? '';
 
             // Get fabric title
             const fabricTitle = selectedFabric.title ?? '';
 
             // Combine all to form tag no
-            const tagNo = `${supplierCode}-${unitCode}-${fabricTitle}`;
+            const tagNo = `${supplierCode}-${unitCode}-${colorTitle}-${fabricTitle}`;
 
             // Output or assign to input
             console.log(tagNo);
