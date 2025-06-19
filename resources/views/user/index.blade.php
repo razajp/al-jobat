@@ -14,29 +14,35 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto pt-7 pr-2 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Users" />
 
                 @if (count($users) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('users.create') }}" title="Add New User" icon="fa-plus" />
                     </div>
-                    
-                    <div class="card_container p-5 pr-3 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                        @foreach ($users as $user)
-                            <div data-json='{{ $user }}'
-                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                <x-card :data="[
-                                    'image' => $user->profile_picture == 'default_avatar.png' ? asset('images/default_avatar.png') : asset('storage/uploads/images/' . $user->profile_picture),
-                                    'name' => $user->name,
-                                    'status' => $user->status,
-                                    'details' => [
-                                        'Username' => $user->username,
-                                        'Role' => str_replace('_', ' ', $user->role),
-                                    ]
-                                ]"/>
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                    @foreach ($users as $user)
+                                        <div data-json='{{ $user }}'
+                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                            <x-card :data="[
+                                                'image' => $user->profile_picture == 'default_avatar.png' ? asset('images/default_avatar.png') : asset('storage/uploads/images/' . $user->profile_picture),
+                                                'name' => $user->name,
+                                                'status' => $user->status,
+                                                'details' => [
+                                                    'Username' => $user->username,
+                                                    'Role' => str_replace('_', ' ', $user->role),
+                                                ]
+                                            ]"/>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
-                        @endforeach
+                        </div>
                     </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">

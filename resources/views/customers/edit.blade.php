@@ -1,6 +1,14 @@
 @extends('app')
 @section('title', 'Edit Customer | ' . app('company')->name)
 @section('content')
+@php
+    $categories_options = [
+        'cash' => ['text' => 'Cash'],
+        'regular' => ['text' => 'Regular'],
+        'site' => ['text' => 'Site'],
+        'other' => ['text' => 'Other'],
+    ]
+@endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
@@ -29,11 +37,24 @@
                         disabled
                     />
 
-                    {{-- person name --}}
+                    {{-- customer_person_name --}}
                     <x-input 
-                        label="Person Name"
+                        label="Person Name" 
+                        name="person_name" 
+                        id="person_name" 
                         value="{{ $customer->person_name }}"
-                        disabled
+                        placeholder="Enter Person Name"
+                        required
+                    />
+
+                    {{-- customer_urdu_title --}}
+                    <x-input 
+                        label="Urdu Title" 
+                        name="urdu_title" 
+                        id="urdu_title" 
+                        value="{{ $customer->urdu_title }}"
+                        placeholder="Enter Urdu Title"
+                        required
                     />
 
                     {{-- customer_phone_number --}}
@@ -44,6 +65,17 @@
                         value="{{ $customer->phone_number }}"
                         placeholder="Enter phone number"
                         required
+                    />
+
+                    {{-- customer_category --}}
+                    <x-select 
+                        label="Category"
+                        name="category"
+                        id="category"
+                        :options="$categories_options"
+                        value="{{ $customer->category }}"
+                        required
+                        showDefault
                     />
 
                     {{-- customer_address --}}

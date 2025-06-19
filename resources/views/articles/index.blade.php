@@ -137,7 +137,7 @@
                                         @endforeach
                                     </div>
                                 @endif
-                        </div>
+                            </div>
                         <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
                 </div>

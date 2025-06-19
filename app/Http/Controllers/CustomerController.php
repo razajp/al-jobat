@@ -155,9 +155,12 @@ class CustomerController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
+            'person_name' => 'required|string|max:255',
+            'urdu_title' => 'nullable|string|max:255',
             'phone_number' => 'required|string|max:255',
-            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'category' => 'required|string|max:255',
             'address' => 'required|string|max:255',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
 
         // Check for validation errors
@@ -190,7 +193,10 @@ class CustomerController extends Controller
 
         // Update the customer
         $customer->update([
+            'person_name' => $data['person_name'],
+            'urdu_title' => $data['urdu_title'],
             'phone_number' => $data['phone_number'],
+            'category' => $data['category'],
             'address' => $data['address'],
         ]);
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('customer_name')->unique();  // Fixed the typo here
+            $table->string('customer_name');  // Fixed the typo here
             $table->string('person_name');  // Fixed the typo here
             $table->string('urdu_title')->nullable();
             $table->string('phone_number');
@@ -25,6 +25,8 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('city_id')->references('id')->on('setups')->onDelete('cascade');
+
+            $table->unique(['customer_name', 'city_id']);
             
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');

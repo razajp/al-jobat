@@ -64,76 +64,80 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Bank Accounts" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($bankAccounts) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('bank-accounts.create') }}" title="Add New Account" icon="fa-plus" />
                     </div>
-                    
-                    <div class="card_container">
-                        @if ($authLayout == 'grid')
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($bankAccounts as $bankAccount)
-                                    <div id='{{ $bankAccount->id }}' data-json='{{ $bankAccount }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                @if ($authLayout == 'grid')
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        @foreach ($bankAccounts as $bankAccount)
+                                            <div id='{{ $bankAccount->id }}' data-json='{{ $bankAccount }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
 
-                                        @php
-                                            $details = [
-                                                'Category' => $bankAccount->category,
-                                            ];
-                                        @endphp
-                                
-                                        @switch($bankAccount->category)
-                                            @case('customer')
-                                                @php $details['Name'] = $bankAccount->subCategory->customer_name; @endphp
-                                                @break
-                                            @case('supplier')
-                                                @php $details['Name'] = $bankAccount->subCategory->supplier_name; @endphp
-                                                @break
-                                        @endswitch
-
-                                        @php $details['Date'] = $bankAccount->date->format('d-M-Y, D'); @endphp
+                                                @php
+                                                    $details = [
+                                                        'Category' => $bankAccount->category,
+                                                    ];
+                                                @endphp
                                         
-                                        <x-card :data="[
-                                            'name' => $bankAccount->account_title,
-                                            'details' => $details,
-                                        ]" />
+                                                @switch($bankAccount->category)
+                                                    @case('customer')
+                                                        @php $details['Name'] = $bankAccount->subCategory->customer_name; @endphp
+                                                        @break
+                                                    @case('supplier')
+                                                        @php $details['Name'] = $bankAccount->subCategory->supplier_name; @endphp
+                                                        @break
+                                                @endswitch
+
+                                                @php $details['Date'] = $bankAccount->date->format('d-M-Y, D'); @endphp
+                                                
+                                                <x-card :data="[
+                                                    'name' => $bankAccount->account_title,
+                                                    'details' => $details,
+                                                ]" />
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                <div class="text-left pl-5">Account Title</div>
-                                <div class="text-left pl-5">Name</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-right pr-5">Date</div>
-                            </div>
-                            
-                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @foreach ($bankAccounts as $bankAccount)
-                                    @php
-                                        $owner = '-';
-                                        switch ($bankAccount->category) {
-                                            case 'customer':
-                                                $owner = $bankAccount->subCategory->customer_name;
-                                                break;
-                                            case 'supplier':
-                                                $owner = $bankAccount->subCategory->supplier_name;
-                                                break;
-                                        }
-                                    @endphp
-                            
-                                    <div id="{{ $bankAccount->id }}" data-json='{{ $bankAccount }}' class="contextMenuToggle modalToggle relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5">{{ $bankAccount->account_title }}</span>
-                                        <span class="text-left pl-5">{{ $owner }}</span>
-                                        <span class="text-center capitalize">{{ $bankAccount->category }}</span>
-                                        <span class="text-right pr-5">{{ $bankAccount->date->format('d-M-Y, D') }}</span>
+                                @else
+                                    <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                        <div class="text-left pl-5">Account Title</div>
+                                        <div class="text-left pl-5">Name</div>
+                                        <div class="text-center">Category</div>
+                                        <div class="text-right pr-5">Date</div>
                                     </div>
-                                @endforeach
+                                    
+                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                        @foreach ($bankAccounts as $bankAccount)
+                                            @php
+                                                $owner = '-';
+                                                switch ($bankAccount->category) {
+                                                    case 'customer':
+                                                        $owner = $bankAccount->subCategory->customer_name;
+                                                        break;
+                                                    case 'supplier':
+                                                        $owner = $bankAccount->subCategory->supplier_name;
+                                                        break;
+                                                }
+                                            @endphp
+                                    
+                                            <div id="{{ $bankAccount->id }}" data-json='{{ $bankAccount }}' class="contextMenuToggle modalToggle relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                                <span class="text-left pl-5">{{ $bankAccount->account_title }}</span>
+                                                <span class="text-left pl-5">{{ $owner }}</span>
+                                                <span class="text-center capitalize">{{ $bankAccount->category }}</span>
+                                                <span class="text-right pr-5">{{ $bankAccount->date->format('d-M-Y, D') }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
                     <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                 @else

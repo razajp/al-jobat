@@ -68,73 +68,70 @@
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Customers" :search_fields=$searchFields/>
         </div>
-        
-        {{-- <div class="w-[80%] mx-auto">
-            <x-search-header heading="Customers" :filter_items="[
-                'all' => 'All',
-                'customer_name' => 'Customer Name',
-                'urdu_title' => 'Urdu Title',
-                'person_name' => 'Person Name',
-                'category' => 'Category',
-                'username' => 'Username',
-            ]"/>
-        </div> --}}
 
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Customers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($customers) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('customers.create') }}" title="Add New Customer" icon="fa-plus" />
                     </div>
-                    
-                    <div class="card_container">
-                        @if ($authLayout == 'grid')
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($customers as $customer)
-                                    <div id='{{ $customer->id }}' data-json='{{ $customer }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'image' =>
-                                                $customer->user['profile_picture'] == 'default_avatar.png'
-                                                    ? asset('images/default_avatar.png')
-                                                    : asset('storage/uploads/images/' . $customer->user['profile_picture']),
-                                            'name' => $customer->customer_name,
-                                            'status' => $customer->user->status,
-                                            'details' => [
-                                                'Urdu Title' => $customer->urdu_title,
-                                                'Category' => $customer->category,
-                                                'Balance' => number_format($customer->balance, 1),
-                                            ],
-                                        ]" />
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                @if ($authLayout == 'grid')
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        @foreach ($customers as $customer)
+                                            <div id='{{ $customer->id }}' data-json='{{ $customer }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                                <x-card :data="[
+                                                    'image' =>
+                                                        $customer->user['profile_picture'] == 'default_avatar.png'
+                                                            ? asset('images/default_avatar.png')
+                                                            : asset('storage/uploads/images/' . $customer->user['profile_picture']),
+                                                    'name' => $customer->customer_name,
+                                                    'status' => $customer->user->status,
+                                                    'details' => [
+                                                        'Urdu Title' => $customer->urdu_title,
+                                                        'Category' => $customer->category,
+                                                        'Balance' => number_format($customer->balance, 1),
+                                                    ],
+                                                ]" />
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                <div class="text-left pl-5">Customer</div>
-                                <div class="text-left pl-5">Urdu Title</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-right">Balance</div>
-                                <div class="text-right pr-5">Status</div>
-                            </div>
-                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @forEach ($customers as $customer)
-                                    <div id="{{ $customer->id }}" data-json='{{ $customer }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5">{{ $customer->customer_name }}</span>
-                                        <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
-                                        <span class="text-center">{{ $customer->category }}</span>
-                                        <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
-                                        <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
+                                @else
+                                    <div class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                        <div class="text-left pl-5">Customer</div>
+                                        <div class="text-left pl-5">Urdu Title</div>
+                                        <div class="text-center">Category</div>
+                                        <div class="text-center">City</div>
+                                        <div class="text-center">Phone</div>
+                                        <div class="text-right">Balance</div>
+                                        <div class="text-right pr-5">Status</div>
                                     </div>
-                                @endforeach
+                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                        @forEach ($customers as $customer)
+                                            <div id="{{ $customer->id }}" data-json='{{ $customer }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                                <span class="text-left pl-5">{{ $customer->customer_name }}</span>
+                                                <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
+                                                <span class="text-center capitalize">{{ $customer->category }}</span>
+                                                <span class="text-center capitalize">{{ $customer->city->title }}</span>
+                                                <span class="text-center">{{ $customer->phone_number }}</span>
+                                                <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
+                                                <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>\
                     </div>
-                    <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Customer yet</h1>
@@ -322,7 +319,7 @@
                         class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
                     </div>
                     <div class="flex items-start relative h-[15rem]">
-                        <div class="rounded-full h-full aspect-square overflow-hidden">
+                        <div class="rounded-[41.5%] h-full aspect-square overflow-hidden">
                             <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
                                 class="w-full h-full object-cover">
                         </div>

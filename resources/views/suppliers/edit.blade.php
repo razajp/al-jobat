@@ -38,8 +38,11 @@
                     {{-- person name --}}
                     <x-input 
                         label="Person Name"
+                        name="person_name" 
+                        id="person_name" 
                         value="{{ $supplier->person_name }}"
-                        disabled
+                        placeholder="Enter person name"
+                        required
                     />
 
                     {{-- supplier_phone_number --}}

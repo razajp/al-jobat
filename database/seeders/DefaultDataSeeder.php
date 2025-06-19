@@ -129,38 +129,8 @@ class DefaultDataSeeder extends Seeder
                 'created_at' => '2025-03-05T17:37:26.000000Z',
                 'updated_at' => '2025-03-05T17:37:26.000000Z',
             ],
-            [
-                'type' => 'city',
-                'title' => 'Karachi',
-                'short_title' => null,
-                'creator_id' => 1,
-                'created_at' => '2025-03-05T17:37:26.000000Z',
-                'updated_at' => '2025-03-05T17:37:26.000000Z',
-            ],
-            [
-                'type' => 'city',
-                'title' => 'Lahore',
-                'short_title' => null,
-                'creator_id' => 1,
-                'created_at' => '2025-03-05T17:37:26.000000Z',
-                'updated_at' => '2025-03-05T17:37:26.000000Z',
-            ],
-            [
-                'type' => 'city',
-                'title' => 'Islamabad',
-                'short_title' => null,
-                'creator_id' => 1,
-                'created_at' => '2025-03-05T17:37:26.000000Z',
-                'updated_at' => '2025-03-05T17:37:26.000000Z',
-            ],
-            [
-                'type' => 'city',
-                'title' => 'Rawalpindi',
-                'short_title' => null,
-                'creator_id' => 1,
-                'created_at' => '2025-03-05T17:37:26.000000Z',
-                'updated_at' => '2025-03-05T17:37:26.000000Z',
-            ],
         ]);
+
+        DB::unprepared(file_get_contents(database_path('seeders/sql/cities.sql')));
     }
 }

@@ -75,7 +75,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Payment Programs" />
 
                 @if (count($finalData) > 0)
@@ -83,95 +83,99 @@
                         <x-section-navigation-button link="{{ route('payment-programs.create') }}" title="Add New Program"
                             icon="fa-plus" />
                     </div>
-
-                    <div class="data_container">
-                        <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                            <div class="text-center w-[10%]">Date</div>
-                            <div class="text-center w-[15%]">Customer</div>
-                            <div class="text-center w-[10%]">O/P No.</div>
-                            <div class="text-center w-[10%]">Category</div>
-                            <div class="text-center w-[10%]">Beneficiary</div>
-                            <div class="text-center w-[10%]">Amount</div>
-                            <div class="text-center w-[10%]">Document</div>
-                            <div class="text-center w-[10%]">Payment</div>
-                            <div class="text-center w-[10%]">Balance</div>
-                            <div class="text-center w-[10%]">Status</div>
-                        </div>
-
-                        <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                            @foreach ($finalData as $data)
-                                <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}"
-                                    class="contextMenuToggle modalToggle relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                    <span class="text-center w-[10%]">{{ date('d-M-Y', strtotime($data['date'])) }}</span>
-                                    <span
-                                        class="text-center w-[15%] capitalize">{{ $data['customer']['customer_name'] }}</span>
-                                    <span class="text-center w-[10%]">{{ $data['order_no'] ?? $data['program_no'] }}</span>
-                                    <span
-                                        class="text-center w-[10%] capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category'] ?? '-')) }}</span>
-                                    <span class="text-center w-[10%]">
-                                        @php
-                                            $beneficiary = '-';
-                                            if (isset($data['category'])) {
-                                                if (
-                                                    $data['category'] == 'supplier' &&
-                                                    isset($data['sub_category']['supplier_name'])
-                                                ) {
-                                                    $beneficiary = $data['sub_category']['supplier_name'];
-                                                } elseif (
-                                                    $data['category'] == 'customer' &&
-                                                    isset($data['sub_category']['customer_name'])
-                                                ) {
-                                                    $beneficiary = $data['sub_category']['customer_name'];
-                                                } elseif ($data['category'] == 'waiting' && isset($data['remarks'])) {
-                                                    $beneficiary = $data['remarks'];
-                                                } elseif (
-                                                    $data['category'] == 'self_account' &&
-                                                    isset($data['sub_category']['account_title'])
-                                                ) {
-                                                    $beneficiary = $data['sub_category']['account_title'];
-                                                }
-                                            } elseif (isset($data['payment_programs']['category'])) {
-                                                if (
-                                                    $data['payment_programs']['category'] == 'supplier' &&
-                                                    isset($data['payment_programs']['sub_category']['supplier_name'])
-                                                ) {
-                                                    $beneficiary =
-                                                        $data['payment_programs']['sub_category']['supplier_name'];
-                                                } elseif (
-                                                    $data['payment_programs']['category'] == 'customer' &&
-                                                    isset($data['payment_programs']['sub_category']['customer_name'])
-                                                ) {
-                                                    $beneficiary =
-                                                        $data['payment_programs']['sub_category']['customer_name'];
-                                                } elseif (
-                                                    $data['payment_programs']['category'] == 'waiting' &&
-                                                    isset($data['payment_programs']['remarks'])
-                                                ) {
-                                                    $beneficiary = $data['payment_programs']['remarks'];
-                                                } elseif (
-                                                    $data['payment_programs']['category'] == 'self_account' &&
-                                                    isset($data['payment_programs']['sub_category']['account_title'])
-                                                ) {
-                                                    $beneficiary =
-                                                        $data['payment_programs']['sub_category']['account_title'];
-                                                }
-                                            }
-                                        @endphp
-                                        {{ $beneficiary }}
-                                    </span>
-                                    <span
-                                        class="text-center w-[10%]">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
-                                    <span class="text-center w-[10%]">{{ $data['document'] ?? '-' }}</span>
-                                    <span
-                                        class="text-center w-[10%]">{{ number_format($data['payment'] ?? '0', 1) }}</span>
-                                    <span
-                                        class="text-center w-[10%]">{{ number_format($data['balance'] ?? '0', 1) }}</span>
-                                    <span class="text-center w-[10%]">{{ $data['status'] ?? '-' }}</span>
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="data_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                    <div class="text-center w-[10%]">Date</div>
+                                    <div class="text-center w-[15%]">Customer</div>
+                                    <div class="text-center w-[10%]">O/P No.</div>
+                                    <div class="text-center w-[10%]">Category</div>
+                                    <div class="text-center w-[10%]">Beneficiary</div>
+                                    <div class="text-center w-[10%]">Amount</div>
+                                    <div class="text-center w-[10%]">Document</div>
+                                    <div class="text-center w-[10%]">Payment</div>
+                                    <div class="text-center w-[10%]">Balance</div>
+                                    <div class="text-center w-[10%]">Status</div>
                                 </div>
-                            @endforeach
+
+                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                    @foreach ($finalData as $data)
+                                        <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}"
+                                            class="contextMenuToggle modalToggle relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                            <span class="text-center w-[10%]">{{ date('d-M-Y', strtotime($data['date'])) }}</span>
+                                            <span
+                                                class="text-center w-[15%] capitalize">{{ $data['customer']['customer_name'] }}</span>
+                                            <span class="text-center w-[10%]">{{ $data['order_no'] ?? $data['program_no'] }}</span>
+                                            <span
+                                                class="text-center w-[10%] capitalize">{{ str_replace('_', ' ', $data['category'] ?? ($data['payment_programs']['category'] ?? '-')) }}</span>
+                                            <span class="text-center w-[10%]">
+                                                @php
+                                                    $beneficiary = '-';
+                                                    if (isset($data['category'])) {
+                                                        if (
+                                                            $data['category'] == 'supplier' &&
+                                                            isset($data['sub_category']['supplier_name'])
+                                                        ) {
+                                                            $beneficiary = $data['sub_category']['supplier_name'];
+                                                        } elseif (
+                                                            $data['category'] == 'customer' &&
+                                                            isset($data['sub_category']['customer_name'])
+                                                        ) {
+                                                            $beneficiary = $data['sub_category']['customer_name'];
+                                                        } elseif ($data['category'] == 'waiting' && isset($data['remarks'])) {
+                                                            $beneficiary = $data['remarks'];
+                                                        } elseif (
+                                                            $data['category'] == 'self_account' &&
+                                                            isset($data['sub_category']['account_title'])
+                                                        ) {
+                                                            $beneficiary = $data['sub_category']['account_title'];
+                                                        }
+                                                    } elseif (isset($data['payment_programs']['category'])) {
+                                                        if (
+                                                            $data['payment_programs']['category'] == 'supplier' &&
+                                                            isset($data['payment_programs']['sub_category']['supplier_name'])
+                                                        ) {
+                                                            $beneficiary =
+                                                                $data['payment_programs']['sub_category']['supplier_name'];
+                                                        } elseif (
+                                                            $data['payment_programs']['category'] == 'customer' &&
+                                                            isset($data['payment_programs']['sub_category']['customer_name'])
+                                                        ) {
+                                                            $beneficiary =
+                                                                $data['payment_programs']['sub_category']['customer_name'];
+                                                        } elseif (
+                                                            $data['payment_programs']['category'] == 'waiting' &&
+                                                            isset($data['payment_programs']['remarks'])
+                                                        ) {
+                                                            $beneficiary = $data['payment_programs']['remarks'];
+                                                        } elseif (
+                                                            $data['payment_programs']['category'] == 'self_account' &&
+                                                            isset($data['payment_programs']['sub_category']['account_title'])
+                                                        ) {
+                                                            $beneficiary =
+                                                                $data['payment_programs']['sub_category']['account_title'];
+                                                        }
+                                                    }
+                                                @endphp
+                                                {{ $beneficiary }}
+                                            </span>
+                                            <span
+                                                class="text-center w-[10%]">{{ number_format($data['amount'] ?? $data['netAmount'], 1) }}</span>
+                                            <span class="text-center w-[10%]">{{ $data['document'] ?? '-' }}</span>
+                                            <span
+                                                class="text-center w-[10%]">{{ number_format($data['payment'] ?? '0', 1) }}</span>
+                                            <span
+                                                class="text-center w-[10%]">{{ number_format($data['balance'] ?? '0', 1) }}</span>
+                                            <span class="text-center w-[10%]">{{ $data['status'] ?? '-' }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                         </div>
-                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
+                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Payment Programs yet</h1>

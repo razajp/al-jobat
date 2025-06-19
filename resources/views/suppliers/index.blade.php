@@ -66,58 +66,62 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Suppliers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($Suppliers) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('suppliers.create') }}" title="Add New Supplier" icon="fa-plus" />
                     </div>
-                    
-                    <div class="card_container">
-                        @if ($authLayout == 'grid')
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($Suppliers as $supplier)
-                                    <div id="{{ $supplier->id }}" data-json='{{ $supplier }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'image' =>
-                                                $supplier->user['profile_picture'] == 'default_avatar.png'
-                                                    ? asset('images/default_avatar.png')
-                                                    : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
-                                            'name' => $supplier->supplier_name,
-                                            'status' => $supplier->user->status,
-                                            'details' => [
-                                                'Urdu Title' => $supplier->urdu_title,
-                                                'Phone' => $supplier->phone_number,
-                                                'Balance' => number_format($supplier->balance, 1),
-                                            ],
-                                        ]" />
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                @if ($authLayout == 'grid')
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        @foreach ($Suppliers as $supplier)
+                                            <div id="{{ $supplier->id }}" data-json='{{ $supplier }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                                <x-card :data="[
+                                                    'image' =>
+                                                        $supplier->user['profile_picture'] == 'default_avatar.png'
+                                                            ? asset('images/default_avatar.png')
+                                                            : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
+                                                    'name' => $supplier->supplier_name,
+                                                    'status' => $supplier->user->status,
+                                                    'details' => [
+                                                        'Urdu Title' => $supplier->urdu_title,
+                                                        'Phone' => $supplier->phone_number,
+                                                        'Balance' => number_format($supplier->balance, 1),
+                                                    ],
+                                                ]" />
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                <div class="text-left pl-5">Supplier</div>
-                                <div class="text-center">Urdu Title</div>
-                                <div class="text-center">Phone</div>
-                                <div class="text-right">Balance</div>
-                                <div class="text-right pr-5">Status</div>
-                            </div>
-                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @forEach ($Suppliers as $supplier)
-                                    <div id="{{ $supplier->id }}" data-json='{{ $supplier }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
-                                        <span class="text-center">{{ $supplier->urdu_title }}</span>
-                                        <span class="text-center">{{ $supplier->phone_number }}</span>
-                                        <span class="text-right">{{ number_format($supplier->balance, 1) }}</span>
-                                        <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $supplier->user->status }}</span>
+                                @else
+                                    <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                        <div class="text-left pl-5">Supplier</div>
+                                        <div class="text-center">Urdu Title</div>
+                                        <div class="text-center">Phone</div>
+                                        <div class="text-right">Balance</div>
+                                        <div class="text-right pr-5">Status</div>
                                     </div>
-                                @endforeach
+                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                        @forEach ($Suppliers as $supplier)
+                                            <div id="{{ $supplier->id }}" data-json='{{ $supplier }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                                <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
+                                                <span class="text-center">{{ $supplier->urdu_title }}</span>
+                                                <span class="text-center">{{ $supplier->phone_number }}</span>
+                                                <span class="text-right">{{ number_format($supplier->balance, 1) }}</span>
+                                                <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $supplier->user->status }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                     </div>
-                    <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Suppliers yet</h1>
@@ -313,7 +317,7 @@
                         class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
                     </div>
                     <div class="flex items-start relative h-[15rem]">
-                        <div class="rounded-full h-full aspect-square overflow-hidden">
+                        <div class="rounded-[41.5%] h-full aspect-square overflow-hidden">
                             <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
                                 class="w-full h-full object-cover">
                         </div>
@@ -503,7 +507,7 @@
                             <hr class="border-gray-600 my-3">
                 
                             <div class="chipsContainer">
-                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2">
+                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2 text-[var(--text-color)]">
                                 </div>
                             </div>
                         </div>
@@ -529,11 +533,11 @@
             let chipsClutter = "";
             data.categories.forEach((category) => {
                 chipsClutter += `
-                    <div data-id="${category.id}" class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                    <div data-id="${category.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
                         <div class="text tracking-wide">${category.title}</div>
                         <button class="delete cursor-pointer ${data.categories.length <= 1 ? "hidden" : ""}" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            class="size-3 stroke-gray-300">
+                            class="size-3 stroke-gray-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>
@@ -601,13 +605,13 @@
                 if (selectedCategoryId) {
                     // Create the chip element
                     let chip = document.createElement('div');
-                    chip.className = 'chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
+                    chip.className = 'chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
                     chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
                     chip.innerHTML = `
                         <div class="text tracking-wide">${selectedCategoryName}</div>
                         <button class="delete cursor-pointer" type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                class="size-3 stroke-gray-300">
+                                class="size-3 stroke-gray-400">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                             </svg>
                         </button>

@@ -63,52 +63,56 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-full md:w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow-lg overflow-y-auto p-7 pt-12 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($employees) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('employees.create') }}" title="Add New Employee" icon="fa-plus" />
                     </div>
-                    
-                    <div class="card_container">
-                        @if ($authLayout == 'grid')
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($employees as $employee)
-                                    <div id='{{ $employee->id }}' data-json='{{ $employee }}'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'name' => $employee->employee_name,
-                                            'details' => [
-                                                'Urdu Title' => $employee->urdu_title,
-                                                'Category' => $employee->category,
-                                                'Type' => $employee->type->title,
-                                                'Balance' => number_format($employee->balance, 1),
-                                            ],
-                                        ]" />
+                
+                    <div class="details h-full z-40">
+                        <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
+                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                                @if ($authLayout == 'grid')
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        @foreach ($employees as $employee)
+                                            <div id='{{ $employee->id }}' data-json='{{ $employee }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+                                                <x-card :data="[
+                                                    'name' => $employee->employee_name,
+                                                    'details' => [
+                                                        'Urdu Title' => $employee->urdu_title,
+                                                        'Category' => $employee->category,
+                                                        'Type' => $employee->type->title,
+                                                        'Balance' => number_format($employee->balance, 1),
+                                                    ],
+                                                ]" />
+                                            </div>
+                                        @endforeach
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                <div class="text-left pl-5">Employee Name</div>
-                                <div class="text-left pl-5">Urdu Title</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-center">Type</div>
-                                <div class="text-right pr-5">Balance</div>
-                            </div>
-                            <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                @forEach ($employees as $employee)
-                                    <div id="{{ $employee->id }}" data-json='{{ $employee }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                        <span class="text-left pl-5 capitalize">{{ $employee->employee_name }}</span>
-                                        <span class="text-left pl-5">{{ $employee->urdu_title }}</span>
-                                        <span class="text-center capitalize">{{ $employee->category }}</span>
-                                        <span class="text-center">{{ $employee->type->title }}</span>
-                                        <span class="text-right pr-5">{{ number_format($employee->balance, 1) }}</span>
+                                @else
+                                    <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                        <div class="text-left pl-5">Employee Name</div>
+                                        <div class="text-left pl-5">Urdu Title</div>
+                                        <div class="text-center">Category</div>
+                                        <div class="text-center">Type</div>
+                                        <div class="text-right pr-5">Balance</div>
                                     </div>
-                                @endforeach
+                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
+                                        @forEach ($employees as $employee)
+                                            <div id="{{ $employee->id }}" data-json='{{ $employee }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                                <span class="text-left pl-5 capitalize">{{ $employee->employee_name }}</span>
+                                                <span class="text-left pl-5">{{ $employee->urdu_title }}</span>
+                                                <span class="text-center capitalize">{{ $employee->category }}</span>
+                                                <span class="text-center">{{ $employee->type->title }}</span>
+                                                <span class="text-right pr-5">{{ number_format($employee->balance, 1) }}</span>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @endif
                             </div>
-                        @endif
+                        </div>
                     </div>
                     <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
                 @else
