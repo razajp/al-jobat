@@ -405,95 +405,72 @@
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <!-- Modal Content Slot -->
-                    <div id="active_inactive_dot_modal"
-                        class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
-                    </div>
-                    <div class="flex items-start relative h-[15rem]">
-                        <div class="rounded-[41.5%] h-full aspect-square overflow-hidden">
-                            <img id="imageInModal" src="${data.image}" alt=""
-                                class="w-full h-full object-cover">
-                        </div>
-                
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.details["Urdu Title"]}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.details["Balance"], 1, 1)}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.details["Category"]}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city}</span></p>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
+            let modalData = {
+                id: 'modalForm',
+                method: "POST",
+                action: "{{ route('update-user-status') }}",
+                class: '',
+                closeAction: 'closeModal()',
+                image: data.image,
+                name: data.name,
+                details: {
+                    'Urud Title': data.details['Urdu Title'],
+                    'Person Name': data.person_name,
+                    'Username': data.user.username,
+                    'Phone Number': data.phone_number,
+                    'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
+                    'Category': data.details['Category'],
+                    'City': data.city,
+                },
+                user: data.user,
+                bottomActions: [
+                    {id: 'edit-in-modal', text: 'Edit Customer'}
+                ],
+            }
 
-                        <button id="edit-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Edit Customer
-                        </button>
+            modalDom.innerHTML = createModal(modalData);
 
-                        <div id="ac_in_modal">
-                            <input type="hidden" id="user_id" name="user_id" value="${data.user.id}">
-                            <input type="hidden" id="user_status" name="status" value="${data.user.status}">
-                            <button id="ac_in_btn" type="submit"
-                                class="px-4 py-2 bg-[var(--bg-error)] border border-[var(--bg-error)] text-[var(--text-error)] font-semibold rounded-lg hover:bg-[var(--h-bg-error)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                                In Active
-                            </button>
-                        </div>
-                    </x-slot>
-                </x-modal>
-            `;
+            // let ac_in_modal = document.getElementById('ac_in_modal');
+            // let ac_in_btn = document.getElementById('ac_in_btn');
+            // let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
 
-            let ac_in_modal = document.getElementById('ac_in_modal');
-            let ac_in_btn = document.getElementById('ac_in_btn');
-            let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
+            // ac_in_modal.classList.add("hidden");
+
+            // if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
+            //     ac_in_modal.classList.remove("hidden");
+            // }
+
+            // if (data.balance == 0) {
+            //     if (data.user.status === 'active') {
+            //         ac_in_btn.classList.add('bg-[var(--bg-error)]')
+            //         ac_in_btn.classList.add('border-[var(--bg-error)]')
+            //         ac_in_btn.classList.remove('bg-[var(--bg-success)]')
+            //         ac_in_btn.classList.remove('border-[var(--bg-success)]')
+            //         ac_in_btn.classList.add('hover:bg-[var(--h-bg-error)]')
+            //         ac_in_btn.classList.remove('hover:bg-[var(--h-bg-success)]')
+            //         ac_in_btn.classList.add('text-[var(--text-error)]')
+            //         ac_in_btn.classList.remove('text-[var(--text-success)]')
+            //         ac_in_btn.textContent = 'In Active'
+            //         active_inactive_dot_modal.classList.remove('bg-[var(--border-error)]')
+            //         active_inactive_dot_modal.classList.add('bg-[var(--border-success)]')
+            //     } else {
+            //         ac_in_btn.classList.remove('bg-[var(--bg-error)]')
+            //         ac_in_btn.classList.remove('border-[var(--bg-error)]')
+            //         ac_in_btn.classList.add('bg-[var(--bg-success)]')
+            //         ac_in_btn.classList.add('border-[var(--bg-success)]')
+            //         ac_in_btn.classList.remove('hover:bg-[var(--h-bg-error)]')
+            //         ac_in_btn.classList.add('hover:bg-[var(--h-bg-success)]')
+            //         ac_in_btn.classList.remove('text-[var(--text-error)]')
+            //         ac_in_btn.classList.add('text-[var(--text-success)]')
+            //         ac_in_btn.textContent = 'Active'
+            //         active_inactive_dot_modal.classList.add('bg-[var(--border-error)]')
+            //         active_inactive_dot_modal.classList.remove('bg-[var(--border-success)]')
+            //     }
+            // } else {
+            //     ac_in_modal.classList.add("hidden");
+            // }
+
             let editInModalDom = document.getElementById('edit-in-modal');
-
-            ac_in_modal.classList.add("hidden");
-
-            if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                ac_in_modal.classList.remove("hidden");
-            }
-
-            if (data.balance == 0) {
-                if (data.user.status === 'active') {
-                    ac_in_btn.classList.add('bg-[var(--bg-error)]')
-                    ac_in_btn.classList.add('border-[var(--bg-error)]')
-                    ac_in_btn.classList.remove('bg-[var(--bg-success)]')
-                    ac_in_btn.classList.remove('border-[var(--bg-success)]')
-                    ac_in_btn.classList.add('hover:bg-[var(--h-bg-error)]')
-                    ac_in_btn.classList.remove('hover:bg-[var(--h-bg-success)]')
-                    ac_in_btn.classList.add('text-[var(--text-error)]')
-                    ac_in_btn.classList.remove('text-[var(--text-success)]')
-                    ac_in_btn.textContent = 'In Active'
-                    active_inactive_dot_modal.classList.remove('bg-[var(--border-error)]')
-                    active_inactive_dot_modal.classList.add('bg-[var(--border-success)]')
-                } else {
-                    ac_in_btn.classList.remove('bg-[var(--bg-error)]')
-                    ac_in_btn.classList.remove('border-[var(--bg-error)]')
-                    ac_in_btn.classList.add('bg-[var(--bg-success)]')
-                    ac_in_btn.classList.add('border-[var(--bg-success)]')
-                    ac_in_btn.classList.remove('hover:bg-[var(--h-bg-error)]')
-                    ac_in_btn.classList.add('hover:bg-[var(--h-bg-success)]')
-                    ac_in_btn.classList.remove('text-[var(--text-error)]')
-                    ac_in_btn.classList.add('text-[var(--text-success)]')
-                    ac_in_btn.textContent = 'Active'
-                    active_inactive_dot_modal.classList.add('bg-[var(--border-error)]')
-                    active_inactive_dot_modal.classList.remove('bg-[var(--border-success)]')
-                }
-            } else {
-                ac_in_modal.classList.add("hidden");
-            }
-
             editInModalDom.addEventListener('click', () => {
                 window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
             });

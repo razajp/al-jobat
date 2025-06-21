@@ -122,7 +122,7 @@ class UserController extends Controller
 
         if ($request->status == 'active') {
             if ($user->id != Auth::id()) {
-                $user->status = 'in active';
+                $user->status = 'in_active';
                 $user->save();
 
                 try {

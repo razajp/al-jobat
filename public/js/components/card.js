@@ -15,8 +15,8 @@ function createCard(data) {
             </button>
     `;
 
-    if (data.status) {
-        const status = data.status;
+    if (data.user.status) {
+        const status = data.user.status;
         const [dotClass, labelClass] = statusColor[status] || statusColor.inactive;
         clutter += `
             <div class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] rounded-full ${dotClass}"></div>

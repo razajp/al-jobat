@@ -230,6 +230,7 @@
     <script src="{{ asset('jquery.js') }}"></script>
     
     <script src="{{ asset('js/components/card.js') }}"></script>
+    <script src="{{ asset('js/components/modal.js') }}"></script>
 </head>
 
 <body class="bg-[var(--secondary-bg-color)] text-[var(--text-color)] text-sm min-h-screen flex flex-col md:flex-row items-center justify-center fade-in" cz-shortcut-listen="true">
