@@ -9,6 +9,11 @@ class UserSession extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         'user_id',
         'session_token',

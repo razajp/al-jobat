@@ -11,6 +11,11 @@ class Supplier extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         'user_id',
         'supplier_name',

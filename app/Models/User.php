@@ -17,6 +17,13 @@ class User extends Authenticatable
      *
      * @var array
      */
+
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+        'password',
+    ];
+    
     protected $fillable = [
         'name',
         'username',
@@ -34,9 +41,6 @@ class User extends Authenticatable
      *
      * @var array
      */
-    protected $hidden = [
-        'password',
-    ];
 
     public function customer() {
         return $this->hasOne(Customer::class);

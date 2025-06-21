@@ -11,6 +11,11 @@ class PaymentProgram extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = ['program_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
     protected $appends = ['payments', 'balance', 'payment'];

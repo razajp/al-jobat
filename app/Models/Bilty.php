@@ -11,6 +11,11 @@ class Bilty extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         'invoice_id',
         'bilty_no',

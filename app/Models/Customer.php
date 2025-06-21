@@ -11,6 +11,14 @@ class Customer extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'user_id',
+        'creator_id',
+        'city_id',
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         'user_id',
         'customer_name',

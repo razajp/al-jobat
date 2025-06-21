@@ -11,6 +11,11 @@ class Invoice extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         "invoice_no",
         "order_no",

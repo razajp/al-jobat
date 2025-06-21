@@ -31,7 +31,7 @@ class CustomerController extends Controller
             $cities_options[$city->id] = ['text' => $city->title];
         }
 
-        // return $customers;
+        // return $customers[0];
         return view("customers.index", compact('customers', 'authLayout', 'cities_options'));
     }
 

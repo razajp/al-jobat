@@ -12,7 +12,7 @@
 {{-- Profile Picture --}}
 @if (isset($data['image']))
     <div class="{{ $data['classImg'] ?? '' }} img aspect-square h-full rounded-[41.5%] overflow-hidden relative">
-        <img src="{{ $data['image'] }}" alt="" class="w-full h-full object-cover">
+        <img src="{{ $data['image'] }}" loading="lazy" alt="" class="w-full h-full object-cover">
     </div>
 @endif
 

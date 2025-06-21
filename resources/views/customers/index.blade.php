@@ -3,61 +3,61 @@
 @section('content')
     @php
         $searchFields = [
-            "Customer Name" => [
-                "id" => "customer_name",
-                "type" => "text",
-                "placeholder" => "Enter customer name",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "customer_name",
+            'Customer Name' => [
+                'id' => 'customer_name',
+                'type' => 'text',
+                'placeholder' => 'Enter customer name',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'customer_name',
             ],
-            "Urdu Title" => [
-                "id" => "urdu_title",
-                "type" => "text",
-                "placeholder" => "Enter urdu title",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "urdu_title",
+            'Urdu Title' => [
+                'id' => 'urdu_title',
+                'type' => 'text',
+                'placeholder' => 'Enter urdu title',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'urdu_title',
             ],
-            "Username" => [
-                "id" => "username",
-                "type" => "text",
-                "placeholder" => "Enter username",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "user.username",
+            'Username' => [
+                'id' => 'username',
+                'type' => 'text',
+                'placeholder' => 'Enter username',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'user.username',
             ],
-            "Phone" => [
-                "id" => "phone",
-                "type" => "text",
-                "placeholder" => "Enter phone number",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "phone_number",
+            'Phone' => [
+                'id' => 'phone',
+                'type' => 'text',
+                'placeholder' => 'Enter phone number',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'phone_number',
             ],
-            "Category" => [
-                "id" => "category",
-                "type" => "select",
-                "options" => [
-                            'cash' => ['text' => 'Cash'],
-                            'regular' => ['text' => 'Regular'],
-                            'site' => ['text' => 'Site'],
-                            'other' => ['text' => 'Other'],
-                        ],
-                "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "category",
+            'Category' => [
+                'id' => 'category',
+                'type' => 'select',
+                'options' => [
+                    'cash' => ['text' => 'Cash'],
+                    'regular' => ['text' => 'Regular'],
+                    'site' => ['text' => 'Site'],
+                    'other' => ['text' => 'Other'],
+                ],
+                'onchange' => 'runDynamicFilter()',
+                'dataFilterPath' => 'category',
             ],
-            "City" => [
-                "id" => "method",
-                "type" => "select",
-                "options" => $cities_options,
-                "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "method",
+            'City' => [
+                'id' => 'method',
+                'type' => 'select',
+                'options' => $cities_options,
+                'onchange' => 'runDynamicFilter()',
+                'dataFilterPath' => 'method',
             ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
-            ]
+            'Date Range' => [
+                'id' => 'date_range_start',
+                'type' => 'date',
+                'id2' => 'date_range_end',
+                'type2' => 'date',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'date',
+            ],
         ];
     @endphp
     <!-- Modal -->
@@ -66,7 +66,7 @@
     </div>
     <div>
         <div class="w-[80%] mx-auto">
-            <x-search-header heading="Customers" :search_fields=$searchFields/>
+            <x-search-header heading="Customers" :search_fields=$searchFields />
         </div>
 
         <!-- Main Content -->
@@ -77,22 +77,27 @@
 
                 @if (count($customers) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
-                        <x-section-navigation-button link="{{ route('customers.create') }}" title="Add New Customer" icon="fa-plus" />
+                        <x-section-navigation-button link="{{ route('customers.create') }}" title="Add New Customer"
+                            icon="fa-plus" />
                     </div>
-                
+
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
                                 @if ($authLayout == 'grid')
-                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($customers as $customer)
-                                            <div id='{{ $customer->id }}' data-json='{{ $customer }}'
+                                    <div
+                                        class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                        {{-- @foreach ($customers as $customer) --}}
+                                            {{-- <div id='{{ $customer->id }}' data-json='{{ $customer }}'
                                                 class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
                                                 <x-card :data="[
                                                     'image' =>
                                                         $customer->user['profile_picture'] == 'default_avatar.png'
                                                             ? asset('images/default_avatar.png')
-                                                            : asset('storage/uploads/images/' . $customer->user['profile_picture']),
+                                                            : asset(
+                                                                'storage/uploads/images/' .
+                                                                    $customer->user['profile_picture'],
+                                                            ),
                                                     'name' => $customer->customer_name,
                                                     'status' => $customer->user->status,
                                                     'details' => [
@@ -101,8 +106,48 @@
                                                         'Balance' => number_format($customer->balance, 1),
                                                     ],
                                                 ]" />
-                                            </div>
-                                        @endforeach
+                                            </div> --}}
+
+                                            {{-- <div id='{{ $customer->id }}' data-json='{{ $customer }}'
+                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
+
+                                                <div
+                                                    class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] rounded-full {{ $customer->user->status === 'active' ? 'bg-[var(--border-success)]' : ($customer->user->status === 'transparent' ? 'bg-transparent' : ($customer->user->status === 'no_Image' ? 'bg-[var(--border-warning)]' : 'bg-[var(--border-error)]')) }}">
+                                                </div>
+                                                <div
+                                                    class="active_inactive absolute top-2 right-2 text-xs capitalize {{ $customer->user->status === 'active' ? 'text-[var(--border-success)]' : ($customer->user->status === 'transparent' ? 'text-transparent' : ($customer->user->status === 'no_Image' ? 'text-[var(--border-warning)]' : 'text-[var(--border-error)]')) }} h-[1rem]">
+                                                    {{ ucfirst(str_replace('_', ' ', $customer->user->status)) }}
+                                                </div>
+
+                                                <div class="img aspect-square h-full rounded-[41.5%] overflow-hidden relative">
+                                                    <img src="{{  $customer->user['profile_picture'] == 'default_avatar.png'
+                                                                    ? asset('images/default_avatar.png')
+                                                                    : asset('storage/uploads/images/' . $customer->user['profile_picture']), }}" loading="lazy" alt="" class="w-full h-full object-cover">
+                                                </div>
+
+                                                <div class="text-start">
+                                                    <h5 class="text-xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
+                                                        {{ $customer->customer_name ?? 'N/A' }}
+                                                    </h5>
+                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
+                                                        <strong>Urdu Title:</strong> <span style="opacity: 0.9">{{ $customer->urdu_title }}</span>
+                                                    </p>
+                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
+                                                        <strong>Category:</strong> <span style="opacity: 0.9">{{ $customer->category }}</span>
+                                                    </p>
+                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
+                                                        <strong>Balance:</strong> <span style="opacity: 0.9">{{ number_format($customer->balance, 1) }}</span>
+                                                    </p>
+                                                </div>
+
+                                                <button type="button"
+                                                    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
+                                                    <div class="absolute top-0 left-0 bg-[var(--h-bg-color)] blur-md rounded-full h-50 aspect-square"></div>
+                                                    <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
+                                                </button>
+
+                                            </div> --}}
+                                        {{-- @endforeach --}}
                                     </div>
                                 @else
                                     <div class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
@@ -115,28 +160,31 @@
                                         <div class="text-right pr-5">Status</div>
                                     </div>
                                     <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        @forEach ($customers as $customer)
-                                            <div id="{{ $customer->id }}" data-json='{{ $customer }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
+                                        @foreach ($customers as $customer)
+                                            <div id="{{ $customer->id }}" data-json='{{ $customer }}'
+                                                class="contextMenuToggle modalToggle relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                                 <span class="text-left pl-5">{{ $customer->customer_name }}</span>
                                                 <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
                                                 <span class="text-center capitalize">{{ $customer->category }}</span>
                                                 <span class="text-center capitalize">{{ $customer->city->title }}</span>
                                                 <span class="text-center">{{ $customer->phone_number }}</span>
                                                 <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
-                                                <span class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
+                                                <span
+                                                    class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
                                             </div>
                                         @endforeach
                                     </div>
                                 @endif
                             </div>
-                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>\
+                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items
+                                found</p>
+                        </div>
                     </div>
-                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Customer yet</h1>
                         <a href="{{ route('customers.create') }}"
-                        class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
+                            class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>
                 @endif
@@ -151,10 +199,10 @@
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
                             Details</button>
                     </li>
-                    
+
                     <li>
                         <button id="edit-in-context" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit 
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit
                             Customer</button>
                     </li>
 
@@ -175,6 +223,61 @@
 
     <script>
         let currentUserRole = '{{ Auth::user()->role }}';
+
+        const fetchData = @json($customers);
+        let allCardsDataArray = fetchData.map(item => {
+            return {
+                id: item.id,
+                image: item.user.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.user.profile_picture}`,
+                name: item.customer_name,
+                details: {
+                    'Urdu Title': item.urdu_title,
+                    'Category': item.category,
+                    'Balance': item.balance,
+                },
+                person_name: item.person_name,
+                phone_number: item.phone_number,
+                user: {
+                    id: item.user.id,
+                    username: item.user.username,
+                    status: item.user.status,
+                },
+                city: item.city.title,
+            };
+        });
+
+        const scroller = document.querySelector(".container-parent");
+        const search_container = document.querySelector('.search_container');
+        const batchSize = 50;
+        let startIndex = 0;
+        let isFetching = false;
+
+        function renderNextBatch() {
+            if (startIndex >= allCardsDataArray.length) return;
+
+            const nextChunk = allCardsDataArray.slice(startIndex, startIndex + batchSize);
+            const html = nextChunk.map(createCard).join('');
+            search_container.insertAdjacentHTML('beforeend', html);
+            startIndex += batchSize;
+        }
+
+        scroller.addEventListener('scroll', () => {
+            const scrollTop = scroller.scrollTop;
+            const scrollHeight = scroller.scrollHeight;
+            const clientHeight = scroller.clientHeight;
+
+            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
+                console.log("Mast");
+
+                isFetching = true;
+                setTimeout(() => {
+                    renderNextBatch();
+                    isFetching = false;
+                }, 100);
+            }
+        });
+
+        renderNextBatch(); // initial load
 
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
@@ -297,20 +400,10 @@
         }
 
         let isModalOpened = false;
-        let card = document.querySelectorAll('.modalToggle')
-
-        card.forEach(item => {
-            item.addEventListener('click', () => {
-                generateModal(item);
-            });
-        });
 
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
-
-            console.log(data);
-            
 
             modalDom.innerHTML = `
                 <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
@@ -320,19 +413,19 @@
                     </div>
                     <div class="flex items-start relative h-[15rem]">
                         <div class="rounded-[41.5%] h-full aspect-square overflow-hidden">
-                            <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
+                            <img id="imageInModal" src="${data.image}" alt=""
                                 class="w-full h-full object-cover">
                         </div>
                 
                         <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.customer_name}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.urdu_title}</span></p>
+                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.details["Urdu Title"]}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
                             <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.category}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city.title}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.details["Balance"], 1, 1)}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Category:</strong> <span>${data.details["Category"]}</span></p>
+                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.city}</span></p>
                         </div>
                     </div>
                 
@@ -361,23 +454,16 @@
             `;
 
             let ac_in_modal = document.getElementById('ac_in_modal');
-            let imageInModal = document.getElementById('imageInModal');
             let ac_in_btn = document.getElementById('ac_in_btn');
             let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
             let editInModalDom = document.getElementById('edit-in-modal');
-            
+
             ac_in_modal.classList.add("hidden");
 
             if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
                 ac_in_modal.classList.remove("hidden");
             }
 
-            if (data.user.profile_picture == "default_avatar.png") {
-                imageInModal.src = `images/default_avatar.png`
-            } else {
-                imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
-            }
-            
             if (data.balance == 0) {
                 if (data.user.status === 'active') {
                     ac_in_btn.classList.add('bg-[var(--bg-error)]')
@@ -416,7 +502,9 @@
         }
 
         document.addEventListener('mousedown', (e) => {
-            const { id } = e.target;
+            const {
+                id
+            } = e.target;
             if (id === 'modalForm') {
                 closeModal();
             }
@@ -460,38 +548,38 @@
                             item.user.username.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'customer_name':
                         return (
                             item.customer_name.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'urdu_title':
                         return (
                             item.urdu_title.toLowerCase().includes(search)
                         );
                         break;
-                        
-                        
+
+
                     case 'person_name':
                         return (
                             item.person_name.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'category':
                         return (
                             item.category.toLowerCase().includes(search)
                         );
                         break;
-                        
+
                     case 'username':
                         return (
                             item.user.username.toLowerCase().includes(search)
                         );
                         break;
-                
+
                     default:
                         return (
                             item.customer_name.toLowerCase().includes(search) ||

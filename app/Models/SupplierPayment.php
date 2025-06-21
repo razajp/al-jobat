@@ -11,6 +11,11 @@ class SupplierPayment extends Model
 {
     use HasFactory;
 
+    protected $hidden = [
+        'created_at',
+        'updated_at',
+    ];
+    
     protected $fillable = [
         "supplier_id",
         "date",
