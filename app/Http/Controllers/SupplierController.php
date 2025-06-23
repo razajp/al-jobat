@@ -45,18 +45,18 @@ class SupplierController extends Controller
             $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
         
-        foreach ($Suppliers as $supplier) {
-            // Decode JSON array of category IDs
-            $categoriesIdArray = json_decode($supplier->categories_array, true);
+        // foreach ($Suppliers as $supplier) {
+        //     // Decode JSON array of category IDs
+        //     $categoriesIdArray = json_decode($supplier->categories_array, true);
     
-            // Fetch categories from Setups model
-            $categories = Setup::whereIn('id', $categoriesIdArray)
-                ->where('type', 'supplier_category')
-                ->get();
+        //     // Fetch categories from Setups model
+        //     $categories = Setup::whereIn('id', $categoriesIdArray)
+        //         ->where('type', 'supplier_category')
+        //         ->get();
     
-            // Attach the categories to the supplier
-            $supplier["categories"] = $categories;
-        }
+        //     // Attach the categories to the supplier
+        //     $supplier["categories"] = $categories;
+        // }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
     
@@ -120,15 +120,7 @@ class SupplierController extends Controller
         $user = User::where('username', $request->username)->first();
 
         if (!$user) {
-            // Upload the image if provided
-            if ($request->hasFile('image_upload')) {
-                $image = $request->file('image_upload');
-                $image_name = time(). '.'. $image->getClientOriginalExtension();
-                $image->move(public_path('uploads/suppliers'), $image_name);
-                $data['image'] = $image_name;
-            } else {
-                $data['image'] = "default_avatar.png";
-            }
+            $data['image'] = "default_avatar.png";
 
             $user = User::create([
                 'name' => $data['supplier_name'],

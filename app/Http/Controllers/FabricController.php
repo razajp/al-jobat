@@ -29,9 +29,18 @@ class FabricController extends Controller
 
         $lastRecord = Fabric::latest()->with('supplier', 'fabric')->first();
 
+        $fabricCategory = Setup::where('title', 'Fabric')->first();
+
         $suppliers = Supplier::whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
+
+        if ($fabricCategory) {
+            $suppliers = $suppliers->filter(function ($supplier) use ($fabricCategory) {
+                $ids = json_decode($supplier->categories_array, true);
+                return is_array($ids) && in_array($fabricCategory->id, $ids);
+            });
+        }
 
         $suppliers_options = [];
         foreach ($suppliers as $supplier) {

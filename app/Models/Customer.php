@@ -10,14 +10,6 @@ use Illuminate\Support\Facades\Auth;
 class Customer extends Model
 {
     use HasFactory;
-
-    protected $hidden = [
-        'user_id',
-        'creator_id',
-        'city_id',
-        'created_at',
-        'updated_at',
-    ];
     
     protected $fillable = [
         'user_id',
@@ -29,6 +21,14 @@ class Customer extends Model
         'category',
         'city_id',
         'address',
+    ];
+
+    protected $hidden = [
+        'user_id',
+        'creator_id',
+        'city_id',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [

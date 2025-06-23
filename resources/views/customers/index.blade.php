@@ -107,46 +107,6 @@
                                                     ],
                                                 ]" />
                                             </div> --}}
-
-                                            {{-- <div id='{{ $customer->id }}' data-json='{{ $customer }}'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-
-                                                <div
-                                                    class="active_inactive_dot absolute top-2 right-2 w-[0.6rem] h-[0.6rem] rounded-full {{ $customer->user->status === 'active' ? 'bg-[var(--border-success)]' : ($customer->user->status === 'transparent' ? 'bg-transparent' : ($customer->user->status === 'no_Image' ? 'bg-[var(--border-warning)]' : 'bg-[var(--border-error)]')) }}">
-                                                </div>
-                                                <div
-                                                    class="active_inactive absolute top-2 right-2 text-xs capitalize {{ $customer->user->status === 'active' ? 'text-[var(--border-success)]' : ($customer->user->status === 'transparent' ? 'text-transparent' : ($customer->user->status === 'no_Image' ? 'text-[var(--border-warning)]' : 'text-[var(--border-error)]')) }} h-[1rem]">
-                                                    {{ ucfirst(str_replace('_', ' ', $customer->user->status)) }}
-                                                </div>
-
-                                                <div class="img aspect-square h-full rounded-[41.5%] overflow-hidden relative">
-                                                    <img src="{{  $customer->user['profile_picture'] == 'default_avatar.png'
-                                                                    ? asset('images/default_avatar.png')
-                                                                    : asset('storage/uploads/images/' . $customer->user['profile_picture']), }}" loading="lazy" alt="" class="w-full h-full object-cover">
-                                                </div>
-
-                                                <div class="text-start">
-                                                    <h5 class="text-xl mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
-                                                        {{ $customer->customer_name ?? 'N/A' }}
-                                                    </h5>
-                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
-                                                        <strong>Urdu Title:</strong> <span style="opacity: 0.9">{{ $customer->urdu_title }}</span>
-                                                    </p>
-                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
-                                                        <strong>Category:</strong> <span style="opacity: 0.9">{{ $customer->category }}</span>
-                                                    </p>
-                                                    <p class="text-[var(--secondary-text)] tracking-wide text-sm capitalize">
-                                                        <strong>Balance:</strong> <span style="opacity: 0.9">{{ number_format($customer->balance, 1) }}</span>
-                                                    </p>
-                                                </div>
-
-                                                <button type="button"
-                                                    class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
-                                                    <div class="absolute top-0 left-0 bg-[var(--h-bg-color)] blur-md rounded-full h-50 aspect-square"></div>
-                                                    <i class='fas fa-arrow-right text-2xl -rotate-45'></i>
-                                                </button>
-
-                                            </div> --}}
                                         {{-- @endforeach --}}
                                     </div>
                                 @else
@@ -160,7 +120,7 @@
                                         <div class="text-right pr-5">Status</div>
                                     </div>
                                     <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        @foreach ($customers as $customer)
+                                        {{-- @foreach ($customers as $customer)
                                             <div id="{{ $customer->id }}" data-json='{{ $customer }}'
                                                 class="contextMenuToggle modalToggle relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
                                                 <span class="text-left pl-5">{{ $customer->customer_name }}</span>
@@ -172,7 +132,7 @@
                                                 <span
                                                     class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
                                             </div>
-                                        @endforeach
+                                        @endforeach --}}
                                     </div>
                                 @endif
                             </div>
@@ -223,9 +183,28 @@
 
     <script>
         let currentUserRole = '{{ Auth::user()->role }}';
+        let authLayout = '{{ $authLayout }}';
+
+        function createRow(data) {
+            return `
+            <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                class="item row relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                data-json='${JSON.stringify(data)}'>
+
+                <span class="text-left pl-5">${data.name}</span>
+                <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
+                <span class="text-center capitalize">${data.details["Category"]}</span>
+                <span class="text-center capitalize">${data.city}</span>
+                <span class="text-center">${data.phone_number}</span>
+                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
+                    ${data.user.status}
+                </span>
+            </div>`;
+        }
 
         const fetchData = @json($customers);
-        let allCardsDataArray = fetchData.map(item => {
+        let allDataArray = fetchData.map(item => {
             return {
                 id: item.id,
                 image: item.user.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.user.profile_picture}`,
@@ -243,6 +222,8 @@
                     status: item.user.status,
                 },
                 city: item.city.title,
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
             };
         });
 
@@ -253,10 +234,10 @@
         let isFetching = false;
 
         function renderNextBatch() {
-            if (startIndex >= allCardsDataArray.length) return;
+            if (startIndex >= allDataArray.length) return;
 
-            const nextChunk = allCardsDataArray.slice(startIndex, startIndex + batchSize);
-            const html = nextChunk.map(createCard).join('');
+            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
+            const html = nextChunk.map(item => authLayout === 'grid' ? createCard(item) : createRow(item)).join('');
             search_container.insertAdjacentHTML('beforeend', html);
             startIndex += batchSize;
         }
@@ -295,20 +276,12 @@
             isContextMenuOpened = true;
         }
 
-        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
-
-        contextMenuToggle.forEach(toggle => {
-            toggle.addEventListener('contextmenu', (e) => {
-                generateContextMenu(e);
-            });
-        });
-
         function generateContextMenu(e) {
             contextMenu.classList.remove('fade-in');
 
             let ac_in_btn_context = document.getElementById('ac_in_btn_context');
             let ac_in_context = document.getElementById('ac_in_context');
-            let item = e.target.closest('.modalToggle');
+            let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
             ac_in_context.classList.add('hidden');

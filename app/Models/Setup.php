@@ -21,24 +21,4 @@ class Setup extends Model
         'title',
         'short_title'
     ];
-
-    protected static function booted()
-    {
-        // Automatically set creator_id when creating a new Article
-        // static::creating(function ($thisModel) {
-        //     if (Auth::check()) {
-        //         $thisModel->creator_id = Auth::id();
-        //     }
-        // });
-
-        // // Always eager load the associated creator
-        // static::addGlobalScope('withCreator', function (Builder $builder) {
-        //     $builder->with('creator');
-        // });
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(User::class, 'creator_id', 'id');
-    }
 }

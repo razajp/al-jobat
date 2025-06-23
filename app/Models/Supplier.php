@@ -12,6 +12,8 @@ class Supplier extends Model
     use HasFactory;
 
     protected $hidden = [
+        'user_id',
+        'creator_id',
         'created_at',
         'updated_at',
     ];
@@ -26,7 +28,11 @@ class Supplier extends Model
         'categories_array',
     ];
 
-    protected $appends = ['balance'];
+    protected $casts = [
+        'date' => 'date',
+    ];
+
+    protected $appends = ['balance', 'categories'];
 
     protected static function booted()
     {
@@ -64,6 +70,10 @@ class Supplier extends Model
     public function payments()
     {
         return $this->hasMany(SupplierPayment::class, 'supplier_id');
+    }
+    public function getCategoriesAttribute() {
+        $ids = json_decode($this->categories_array, true);
+        return is_array($ids) ? Setup::whereIn('id', $ids)->get() : [];
     }
     public function expenses()
     {

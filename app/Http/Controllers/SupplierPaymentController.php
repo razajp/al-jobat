@@ -14342,6 +14342,28 @@ class SupplierPaymentController extends Controller
             ]
         ];
 
+        $counter = [];
+        $duplicates = [];
+
+        // First, count how many times each (name + city) appears
+        foreach ($allMyData as $customer) {
+            $key = strtolower(trim($customer['customer_name'])) . '|' . strtolower(trim($customer['city']));
+            if (!isset($counter[$key])) {
+                $counter[$key] = 0;
+            }
+            $counter[$key]++;
+        }
+
+        // Now, collect all customers that appear more than once by (name + city)
+        foreach ($allMyData as $customer) {
+            $key = strtolower(trim($customer['customer_name'])) . '|' . strtolower(trim($customer['city']));
+            if ($counter[$key] > 1) {
+                $duplicates[] = $customer;
+            }
+        }
+
+        return response()->json($duplicates);
+
         $validator = Validator::make(
             ['customers' => $allMyData],
             [
