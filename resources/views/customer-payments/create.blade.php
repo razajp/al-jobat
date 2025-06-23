@@ -59,6 +59,7 @@
                     {{-- method --}}
                     <x-select 
                         label="Method"
+                        name="method"
                         id="method"
                         :options="$method_options"
                         required
@@ -73,6 +74,12 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="w-full flex justify-end mt-4">
+            <button type="submit"
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                <i class='fas fa-save mr-1'></i> Save
+            </button>
         </div>
     </form>
 
@@ -231,7 +238,6 @@
                             name="payment_programs"
                             id="payment_programs"
                             required
-                            showDefault
                             onchange="trackProgramState(this)"
                         />
                     </div>
@@ -240,7 +246,7 @@
                 const programSelectDom = document.getElementById('payment_programs');
                 if (allProgramsArray.length > 0) {
                     programSelectDom.disabled = false;
-                    programSelectDom.innerHTML = `<option value="" >-- Select payment program --</option>`;
+                    programSelectDom.innerHTML = '<option value="" >-- Select payment program --</option>';
                     allProgramsArray.forEach(program => {
                         programSelectDom.innerHTML += `<option value="${program.id}" data-option='${JSON.stringify(program)}' >${program.program_no ?? program.order_no}</option>`;
                     });
