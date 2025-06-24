@@ -28,7 +28,6 @@ class DefaultDataSeeder extends Seeder
                 'type' => 'bank_name',
                 'title' => 'Meezan Bank Limited',
                 'short_title' => 'MBL',
-                'creator_id' => 1,
                 'created_at' => '2025-03-05T17:37:26.000000Z',
                 'updated_at' => '2025-03-05T17:37:26.000000Z',
             ],

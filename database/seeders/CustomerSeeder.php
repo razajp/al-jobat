@@ -2756,7 +2756,7 @@ class CustomerSeeder extends Seeder
                 "person_name" => "Ashraf Garments (Sharqiya)",
                 "date" => "2024-01-01 00:00:00",
                 "password" => "1234",
-                "city" => "Ahmedpur ",
+                "city" => "Ahmedpur",
                 "username" => "ashraf",
                 "phone_number" => "03176717919",
                 "address" => ""
@@ -9800,7 +9800,7 @@ class CustomerSeeder extends Seeder
                 "person_name" => "Nasir Garments (Sharqiya)",
                 "date" => "2024-01-01 00:00:00",
                 "password" => "1234",
-                "city" => "Ahmedpur ",
+                "city" => "Ahmedpur",
                 "username" => "nasir",
                 "phone_number" => "0314-6880516",
                 "address" => ""
@@ -14132,7 +14132,7 @@ class CustomerSeeder extends Seeder
                 "person_name" => "Zia Garments",
                 "date" => "2024-01-01 00:00:00",
                 "password" => "1234",
-                "city" => "Victoria ",
+                "city" => "Victoria",
                 "username" => "ziagarments",
                 "phone_number" => "0304-2824077",
                 "address" => ""
@@ -14235,7 +14235,6 @@ class CustomerSeeder extends Seeder
             ]
         ];
 
-<<<<<<< HEAD
         // City 'Ahmedpur ' not found. Skipping. Urdu Title: '501907'
         // City 'Timergara' not found. Skipping. Urdu Title: '501856'
         // City 'Timergara' not found. Skipping. Urdu Title: '501624'
@@ -14249,8 +14248,6 @@ class CustomerSeeder extends Seeder
         // City 'Jatoi' not found. Skipping. Urdu Title: '501258'
         // City 'Victoria ' not found. Skipping. Urdu Title: '501421'
 
-=======
->>>>>>> 93cd23b86a4002da73944d99987012dff933665d
         foreach ($allMyData as $data) {
             // Find city
             $city = Setup::where('title', $data['city'])->first();
