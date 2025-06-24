@@ -84,57 +84,18 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                @if ($authLayout == 'grid')
-                                    <div
-                                        class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        {{-- @foreach ($customers as $customer) --}}
-                                            {{-- <div id='{{ $customer->id }}' data-json='{{ $customer }}'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'image' =>
-                                                        $customer->user['profile_picture'] == 'default_avatar.png'
-                                                            ? asset('images/default_avatar.png')
-                                                            : asset(
-                                                                'storage/uploads/images/' .
-                                                                    $customer->user['profile_picture'],
-                                                            ),
-                                                    'name' => $customer->customer_name,
-                                                    'status' => $customer->user->status,
-                                                    'details' => [
-                                                        'Urdu Title' => $customer->urdu_title,
-                                                        'Category' => $customer->category,
-                                                        'Balance' => number_format($customer->balance, 1),
-                                                    ],
-                                                ]" />
-                                            </div> --}}
-                                        {{-- @endforeach --}}
-                                    </div>
-                                @else
-                                    <div class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                        <div class="text-left pl-5">Customer</div>
-                                        <div class="text-left pl-5">Urdu Title</div>
-                                        <div class="text-center">Category</div>
-                                        <div class="text-center">City</div>
-                                        <div class="text-center">Phone</div>
-                                        <div class="text-right">Balance</div>
-                                        <div class="text-right pr-5">Status</div>
-                                    </div>
-                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        {{-- @foreach ($customers as $customer)
-                                            <div id="{{ $customer->id }}" data-json='{{ $customer }}'
-                                                class="contextMenuToggle modalToggle relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                                <span class="text-left pl-5">{{ $customer->customer_name }}</span>
-                                                <span class="text-left pl-5">{{ $customer->urdu_title }}</span>
-                                                <span class="text-center capitalize">{{ $customer->category }}</span>
-                                                <span class="text-center capitalize">{{ $customer->city->title }}</span>
-                                                <span class="text-center">{{ $customer->phone_number }}</span>
-                                                <span class="text-right">{{ number_format($customer->balance, 1) }}</span>
-                                                <span
-                                                    class="text-right pr-5 capitalize {{ $customer->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $customer->user->status }}</span>
-                                            </div>
-                                        @endforeach --}}
-                                    </div>
-                                @endif
+                                <div id="table-head" class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden">
+                                    <div class="text-left pl-5">Customer</div>
+                                    <div class="text-left pl-5">Urdu Title</div>
+                                    <div class="text-center">Category</div>
+                                    <div class="text-center">City</div>
+                                    <div class="text-center">Phone</div>
+                                    <div class="text-right">Balance</div>
+                                    <div class="text-right pr-5">Status</div>
+                                </div>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                </div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items
                                 found</p>
@@ -228,6 +189,7 @@
         });
 
         const scroller = document.querySelector(".container-parent");
+        const tableHead = document.getElementById('table-head');
         const search_container = document.querySelector('.search_container');
         const batchSize = 50;
         let startIndex = 0;
@@ -258,7 +220,20 @@
             }
         });
 
-        renderNextBatch(); // initial load
+        function renderData() {
+            if (authLayout == "grid") {
+                tableHead.classList.add("hidden");
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5";
+            } else {
+                tableHead.classList.remove("hidden");
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2";
+            }
+            search_container.innerHTML = "";
+            startIndex = 0;
+            renderNextBatch();
+        }
+
+        renderData(); // initial load
 
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
