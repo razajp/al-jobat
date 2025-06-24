@@ -55,7 +55,7 @@ class CustomerPaymentController extends Controller
         $banks = Setup::where('type', 'bank_name')->get();
         foreach ($banks as $bank) {
             if ($bank) {
-                $banks_options[$bank->title] = [
+                $banks_options[(int)$bank->id] = [
                     'text' => $bank->title,
                     'data_option' => $bank,
                 ];
@@ -139,8 +139,18 @@ class CustomerPaymentController extends Controller
             "customer_id" => "required|integer|exists:customers,id",
             "date" => "required|date",
             "type" => "required|string",
-            "program_id" => "nullable|exists:payment_programs,id", 
-            "payment_details_array" => "required|json",
+            "method" => "required|string",
+            "amount" => "required|integer",
+            "bank_id" => "nullable|integer|exists:setups,id",
+            "cheque_date" => "nullable|date",
+            "slip_date" => "nullable|date",
+            "cheque_no" => "nullable|string",
+            "slip_no" => "nullable|string",
+            "clear_date" => "nullable|date",
+            "bank_account_id" => "nullable|integer|exists:bank_accounts,id",
+            "transaction_id" => "nullable|string",
+            "program_id" => "nullable|exists:payment_programs,id",
+            "remarks" => "nullable|string",
         ]);
 
         if ($validator->fails()) {
@@ -149,23 +159,13 @@ class CustomerPaymentController extends Controller
 
         $data = $request->all();
 
-        $paymentDetailsArray = json_decode($data['payment_details_array'], true);
-
-        foreach ($paymentDetailsArray as $paymentDetails) {
-            $paymentDetails['customer_id'] = $request->customer_id;
-            $paymentDetails['date'] = $request->date;
-            $paymentDetails['type'] = $request->type;
-            $paymentDetails['program_id'] = $request->program_id;
-
-            // return $paymentDetails;
-            CustomerPayment::create($paymentDetails);
-            
-            if ($paymentDetails['program_id']) {
-                $program = PaymentProgram::find($paymentDetails['program_id']);
-                if ($program && $paymentDetails['method'] == 'program') {
-                    $paymentDetails['supplier_id'] = $program->sub_category_id;
-                    SupplierPayment::create($paymentDetails);
-                }
+        CustomerPayment::create($data);
+        
+        if ($data['program_id']) {
+            $program = PaymentProgram::find($data['program_id']);
+            if ($program && $data['method'] == 'program') {
+                $data['supplier_id'] = $program->sub_category_id;
+                SupplierPayment::create($data);
             }
         }
 

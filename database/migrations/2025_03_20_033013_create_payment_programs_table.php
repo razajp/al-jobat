@@ -21,7 +21,7 @@ return new class extends Migration
             $table->nullableMorphs('sub_category');
             $table->integer('amount');
             $table->string('remarks')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('Unpaid');
             $table->timestamps();
 
             $table->foreign('customer_id')->references('id')->on('customers');

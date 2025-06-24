@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer_id');
+            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->date('date');
             $table->string('type');
             $table->string('method');
@@ -24,18 +24,12 @@ return new class extends Migration
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();
             $table->date('clear_date')->nullable();
-            $table->string('bank')->nullable();
+            $table->foreignId('bank_id')->constrained('setups')->onDelete('cascade')->nullable();
             $table->string('remarks')->nullable();
-            $table->string('program_id')->nullable();
-            $table->string('bank_account_id')->nullable();
-
-            // Define foreign key constraint
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
-            $table->foreign('bank_account_id')->references('id')->on('bank_accounts')->onDelete('cascade');
-            $table->foreign('program_id')->references('id')->on('payment_programs')->onDelete('set null');
+            $table->foreignId('program_id')->constrained('payment_programs')->onDelete('cascade')->nullable();
+            $table->foreignId('bank_account_id')->constrained('bank_accounts')->onDelete('cascade')->nullable();
             
-            $table->unsignedBigInteger('creator_id');
-            $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
 
             $table->timestamps();
         });

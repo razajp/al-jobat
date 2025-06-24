@@ -182,7 +182,7 @@
             } else if (elem.value == 'cheque') {
                 detailsDom.innerHTML = `
                     {{-- bank --}}
-                    <x-select label="Bank" name="bank" id="bank" :options="$banks_options" required showDefault />
+                    <x-select label="Bank" name="bank_id" id="bank" :options="$banks_options" required showDefault />
 
                     {{-- amount --}}
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
@@ -197,7 +197,7 @@
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
                 `;
             } else if (elem.value == 'slip') {
                 detailsDom.innerHTML = `
@@ -235,7 +235,7 @@
                         {{-- payment_programs --}}
                         <x-select 
                             label="Payment Programs"
-                            name="payment_programs"
+                            name="program_id"
                             id="payment_programs"
                             required
                             onchange="trackProgramState(this)"
@@ -282,16 +282,16 @@
 
             detailsDom.innerHTML += `
                 {{-- category --}}
-                <x-input label="Category" value="${selectedProgramData.category}" id="category" disabled required/>
+                <x-input label="Category" value="${selectedProgramData.category}" disabled/>
                 
                 {{-- beneficiary --}}
-                <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" id="beneficiary" disabled required/>
+                <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" disabled/>
 
                 {{-- program date --}}
-                <x-input label="Program Date" value="${selectedProgramData.date}" id="program_date" disabled required/>
+                <x-input label="Program Date" value="${selectedProgramData.date}" disabled/>
 
                 {{-- program amount --}}
-                <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" id="program_amount" disabled required/>
+                <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" disabled/>
 
                 {{-- amount --}}
                 <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>

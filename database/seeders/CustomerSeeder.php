@@ -166,7 +166,6 @@ class CustomerSeeder extends Seeder
         // City 'Timergara' not found. Skipping. Urdu Title: '500256'
         // City 'Timergara' not found. Skipping. Urdu Title: '501209'
         // City 'Ahmedpur ' not found. Skipping. Urdu Title: '500569'
-        // City 'Cmt' not found. Skipping. Urdu Title: '501597'
         // City 'Timergara' not found. Skipping. Urdu Title: '501023'
         // City 'Timergara' not found. Skipping. Urdu Title: '501132'
         // City 'Timergara' not found. Skipping. Urdu Title: '501716'

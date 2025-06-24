@@ -28,7 +28,7 @@ class CustomerPayment extends Model
         "cheque_date",
         "slip_date",
         "clear_date",
-        "bank",
+        "bank_id",
         "remarks",
         "program_id",
         "bank_account_id",
@@ -70,6 +70,11 @@ class CustomerPayment extends Model
     public function program()
     {
         return $this->belongsTo(PaymentProgram::class, "program_id");
+    }
+    
+    public function bank()
+    {
+        return $this->belongsTo(Setup::class, "bank_id");
     }
     
     public function bankAccount()
