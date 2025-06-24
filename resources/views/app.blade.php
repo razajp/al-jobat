@@ -817,6 +817,45 @@
 
         noItemsError.style.display = Array.from(items).every(i => i.style.display === "none") ? "block" : "none";
     }
+
+    // change layout
+    function changeLayout() {
+        $.ajax({
+            url: "{{ route('change-data-layout') }}",
+            type: 'POST',
+            data: {
+                layout: authLayout,
+            }, // Optional if you want to send any data, can be left empty
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                if (response.status === 'updated') {
+                    console.log("Layout Updated Successfully.");
+                    authLayout = response.updatedLayout;
+                    console.log(authLayout);
+                    
+                    renderData();
+
+                    const changeLayoutBtn = document.getElementById('changeLayoutBtn');
+                    if (response.updatedLayout == "grid") {
+                        changeLayoutBtn.innerHTML = `
+                            <i class='fas fa-list-ul text-white'></i>
+                            <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
+                        `;
+                    } else {
+                        changeLayoutBtn.innerHTML = `
+                            <i class='fas fa-grip text-white'></i>
+                            <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
+                        `;
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to update Layout", error);
+            }
+        });
+    }
 </script>
 
 </html>

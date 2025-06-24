@@ -81,7 +81,10 @@ class Controller extends BaseController
 
         $authUser->save();
     
-        return redirect()->back()->with('success', 'Layout updated successfully.');
+        return response()->json([
+            "status" => "updated",
+            "updatedLayout" => $newLayout
+        ]);
     }
 
     protected function getAuthLayout($routeName, $default = 'grid')
