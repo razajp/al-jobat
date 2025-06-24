@@ -164,8 +164,8 @@
             </div>`;
         }
 
-        const fetchData = @json($customers);
-        let allDataArray = fetchData.map(item => {
+        const fetchedData = @json($customers);
+        let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
                 image: item.user.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.user.profile_picture}`,
@@ -187,53 +187,6 @@
                 onclick: "generateModal(this)",
             };
         });
-
-        const scroller = document.querySelector(".container-parent");
-        const tableHead = document.getElementById('table-head');
-        const search_container = document.querySelector('.search_container');
-        const batchSize = 50;
-        let startIndex = 0;
-        let isFetching = false;
-
-        function renderNextBatch() {
-            if (startIndex >= allDataArray.length) return;
-
-            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
-            const html = nextChunk.map(item => authLayout === 'grid' ? createCard(item) : createRow(item)).join('');
-            search_container.insertAdjacentHTML('beforeend', html);
-            startIndex += batchSize;
-        }
-
-        scroller.addEventListener('scroll', () => {
-            const scrollTop = scroller.scrollTop;
-            const scrollHeight = scroller.scrollHeight;
-            const clientHeight = scroller.clientHeight;
-
-            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
-                console.log("Mast");
-
-                isFetching = true;
-                setTimeout(() => {
-                    renderNextBatch();
-                    isFetching = false;
-                }, 100);
-            }
-        });
-
-        function renderData() {
-            if (authLayout == "grid") {
-                tableHead.classList.add("hidden");
-                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5";
-            } else {
-                tableHead.classList.remove("hidden");
-                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2";
-            }
-            search_container.innerHTML = "";
-            startIndex = 0;
-            renderNextBatch();
-        }
-
-        renderData(); // initial load
 
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;

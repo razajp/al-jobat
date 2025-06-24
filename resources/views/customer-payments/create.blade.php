@@ -241,6 +241,8 @@
                             onchange="trackProgramState(this)"
                         />
                     </div>
+                    <div id="details-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full">
+                    </div>
                 `;
 
                 const programSelectDom = document.getElementById('payment_programs');
@@ -258,9 +260,8 @@
         }
         
         function trackProgramState(elem) {
-            while (details.children.length > 1) {
-                details.removeChild(details.lastChild);
-            }
+            const detailsInputsContainer = document.getElementById("details-inputs-container");
+            detailsInputsContainer.innerHTML = "";
 
             selectedProgramData = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
 
@@ -280,7 +281,7 @@
                 selectedProgramData.beneficiary = beneficiary
             }
 
-            detailsDom.innerHTML += `
+            detailsInputsContainer.innerHTML += `
                 {{-- category --}}
                 <x-input label="Category" value="${selectedProgramData.category}" disabled/>
                 
