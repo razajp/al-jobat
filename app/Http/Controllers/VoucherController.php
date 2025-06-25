@@ -42,27 +42,9 @@ class VoucherController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $cheques_options = [];
-        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer', 'cheque')->doesntHave('cheque')->get();
-        foreach ($cheques as $cheque) {
-            if ($cheque) {
-                $cheques_options[$cheque->id] = [
-                    'text' => $cheque->cheque_no . ' | ' . $cheque->customer->customer_name . ' | ' . $cheque->cheque_date->format('d-M-Y, D'),
-                    'data_option' => $cheque,
-                ];
-            }
-        }
+        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city', 'cheque')->doesntHave('cheque')->get();
 
-        $slips_options = [];
-        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer', 'slip')->doesntHave('slip')->get();
-        foreach ($slips as $slip) {
-            if ($slip) {
-                $slips_options[$slip->id] = [
-                    'text' => $slip->slip_no . ' | ' . $slip->customer->customer_name . ' | ' . $slip->slip_date->format('d-M-Y, D'),
-                    'data_option' => $slip,
-                ];
-            }
-        }
+        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city', 'slip')->doesntHave('slip')->get();
 
         $suppliers_options = [];
 
@@ -111,7 +93,7 @@ class VoucherController extends Controller
             $last_voucher['voucher_no'] = '00/101';
         }
 
-        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'last_voucher'));
+        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques', 'slips', 'last_voucher'));
     }
 
     /**
