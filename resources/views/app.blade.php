@@ -467,50 +467,6 @@
 
         document.addEventListener("contextmenu", e => e.preventDefault());
 
-        @if(!request()->is('orders/create') && !request()->is('shipments/create') && !request()->is('cargos/create'))
-            // Search Script
-            let filterType;
-            let cardsDataArray = [];
-
-            let cardsArray = $('.search_container').children().toArray();
-
-            function setCardsData() {
-                cardsArray = $('.search_container').children().toArray();
-
-                cardsArray.forEach((card) => {
-                    cardsDataArray.push(JSON.parse(card.dataset.json));
-                })
-            }
-            setCardsData();
-
-            function setFilter(filterTypeArg) {
-                filterType = filterTypeArg;
-
-                searchData(document.getElementById('search_box').value);
-            }
-
-            function searchData(search) {
-                search = search.toLowerCase();
-
-                let filteredData = filterData(search);
-
-                const cardContainerDom = document.querySelector('.search_container');
-                cardContainerDom.innerHTML = "";
-
-                if (filteredData.length === 0) {
-                    const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No data found</p>"
-                    cardContainerDom.innerHTML = noResultMessage;
-                } else {
-                    filteredData.forEach(item => {
-                        const cardElement = cardsArray.find(card => card.id == item.id);
-                        if (cardElement) {
-                            cardContainerDom.appendChild(cardElement);
-                        }
-                    });
-                }
-            }
-        @endif
-
         // Function to send AJAX request to update last_activity
         function updateLastActivity() {
             $.ajax({
@@ -735,6 +691,8 @@
     // }
 
     function getNestedValue(obj, path) {
+        console.log(parsed);
+        
         return path.split('.').reduce((acc, part) => acc?.[part], obj);
     }
 
@@ -745,7 +703,7 @@
 
         // Group filters by path
         const filterGroups = {};
-
+        
         filters.forEach(filter => {
             const path = filter.dataset.filterPath;
             if (!filterGroups[path]) filterGroups[path] = [];
@@ -873,7 +831,7 @@
         startIndex += batchSize;
     }
 
-    scroller.addEventListener('scroll', () => {
+    scroller?.addEventListener('scroll', () => {
         const scrollTop = scroller.scrollTop;
         const scrollHeight = scroller.scrollHeight;
         const clientHeight = scroller.clientHeight;

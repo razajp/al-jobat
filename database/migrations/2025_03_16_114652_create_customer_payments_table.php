@@ -24,10 +24,10 @@ return new class extends Migration
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();
             $table->date('clear_date')->nullable();
-            $table->foreignId('bank_id')->constrained('setups')->onDelete('cascade')->nullable();
+            $table->foreignId('bank_id')->nullable()->constrained('setups')->onDelete('cascade');
             $table->string('remarks')->nullable();
-            $table->foreignId('program_id')->constrained('payment_programs')->onDelete('cascade')->nullable();
-            $table->foreignId('bank_account_id')->constrained('bank_accounts')->onDelete('cascade')->nullable();
+            $table->foreignId('program_id')->nullable()->constrained('payment_programs')->onDelete('cascade');
+            $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
 
@@ -40,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('payments');
+        Schema::dropIfExists('customer_payments');
     }
 };

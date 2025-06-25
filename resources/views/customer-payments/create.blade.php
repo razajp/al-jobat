@@ -21,11 +21,11 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('customer-payments.store') }}" method="post"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-7 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Customer Payment" />
 
-        <div class="step space-y-4 ">
+        <div class="step space-y-4 overflow-y-auto max-h-[55vh] p-1 my-scrollbar-2">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- customer --}}
                 <x-select 
@@ -42,7 +42,7 @@
                 <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
                 
                 {{-- date --}}
-                <x-input label="Date" name="date" id="date" type="date" required disabled />
+                <x-input label="Date" name="date" id="date" type="date" required disabled onchange="trackDateState(this)"/>
 
                 {{-- type --}}
                 <x-select 
@@ -56,6 +56,9 @@
                 />
                 
                 <div class="col-span-full">
+                    <div id="details-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full mb-4">
+                    </div>
+
                     {{-- method --}}
                     <x-select 
                         label="Method"
@@ -68,7 +71,7 @@
                     />
                     
                     <hr class="border-gray-600 my-3">
-
+                    
                     <div id="details" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                     </div>
@@ -158,15 +161,59 @@
                 }
 
                 trackTypeState(typeSelectDom, true);
+                
+                let programSelectDom = document.getElementById('payment_programs');
+                programSelectDom.selectedIndex = 1;
+                let ProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+
+                if (ProgramData.category != 'waiting') {
+                    programSelectDom.dispatchEvent(new Event('change'));
+                    methodSelectDom.value = 'program'
+                    trackMethodState(methodSelectDom);
+                } else {
+                    methodSelectDom.querySelector("option[value='program']")?.remove();
+                }
             }
         });
+
+        const detailsInputsContainer = document.getElementById("details-inputs-container");
 
         function trackTypeState(elem, isNoModal) {
             methodSelectDom.value = '';
             if (elem.value == 'payment_program') {
                 methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
+                detailsInputsContainer.innerHTML = "";
+
+                let allProgramsArray = JSON.parse(typeSelectDom.options[typeSelectDom.selectedIndex].dataset.option);
+                
+                detailsInputsContainer.innerHTML = `
+                    <div class="col-span-full">
+                        {{-- payment_programs --}}
+                        <x-select 
+                            label="Payment Programs"
+                            name="program_id"
+                            id="payment_programs"
+                            required
+                            onchange="trackProgramState(this)"
+                        />
+                    </div>
+                `;
+
+                const programSelectDom = document.getElementById('payment_programs');
+                if (allProgramsArray.length > 0) {
+                    programSelectDom.disabled = false;
+                    programSelectDom.innerHTML = '<option value="" >-- Select payment program --</option>';
+                    allProgramsArray.forEach(program => {
+                        programSelectDom.innerHTML += `<option value="${program.id}" data-option='${JSON.stringify(program)}' >${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)}</option>`;
+                    });
+                } else {
+                    programSelectDom.disabled = false;
+                    programSelectDom.innerHTML = `<option value="">-- No options avalaible --</option>`;
+                }
             } else {
+                detailsInputsContainer.innerHTML = "";
                 methodSelectDom.querySelector("option[value='program']")?.remove();
+                methodSelectDom.value = '';
             }
         }
 
@@ -228,99 +275,105 @@
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
                 `;
             } else if (elem.value == 'program') {
-                let allProgramsArray = JSON.parse(typeSelectDom.options[typeSelectDom.selectedIndex].dataset.option);
-                
-                detailsDom.innerHTML = `
-                    <div class="col-span-full">
-                        {{-- payment_programs --}}
-                        <x-select 
-                            label="Payment Programs"
-                            name="program_id"
-                            id="payment_programs"
-                            required
-                            onchange="trackProgramState(this)"
-                        />
-                    </div>
-                    <div id="details-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full">
-                    </div>
-                `;
+                let programSelectDom = document.getElementById('payment_programs');
+                selectedProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+                if (selectedProgramData.category != 'waiting') {
+                    if (selectedProgramData.category != 'waiting') {
+                        let beneficiary = '-';
+                        if (selectedProgramData.category) {
+                            if (selectedProgramData.category === 'supplier' && selectedProgramData.sub_category?.supplier_name) {
+                                beneficiary = selectedProgramData.sub_category.supplier_name;
+                            } else if (selectedProgramData.category === 'customer' && selectedProgramData.sub_category?.customer_name) {
+                                beneficiary = selectedProgramData.sub_category.customer_name;
+                            } else if (selectedProgramData.category === 'self_account' && selectedProgramData.sub_category?.account_title) {
+                                beneficiary = selectedProgramData.sub_category.account_title;
+                            } else if (selectedProgramData.category === 'waiting' && selectedProgramData.remarks) {
+                                beneficiary = selectedProgramData.remarks;
+                            }
+                        }
+                        selectedProgramData.beneficiary = beneficiary
+                    }
 
-                const programSelectDom = document.getElementById('payment_programs');
-                if (allProgramsArray.length > 0) {
-                    programSelectDom.disabled = false;
-                    programSelectDom.innerHTML = '<option value="" >-- Select payment program --</option>';
-                    allProgramsArray.forEach(program => {
-                        programSelectDom.innerHTML += `<option value="${program.id}" data-option='${JSON.stringify(program)}' >${program.program_no ?? program.order_no}</option>`;
-                    });
+                    detailsDom.innerHTML = `
+                        {{-- category --}}
+                        <x-input label="Category" value="${selectedProgramData.category}" disabled/>
+                        
+                        {{-- beneficiary --}}
+                        <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" disabled/>
+
+                        {{-- program date --}}
+                        <x-input label="Program Date" value="${selectedProgramData.date}" disabled/>
+
+                        {{-- program amount --}}
+                        <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" disabled/>
+
+                        {{-- amount --}}
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                        
+                        {{-- bank account --}}
+                        <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
+                        
+                        {{-- transaction id --}}
+                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />
+
+                        {{-- remarks --}}
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                    `;
+
+                    let bankAccountData = selectedProgramData.sub_category.bank_accounts;
+                    
+                    if (bankAccountData) {
+                        let bankAccountsSelect = document.getElementById('bank_accounts');
+                        bankAccountsSelect.disabled = false;
+                        bankAccountsSelect.innerHTML = '<option value="">-- Select Bank Account --</option>';
+                        if (bankAccountData.length > 0) {
+                            bankAccountData.forEach(account => {
+                                bankAccountsSelect.innerHTML += `<option value="${account.id}">${account.account_title} | ${account.bank.short_title}</option>`;
+                            });
+                        } else {
+                            bankAccountsSelect.innerHTML += `<option value="${bankAccountData.id}">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</option>`;
+                        }
+                    }
                 } else {
-                    programSelectDom.disabled = false;
-                    programSelectDom.innerHTML = `<option value="">-- No options avalaible --</option>`;
+                    detailsDom.innerHTML = '';
                 }
             }
         }
-        
+
         function trackProgramState(elem) {
-            const detailsInputsContainer = document.getElementById("details-inputs-container");
-            detailsInputsContainer.innerHTML = "";
+            let programSelectDom = document.getElementById('payment_programs');
+            let ProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
 
-            selectedProgramData = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
-
-            if (selectedProgramData.category != 'waiting') {
-                let beneficiary = '-';
-                if (selectedProgramData.category) {
-                    if (selectedProgramData.category === 'supplier' && selectedProgramData.sub_category?.supplier_name) {
-                        beneficiary = selectedProgramData.sub_category.supplier_name;
-                    } else if (selectedProgramData.category === 'customer' && selectedProgramData.sub_category?.customer_name) {
-                        beneficiary = selectedProgramData.sub_category.customer_name;
-                    } else if (selectedProgramData.category === 'self_account' && selectedProgramData.sub_category?.account_title) {
-                        beneficiary = selectedProgramData.sub_category.account_title;
-                    } else if (selectedProgramData.category === 'waiting' && selectedProgramData.remarks) {
-                        beneficiary = selectedProgramData.remarks;
-                    }
+            if (ProgramData.category != 'waiting') {
+                if (!methodSelectDom.querySelector("option[value='program']")) {
+                    methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
                 }
-                selectedProgramData.beneficiary = beneficiary
+                methodSelectDom.value = 'program'
+                trackMethodState(methodSelectDom);
+            } else {
+                methodSelectDom.querySelector("option[value='program']")?.remove();
+                detailsDom.innerHTML = '';
             }
+        }
 
-            detailsInputsContainer.innerHTML += `
-                {{-- category --}}
-                <x-input label="Category" value="${selectedProgramData.category}" disabled/>
-                
-                {{-- beneficiary --}}
-                <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" disabled/>
+        function trackDateState(elem) {
+            let totalPrograms = selectedCustomer.payment_programs;
+            typeSelectDom.value = '';
+            trackTypeState(typeSelectDom);
 
-                {{-- program date --}}
-                <x-input label="Program Date" value="${selectedProgramData.date}" disabled/>
+            methodSelectDom.value = '';
+            detailsDom.innerHTML = '';
+            trackMethodState(methodSelectDom);
 
-                {{-- program amount --}}
-                <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" disabled/>
+            const filteredPrograms = totalPrograms.filter(program => {
+                const programDate = program.date; // adjust 'date' key as per actual field
+                return programDate <= elem.value;
+            });
 
-                {{-- amount --}}
-                <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-                
-                {{-- bank account --}}
-                <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
-                
-                {{-- transaction id --}}
-                <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />
+            typeSelectDom.querySelector("option[value='payment_program']").dataset.option = JSON.stringify(filteredPrograms);
 
-                {{-- remarks --}}
-                <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-            `;
-
-            let bankAccountData = selectedProgramData.sub_category.bank_accounts;
-            
-            if (bankAccountData) {
-                let bankAccountsSelect = document.getElementById('bank_accounts');
-                bankAccountsSelect.disabled = false;
-                bankAccountsSelect.innerHTML = '<option value="">-- Select Bank Account --</option>';
-                if (bankAccountData.length > 0) {
-                    bankAccountData.forEach(account => {
-                        bankAccountsSelect.innerHTML += `<option value="${account.id}">${account.account_title} | ${account.bank.short_title}</option>`;
-                    });
-                } else {
-                    bankAccountsSelect.innerHTML += `<option value="${bankAccountData.id}">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</option>`;
-                }
-            }
+            console.log('totalPrograms', totalPrograms);
+            console.log('filteredPrograms', filteredPrograms);
         }
     </script>
 @endsection
