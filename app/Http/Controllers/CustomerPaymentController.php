@@ -83,7 +83,7 @@ class CustomerPaymentController extends Controller
         
         $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory.bankAccounts.bank')->whereHas('user', function ($query) {
             $query->where('status', 'active');
-        })->get();
+        })->paginate('10');
 
         foreach ($customers as $customer) {
             foreach ($customer->paymentPrograms as $program) {
@@ -118,7 +118,9 @@ class CustomerPaymentController extends Controller
             ];
         }
 
-        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options'));
+        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->first();
+
+        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord'));
         // return $customers;
     }
 
@@ -157,7 +159,7 @@ class CustomerPaymentController extends Controller
 
         CustomerPayment::create($data);
         
-        if ($data['program_id']) {
+        if (isset($data['program_id']) && $data['program_id']) {
             $program = PaymentProgram::find($data['program_id']);
             if ($program && $data['method'] == 'program') {
                 $data['supplier_id'] = $program->sub_category_id;
@@ -167,15 +169,17 @@ class CustomerPaymentController extends Controller
 
         $currentProgram = PaymentProgram::find($request->program_id);
         
-        if ($currentProgram->balance >= 1000 && $currentProgram->balance <= 0.0) {
-            $currentProgram->status = 'Paid';
-            $currentProgram->save();
-        } else if ($currentProgram->balance < 0.0) {
-            $currentProgram->status = 'Overpaid';
-            $currentProgram->save();
-        } else {
-            $currentProgram->status = 'Unpaid';
-            $currentProgram->save();
+        if (isset($currentProgram)) {
+            if ($currentProgram->balance >= 1000 && $currentProgram->balance <= 0.0) {
+                $currentProgram->status = 'Paid';
+                $currentProgram->save();
+            } else if ($currentProgram->balance < 0.0) {
+                $currentProgram->status = 'Overpaid';
+                $currentProgram->save();
+            } else {
+                $currentProgram->status = 'Unpaid';
+                $currentProgram->save();
+            }
         }
 
         return redirect()->route('customer-payments.create')->with('success', 'Payment Added successfully.');

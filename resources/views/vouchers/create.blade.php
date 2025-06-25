@@ -218,7 +218,7 @@
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- cheque_id --}}
-                        <x-select label="Cheque" name="cheque_id" id="cheque_id" :options="$cheques_options" required showDefault />
+                        <x-select label="Cheque" name="cheque_id" id="cheque_id" required showDefault />
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
@@ -233,6 +233,20 @@
 
                 let chequeSelectDom = document.getElementById('cheque_id');
                 let selectedDom = document.getElementById('selected');
+                
+                let allCheques = @json($cheques);
+
+                const filteredCheques = allCheques.filter(cheque => {
+                    return new Date(cheque.date) <= new Date(dateDom.value);
+                });
+
+                filteredCheques.forEach(cheque => {
+                    chequeSelectDom.innerHTML += `<option value="${cheque.id}" data-option='${JSON.stringify(cheque)}'>${cheque.amount} | ${cheque.customer.customer_name} | ${cheque.customer.city.title}</option>`;
+                })
+
+                if (filteredCheques.length > 0) {
+                    chequeSelectDom.disabled = false;
+                }
 
                 chequeSelectDom.addEventListener('change', () => {
                     let selectedOption = chequeSelectDom.options[chequeSelectDom.selectedIndex];
@@ -245,7 +259,7 @@
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
                         {{-- slip_id --}}
-                        <x-select label="Slip" name="slip_id" id="slip_id" :options="$slips_options" required showDefault />
+                        <x-select label="Slip" name="slip_id" id="slip_id" required showDefault />
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
@@ -260,6 +274,20 @@
 
                 let slipSelectDom = document.getElementById('slip_id');
                 let selectedDom = document.getElementById('selected');
+
+                let allSlips = @json($slips);
+
+                const filteredSlips = allSlips.filter(slip => {
+                    return new Date(slip.date) <= new Date(dateDom.value);
+                });
+
+                filteredSlips.forEach(slip => {
+                    slipSelectDom.innerHTML += `<option value="${slip.id}" data-option='${JSON.stringify(slip)}'>${slip.amount} | ${slip.customer.customer_name} | ${slip.customer.city.title}</option>`;
+                })
+
+                if (filteredSlips.length > 0) {
+                    slipSelectDom.disabled = false;
+                }
                 
                 slipSelectDom.addEventListener('change', () => {
                     let selectedOption = slipSelectDom.options[slipSelectDom.selectedIndex];
@@ -290,11 +318,17 @@
                 let paymentSelectDom = document.getElementById('program');
                 let selectedDom = document.getElementById('selected');
 
-                selectedSupplier.payments.forEach(payment => {
+                let allPayments = selectedSupplier.payments;
+
+                const filteredPayments = allPayments.filter(payment => {
+                    return new Date(payment.date) <= new Date(dateDom.value);
+                });
+
+                filteredPayments.forEach(payment => {
                     paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
                 })
 
-                if (selectedSupplier.payments.length > 0) {
+                if (filteredPayments.length > 0) {
                     paymentSelectDom.disabled = false;
                 }
 
