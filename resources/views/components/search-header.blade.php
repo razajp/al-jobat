@@ -41,58 +41,45 @@
                         <i class="text-xs fa-solid fa-filter"></i>
                     </button>
                     <div
-                        class="dropdownMenu text-sm absolute mt-2 top-2 left-1/2 -translate-x-1/2 hidden border border-gray-600 w-[50%] bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50 p-4">
-                        <h6 class="text-xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
+                        class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-[100] p-4">
+                        <div class="header flex justify-between items-center">
+                            <h6 class="text-xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
+                            <div onclick="closeAllDropdowns()" class="text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
+                                <button type="button" class="z-10 text-gray-400 hover:text-gray-600 hover:scale-[0.95] transition-all duration-300 ease-in-out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6" style="display: inline">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                         <hr class="border-gray-600 my-4 w-full">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            @foreach ($search_fields as $search_field => $value)
-                                @if ($value['type'] == "select")
-                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" dataFilterPath="{{ $value['dataFilterPath'] }}" onchange="{!! $value['onchange'] !!}" required showDefault />
-                                @elseif ($value['type'] == "text")
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required placeholder="{{ $value['placeholder'] }}" />
-                                @elseif (isset($value['type2']) && isset($value['id2']))
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required/>
-                                @else
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" oninput="{!! $value['oninput'] !!}" required/>
-                                @endif
-                            @endforeach
+                        <div class="grow overflow-y-auto my-scrollbar-2">
+                            <div class="grid grid-cols-1 gap-4">
+                                @foreach ($search_fields as $search_field => $value)
+                                    @if ($value['type'] == "select")
+                                        <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
+                                    @elseif ($value['type'] == "text")
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                                    @elseif (isset($value['type2']) && isset($value['id2']))
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                    @else
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                        <hr class="border-gray-600 my-4 w-full">
+                        <div class="flex gap-4">
+                            <button type="button" onclick="closeAllDropdowns()"
+                                class="flex-1 px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                                Cancel
+                            </button>
+                            <button type="button" onclick="clearAllSearchFields()"
+                                class="flex-1 px-4 py-2 bg-[var(--bg-error)] border border-[var(--bg-error)] text-[var(--text-error)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-error)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                                Clear
+                            </button>
                         </div>
                     </div>
-                    {{-- <div class="dropdownMenu text-sm absolute mt-2 top-10 right-0 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-50">
-                        <ul class="p-2 space-y-1">
-                            @foreach ($search_fields as $key => $filter_item)
-                                <li>
-                                    <label 
-                                        class="flex items-center justify-between cursor-pointer group py-2 px-3 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out relative overflow-hidden"
-                                        onclick='setFilter("{{ $key }}")'>
-                                        <!-- Hidden input for peer -->
-                                        <input 
-                                            type="radio" 
-                                            name="filter" 
-                                            value="{{ $key }}" 
-                                            class="hidden peer" 
-                                            {{ $key == 'all' ? 'checked' : '' }}
-                                        />
-
-                                        <!-- border -->
-                                        <div class="absolute left-0 top-0 h-full w-full rounded-lg border-b border-transparent transition-all duration-200 ease-in-out peer-checked:bg-[var(--bg-color)] peer-checked:border-gray-600">
-                                        </div>
-
-                                        <!-- Left bar -->
-                                        <div class="absolute -left-1 top-1/2 -translate-y-1/2 h-[65%] bg-[var(--primary-color)] rounded-tr-md rounded-br-md transition-all duration-200 ease-in-out
-                                            w-0 peer-checked:w-[0.7rem] group-hover:w-[0.6rem] mx-auto">
-                                        </div>
-
-                                        <!-- Label Text -->
-                                        <span class="peer-checked:text-[var(--primary-color)] peer-checked:ml-1.5 group-hover:text-[var(--primary-color)] group-hover:ml-1 transition-all duration-200 ease-in-out z-10">{{ $filter_item }}</span>
-
-                                        <!-- Selection Dot -->
-                                        <div class="w-3 h-3 border-2 border-gray-500 rounded-full flex items-center justify-center peer-checked:border-[var(--primary-color)] group-hover:border-[var(--primary-color)] peer-checked:scale-[1.1] p-[0.1rem] transition-all duration-200 ease-in-out z-10"></div>
-                                    </label>
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div> --}}
                 </div>
             </div>
         @endif

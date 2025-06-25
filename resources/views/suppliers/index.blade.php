@@ -7,36 +7,31 @@
                 "id" => "supplier_name",
                 "type" => "text",
                 "placeholder" => "Enter supplier name",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "supplier_name",
+                "dataFilterPath" => "name",
             ],
             "Urdu Title" => [
                 "id" => "urdu_title",
                 "type" => "text",
                 "placeholder" => "Enter urdu title",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "urdu_title",
+                "dataFilterPath" => "details.Urdu Title",
             ],
             "Username" => [
                 "id" => "username",
                 "type" => "text",
                 "placeholder" => "Enter username",
-                "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "user.username",
             ],
             "Phone" => [
                 "id" => "phone",
                 "type" => "text",
                 "placeholder" => "Enter phone number",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "phone_number",
+                "dataFilterPath" => "details.Phone",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",
                 "id2" => "date_range_end",
                 "type2" => "date",
-                "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "date",
             ]
         ];
@@ -53,23 +48,12 @@
             <x-search-header heading="Suppliers" :search_fields=$searchFields/>
         </div>
 
-        {{-- <div class="w-[80%] mx-auto">
-            <x-search-header heading="Suppliers" :filter_items="[
-                'all' => 'All',
-                'supplier_name' => 'Supplier Name',
-                'urdu_title' => 'Urdu Title',
-                'person_name' => 'Person Name',
-                'username' => 'Username',
-            ]"/>
-        </div> --}}
-        <!-- Main Content -->
-
         <section class="text-center mx-auto ">
             <div
                 class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Suppliers" changeLayoutBtn layout="{{ $authLayout }}" />
 
-                @if (count($Suppliers) > 0)
+                @if (count($suppliers) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('suppliers.create') }}" title="Add New Supplier" icon="fa-plus" />
                     </div>
@@ -77,51 +61,19 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                @if ($authLayout == 'grid')
-                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($Suppliers as $supplier)
-                                            <div id="{{ $supplier->id }}" data-json='{{ $supplier }}'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'image' =>
-                                                        $supplier->user['profile_picture'] == 'default_avatar.png'
-                                                            ? asset('images/default_avatar.png')
-                                                            : asset('storage/uploads/images/' . $supplier->user['profile_picture']),
-                                                    'name' => $supplier->supplier_name,
-                                                    'status' => $supplier->user->status,
-                                                    'details' => [
-                                                        'Urdu Title' => $supplier->urdu_title,
-                                                        'Phone' => $supplier->phone_number,
-                                                        'Balance' => number_format($supplier->balance, 1),
-                                                    ],
-                                                ]" />
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                        <div class="text-left pl-5">Supplier</div>
-                                        <div class="text-center">Urdu Title</div>
-                                        <div class="text-center">Phone</div>
-                                        <div class="text-right">Balance</div>
-                                        <div class="text-right pr-5">Status</div>
-                                    </div>
-                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        @forEach ($Suppliers as $supplier)
-                                            <div id="{{ $supplier->id }}" data-json='{{ $supplier }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                                <span class="text-left pl-5">{{ $supplier->customer_name }}</span>
-                                                <span class="text-center">{{ $supplier->urdu_title }}</span>
-                                                <span class="text-center">{{ $supplier->phone_number }}</span>
-                                                <span class="text-right">{{ number_format($supplier->balance, 1) }}</span>
-                                                <span class="text-right pr-5 capitalize {{ $supplier->user->status == 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]' }}">{{ $supplier->user->status }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                    <div class="text-left pl-5">Supplier</div>
+                                    <div class="text-center">Urdu Title</div>
+                                    <div class="text-center">Phone</div>
+                                    <div class="text-right">Balance</div>
+                                    <div class="text-right pr-5">Status</div>
+                                </div>
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                </div>
                             </div>
-                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                        </div>
                     </div>
-                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Suppliers yet</h1>
@@ -170,6 +122,46 @@
 
     <script>
         let currentUserRole = '{{ Auth::user()->role }}';
+        let authLayout = '{{ $authLayout }}';
+
+        function createRow(data) {
+            return `
+            <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                data-json='${JSON.stringify(data)}'>
+
+                <span class="text-left pl-5">${data.name}</span>
+                <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
+                <span class="text-center capitalize">${data.details["Phone"]}</span>
+                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
+                    ${data.user.status}
+                </span>
+            </div>`;
+        }
+
+        const fetchedData = @json($suppliers);
+        let allDataArray = fetchedData.map(item => {
+            return {
+                id: item.id,
+                image: item.user.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.user.profile_picture}`,
+                name: item.supplier_name,
+                details: {
+                    'Urdu Title': item.urdu_title,
+                    'Phone': item.phone_number,
+                    'Balance': item.balance,
+                },
+                user: {
+                    id: item.user.id,
+                    username: item.user.username,
+                    status: item.user.status,
+                },
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
+                date: item.date,
+                visible: true,
+            };
+        });
 
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
@@ -200,12 +192,12 @@
 
             let ac_in_btn_context = document.getElementById('ac_in_btn_context');
             let ac_in_context = document.getElementById('ac_in_context');
-            let item = e.target.closest('.modalToggle');
+            let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
             ac_in_context.classList.add('hidden');
 
-            if (data.balance == 0.00) {
+            if (data.balance == 0.00) {z
                 if (ac_in_btn_context) {
                     ac_in_btn_context.classList.add('text-[var(--border-error)]');
                     if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
@@ -310,130 +302,32 @@
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <!-- Modal Content Slot -->
-                    <div id="active_inactive_dot_modal"
-                        class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
-                    </div>
-                    <div class="flex items-start relative h-[15rem]">
-                        <div class="rounded-[41.5%] h-full aspect-square overflow-hidden">
-                            <img id="imageInModal" src="{{ asset('images/default_avatar.png') }}" alt=""
-                                class="w-full h-full object-cover">
-                        </div>
-                
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.supplier_name}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.urdu_title}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Person Name:</strong> <span>${data.person_name}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${data.user.username}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span></p>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            <div class="chipsContainer">
-                                <div id="chips" class="w-full flex flex-wrap gap-2">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button id="manageCategoryBtn" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                            Manage Category
-                        </button>
-
-                        <button id="edit-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Edit Supplier
-                        </button>
-
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                            Cancel
-                        </button>
-
-                        <div id="ac_in_modal">
-                            <input type="hidden" id="user_id" name="user_id" value="${data.user.id}">
-                            <input type="hidden" id="user_status" name="status" value="${data.user.status}">
-                            <button id="ac_in_btn" type="submit"
-                                class="px-4 py-2 bg-[var(--bg-error)] border border-[var(--bg-error)] text-[var(--text-error)] font-semibold rounded-lg hover:bg-[var(--h-bg-error)] transition-all duration-300 ease-in-out cursor-pointer">
-                                In Active
-                            </button>
-                        </div>
-                    </x-slot>
-                </x-modal>
-            `;
-
-            let ac_in_modal = document.getElementById('ac_in_modal');
-            let imageInModal = document.getElementById('imageInModal');
-            let ac_in_btn = document.getElementById('ac_in_btn');
-            let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
-
-            ac_in_modal.classList.add("hidden");
-
-            if (data.balance == 0.00) {
-                if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                    ac_in_modal.classList.remove("hidden");
-                }
+            let modalData = {
+                id: 'modalForm',
+                method: "POST",
+                action: "{{ route('update-user-status') }}",
+                class: '',
+                closeAction: 'closeModal()',
+                image: data.image,
+                name: data.name,
+                details: {
+                    'Urud Title': data.details['Urdu Title'],
+                    'Username': data.user.username,
+                    'Phone Number': data.details['Phone'],
+                    'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
+                },
+                user: data.user,
+                bottomActions: [
+                    {id: 'edit-in-modal', text: 'Edit Supplier'}
+                ],
             }
 
-            if (data.user.profile_picture == "default_avatar.png") {
-                imageInModal.src = `images/default_avatar.png`
-            } else {
-                imageInModal.src = `storage/uploads/images/${data.user.profile_picture}`
-            }
+            modalDom.innerHTML = createModal(modalData);
 
-            document.getElementById('edit-in-modal').addEventListener('click', () => {
+            let editInModalDom = document.getElementById('edit-in-modal');
+            editInModalDom.addEventListener('click', () => {
                 window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
             });
-            
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "manageCategoryBtn") {
-                    generateManageCategoryModal(item);
-                }
-            });
-
-            let chipsClutter = "";
-            data.categories.forEach((category) => {
-                chipsClutter += `
-                    <div class="chip border border-gray-600 text-[var(--secondary-text)] text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                        <div class="text tracking-wide">${category.title}</div>
-                    </div>
-                `
-            });
-
-            let chipsContainerDom = document.getElementById("chips");
-            chipsContainerDom.innerHTML = chipsClutter;
-
-            if (data.user.status === 'active') {
-                ac_in_btn.classList.add('bg-[var(--bg-error)]')
-                ac_in_btn.classList.add('border-[var(--bg-error)]')
-                ac_in_btn.classList.remove('bg-[var(--bg-success)]')
-                ac_in_btn.classList.remove('border-[var(--bg-success)]')
-                ac_in_btn.classList.add('hover:bg-[var(--h-bg-error)]')
-                ac_in_btn.classList.remove('hover:bg-[var(--h-bg-success)]')
-                ac_in_btn.classList.add('text-[var(--text-error)]')
-                ac_in_btn.classList.remove('text-[var(--text-success)]')
-                ac_in_btn.textContent = 'In Active'
-                active_inactive_dot_modal.classList.remove('bg-[var(--border-error)]')
-                active_inactive_dot_modal.classList.add('bg-[var(--border-success)]')
-            } else {
-                ac_in_btn.classList.remove('bg-[var(--bg-error)]')
-                ac_in_btn.classList.remove('border-[var(--bg-error)]')
-                ac_in_btn.classList.add('bg-[var(--bg-success)]')
-                ac_in_btn.classList.add('border-[var(--bg-success)]')
-                ac_in_btn.classList.remove('hover:bg-[var(--h-bg-error)]')
-                ac_in_btn.classList.add('hover:bg-[var(--h-bg-success)]')
-                ac_in_btn.classList.remove('text-[var(--text-error)]')
-                ac_in_btn.classList.add('text-[var(--text-success)]')
-                ac_in_btn.textContent = 'Active'
-                active_inactive_dot_modal.classList.add('bg-[var(--border-error)]')
-                active_inactive_dot_modal.classList.remove('bg-[var(--border-success)]')
-            }
 
             openModal()
         }

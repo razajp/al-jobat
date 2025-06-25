@@ -158,6 +158,15 @@
             })
         </script>
     @endif
+    @if (!request()->is('login'))
+        <script>
+            document.addEventListener("keydown", (e) => {
+                if (e.key == 'Escape') {
+                    closeAllDropdowns();
+                }
+            })
+        </script>
+    @endif
     @if (request()->is('login'))
         <script>
             const html = document.documentElement;

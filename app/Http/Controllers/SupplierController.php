@@ -21,9 +21,9 @@ class SupplierController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
 
-        $Suppliers = Supplier::with('user')->get();
+        $suppliers = Supplier::with('user')->get();
 
-        foreach ($Suppliers as $supplier) {
+        foreach ($suppliers as $supplier) {
             // foreach ($supplier['orders'] as $order) {
             //     $supplier['totalAmount'] += $order->netAmount;
             // }
@@ -45,7 +45,7 @@ class SupplierController extends Controller
             $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
         
-        // foreach ($Suppliers as $supplier) {
+        // foreach ($suppliers as $supplier) {
         //     // Decode JSON array of category IDs
         //     $categoriesIdArray = json_decode($supplier->categories_array, true);
     
@@ -60,8 +60,8 @@ class SupplierController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
     
-        // return $Suppliers;
-        return view("suppliers.index", compact('Suppliers', 'categories_options', 'authLayout'));
+        // return $suppliers;
+        return view("suppliers.index", compact('suppliers', 'categories_options', 'authLayout'));
     }
 
     /**

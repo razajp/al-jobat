@@ -7,28 +7,24 @@
                 'id' => 'customer_name',
                 'type' => 'text',
                 'placeholder' => 'Enter customer name',
-                'oninput' => 'runDynamicFilter()',
-                'dataFilterPath' => 'customer_name',
+                'dataFilterPath' => 'name',
             ],
             'Urdu Title' => [
                 'id' => 'urdu_title',
                 'type' => 'text',
                 'placeholder' => 'Enter urdu title',
-                'oninput' => 'runDynamicFilter()',
-                'dataFilterPath' => 'urdu_title',
+                'dataFilterPath' => 'details.Urdu Title',
             ],
             'Username' => [
                 'id' => 'username',
                 'type' => 'text',
                 'placeholder' => 'Enter username',
-                'oninput' => 'runDynamicFilter()',
                 'dataFilterPath' => 'user.username',
             ],
             'Phone' => [
                 'id' => 'phone',
                 'type' => 'text',
                 'placeholder' => 'Enter phone number',
-                'oninput' => 'runDynamicFilter()',
                 'dataFilterPath' => 'phone_number',
             ],
             'Category' => [
@@ -38,24 +34,21 @@
                     'cash' => ['text' => 'Cash'],
                     'regular' => ['text' => 'Regular'],
                     'site' => ['text' => 'Site'],
-                    'other' => ['text' => 'Other'],
+                    'other' => ['text' => 'Others'],
                 ],
-                'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'category',
+                'dataFilterPath' => 'details.Category',
             ],
             'City' => [
-                'id' => 'method',
+                'id' => 'city',
                 'type' => 'select',
                 'options' => $cities_options,
-                'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'method',
+                'dataFilterPath' => 'city',
             ],
             'Date Range' => [
                 'id' => 'date_range_start',
                 'type' => 'date',
                 'id2' => 'date_range_end',
                 'type2' => 'date',
-                'oninput' => 'runDynamicFilter()',
                 'dataFilterPath' => 'date',
             ],
         ];
@@ -93,12 +86,11 @@
                                     <div class="text-right">Balance</div>
                                     <div class="text-right pr-5">Status</div>
                                 </div>
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
                                     {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
                                 </div>
                             </div>
-                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items
-                                found</p>
                         </div>
                     </div>
                 @else
@@ -185,6 +177,8 @@
                 city: item.city.title,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
+                date: item.date,
+                visible: true,
             };
         });
 

@@ -28,7 +28,7 @@ class CustomerController extends Controller
         $allCities = Setup::where('type', 'city')->get();
 
         foreach ($allCities as $city) {
-            $cities_options[$city->id] = ['text' => $city->title];
+            $cities_options[$city->title] = ['text' => $city->title];
         }
 
         // return $customers[0];

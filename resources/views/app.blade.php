@@ -690,177 +690,199 @@
     //     return path.split('.').reduce((acc, part) => acc?.[part], obj);
     // }
 
-    function getNestedValue(obj, path) {
-        console.log(parsed);
-        
-        return path.split('.').reduce((acc, part) => acc?.[part], obj);
-    }
+    @if(request()->route()->getActionMethod() === 'index')
+        // change layout
+        function changeLayout() {
+            $.ajax({
+                url: "{{ route('change-data-layout') }}",
+                type: 'POST',
+                data: {
+                    layout: authLayout,
+                }, // Optional if you want to send any data, can be left empty
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status === 'updated') {
+                        console.log("Layout Updated Successfully.");
+                        authLayout = response.updatedLayout;
+                        console.log(authLayout);
+                        
+                        clearAllSearchFields();
+                        renderData();
 
-    const items = document.querySelectorAll(".search_container > div");
-    function runDynamicFilter() {
-        const filters = document.querySelectorAll('[data-filter-path]');
-        const noItemsError = document.getElementById("noItemsError");
-
-        // Group filters by path
-        const filterGroups = {};
-        
-        filters.forEach(filter => {
-            const path = filter.dataset.filterPath;
-            if (!filterGroups[path]) filterGroups[path] = [];
-            filterGroups[path].push(filter);
-        });
-
-        const items = document.querySelectorAll(".search_container > div");
-
-        items.forEach(item => {
-            const jsonData = item.getAttribute("data-json");
-            if (!jsonData) return;
-
-            const parsed = JSON.parse(jsonData);
-            let visible = true;
-
-            for (const path in filterGroups) {
-                const group = filterGroups[path];
-                const jsonVal = (getNestedValue(parsed, path) || "").toString().toLowerCase();
-
-                // Handle date range
-                if (group.length === 2 && group[0].type === "date" && group[1].type === "date") {
-                    const startInput = group.find(i => i.id.includes("start"));
-                    const endInput = group.find(i => i.id.includes("end"));
-
-                    const startVal = startInput?.value;
-                    const endVal = endInput?.value;
-
-                    const jsonDate = new Date(jsonVal);
-
-                    if (startVal) {
-                        const startDate = new Date(startVal);
-                        if (jsonDate < startDate) visible = false;
-                    }
-
-                    if (endVal) {
-                        const endDate = new Date(endVal);
-                        if (jsonDate > endDate) visible = false;
-                    }
-                } else {
-                    for (const input of group) {
-                        const value = (input.value || "").trim().toLowerCase();
-
-                        if (!value) continue;
-
-                        if (input.type === "text") {
-                            if (!jsonVal.includes(value)) visible = false;
-                        } else if (input.type === "select-one") {
-                            if (jsonVal !== value) visible = false;
-                        } else if (input.type === "number") {
-                            const inputNumber = Number(value);
-                            const jsonNumber = Number(jsonVal);
-
-                            if (isNaN(jsonNumber) || jsonNumber !== inputNumber) visible = false;
-                        } else if (input.type === "date") {
-                            const inputDate = new Date(value);
-                            const jsonDate = new Date(jsonVal);
-
-                            if (input.id.includes("start") && jsonDate < inputDate) visible = false;
-                            if (input.id.includes("end") && jsonDate > inputDate) visible = false;
+                        const changeLayoutBtn = document.getElementById('changeLayoutBtn');
+                        if (response.updatedLayout == "grid") {
+                            changeLayoutBtn.innerHTML = `
+                                <i class='fas fa-list-ul text-white'></i>
+                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
+                            `;
+                        } else {
+                            changeLayoutBtn.innerHTML = `
+                                <i class='fas fa-grip text-white'></i>
+                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
+                            `;
                         }
                     }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to update Layout", error);
                 }
+            });
+        }
 
-                if (!visible) break;
-            }
+        const tableHead = document.getElementById('table-head');
+        const search_container = document.querySelector('.search_container');
+        const scroller = search_container;
+        const batchSize = 50;
+        let startIndex = 0;
+        let isFetching = false;
 
-            item.style.display = visible ? "" : "none";
-        });
+        function renderNextBatch() {
+            if (startIndex >= allDataArray.length) return;
 
-        noItemsError.style.display = Array.from(items).every(i => i.style.display === "none") ? "block" : "none";
-    }
+            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
+            const html = nextChunk
+                .filter(item => item.visible === true)
+                .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
+                .join('');
+            search_container.insertAdjacentHTML('beforeend', html);
+            startIndex += batchSize;
+        }
 
-    // change layout
-    function changeLayout() {
-        $.ajax({
-            url: "{{ route('change-data-layout') }}",
-            type: 'POST',
-            data: {
-                layout: authLayout,
-            }, // Optional if you want to send any data, can be left empty
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            success: function(response) {
-                if (response.status === 'updated') {
-                    console.log("Layout Updated Successfully.");
-                    authLayout = response.updatedLayout;
-                    console.log(authLayout);
+        scroller?.addEventListener('scroll', () => {
+            const scrollTop = scroller.scrollTop;
+            const scrollHeight = scroller.scrollHeight;
+            const clientHeight = scroller.clientHeight;
+
+            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
+                isFetching = true;
+                setTimeout(() => {
+                    console.log("Render Next Batch");
                     
-                    renderData();
-
-                    const changeLayoutBtn = document.getElementById('changeLayoutBtn');
-                    if (response.updatedLayout == "grid") {
-                        changeLayoutBtn.innerHTML = `
-                            <i class='fas fa-list-ul text-white'></i>
-                            <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
-                        `;
-                    } else {
-                        changeLayoutBtn.innerHTML = `
-                            <i class='fas fa-grip text-white'></i>
-                            <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
-                        `;
-                    }
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("Failed to update Layout", error);
+                    renderNextBatch();
+                    isFetching = false;
+                }, 100);
             }
         });
-    }
 
-    const scroller = document.querySelector(".container-parent");
-    const tableHead = document.getElementById('table-head');
-    const search_container = document.querySelector('.search_container');
-    const batchSize = 50;
-    let startIndex = 0;
-    let isFetching = false;
-
-    function renderNextBatch() {
-        if (startIndex >= allDataArray.length) return;
-
-        const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
-        const html = nextChunk.map(item => authLayout === 'grid' ? createCard(item) : createRow(item)).join('');
-        search_container.insertAdjacentHTML('beforeend', html);
-        startIndex += batchSize;
-    }
-
-    scroller?.addEventListener('scroll', () => {
-        const scrollTop = scroller.scrollTop;
-        const scrollHeight = scroller.scrollHeight;
-        const clientHeight = scroller.clientHeight;
-
-        if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
-            console.log("Mast");
-
-            isFetching = true;
-            setTimeout(() => {
-                renderNextBatch();
-                isFetching = false;
-            }, 100);
+        function renderData() {
+            if (authLayout == "grid") {
+                tableHead.classList.add("hidden");
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2";
+            } else {
+                tableHead.classList.remove("hidden");
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2";
+            }
+            search_container.innerHTML = "";
+            startIndex = 0;
+            renderNextBatch();
         }
-    });
 
-    function renderData() {
-        if (authLayout == "grid") {
-            tableHead.classList.add("hidden");
-            search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5";
-        } else {
-            tableHead.classList.remove("hidden");
-            search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2";
+        renderData(); // initial load
+
+        function getNestedValue(obj, path) {
+            return path.split('.').reduce((acc, part) => acc?.[part], obj);
         }
-        search_container.innerHTML = "";
-        startIndex = 0;
-        renderNextBatch();
-    }
 
-    renderData(); // initial load
+        function runDynamicFilter() {
+            console.log("hello");
+            
+            const filters = document.querySelectorAll('[data-filter-path]');
+            const noItemsError = document.getElementById("noItemsError");
+
+            // Group filters by path
+            const filterGroups = {};
+
+            filters.forEach(filter => {
+                const path = filter.dataset.filterPath;
+                if (!filterGroups[path]) filterGroups[path] = [];
+                filterGroups[path].push(filter);
+            });
+
+            allDataArray.forEach(item => {
+                let visible = true;
+
+                for (const path in filterGroups) {
+                    const group = filterGroups[path];
+                    const jsonVal = (getNestedValue(item, path) || "").toString().toLowerCase();
+
+                    // Handle date range
+                    if (group.length === 2 && group[0].type === "date" && group[1].type === "date") {
+                        const startInput = group.find(i => i.id.includes("start"));
+                        const endInput = group.find(i => i.id.includes("end"));
+
+                        const startVal = startInput?.value;
+                        const endVal = endInput?.value;
+
+                        const jsonDate = new Date(jsonVal);
+
+                        if (startVal) {
+                            const startDate = new Date(startVal);
+                            if (jsonDate < startDate) visible = false;
+                        }
+
+                        if (endVal) {
+                            const endDate = new Date(endVal);
+                            if (jsonDate > endDate) visible = false;
+                        }
+                    } else {
+                        for (const input of group) {
+                            const value = (input.value || "").trim().toLowerCase();
+
+                            if (!value) continue;
+
+                            if (input.type === "text") {
+                                if (!jsonVal.includes(value)) visible = false;
+                            } else if (input.type === "select-one") {
+                                if (jsonVal !== value) visible = false;
+                            } else if (input.type === "number") {
+                                const inputNumber = Number(value);
+                                const jsonNumber = Number(jsonVal);
+
+                                if (isNaN(jsonNumber) || jsonNumber !== inputNumber) visible = false;
+                            } else if (input.type === "date") {
+                                const inputDate = new Date(value);
+                                const jsonDate = new Date(jsonVal);
+
+                                if (input.id.includes("start") && jsonDate < inputDate) visible = false;
+                                if (input.id.includes("end") && jsonDate > inputDate) visible = false;
+                            }
+                        }
+                    }
+
+                    if (!visible) break;
+                }
+
+                item.visible = visible;
+            });
+            renderData();
+
+            noItemsError.style.display = allDataArray.every(i => i.visible == false) ? "block" : "none";
+        }
+
+        function debounce(func, delay = 300) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        const debouncedFilter = debounce(runDynamicFilter, 300);
+
+        document.querySelectorAll('[data-filter-path]').forEach(input => {
+            const eventType = (input.tagName === 'SELECT' || input.type === 'date') ? 'change' : 'input';
+            input.addEventListener(eventType, debouncedFilter);
+        });
+
+        function clearAllSearchFields() {
+            document.querySelectorAll('[data-filter-path]').forEach(searchField => {
+                searchField.value = "";
+                debouncedFilter();
+            })
+        }
+    @endif
 </script>
 
 </html>
