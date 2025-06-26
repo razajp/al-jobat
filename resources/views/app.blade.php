@@ -228,6 +228,16 @@
         }
     </script>
     <script src="{{ asset('jquery.js') }}"></script>
+
+    <script>
+        function formatNumbersDigitLess(number) {
+            return new Intl.NumberFormat('en-US').format(number);
+        }
+
+        function formatNumbersWithDigits(number, maxFraction, minFraction) {
+            return new Intl.NumberFormat('en-US', { maximumFractionsDigits:maxFraction, minimumFractionDigits:minFraction}).format(number);
+        }
+    </script>
     
     <script src="{{ asset('js/components/card.js') }}"></script>
     <script src="{{ asset('js/components/modal.js') }}"></script>
@@ -455,14 +465,6 @@
                 }
                 reader.readAsDataURL(file);
             }
-        }
-
-        function formatNumbersDigitLess(number) {
-            return new Intl.NumberFormat('en-US').format(number);
-        }
-
-        function formatNumbersWithDigits(number, maxFraction, minFraction) {
-            return new Intl.NumberFormat('en-US', { maximumFractionsDigits:maxFraction, minimumFractionDigits:minFraction}).format(number);
         }
 
         document.addEventListener("contextmenu", e => e.preventDefault());

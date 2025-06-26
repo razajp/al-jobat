@@ -77,9 +77,21 @@ class EmployeeController extends Controller
             'joining_date' => 'required|date',
             'cnic_no' => 'nullable|string',
             'salary' => 'nullable|integer|min:1',
+            'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
+        
+        $data = $request->all();
 
-        Employee::create($request->all());
+        // Handle the image upload if present
+        if ($request->hasFile('profile_picture')) {
+            $file = $request->file('profile_picture');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
+
+            $data['profile_picture'] = $fileName; // Save the file path in the database
+        }
+
+        Employee::create($data);
 
         return redirect()->route('employees.create')->with('success', 'Employee added successfully.');
     }
@@ -114,5 +126,24 @@ class EmployeeController extends Controller
     public function destroy(Employee $employee)
     {
         //
+    }
+
+    public function updateStatus(Request $request)
+    {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
+        $employee = Employee::find($request->user_id);
+
+        if ($request->status == 'active') {
+            $employee->status = 'in_active';
+            $employee->save();
+        } else {
+            $employee->status = 'active';
+            $employee->save();
+        }
+        return redirect()->back()->with('success', 'Status has been updated successfully!');
     }
 }

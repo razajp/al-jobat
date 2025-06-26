@@ -318,52 +318,13 @@
                     'City': data.city,
                 },
                 user: data.user,
+                profile: true
                 bottomActions: [
                     {id: 'edit-in-modal', text: 'Edit Customer'}
                 ],
             }
 
             modalDom.innerHTML = createModal(modalData);
-
-            // let ac_in_modal = document.getElementById('ac_in_modal');
-            // let ac_in_btn = document.getElementById('ac_in_btn');
-            // let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
-
-            // ac_in_modal.classList.add("hidden");
-
-            // if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-            //     ac_in_modal.classList.remove("hidden");
-            // }
-
-            // if (data.balance == 0) {
-            //     if (data.user.status === 'active') {
-            //         ac_in_btn.classList.add('bg-[var(--bg-error)]')
-            //         ac_in_btn.classList.add('border-[var(--bg-error)]')
-            //         ac_in_btn.classList.remove('bg-[var(--bg-success)]')
-            //         ac_in_btn.classList.remove('border-[var(--bg-success)]')
-            //         ac_in_btn.classList.add('hover:bg-[var(--h-bg-error)]')
-            //         ac_in_btn.classList.remove('hover:bg-[var(--h-bg-success)]')
-            //         ac_in_btn.classList.add('text-[var(--text-error)]')
-            //         ac_in_btn.classList.remove('text-[var(--text-success)]')
-            //         ac_in_btn.textContent = 'In Active'
-            //         active_inactive_dot_modal.classList.remove('bg-[var(--border-error)]')
-            //         active_inactive_dot_modal.classList.add('bg-[var(--border-success)]')
-            //     } else {
-            //         ac_in_btn.classList.remove('bg-[var(--bg-error)]')
-            //         ac_in_btn.classList.remove('border-[var(--bg-error)]')
-            //         ac_in_btn.classList.add('bg-[var(--bg-success)]')
-            //         ac_in_btn.classList.add('border-[var(--bg-success)]')
-            //         ac_in_btn.classList.remove('hover:bg-[var(--h-bg-error)]')
-            //         ac_in_btn.classList.add('hover:bg-[var(--h-bg-success)]')
-            //         ac_in_btn.classList.remove('text-[var(--text-error)]')
-            //         ac_in_btn.classList.add('text-[var(--text-success)]')
-            //         ac_in_btn.textContent = 'Active'
-            //         active_inactive_dot_modal.classList.add('bg-[var(--border-error)]')
-            //         active_inactive_dot_modal.classList.remove('bg-[var(--border-success)]')
-            //     }
-            // } else {
-            //     ac_in_modal.classList.add("hidden");
-            // }
 
             let editInModalDom = document.getElementById('edit-in-modal');
             editInModalDom.addEventListener('click', () => {

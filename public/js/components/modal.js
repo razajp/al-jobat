@@ -8,6 +8,7 @@ function createModal(data) {
 
     let clutter = `
         <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center">
+            <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
             <div class="${data.class} bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-full max-w-2xl p-6 flex relative">
                 <div id="modal-close" onclick="${data.closeAction}"
                     class="absolute top-0 -right-4 translate-x-full bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-auto p-3 text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
@@ -24,8 +25,8 @@ function createModal(data) {
                     <div class="w-full h-full">
     `;
 
-    if (data.user.status) {
-        const [bgColor, hoverBgColor, textColor] = statusColor[data.user.status] || statusColor.inactive;
+    if (data.user?.status || data.status) {
+        const [bgColor, hoverBgColor, textColor] = statusColor[data.user?.status ?? data.status] || statusColor.inactive;
         clutter += `
             <div id="active_inactive_dot_modal"
                 class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-${textColor} rounded-full">
@@ -39,7 +40,7 @@ function createModal(data) {
     
     if (data.image) {
         clutter += `
-                <div class="${!data.user ? 'rounded-lg' : 'rounded-[41.5%]'} h-full aspect-square overflow-hidden">
+                <div class="${!data.profile ? 'rounded-lg' : 'rounded-[41.5%]'} h-full aspect-square overflow-hidden">
                     <img id="imageInModal" src="${data.image}" alt=""
                         class="w-full h-full object-cover">
                 </div>
@@ -88,15 +89,16 @@ function createModal(data) {
     }
 
 
-    if (data.user.status) {
-        const [bgColor, hoverBgColor, textColor] = statusColor[data.user.status = 'active' ? 'in_active' : 'active'] || statusColor.inactive;
+    if (data.user?.status || data.status) {
+        let status = data.user?.status ?? data.status;
+        const [bgColor, hoverBgColor, textColor] = statusColor[status = 'active' ? 'in_active' : 'active'] || statusColor.inactive;
         clutter += `
             <div id="ac_in_modal">
-                <input type="hidden" id="user_id" name="user_id" value="${data.user.id}">
-                <input type="hidden" id="user_status" name="status" value="${data.user.status}">
+                <input type="hidden" id="user_id" name="user_id" value="${data.user?.id ?? data.uId}">
+                <input type="hidden" id="user_status" name="status" value="${data.user?.status ?? data.status}">
                 <button id="ac_in_btn" type="submit"
                     class="px-4 py-2 bg-${bgColor} border border-${bgColor} text-${textColor} font-semibold rounded-lg hover:bg-${hoverBgColor} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95] capitalize">
-                    ${data.user.status.replace('_', ' ')}
+                    ${status.replace('_', ' ')}
                 </button>
             </div>
         `;

@@ -21,6 +21,8 @@ return new class extends Migration
             $table->date('joining_date');
             $table->string('cnic_no')->nullable();
             $table->integer('salary')->nullable();
+            $table->string('status')->default('active');
+            $table->string('profile_picture')->default('default_avatar.png');
             $table->timestamps();
         });
     }

@@ -16,7 +16,53 @@ class FabricController extends Controller
      */
     public function index()
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        // Added fabric entries
+        $addedFabrics = Fabric::with('supplier', 'fabric')->get()->map(function ($fabric) {
+            return [
+                'id' => $fabric->id,
+                'type' => 'added',
+                'tag' => $fabric->tag,
+                'quantity' => $fabric->quantity,
+                'date' => $fabric->date, // Logical fabric addition date
+                'supplier_name' => $fabric->supplier->supplier_name,
+                'fabric' => $fabric->fabric->title,
+                'color' => $fabric->color,
+                'unit' => $fabric->unit,
+                'remarks' => $fabric->remarks,
+                'created_at' => $fabric->created_at,
+            ];
+        })->toArray();
+
+        // Issued fabric entries
+        $issuedFabrics = IssuedFabric::with('worker')->get()->map(function ($issue) {
+            return [
+                'id' => $issue->id,
+                'type' => 'issued',
+                'tag' => $issue->tag,
+                'quantity' => $issue->quantity,
+                'date' => $issue->date, // Logical fabric issue date
+                'employee_name' => $issue->worker->employee_name,
+                'remarks' => $issue->remarks,
+                'created_at' => $issue->created_at,
+            ];
+        })->toArray();
+
+        // Combine both arrays manually
+        $finalData = array_merge($issuedFabrics, $addedFabrics);
+
+        // Sort the final combined array by date and then by created_at time (both descending)
+        usort($finalData, function ($a, $b) {
+            if ($a['date'] == $b['date']) {
+                return strtotime($b['created_at']) - strtotime($a['created_at']); // time DESC
+            }
+            return strtotime($b['date']) - strtotime($a['date']); // date DESC
+        });
+
+        return view('fabrics.index', compact('finalData'));
     }
 
     /**

@@ -8,11 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class IssuedFabric extends Model
 {
     use HasFactory;
-
-    protected $hidden = [
-        'created_at',
-        'updated_at',
-    ];
     
     protected $fillable = [
         'date',
@@ -20,6 +15,12 @@ class IssuedFabric extends Model
         'worker_id',
         'quantity',
         'remarks',
+    ];
+
+    protected $hidden = [
+        'worker_id',
+        'created_at',
+        'updated_at',
     ];
 
     protected $casts = [

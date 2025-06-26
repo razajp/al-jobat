@@ -91,6 +91,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('fabrics', FabricController::class);
     
     Route::resource('employees', EmployeeController::class);
+    Route::post('update-employee-status', [EmployeeController::class, 'updateStatus'])->name('update-employee-status');
     
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');

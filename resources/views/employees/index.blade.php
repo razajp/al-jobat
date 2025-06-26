@@ -74,43 +74,17 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                @if ($authLayout == 'grid')
-                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($employees as $employee)
-                                            <div id='{{ $employee->id }}' data-json='{{ $employee }}'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'name' => $employee->employee_name,
-                                                    'details' => [
-                                                        'Urdu Title' => $employee->urdu_title,
-                                                        'Category' => $employee->category,
-                                                        'Type' => $employee->type->title,
-                                                        'Balance' => number_format($employee->balance, 1),
-                                                    ],
-                                                ]" />
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                        <div class="text-left pl-5">Employee Name</div>
-                                        <div class="text-left pl-5">Urdu Title</div>
-                                        <div class="text-center">Category</div>
-                                        <div class="text-center">Type</div>
-                                        <div class="text-right pr-5">Balance</div>
-                                    </div>
-                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        @forEach ($employees as $employee)
-                                            <div id="{{ $employee->id }}" data-json='{{ $employee }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                                <span class="text-left pl-5 capitalize">{{ $employee->employee_name }}</span>
-                                                <span class="text-left pl-5">{{ $employee->urdu_title }}</span>
-                                                <span class="text-center capitalize">{{ $employee->category }}</span>
-                                                <span class="text-center">{{ $employee->type->title }}</span>
-                                                <span class="text-right pr-5">{{ number_format($employee->balance, 1) }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                <div id="table-head"class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                    <div class="text-left pl-5">Employee Name</div>
+                                    <div class="text-left pl-5">Category</div>
+                                    <div class="text-center">Type</div>
+                                    <div class="text-center">Balance</div>
+                                    <div class="text-right pr-5">Status</div>
+                                </div>
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -140,6 +114,17 @@
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit 
                             Employee</button>
                     </li>
+
+                    <li id="ac_in_context" class="hidden">
+                        <form method="POST" action="{{ route('update-user-status') }}">
+                            @csrf
+                            <input type="hidden" id="user_id_context" name="user_id" value="">
+                            <input type="hidden" id="user_status_context" name="status" value="">
+                            <button id="ac_in_btn_context" type="submit"
+                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
+                                Active</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>
@@ -147,6 +132,43 @@
 
     <script>
         let currentUserRole = '{{ Auth::user()->role }}';
+        let authLayout = '{{ $authLayout }}';
+
+        function createRow(data) {
+            return `
+            <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                data-json='${JSON.stringify(data)}'>
+
+                <span class="text-left pl-5">${data.name}</span>
+                <span class="text-left pl-5">${data.details["Category"]}</span>
+                <span class="text-center capitalize">${data.details["Type"]}</span>
+                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                <span class="text-right pr-5 capitalize ${data.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
+                    ${data.status}
+                </span>
+            </div>`;
+        }
+
+        const fetchedData = @json($employees);
+        let allDataArray = fetchedData.map(item => {
+            return {
+                id: item.id,
+                status: item.status,
+                image: item.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.profile_picture}`,
+                name: item.employee_name,
+                details: {
+                    'Category': item.category,
+                    'Type': item.type.title,
+                    'Balance': item.balance ?? 0,
+                },
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
+                joining_date: item.joining_date,
+                cnic_no: item.cnic_no,
+                visible: true,
+            };
+        });
 
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
@@ -241,37 +263,31 @@
             let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative">
-                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.employee_name}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Urdu Title:</strong> <span>${data.urdu_title}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Phone Number:</strong> <span>${data.phone_number}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>C.N.I.C No.:</strong> <span>${data.cnic_no ?? '-'}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Category:</strong> <span>${data.category}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>City:</strong> <span>${data.type.title}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Joining Date:</strong> <span>${formatDate(data.joining_date)}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm ${data.category == 'worker' ? 'hidden' : ''}"><strong>Salary:</strong> <span>${formatNumbersWithDigits(data.salary, 1, 1)}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Balance:</strong> <span>${formatNumbersWithDigits(data.balance ?? 0, 1, 1)}</span></p>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
+            let modalData = {
+                id: 'modalForm',
+                uId: data.id,
+                status: data.status,
+                method: "POST",
+                action: "{{ route('update-employee-status') }}",
+                class: '',
+                closeAction: 'closeModal()',
+                image: data.image,
+                name: data.name,
+                details: {
+                    'Category': data.category,
+                    'Type': data.type,
+                    'Phone Number': data.phone_number,
+                    'Joining Date': data.joining_date,
+                    'C.N.I.C No.': data.cnic_no,
+                    'Balance': data.Balance ?? 0,
+                },
+                profile: true,
+                bottomActions: [
+                    {id: 'edit-in-modal', text: 'Edit Employee'}
+                ],
+            }
 
-                        <button id="edit-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Edit Employee
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
+            modalDom.innerHTML = createModal(modalData);
 
             let editInModalDom = document.getElementById('edit-in-modal');
 

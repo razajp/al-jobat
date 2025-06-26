@@ -10,6 +10,7 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Add Employee" link linkText="Show Employees" linkHref="{{ route('employees.index') }}"/>
+        <x-progress-bar :steps="['Enter Details', 'Upload Image']" :currentStep="1" />
     </div>
 
     <!-- Form -->
@@ -18,8 +19,8 @@
         @csrf
         <x-form-title-bar title="Add Employee" />
 
-        <!-- Step : Basic Information -->
-        <div class="step space-y-4">
+        <!-- Step1 : Basic Information -->
+        <div class="step1 space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- employee_category --}}
                 <x-select 
@@ -102,11 +103,10 @@
             </div>
         </div>
 
-        <div class="w-full flex justify-end mt-4">
-            <button type="submit"
-                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
-                <i class='fas fa-save mr-1'></i> Save
-            </button>
+        <!-- Step 2: Production Details -->
+        <div class="step2 hidden space-y-6 ">
+            <x-image-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
+                uploadText="Upload Profile Picture" />
         </div>
     </form>
 

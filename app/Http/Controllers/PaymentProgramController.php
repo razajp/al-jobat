@@ -65,9 +65,9 @@ class PaymentProgramController extends Controller
         // Sort the final combined array by date and created_at
         usort($finalData, function ($a, $b) {
             if ($a['date'] == $b['date']) {
-                return strtotime($a['created_at']) - strtotime($b['created_at']);
+                return strtotime($b['created_at']) - strtotime($a['created_at']); // time DESC
             }
-            return strtotime($a['date']) - strtotime($b['date']);
+            return strtotime($b['date']) - strtotime($a['date']); // date DESC
         });
 
         // return $finalData;
