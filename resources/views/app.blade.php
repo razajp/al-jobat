@@ -404,8 +404,12 @@
                     e.stopPropagation();
         
                     if (dropdownMenu.classList.contains('hidden')) {
-                        closeAllDropdowns();
-        
+                        dropdownMenus.forEach(menu => {
+                            menu.classList.remove('opacity-100', 'scale-100');
+                            menu.classList.add('opacity-0', 'scale-95');
+                            menu.classList.add('hidden');
+                        });
+
                         dropdownMenu.classList.remove('hidden');
                         setTimeout(() => {
                             dropdownMenu.classList.add('opacity-100', 'scale-100');
@@ -437,9 +441,11 @@
 
         function closeAllDropdowns() {
             dropdownMenus.forEach(menu => {
-                menu.classList.add('hidden');
                 menu.classList.remove('opacity-100', 'scale-100');
                 menu.classList.add('opacity-0', 'scale-95');
+                setTimeout(() => {
+                    menu.classList.add('hidden');
+                }, 300);
             });
         }
 
@@ -771,10 +777,10 @@
         function renderData() {
             if (authLayout == "grid") {
                 tableHead.classList.add("hidden");
-                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2";
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 pb-0 p-2 overflow-y-auto grow my-scrollbar-2";
             } else {
                 tableHead.classList.remove("hidden");
-                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2";
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3";
             }
             search_container.innerHTML = "";
             startIndex = 0;

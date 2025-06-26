@@ -40,12 +40,11 @@
                         class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
                         <i class="text-xs fa-solid fa-filter"></i>
                     </button>
-                    <div
-                        class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-[100] p-4">
-                        <div class="header flex justify-between items-center">
-                            <h6 class="text-xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
+                    <div class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-[100] p-4">
+                        <div class="header flex justify-between items-center p-1">
+                            <h6 class="text-2xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
                             <div onclick="closeAllDropdowns()" class="text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
-                                <button type="button" class="z-10 text-gray-400 hover:text-gray-600 hover:scale-[0.95] transition-all duration-300 ease-in-out">
+                                <button type="button" class="z-10 text-gray-400 hover:text-gray-600 hover:scale-[0.95] transition-all duration-300 ease-in-out cursor-pointer">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6" style="display: inline">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                                     </svg>
@@ -53,7 +52,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-600 my-4 w-full">
-                        <div class="grow overflow-y-auto my-scrollbar-2">
+                        <div class="grow overflow-y-auto my-scrollbar-2 p-1">
                             <div class="grid grid-cols-1 gap-4">
                                 @foreach ($search_fields as $search_field => $value)
                                     @if ($value['type'] == "select")
@@ -69,7 +68,7 @@
                             </div>
                         </div>
                         <hr class="border-gray-600 my-4 w-full">
-                        <div class="flex gap-4">
+                        <div class="flex gap-4 p-1">
                             <button type="button" onclick="closeAllDropdowns()"
                                 class="flex-1 px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                                 Cancel

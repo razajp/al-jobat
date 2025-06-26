@@ -89,19 +89,21 @@ function createModal(data) {
     }
 
 
-    if (data.user?.status || data.status) {
-        let status = data.user?.status ?? data.status;
-        const [bgColor, hoverBgColor, textColor] = statusColor[status = 'active' ? 'in_active' : 'active'] || statusColor.inactive;
-        clutter += `
-            <div id="ac_in_modal">
-                <input type="hidden" id="user_id" name="user_id" value="${data.user?.id ?? data.uId}">
-                <input type="hidden" id="user_status" name="status" value="${data.user?.status ?? data.status}">
-                <button id="ac_in_btn" type="submit"
-                    class="px-4 py-2 bg-${bgColor} border border-${bgColor} text-${textColor} font-semibold rounded-lg hover:bg-${hoverBgColor} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95] capitalize">
-                    ${status.replace('_', ' ')}
-                </button>
-            </div>
-        `;
+    if (data.details['Balance'] == 0.0) {
+        if (data.user?.status || data.status) {
+            let status = data.user?.status ?? data.status;
+            const [bgColor, hoverBgColor, textColor] = statusColor[status == 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;
+            clutter += `
+                <div id="ac_in_modal">
+                    <input type="hidden" id="user_id" name="user_id" value="${data.user?.id ?? data.uId}">
+                    <input type="hidden" id="user_status" name="status" value="${data.user?.status ?? data.status}">
+                    <button id="ac_in_btn" type="submit"
+                        class="px-4 py-2 bg-${bgColor} border border-${bgColor} text-${textColor} font-semibold rounded-lg hover:bg-${hoverBgColor} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95] capitalize">
+                        ${status.replace('_', ' ')}
+                    </button>
+                </div>
+            `;
+        }
     }
 
     clutter += `

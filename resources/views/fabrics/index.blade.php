@@ -97,9 +97,9 @@
                                             <span class="text-center w-[10%]">{{ date('d-M-Y, D', strtotime($data['date'])) }}</span>
                                             <span class="text-center w-[15%] capitalize">{{ $data['supplier_name'] ?? $data['employee_name'] }}</span>
                                             <span class="text-center w-[10%] capitalize">{{ $data['fabric'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%]">{{ $data['remarks'] ??'-' }}</span>
-                                            <span class="text-center w-[10%]">{{ $data['color'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%]">{{ $data['unit'] ?? '-' }}</span>
+                                            <span class="text-center w-[10%] capitalize">{{ $data['remarks'] ??'-' }}</span>
+                                            <span class="text-center w-[10%] capitalize">{{ $data['color'] ?? '-' }}</span>
+                                            <span class="text-center w-[10%] capitalize">{{ $data['unit'] ?? '-' }}</span>
                                             <span class="text-center w-[10%]">{{ number_format($data['quantity'] ?? '0', 1) }}</span>
                                             <span class="text-center w-[20%]">{{ $data['tag'] ?? '-' }}</span>
                                             <span class="text-center w-[10%]">{{ $data['type'] ?? '-' }}</span>
@@ -112,8 +112,8 @@
                 </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
-                        <h1 class="text-md text-[var(--secondary-text)] capitalize">No Payment Programs yet</h1>
-                        <a href="{{ route('payment-programs.create') }}"
+                        <h1 class="text-md text-[var(--secondary-text)] capitalize">No Fabrics yet</h1>
+                        <a href="{{ route('fabrics.create') }}"
                             class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                             New</a>
                     </div>

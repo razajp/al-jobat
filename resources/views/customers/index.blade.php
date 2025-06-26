@@ -44,6 +44,15 @@
                 'options' => $cities_options,
                 'dataFilterPath' => 'city',
             ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'active' => ['text' => 'Active'],
+                    'in_active' => ['text' => 'In Active'],
+                ],
+                'dataFilterPath' => 'user.status',
+            ],
             'Date Range' => [
                 'id' => 'date_range_start',
                 'type' => 'date',
@@ -69,16 +78,17 @@
                 <x-form-title-bar title="Show Customers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($customers) > 0)
-                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                        <x-section-navigation-button direction="right" id="info" title="Total Customers: 1200 | Active: 1199 | In Active: 01" icon="fa-info" />
                         <x-section-navigation-button link="{{ route('customers.create') }}" title="Add New Customer"
                             icon="fa-plus" />
                     </div>
 
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                <div id="table-head" class="grid grid-cols-7 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden">
-                                    <div class="text-left pl-5">Customer</div>
+                            <div class="card_container py-0 p-3 h-full flex flex-col">
+                                <div id="table-head" class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                                    <div class="text-left pl-5 col-span-2">Customer</div>
                                     <div class="text-left pl-5">Urdu Title</div>
                                     <div class="text-center">Category</div>
                                     <div class="text-center">City</div>
@@ -141,10 +151,10 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid text- grid-cols-7 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid text- grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="text-left pl-5">${data.name}</span>
+                <span class="text-left pl-5 col-span-2">${data.name}</span>
                 <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
                 <span class="text-center capitalize">${data.details["Category"]}</span>
                 <span class="text-center capitalize">${data.city}</span>
@@ -182,6 +192,12 @@
             };
         });
 
+        const activeCustomers = allDataArray.filter(customer => customer.user.status === 'active');
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
+        
+
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
 
@@ -208,7 +224,7 @@
 
             ac_in_context.classList.add('hidden');
 
-            if (ac_in_btn_context && data.balance == 0) {
+            if (ac_in_btn_context && data.details['Balance'] == 0) {
                 ac_in_btn_context.classList.add('text-[var(--border-error)]');
                 if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
                     if (data.user.status === 'active') {
@@ -318,7 +334,7 @@
                     'City': data.city,
                 },
                 user: data.user,
-                profile: true
+                profile: true,
                 bottomActions: [
                     {id: 'edit-in-modal', text: 'Edit Customer'}
                 ],
@@ -366,66 +382,6 @@
             }, {
                 once: true
             });
-        }
-
-        // Function for Search
-        function filterData(search) {
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.customer_name.toLowerCase().includes(search) ||
-                            item.urdu_title.toLowerCase().includes(search) ||
-                            item.person_name.toLowerCase().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-
-                    case 'customer_name':
-                        return (
-                            item.customer_name.toLowerCase().includes(search)
-                        );
-                        break;
-
-                    case 'urdu_title':
-                        return (
-                            item.urdu_title.toLowerCase().includes(search)
-                        );
-                        break;
-
-
-                    case 'person_name':
-                        return (
-                            item.person_name.toLowerCase().includes(search)
-                        );
-                        break;
-
-                    case 'category':
-                        return (
-                            item.category.toLowerCase().includes(search)
-                        );
-                        break;
-
-                    case 'username':
-                        return (
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-
-                    default:
-                        return (
-                            item.customer_name.toLowerCase().includes(search) ||
-                            item.urdu_title.toLowerCase().includes(search) ||
-                            item.person_name.toLowerCase().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-                }
-            });
-
-            return filteredData;
         }
     </script>
 @endsection

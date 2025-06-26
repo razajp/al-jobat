@@ -62,8 +62,7 @@
 
         <!-- Main Content -->
         <section class="text-center mx-auto">
-            <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
+            <div class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
                 <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($employees) > 0)
@@ -73,7 +72,7 @@
                 
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                            <div class="card_container py-0 p-3 h-full flex flex-col">
                                 <div id="table-head"class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div class="text-left pl-5">Employee Name</div>
                                     <div class="text-left pl-5">Category</div>
@@ -197,7 +196,7 @@
         function generateContextMenu(e) {
             contextMenu.classList.remove('fade-in');
 
-            let item = e.target.closest('.modalToggle');
+            let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
             const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID

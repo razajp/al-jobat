@@ -24,7 +24,7 @@ class FabricController extends Controller
         $addedFabrics = Fabric::with('supplier', 'fabric')->get()->map(function ($fabric) {
             return [
                 'id' => $fabric->id,
-                'type' => 'added',
+                'type' => 'Recived',
                 'tag' => $fabric->tag,
                 'quantity' => $fabric->quantity,
                 'date' => $fabric->date, // Logical fabric addition date
@@ -41,7 +41,7 @@ class FabricController extends Controller
         $issuedFabrics = IssuedFabric::with('worker')->get()->map(function ($issue) {
             return [
                 'id' => $issue->id,
-                'type' => 'issued',
+                'type' => 'Issued',
                 'tag' => $issue->tag,
                 'quantity' => $issue->quantity,
                 'date' => $issue->date, // Logical fabric issue date
@@ -217,5 +217,9 @@ class FabricController extends Controller
         IssuedFabric::create($request->all());
 
         return redirect()->route('fabrics.issue')->with('success', 'Fabric added successfully.');
+    }
+
+    public function summary() {
+        return view('fabrics.summary');
     }
 }
