@@ -11,16 +11,20 @@ class BankAccount extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['category', 'sub_category', 'bank_id', 'account_title', 'date', 'remarks', 'account_no', 'chqbk_serial_start', 'chqbk_serial_end'];
+
     protected $hidden = [
+        'bank_id',
+        'creator_id',
         'created_at',
         'updated_at',
     ];
-    
-    protected $fillable = ['category', 'sub_category', 'bank_id', 'account_title', 'date', 'remarks', 'account_no', 'chqbk_serial_start', 'chqbk_serial_end'];
 
     protected $casts = [
         'date' => 'date',
     ];
+
+    protected $appends = ['available_cheques'];
 
     protected static function booted()
     {
@@ -57,5 +61,27 @@ class BankAccount extends Model
     public function bankAccounts()
     {
         return $this->hasOne(BankAccount::class, 'id');
+    }
+    public function getAvailableChequesAttribute()
+    {
+        if ($this->category !== 'self') {
+            return null;
+        }
+    
+        // Get all the used cheques for this bank account
+        $usedCheques = SupplierPayment::where('bank_account_id', $this->id)
+            ->pluck('cheque_no')
+            ->toArray();
+
+        // Generate full range of cheque numbers
+        $start = (int) $this->chqbk_serial_start;
+        $end = (int) $this->chqbk_serial_end;
+        $fullRange = range($start, $end);
+
+        // Filter out the used ones
+        $available = array_diff($fullRange, $usedCheques);
+
+        // Return available cheque numbers
+        return array_values($available);
     }
 }

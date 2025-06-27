@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
 use App\Models\CustomerPayment;
 use App\Models\Supplier;
 use App\Models\SupplierPayment;
@@ -45,6 +46,8 @@ class VoucherController extends Controller
         $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city', 'cheque')->doesntHave('cheque')->get();
 
         $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city', 'slip')->doesntHave('slip')->get();
+
+        $self_accounts = BankAccount::where('category', 'self')->with('bank')->get();
 
         $suppliers_options = [];
 
@@ -93,7 +96,7 @@ class VoucherController extends Controller
             $last_voucher['voucher_no'] = '00/101';
         }
 
-        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques', 'slips', 'last_voucher'));
+        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques', 'slips', 'self_accounts', 'last_voucher'));
     }
 
     /**

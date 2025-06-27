@@ -94,6 +94,9 @@
                                                     @case('supplier')
                                                         @php $details['Name'] = $bankAccount->subCategory->supplier_name; @endphp
                                                         @break
+                                                    @case('self')
+                                                        @php $details['Name'] = $bankAccount->account_title; @endphp
+                                                        @break
                                                 @endswitch
 
                                                 @php $details['Date'] = $bankAccount->date->format('d-M-Y, D'); @endphp

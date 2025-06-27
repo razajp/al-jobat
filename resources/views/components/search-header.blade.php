@@ -11,7 +11,7 @@
 
 <div class="header w-full flex items-center justify-between">
     <h5 id="name" class="text-3xl text-[var(--text-color)] uppercase font-semibold leading-none ml-1">
-        {{ $heading }}</h5>
+        {{ str_replace('_', ' ', $heading) }}</h5>
 
     <div class="">
         @if ($toFrom)

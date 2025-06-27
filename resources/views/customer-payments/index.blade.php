@@ -75,6 +75,7 @@
                                                 'name' => 'Customer: ' . $payment->customer->customer_name,
                                                 'details' => [
                                                     'Type' => str_replace('_', ' ',$payment->type),
+                                                    'Method' => str_replace('_', ' ',$payment->method),
                                                     'Date' => date('d-M-Y D', strtotime($payment->date)),
                                                     'Amount' => number_format($payment->amount, 1),
                                                 ],

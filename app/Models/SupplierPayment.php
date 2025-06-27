@@ -21,6 +21,8 @@ class SupplierPayment extends Model
         "date",
         "method",
         "amount",
+        "reff_no",
+        "cheque_no",
         "cheque_id",
         "slip_id",
         "program_id",
