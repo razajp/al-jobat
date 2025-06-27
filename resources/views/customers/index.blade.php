@@ -201,83 +201,95 @@
         let contextMenu = document.querySelector('.context-menu');
         let isContextMenuOpened = false;
 
-        function closeContextMenu() {
-            contextMenu.classList.remove('fade-in');
-            contextMenu.style.display = 'none';
-            isContextMenuOpened = false;
-        }
+        // function closeContextMenu() {
+        //     contextMenu.classList.remove('fade-in');
+        //     contextMenu.style.display = 'none';
+        //     isContextMenuOpened = false;
+        // }
 
-        function openContextMenu() {
-            closeAllDropdowns()
-            contextMenu.classList.add('fade-in');
-            contextMenu.style.display = 'block';
-            isContextMenuOpened = true;
-        }
+        // function openContextMenu() {
+        //     closeAllDropdowns()
+        //     contextMenu.classList.add('fade-in');
+        //     contextMenu.style.display = 'block';
+        //     isContextMenuOpened = true;
+        // }
 
         function generateContextMenu(e) {
-            contextMenu.classList.remove('fade-in');
+            e.preventDefault();
+            // contextMenu.classList.remove('fade-in');
 
-            let ac_in_btn_context = document.getElementById('ac_in_btn_context');
-            let ac_in_context = document.getElementById('ac_in_context');
+            // let ac_in_btn_context = document.getElementById('ac_in_btn_context');
+            // let ac_in_context = document.getElementById('ac_in_context');
             let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
-            ac_in_context.classList.add('hidden');
+            let contextMenuData = {
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                actions: [
+                    {id: 'edit', text: 'Edit Customer'}
+                ],
+            };
 
-            if (ac_in_btn_context && data.details['Balance'] == 0) {
-                ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                    if (data.user.status === 'active') {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.textContent = 'In Active';
-                    } else {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.textContent = 'Active';
-                    }
-                }
-            }
+            createContextMenu(contextMenuData);
 
-            const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
+            // ac_in_context.classList.add('hidden');
 
-            if (!contextMenu || !wrapper) return;
+            // if (ac_in_btn_context && data.details['Balance'] == 0) {
+            //     ac_in_btn_context.classList.add('text-[var(--border-error)]');
+            //     if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
+            //         if (data.user.status === 'active') {
+            //             ac_in_context.classList.remove('hidden');
+            //             ac_in_btn_context.classList.remove('text-[var(--border-success)]');
+            //             ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
+            //             ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
+            //             ac_in_btn_context.classList.add('text-[var(--border-error)]');
+            //             ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
+            //             ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
+            //             ac_in_btn_context.textContent = 'In Active';
+            //         } else {
+            //             ac_in_context.classList.remove('hidden');
+            //             ac_in_btn_context.classList.remove('text-[var(--border-error)]');
+            //             ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
+            //             ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
+            //             ac_in_btn_context.classList.add('text-[var(--border-success)]');
+            //             ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
+            //             ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
+            //             ac_in_btn_context.textContent = 'Active';
+            //         }
+            //     }
+            // }
 
-            const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
+            // const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
 
-            let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
+            // if (!contextMenu || !wrapper) return;
+
+            // const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
+
+            // let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
+            // let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
 
             // Prevent right edge overflow
-            if (x + contextMenu.offsetWidth > wrapperRect.width) {
-                x -= contextMenu.offsetWidth;
-            }
+            // if (x + contextMenu.offsetWidth > wrapperRect.width) {
+            //     x -= contextMenu.offsetWidth;
+            // }
 
             // Prevent bottom edge overflow
-            if (y + contextMenu.offsetHeight > wrapperRect.height) {
-                y -= contextMenu.offsetHeight;
-            }
+            // if (y + contextMenu.offsetHeight > wrapperRect.height) {
+            //     y -= contextMenu.offsetHeight;
+            // }
 
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
+            // contextMenu.style.left = `${x}px`;
+            // contextMenu.style.top = `${y}px`;
 
-            openContextMenu();
+            // openContextMenu();
 
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "show-details") {
-                    generateModal(item)
-                }
-            });
+            // document.addEventListener('mousedown', (e) => {
+            //     if (e.target.id === "show-details") {
+            //         generateModal(item)
+            //     }
+            // });
 
             document.addEventListener('mousedown', (e) => {
                 if (e.target.id === "edit-in-context") {
@@ -285,35 +297,32 @@
                 }
             });
 
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "ac_in_btn_context") {
-                    user_id_context = document.getElementById('user_id_context');
-                    user_status_context = document.getElementById('user_status_context');
-                    user_id_context.value = data.user.id;
-                    user_status_context.value = data.user.status;
-                    ac_in_btn_context.click();
-                }
-            });
+            // document.addEventListener('mousedown', (e) => {
+            //     if (e.target.id === "ac_in_btn_context") {
+            //         user_id_context = document.getElementById('user_id_context');
+            //         user_status_context = document.getElementById('user_status_context');
+            //         user_id_context.value = data.user.id;
+            //         user_status_context.value = data.user.status;
+            //         ac_in_btn_context.click();
+            //     }
+            // });
 
             // Function to remove context menu
-            const removeContextMenu = (event) => {
-                if (!contextMenu.contains(event.target)) {
-                    closeContextMenu();
-                    document.removeEventListener('click', removeContextMenu);
-                    document.removeEventListener('contextmenu', removeContextMenu);
-                }
-            }
+            // const removeContextMenu = (event) => {
+            //     if (!contextMenu.contains(event.target)) {
+            //         closeContextMenu();
+            //         document.removeEventListener('click', removeContextMenu);
+            //         document.removeEventListener('contextmenu', removeContextMenu);
+            //     }
+            // }
 
             // Wait for a small delay before attaching event listeners to avoid immediate removal
-            setTimeout(() => {
-                document.addEventListener('mousedown', removeContextMenu);
-            }, 10);
+            // setTimeout(() => {
+            //     document.addEventListener('mousedown', removeContextMenu);
+            // }, 10);
         }
 
-        let isModalOpened = false;
-
         function generateModal(item) {
-            // let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
             let modalData = {
@@ -340,39 +349,36 @@
                 ],
             }
 
-            // modalDom.innerHTML = createModal(modalData);
             createModal(modalData);
 
             let editInModalDom = document.getElementById('edit-in-modal');
             editInModalDom.addEventListener('click', () => {
                 window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
             });
-
-            // openModal()
         }
 
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'modalForm') {
-                closeModal();
-            }
-        });
+        // document.addEventListener('mousedown', (e) => {
+        //     const {
+        //         id
+        //     } = e.target;
+        //     if (id === 'modalForm') {
+        //         closeModal();
+        //     }
+        // });
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeContextMenu();
-                closeModal();
-            }
-        })
+        // document.addEventListener('keydown', (e) => {
+        //     if (e.key === 'Escape' && isModalOpened) {
+        //         closeContextMenu();
+        //         closeModal();
+        //     }
+        // })
 
-        function openModal() {
-            isModalOpened = true;
-            document.getElementById('modal').classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu();
-        }
+        // function openModal() {
+        //     isModalOpened = true;
+        //     document.getElementById('modal').classList.remove('hidden');
+        //     closeAllDropdowns();
+        //     closeContextMenu();
+        // }
 
         // function closeModal() {
         //     modal.classList.add('fade-out');

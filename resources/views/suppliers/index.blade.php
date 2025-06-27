@@ -289,17 +289,7 @@
             }, 10);
         }
 
-        let isModalOpened = false;
-        let card = document.querySelectorAll('.modalToggle')
-
-        card.forEach(item => {
-            item.addEventListener('click', () => {
-                generateModal(item);
-            });
-        });
-
         function generateModal(item) {
-            let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
             let modalData = {
@@ -316,56 +306,21 @@
                     'Phone Number': data.details['Phone'],
                     'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
                 },
+                profile: true,
                 user: data.user,
                 bottomActions: [
                     {id: 'edit-in-modal', text: 'Edit Supplier'}
                 ],
             }
 
-            modalDom.innerHTML = createModal(modalData);
+            createModal(modalData);
 
             let editInModalDom = document.getElementById('edit-in-modal');
             editInModalDom.addEventListener('click', () => {
                 window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
             });
-
-            openModal()
         }
 
-        document.addEventListener('mousedown', (e) => {
-            const { id } = e.target;
-            if (id === 'modalForm') {
-                closeModal();
-            } else if (id === 'manageCategoryModalForm') {
-                closeManageCategoryModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeContextMenu();
-                closeModal();
-                closeManageCategoryModal()
-            }
-        })
-
-        function openModal() {
-            isModalOpened = true;
-            document.getElementById('modal').classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu();
-        }
-
-        function closeModal() {
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
         let categoriesArray;
         const manageCategoryModalDom = document.getElementById('manageCategoryModal');
         let isManageCategoryModalOpened = false;
@@ -583,58 +538,6 @@
             }, {
                 once: true
             });
-        }
-
-        // Function for Search
-        function filterData(search) {
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.supplier_name.toLowerCase().includes(search) ||
-                            item.urdu_title.toLowerCase().includes(search) ||
-                            item.person_name.toLowerCase().includes(search) ||
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'supplier_name':
-                        return (
-                            item.supplier_name.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'urdu_title':
-                        return (
-                            item.urdu_title.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                        
-                    case 'person_name':
-                        return (
-                            item.person_name.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'username':
-                        return (
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-                
-                    default:
-                        return (
-                            item.supplier_name.toLowerCase().includes(search) ||
-                            item.urdu_title.toLowerCase().includes(search) ||
-                            item.person_name.toLowerCase().includes(search) ||
-                            item.user.username.toLowerCase().includes(search)
-                        );
-                        break;
-                }
-            });
-
-            return filteredData;
         }
     </script>
 @endsection

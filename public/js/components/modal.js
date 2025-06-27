@@ -116,5 +116,39 @@ function createModal(data) {
         </form>
     `;
     modalWrapper.innerHTML = clutter;
+
+    const closeOnClickOutside = (e) => {
+        if (e.target.id === `${data.id}`) {
+            const form = e.target;
+            form.classList.add('scale-out');
+            form.addEventListener('animationend', () => {
+                modalWrapper.classList.add('fade-out');
+                modalWrapper.addEventListener('animationend', () => {
+                    modalWrapper.remove();
+                }, { once: true });
+            }, { once: true });
+        }
+    };
+    document.addEventListener('mousedown', closeOnClickOutside);
+
+    // ✅ Escape Key to Close
+    const escToClose = (e) => {
+        if (e.key === 'Escape') {
+            const form = modalWrapper.querySelector('form');
+            form.classList.add('scale-out');
+            form.addEventListener('animationend', () => {
+                modalWrapper.classList.add('fade-out');
+                modalWrapper.addEventListener('animationend', () => {
+                    modalWrapper.remove();
+                }, { once: true });
+            }, { once: true });
+
+            // Optionally: remove these listeners after first use
+            document.removeEventListener('mousedown', closeOnClickOutside);
+            document.removeEventListener('keydown', escToClose);
+        }
+    };
+
+    document.addEventListener('keydown', escToClose);
     document.body.appendChild(modalWrapper);
 }
