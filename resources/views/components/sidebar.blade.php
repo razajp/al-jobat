@@ -58,12 +58,21 @@
         <!-- Navigation Menu -->
         <nav class="space-y-4 hidden md:flex flex-col ">
             <div class="relative group">
-                <x-nav-link-item label="Home" icon="fas fa-home" href="/" />
+                <x-nav-link-item label="Home" 
+                {{-- icon="fas fa-home" --}}
+                svgIcon='
+                <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1309.5 1406.28"><path d="M731.41-154.73,379.2-411.07c-80-48.47-177.61-48.47-257.65,0l-352.2,256.34C-337.48-93.92-404.37,26-404.37,156.59V679.77c0,154.14,115.44,279.08,257.85,279.08H647.27c142.41,0,257.86-124.94,257.86-279.08V156.59C905.13,26,838.23-93.92,731.41-154.73ZM462.16,709.05H38.59c-47.35,0-85.88-41.7-85.88-92.95s38.53-93,85.88-93H462.16c47.36,0,85.88,41.69,85.88,93S509.52,709.05,462.16,709.05Z" transform="translate(404.37 447.42)"/></svg>
+                '
+                href="/" />
             </div>
 
             @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
-                    <x-nav-link-item label="Users" icon="fas fa-user" includesDropdown :items="[
+                    <x-nav-link-item label="Users"
+                        svgIcon='
+                            <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>
+                        '
+                        includesDropdown :items="[
                         ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
                         ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User'],
                     ]" />
@@ -72,7 +81,8 @@
 
             @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
-                    <x-nav-link-item label="Suppliers" icon="fas fa-truck" :activatorTags="['vouchers']" includesDropdown
+                    <x-nav-link-item label="Suppliers" icon="fas fa-truck"
+                    :activatorTags="['vouchers']" includesDropdown
                         :items="[
                             [
                                 'label' => 'Supplier',
@@ -199,7 +209,7 @@
                 <div class="relative group">
                     <x-nav-link-item label="Expenses"
                         svgIcon='
-                            <svg class="fill-[var(--text-color)]" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            <svg class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                                 x="0px" y="0px" viewBox="0 0 578 578" style="enable-background:new 0 0 578 578;" xml:space="preserve">
                                 <g>
                                     <path d="M523.7,308.6c-30.7,0-59.6,0-88.6,0c-36.9,0-51.8,11.3-56.3,47.9c-2.2,18.2-0.6,37.5,3.2,55.5
@@ -275,9 +285,9 @@
 
             @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
-                    <x-nav-link-item label="Fabrics" 
+                    <x-nav-link-item label="Fabrics"
                         svgIcon='
-                            <svg id="Layer_1" class="fill-[var(--text-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150.73 150.73">
+                            <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150.73 150.73">
                                 <path
                                     d="M20.63,155.18v-5.3a1.87,1.87,0,0,0,.28-.49c1.92-9.13,9.18-15.43,18.47-15.53,15-.15,29.93-.05,44.89,0A7,7,0,0,1,90,136.56a6.76,6.76,0,0,1,1,7.2,6.68,6.68,0,0,1-6,4.33c-4,.19-7.94.1-11.92.1-9.51,0-19,0-28.55,0-3,0-4.92,1.82-4.86,4.52s2,4.24,4.94,4.24q19.57,0,39.15,0a17.67,17.67,0,0,0,4.36-.49,16.09,16.09,0,0,0,12.28-16.11q0-50.26,0-100.54V38.13h60.81c.54,0,1.08,0,1.62,0a8.77,8.77,0,0,1,8.51,9.22q0,57.4,0,114.81a8.74,8.74,0,0,1-9.14,9.16H39.31a18.73,18.73,0,0,1-18-13.5C21.08,157,20.87,156.07,20.63,155.18Z"
                                     transform="translate(-20.63 -20.63)" />
@@ -290,8 +300,7 @@
                             ['type' => 'link', 'href' => route('fabrics.index'), 'label' => 'Show Fabrics'],
                             ['type' => 'link', 'href' => route('fabrics.create'), 'label' => 'Add Fabric'],
                             ['type' => 'link', 'href' => route('fabrics.issue'), 'label' => 'Issue Fabric'],
-                        ]" 
-                    />
+                        ]" />
                 </div>
             @endif
 

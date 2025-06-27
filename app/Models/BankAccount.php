@@ -11,7 +11,7 @@ class BankAccount extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['category', 'sub_category', 'bank_id', 'account_title', 'date', 'remarks', 'account_no', 'chqbk_serial_start', 'chqbk_serial_end'];
+    protected $fillable = ['category', 'sub_category', 'bank_id', 'account_title', 'date', 'remarks', 'account_no', 'chqbk_serial_start', 'chqbk_serial_end', 'status'];
 
     protected $hidden = [
         'bank_id',
@@ -67,7 +67,7 @@ class BankAccount extends Model
         if ($this->category !== 'self') {
             return null;
         }
-    
+
         // Get all the used cheques for this bank account
         $usedCheques = SupplierPayment::where('bank_account_id', $this->id)
             ->pluck('cheque_no')

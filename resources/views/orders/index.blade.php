@@ -303,7 +303,7 @@
                                         <div class="left w-50 space-y-1">
                                             <div class="order-customer text-lg leading-none capitalize">M/s: ${data.customer.customer_name}</div>
                                             <div class="order-person text-md text-lg leading-none">${data.customer.urdu_title}</div>
-                                            <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city}</div>
+                                            <div class="order-address text-md leading-none">${data.customer.address}, ${data.customer.city.title}</div>
                                             <div class="order-phone text-md leading-none">${data.customer.phone_number}</div>
                                         </div>
                                         <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">

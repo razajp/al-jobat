@@ -92,6 +92,14 @@
         .fade-in {
             animation: fadeIn 0.35s ease-in-out;
         }
+        
+        .scale-in {
+            animation: scaleIn 0.4s ease-in-out;
+        }
+
+        .scale-out {
+            animation: scaleOut 0.4s ease-in-out;
+        }
 
         /* Example animation */
         @keyframes fadeIn {
@@ -111,6 +119,36 @@
 
             100% {
                 opacity: 0;
+            }
+        }
+        
+        @keyframes scaleIn {
+            0% {
+                transform: scale(0.9);
+            }
+            60% {
+                transform: scale(1.05);
+            }
+            80% {
+                transform: scale(0.97);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes scaleOut {
+            0% {
+                transform: scale(1);
+            }
+            30% {
+                transform: scale(1.05);
+            }
+            60% {
+                transform: scale(0.95);
+            }
+            100% {
+                transform: scale(0);
             }
         }
 
@@ -177,6 +215,10 @@
 
         .nav-link.active:hover i {
             color: var(--h-primary-color) !important;
+        }
+
+        .nav-link.active:hover svg {
+            fill: var(--h-primary-color) !important;
         }
 
         input[type="number"]::-webkit-inner-spin-button,
@@ -891,6 +933,22 @@
             })
         }
     @endif
+    
+    
+    function closeModal(modalId) {
+        const modal = document.getElementById(`${modalId}-wrapper`);
+        const modalForm = modal.querySelector('form');
+
+        modalForm.classList.add('scale-out');
+
+        modalForm.addEventListener('animationend', () => {
+            modal.classList.add('fade-out');
+
+            modal.addEventListener('animationend', () => {
+                modal.remove();
+            }, { once: true });
+        }, { once: true });
+    }
 </script>
 
 </html>

@@ -63,9 +63,9 @@
         ];
     @endphp
     <!-- Modal -->
-    <div id="modal"
+    {{-- <div id="modal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
+    </div> --}}
     <div>
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Customers" :search_fields=$searchFields />
@@ -313,7 +313,7 @@
         let isModalOpened = false;
 
         function generateModal(item) {
-            let modalDom = document.getElementById('modal')
+            // let modalDom = document.getElementById('modal')
             let data = JSON.parse(item.dataset.json);
 
             let modalData = {
@@ -340,14 +340,15 @@
                 ],
             }
 
-            modalDom.innerHTML = createModal(modalData);
+            // modalDom.innerHTML = createModal(modalData);
+            createModal(modalData);
 
             let editInModalDom = document.getElementById('edit-in-modal');
             editInModalDom.addEventListener('click', () => {
                 window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
             });
 
-            openModal()
+            // openModal()
         }
 
         document.addEventListener('mousedown', (e) => {
@@ -373,15 +374,36 @@
             closeContextMenu();
         }
 
-        function closeModal() {
-            modal.classList.add('fade-out');
+        // function closeModal() {
+        //     modal.classList.add('fade-out');
 
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
+        //     modal.addEventListener('animationend', () => {
+        //         modal.classList.add('hidden');
+        //         modal.classList.remove('fade-out');
+        //     }, {
+        //         once: true
+        //     });
+        // }
+
+        // close with bounce animation
+        // function closeModal() {
+        //     let modalForm = document.getElementById('modalForm');
+
+        //     modalForm.classList.add('scale-out');
+
+        //     modalForm.addEventListener('animationend' , () => {
+        //         modal.classList.add('fade-out');
+
+        //         modal.addEventListener('animationend', () => {
+        //             modal.classList.add('hidden');
+        //             modal.classList.remove('fade-out');
+        //             modalForm.classList.remove('scale-out');
+        //         }, {
+        //             once: true
+        //         });
+        //     }, {
+        //         once: true
+        //     });
+        // }
     </script>
 @endsection

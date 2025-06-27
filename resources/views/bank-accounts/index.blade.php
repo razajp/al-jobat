@@ -103,6 +103,7 @@
                                                 
                                                 <x-card :data="[
                                                     'name' => $bankAccount->account_title,
+                                                    'status' => $bankAccount->status,
                                                     'details' => $details,
                                                 ]" />
                                             </div>

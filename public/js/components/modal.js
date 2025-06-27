@@ -6,11 +6,15 @@ function createModal(data) {
         inactive: ['[var(--bg-error)]', '[var(--h-bg-error)]', '[var(--border-error)]'],
     };
 
+    const modalWrapper = document.createElement('div');
+    modalWrapper.id = `${data.id}-wrapper`;
+    modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in`;
+
     let clutter = `
-        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center">
+        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
             <div class="${data.class} bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-full max-w-2xl p-6 flex relative">
-                <div id="modal-close" onclick="${data.closeAction}"
+                <div id="modal-close" onclick="closeModal('${data.id}')"
                     class="absolute top-0 -right-4 translate-x-full bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-auto p-3 text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
                     <button type="button"
                         class="z-10 text-gray-400 hover:text-gray-600 hover:scale-[0.95] transition-all duration-300 ease-in-out">
@@ -71,7 +75,7 @@ function createModal(data) {
         <div id="modal-action"
             class="bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg max-w-3xl w-auto p-3 relative text-sm">
             <div class="flex gap-4">
-                <button onclick="${data.closeAction}" type="button"
+                <button onclick="closeModal('${data.id}')" type="button"
                     class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                     Cancel
                 </button>
@@ -111,5 +115,6 @@ function createModal(data) {
             </div>
         </form>
     `;
-    return clutter;
+    modalWrapper.innerHTML = clutter;
+    document.body.appendChild(modalWrapper);
 }

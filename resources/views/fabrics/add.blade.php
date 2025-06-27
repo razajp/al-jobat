@@ -110,7 +110,7 @@
 
                         <!-- reff_no -->
                         <x-input label="Reff. No." id="last_reff_no" type="number" disabled
-                            value="{{ $lastRecord->reff_no }}" />
+                            value="{{ $lastRecord->reff_no ?? '-' }}" />
 
                         {{-- remarks --}}
                         <x-input label="Remarks" id="last_remarks" type="text" disabled

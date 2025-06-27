@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('account_no')->nullable();
             $table->string('chqbk_serial_start')->nullable();
             $table->string('chqbk_serial_end')->nullable();
+            $table->string('status')->default('active');
             $table->timestamps();
             
             $table->unsignedBigInteger('creator_id');
