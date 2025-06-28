@@ -82,23 +82,29 @@ function createModal(data) {
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         `;
         data.fields.forEach(field => {
-            if (field.type == 'input') {
-                clutter += `
-                    <div class="form-group relative">
-                        <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label}</label>
+            if (field.category == 'input') {
+                if (field.type != 'hidden') {
+                    clutter += `
+                        <div class="form-group relative">
+                            <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label}</label>
 
-                        <div class="relative flex gap-4">
-                            <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                            <div class="relative flex gap-4">
+                                <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                            </div>
                         </div>
-                    </div>
-                `;
-            } else if (field.type == 'select') {
+                    `;
+                } else {
+                    clutter += `
+                        <input id="${field.id ?? ''}" type="hidden" name="${field.name ?? ''}" value="${field.value ?? ''}">
+                    `;
+                }
+            } else if (field.category == 'select') {
                 let buttonHTML = '';
                 let optionsHTML = '';
                 
                 if (field.btnId) {
                     buttonHTML = `
-                        <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled="">+</button>
+                        <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>+</button>
                     `;
                 }
 
@@ -125,7 +131,7 @@ function createModal(data) {
                         <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label} *</label>
                         
                         <div class="selectParent relative flex gap-4">
-                            <select id="${field.id ?? ''}" name="${field.name ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
+                            <select id="${field.id ?? ''}" name="${field.name ?? ''}" onchange="${field.onchange}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
                                 ${optionsHTML}
                             </select>
                             ${buttonHTML}
@@ -143,23 +149,30 @@ function createModal(data) {
     if (data.chips) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
+                <div id="chipsContainer" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2 text-[var(--text-color)]">
         `;
+
         let removeBtn = `
-            <button class="delete cursor-pointer ${data.chips.length <= 1 ? "hidden" : ""}" type="button">
+            <button class="delete cursor-pointer ${data.chips.length <= 1 ? 'hidden' : ''} transition-all 0.3s ease-in-out" type="button">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
                 class="size-3 stroke-gray-400">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
             </button>
         `;
+
         data.chips.forEach(chip => {
            clutter += `
-                <div data-id="${chip.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                <div data-id="${chip.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 transition-all 0.3s ease-in-out">
                     <div class="text tracking-wide">${chip.title}</div>
                     ${data.editableChips ? removeBtn : ''}
                 </div>
            `; 
         });
+
+        clutter += `
+            </div>
+        `;
     }
         
     clutter += `

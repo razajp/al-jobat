@@ -173,8 +173,71 @@
         }
 
         let categoriesArray;
-        const manageCategoryModalDom = document.getElementById('manageCategoryModal');
-        let isManageCategoryModalOpened = false;
+
+        function trackCategoryState(elem) {
+            let addCategoryBtn = elem.parentElement.querySelector('button');
+
+            if (elem.value != '') {
+                addCategoryBtn.disabled = false;
+            } else {
+                addCategoryBtn.disabled = true;
+            }
+
+            addCategoryBtn.addEventListener('click', () => {
+                let selectedCategory = elem.options[elem.selectedIndex];
+                const chipsContainer = elem.parentElement.closest('form').querySelector('#chipsContainer');
+                const dataIds = Array.from(chipsContainer.children).map(child => child.getAttribute('data-id'));
+                
+                if (dataIds.includes(elem.value)) {
+                    chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
+                    let existingChip = Array.from(chipsContainer.children).find(chip => 
+                        chip.getAttribute('data-id') === elem.value
+                    );
+
+                    if (existingChip) {
+                        messageBox.innerHTML = `
+                            <x-alert type="error" :messages="'This category is already exists.'" />
+                        `;
+                        messageBoxAnimation();
+                        existingChip.classList.add('bg-[var(--bg-error)]', 'transition', 'duration-300');
+                        setTimeout(() => {
+                            existingChip.classList.remove('bg-[var(--bg-error)]');
+                        }, 5000);
+                        elem.value = '';
+                        addCategoryBtn.disabled = true;
+                        elem.focus();
+                    }
+                    
+                    return;
+                } 
+                if (elem.value != '') {
+                    chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
+                    chipsContainer.innerHTML += `
+                        <div data-id="${elem.value}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 transition-all 0.3s ease-in-out">
+                            <div class="text tracking-wide">${selectedCategory.textContent}</div>
+                            <button class="delete cursor-pointer" type="button">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                                class="size-3 stroke-gray-400">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    `;
+                    
+                    elem.value = '';
+                    addCategoryBtn.disabled = true;
+                    elem.focus();
+
+                    const allChips = chipsContainer.querySelectorAll('.chip');
+                    allChips.forEach((chip) => {
+                        let deleteBtn = chip.querySelector('.delete')
+                        if (deleteBtn.classList.contains('hidden')) {
+                            deleteBtn.classList.remove('hidden')
+                        }
+                    })
+                }
+            })
+        }
 
         function generateManageCategoryModal(item) {
             console.log(item);
@@ -188,19 +251,24 @@
                 editableChips: true,
                 fields: [
                     {
-                        type: 'input',
+                        category: 'input',
                         label: 'Supplier Name',
                         value: item.name,
                         disabled: true,
                     },
                     {
-                        type: 'select',
-                        type: 'select',
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'categories_array',
+                    },
+                    {
+                        category: 'select',
                         label: 'Category',
                         id: 'category',
                         options: [@json($categories_options)],
                         showDefault: true,
                         class: 'grow',
+                        onchange: 'trackCategoryState(this)',
                         btnId: 'addCategoryBtn',
                     }
                 ],
@@ -286,8 +354,6 @@
             chipsContainerDom.innerHTML = chipsClutter;
 
             const categorySelectDom = document.getElementById("category_select");
-            const addCategoryBtnDom = document.getElementById("addCategoryBtn");
-            addCategoryBtnDom.disabled = true;
             
             categorySelectDom.addEventListener("change", (e) => {
                 trackStateOfCategoryBtn(e.target.value);
@@ -303,8 +369,8 @@
 
             const categoriesArrayInput = document.getElementById("categories_array");
             categoriesArray = data.categories
-            .filter(category => typeof category === 'object')  // Keep only objects
-            .map(category => category.id.toString());           // Extract IDs as strings
+            .filter(category => typeof category === 'object')   // Keep only objects
+            .map(category => category.id.toString());   // Extract IDs as strings
 
 
             addCategoryBtnDom.addEventListener('click', () => {
