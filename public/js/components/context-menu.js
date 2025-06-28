@@ -20,7 +20,7 @@ function createContextMenu(data) {
         <div class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transition-all duration-300 ease-in-out">
             <ul class="p-2">
                 <li>
-                    <button id="show-details" type="button" onclick='generateModal(${JSON.stringify(data.data)})'
+                    <button id="show-details" type="button" onclick='generateModal(${data.item.target.closest('.item')})'
                         class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
                         Show Details
                     </button>
@@ -40,20 +40,20 @@ function createContextMenu(data) {
         });
     }
 
-    if (data.details?.Balance == 0.0) {
-        if (data.user?.status || data.status) {
-            let status = data.user?.status ?? data.status;
-            const [bgColor, textColor, borderColor] = statusColor[status === 'active' ? 'inactive' : 'active'] || statusColor.inactive;
+    if (data.data.details?.Balance == 0.0) {
+        if (data.data.user?.status || data.data.status) {
+            let status = data.data.user?.status ?? data.data.status;
+            const [bgColor, textColor, borderColor] = statusColor[status === 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;
 
             clutter += `
                 <li id="ac_in_context">
                     <form method="POST" action="/update-user-status">
                         <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content}">
-                        <input type="hidden" name="user_id" value="${data.user?.id ?? data.uId}">
+                        <input type="hidden" name="user_id" value="${data.data.user?.id ?? data.data.uId}">
                         <input type="hidden" name="status" value="${status}">
                         <button type="submit"
-                            class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer text-${borderColor} hover:bg-${bgColor} hover:text-${textColor}">
-                            In ${status.replace('_', ' ')}
+                            class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer capitalize text-${borderColor} hover:bg-${bgColor} hover:text-${textColor}">
+                            ${status.replace('_', ' ')}
                         </button>
                     </form>
                 </li>

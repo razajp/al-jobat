@@ -224,6 +224,7 @@
             let data = JSON.parse(item.dataset.json);
 
             let contextMenuData = {
+                item: e,
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
