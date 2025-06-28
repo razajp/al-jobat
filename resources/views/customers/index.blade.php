@@ -62,10 +62,6 @@
             ],
         ];
     @endphp
-    <!-- Modal -->
-    {{-- <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div> --}}
     <div>
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Customers" :search_fields=$searchFields />
@@ -74,7 +70,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
                 <x-form-title-bar title="Show Customers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($customers) > 0)
@@ -113,35 +109,6 @@
                 @endif
             </div>
         </section>
-        <div class="context-menu absolute top-0 text-sm" style="display: none;">
-            <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all duration-300 ease-in-out z-50">
-                <ul class="p-2">
-                    <li>
-                        <button id="show-details" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
-                            Details</button>
-                    </li>
-
-                    <li>
-                        <button id="edit-in-context" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit
-                            Customer</button>
-                    </li>
-
-                    <li id="ac_in_context" class="hidden">
-                        <form method="POST" action="{{ route('update-user-status') }}">
-                            @csrf
-                            <input type="hidden" id="user_id_context" name="user_id" value="">
-                            <input type="hidden" id="user_status_context" name="status" value="">
-                            <button id="ac_in_btn_context" type="submit"
-                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
-                                Active</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -196,131 +163,24 @@
 
         let infoDom = document.getElementById('info').querySelector('span');
         infoDom.textContent = `Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
-        
-
-        let contextMenu = document.querySelector('.context-menu');
-        let isContextMenuOpened = false;
-
-        // function closeContextMenu() {
-        //     contextMenu.classList.remove('fade-in');
-        //     contextMenu.style.display = 'none';
-        //     isContextMenuOpened = false;
-        // }
-
-        // function openContextMenu() {
-        //     closeAllDropdowns()
-        //     contextMenu.classList.add('fade-in');
-        //     contextMenu.style.display = 'block';
-        //     isContextMenuOpened = true;
-        // }
 
         function generateContextMenu(e) {
             e.preventDefault();
-            // contextMenu.classList.remove('fade-in');
-
-            // let ac_in_btn_context = document.getElementById('ac_in_btn_context');
-            // let ac_in_context = document.getElementById('ac_in_context');
             let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
             let contextMenuData = {
-                item: e,
+                item: item,
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
+                action: "{{ route('update-user-status') }}",
                 actions: [
                     {id: 'edit', text: 'Edit Customer'}
                 ],
             };
 
             createContextMenu(contextMenuData);
-
-            // ac_in_context.classList.add('hidden');
-
-            // if (ac_in_btn_context && data.details['Balance'] == 0) {
-            //     ac_in_btn_context.classList.add('text-[var(--border-error)]');
-            //     if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-            //         if (data.user.status === 'active') {
-            //             ac_in_context.classList.remove('hidden');
-            //             ac_in_btn_context.classList.remove('text-[var(--border-success)]');
-            //             ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
-            //             ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
-            //             ac_in_btn_context.classList.add('text-[var(--border-error)]');
-            //             ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
-            //             ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
-            //             ac_in_btn_context.textContent = 'In Active';
-            //         } else {
-            //             ac_in_context.classList.remove('hidden');
-            //             ac_in_btn_context.classList.remove('text-[var(--border-error)]');
-            //             ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
-            //             ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
-            //             ac_in_btn_context.classList.add('text-[var(--border-success)]');
-            //             ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
-            //             ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
-            //             ac_in_btn_context.textContent = 'Active';
-            //         }
-            //     }
-            // }
-
-            // const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
-
-            // if (!contextMenu || !wrapper) return;
-
-            // const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
-
-            // let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            // let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
-
-            // Prevent right edge overflow
-            // if (x + contextMenu.offsetWidth > wrapperRect.width) {
-            //     x -= contextMenu.offsetWidth;
-            // }
-
-            // Prevent bottom edge overflow
-            // if (y + contextMenu.offsetHeight > wrapperRect.height) {
-            //     y -= contextMenu.offsetHeight;
-            // }
-
-            // contextMenu.style.left = `${x}px`;
-            // contextMenu.style.top = `${y}px`;
-
-            // openContextMenu();
-
-            // document.addEventListener('mousedown', (e) => {
-            //     if (e.target.id === "show-details") {
-            //         generateModal(item)
-            //     }
-            // });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "edit-in-context") {
-                    window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
-                }
-            });
-
-            // document.addEventListener('mousedown', (e) => {
-            //     if (e.target.id === "ac_in_btn_context") {
-            //         user_id_context = document.getElementById('user_id_context');
-            //         user_status_context = document.getElementById('user_status_context');
-            //         user_id_context.value = data.user.id;
-            //         user_status_context.value = data.user.status;
-            //         ac_in_btn_context.click();
-            //     }
-            // });
-
-            // Function to remove context menu
-            // const removeContextMenu = (event) => {
-            //     if (!contextMenu.contains(event.target)) {
-            //         closeContextMenu();
-            //         document.removeEventListener('click', removeContextMenu);
-            //         document.removeEventListener('contextmenu', removeContextMenu);
-            //     }
-            // }
-
-            // Wait for a small delay before attaching event listeners to avoid immediate removal
-            // setTimeout(() => {
-            //     document.addEventListener('mousedown', removeContextMenu);
-            // }, 10);
         }
 
         function generateModal(item) {
@@ -346,71 +206,11 @@
                 user: data.user,
                 profile: true,
                 bottomActions: [
-                    {id: 'edit-in-modal', text: 'Edit Customer'}
+                    {id: 'edit', text: 'Edit Customer', dataId: data.id}
                 ],
             }
 
             createModal(modalData);
-
-            let editInModalDom = document.getElementById('edit-in-modal');
-            editInModalDom.addEventListener('click', () => {
-                window.location.href = "{{ route('customers.edit', ':id') }}".replace(':id', data.id);
-            });
         }
-
-        // document.addEventListener('mousedown', (e) => {
-        //     const {
-        //         id
-        //     } = e.target;
-        //     if (id === 'modalForm') {
-        //         closeModal();
-        //     }
-        // });
-
-        // document.addEventListener('keydown', (e) => {
-        //     if (e.key === 'Escape' && isModalOpened) {
-        //         closeContextMenu();
-        //         closeModal();
-        //     }
-        // })
-
-        // function openModal() {
-        //     isModalOpened = true;
-        //     document.getElementById('modal').classList.remove('hidden');
-        //     closeAllDropdowns();
-        //     closeContextMenu();
-        // }
-
-        // function closeModal() {
-        //     modal.classList.add('fade-out');
-
-        //     modal.addEventListener('animationend', () => {
-        //         modal.classList.add('hidden');
-        //         modal.classList.remove('fade-out');
-        //     }, {
-        //         once: true
-        //     });
-        // }
-
-        // close with bounce animation
-        // function closeModal() {
-        //     let modalForm = document.getElementById('modalForm');
-
-        //     modalForm.classList.add('scale-out');
-
-        //     modalForm.addEventListener('animationend' , () => {
-        //         modal.classList.add('fade-out');
-
-        //         modal.addEventListener('animationend', () => {
-        //             modal.classList.add('hidden');
-        //             modal.classList.remove('fade-out');
-        //             modalForm.classList.remove('scale-out');
-        //         }, {
-        //             once: true
-        //         });
-        //     }, {
-        //         once: true
-        //     });
-        // }
     </script>
 @endsection

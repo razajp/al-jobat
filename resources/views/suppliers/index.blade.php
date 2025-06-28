@@ -36,10 +36,6 @@
             ]
         ];
     @endphp
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <div id="manageCategoryModal"
         class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
     </div>
@@ -50,7 +46,7 @@
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
                 <x-form-title-bar title="Show Suppliers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($suppliers) > 0)
@@ -60,7 +56,7 @@
                 
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
+                            <div class="card_container py-0 p-3 h-full flex flex-col">
                                 <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div class="text-left pl-5">Supplier</div>
                                     <div class="text-center">Urdu Title</div>
@@ -69,7 +65,7 @@
                                     <div class="text-right pr-5">Status</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
                                 </div>
                             </div>
                         </div>
@@ -84,40 +80,6 @@
                 @endif
             </div>
         </section>
-        <div class="context-menu absolute top-0 text-sm" style="display: none;">
-            <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all duration-300 ease-in-out z-50">
-                <ul class="p-2">
-                    <li>
-                        <button id="show-details" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
-                            Details</button>
-                    </li>
-
-                    <li>
-                        <button id="manage-category" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Manage
-                            Category</button>
-                    </li>
-
-                    <li>
-                        <button id="edit-in-context" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit Supplier</button>
-                    </li>
-
-                    <li id="ac_in_context" class="hidden">
-                        <form method="POST" action="{{ route('update-user-status') }}">
-                            @csrf
-                            <input type="hidden" id="user_id_context" name="user_id" value="">
-                            <input type="hidden" id="user_status_context" name="status" value="">
-                            <button id="ac_in_btn_context" type="submit"
-                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
-                                Active</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -159,145 +121,37 @@
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 date: item.date,
+                categories: item.categories,
                 visible: true,
             };
         });
 
-        let contextMenu = document.querySelector('.context-menu');
-        let isContextMenuOpened = false;
-
-        function closeContextMenu() {
-            contextMenu.classList.remove('fade-in');
-            contextMenu.style.display = 'none';
-            isContextMenuOpened = false;
-        }
-
-        function openContextMenu() {
-            closeAllDropdowns()
-            contextMenu.classList.add('fade-in');
-            contextMenu.style.display = 'block';
-            isContextMenuOpened = true;
-        }
-
-        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
-
-        contextMenuToggle.forEach(toggle => {
-            toggle.addEventListener('contextmenu', (e) => {
-                generateContextMenu(e);
-            });
-        });
-
         function generateContextMenu(e) {
-            contextMenu.classList.remove('fade-in');
-
-            let ac_in_btn_context = document.getElementById('ac_in_btn_context');
-            let ac_in_context = document.getElementById('ac_in_context');
             let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
-            ac_in_context.classList.add('hidden');
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                action: "{{ route('update-user-status') }}",
+                actions: [
+                    {id: 'edit', text: 'Edit Supplier'},
+                    {id: 'manage-category', text: 'Manage Category'},
+                ],
+            };
 
-            if (data.balance == 0.00) {z
-                if (ac_in_btn_context) {
-                    ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                    if (currentUserRole == "developer" || currentUserRole == "owner" || currentUserRole == "admin") {
-                        if (data.user.status === 'active') {
-                            ac_in_context.classList.remove('hidden');
-                            ac_in_btn_context.classList.remove('text-[var(--border-success)]');
-                            ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
-                            ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
-                            ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                            ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
-                            ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
-                            ac_in_btn_context.textContent = 'In Active';
-                        } else {
-                            ac_in_context.classList.remove('hidden');
-                            ac_in_btn_context.classList.remove('text-[var(--border-error)]');
-                            ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
-                            ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
-                            ac_in_btn_context.classList.add('text-[var(--border-success)]');
-                            ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
-                            ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
-                            ac_in_btn_context.textContent = 'Active';
-                        }
-                    }
-                }
-            }
-
-            const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
-
-            if (!contextMenu || !wrapper) return;
-
-            const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
-
-            let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
-
-            // Prevent right edge overflow
-            if (x + contextMenu.offsetWidth > wrapperRect.width) {
-                x -= contextMenu.offsetWidth;
-            }
-
-            // Prevent bottom edge overflow
-            if (y + contextMenu.offsetHeight > wrapperRect.height) {
-                y -= contextMenu.offsetHeight;
-            }
-
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-
-            openContextMenu();
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "show-details") {
-                    generateModal(item)
-                }
-            });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "edit-in-context") {
-                    window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
-                }
-            });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "ac_in_btn_context") {
-                    user_id_context = document.getElementById('user_id_context');
-                    user_status_context = document.getElementById('user_status_context');
-                    user_id_context.value = data.user.id;
-                    user_status_context.value = data.user.status;
-                    ac_in_btn_context.click();
-                }
-                
-                if (e.target.id === "manage-category") {
-                    generateManageCategoryModal(item);
-                }
-            });
-
-            // Function to remove context menu
-            const removeContextMenu = (event) => {
-                if (!contextMenu.contains(event.target)) {
-                    closeContextMenu();
-                    document.removeEventListener('click', removeContextMenu);
-                    document.removeEventListener('contextmenu', removeContextMenu);
-                }
-            }
-
-            // Wait for a small delay before attaching event listeners to avoid immediate removal
-            setTimeout(() => {
-                document.addEventListener('mousedown', removeContextMenu);
-            }, 10);
+            createContextMenu(contextMenuData);
         }
 
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
-
+            
             let modalData = {
                 id: 'modalForm',
                 method: "POST",
                 action: "{{ route('update-user-status') }}",
-                class: '',
-                closeAction: 'closeModal()',
                 image: data.image,
                 name: data.name,
                 details: {
@@ -306,19 +160,16 @@
                     'Phone Number': data.details['Phone'],
                     'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
                 },
-                profile: true,
+                chips: data.categories,
                 user: data.user,
+                profile: true,
                 bottomActions: [
-                    {id: 'edit-in-modal', text: 'Edit Supplier'}
+                    {id: 'edit', text: 'Edit Supplier', dataId: data.id},
+                    {id: 'manage-category', text: 'Manage Category', onclick: `generateManageCategoryModal(${JSON.stringify(data)})`},
                 ],
             }
 
             createModal(modalData);
-
-            let editInModalDom = document.getElementById('edit-in-modal');
-            editInModalDom.addEventListener('click', () => {
-                window.location.href = "{{ route('suppliers.edit', ':id') }}".replace(':id', data.id);
-            });
         }
 
         let categoriesArray;
@@ -326,6 +177,21 @@
         let isManageCategoryModalOpened = false;
 
         function generateManageCategoryModal(item) {
+            console.log(item);
+
+            let modalData = {
+                id: 'manageCategoryModalForm',
+                method: "POST",
+                action: "{{ route('update-supplier-category') }}",
+                name: 'Manage Category',
+                bottomActions: [
+                    {id: 'add', text: 'Add', type: 'submit'},
+                ],
+            }
+
+            createModal(modalData);
+            return;
+            
             let data = JSON.parse(item.dataset.json);
 
             manageCategoryModalDom.innerHTML = `

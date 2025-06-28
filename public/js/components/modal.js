@@ -6,6 +6,14 @@ function createModal(data) {
         inactive: ['[var(--bg-error)]', '[var(--h-bg-error)]', '[var(--border-error)]'],
     };
 
+    const contextMenu = document.getElementById('context-menu');
+    if (contextMenu) {
+        contextMenu.classList.add('fade-out');
+        contextMenu.addEventListener('animationend', () => {
+            contextMenu.remove()
+        }, { once: true })
+    };
+
     const modalWrapper = document.createElement('div');
     modalWrapper.id = `${data.id}-wrapper`;
     modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in`;
@@ -61,11 +69,27 @@ function createModal(data) {
         `;
         }).join('');
     }
+
+    clutter += `
+        <div class="flex-1 ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
+            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
+            ${detailsHTML}
+    `;
+
+    if (data.chips) {
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+        `;
+        data.chips.forEach(chip => {
+           clutter += `
+                <div data-id="${chip.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                    <div class="text tracking-wide">${chip.title}</div>
+                </div>
+           `; 
+        });
+    }
         
     clutter += `
-                        <div class="flex-1 ml-8 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
-                            ${detailsHTML}
                         </div>
                     </div>
                 </div>
@@ -83,17 +107,26 @@ function createModal(data) {
     
     if (data.bottomActions) {
         data.bottomActions.forEach(action => {
-            clutter += `
-                <button id="${action.id}" type="${action.type ?? 'button'}"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                    ${action.text}
-                </button>
-            `;
+            if (action.id.includes('edit')) {
+                clutter += `
+                    <a id="${action.id}-in-modal" href="${window.location.pathname}/${action.dataId}/edit"
+                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                        ${action.text}
+                    </a>
+                `;
+            } else {
+                clutter += `
+                    <button id="${action.id}-in-modal" type="${action.type ?? 'button'}" onclick='${action.onclick}'
+                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                        ${action.text}
+                    </button>
+                `;
+            }
         });
     }
 
 
-    if (data.details['Balance'] == 0.0) {
+    if (data.details && data.details['Balance'] && data.details['Balance'] == 0.0) {
         if (data.user?.status || data.status) {
             let status = data.user?.status ?? data.status;
             const [bgColor, hoverBgColor, textColor] = statusColor[status == 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;

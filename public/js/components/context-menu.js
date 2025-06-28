@@ -8,11 +8,16 @@ function createContextMenu(data) {
 
     // Remove old menu if exists
     const old = document.getElementById('context-menu');
-    if (old) old.remove();
+    if (old) {
+        old.classList.add('fade-out');
+        old.addEventListener('animationend', () => {
+            old.remove()
+        }, { once: true })
+    };
 
     const contextMenu = document.createElement('div');
     contextMenu.id = 'context-menu';
-    contextMenu.className = 'context-menu absolute text-sm z-50';
+    contextMenu.className = 'context-menu absolute text-sm z-50 fade-in';
     contextMenu.style.top = `${data.y}px`;
     contextMenu.style.left = `${data.x}px`;
 
@@ -20,7 +25,7 @@ function createContextMenu(data) {
         <div class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transition-all duration-300 ease-in-out">
             <ul class="p-2">
                 <li>
-                    <button id="show-details" type="button" onclick='generateModal(${data.item.target.closest('.item')})'
+                    <button id="show-details" type="button"
                         class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
                         Show Details
                     </button>
@@ -29,14 +34,25 @@ function createContextMenu(data) {
 
     if (Array.isArray(data.actions)) {
         data.actions.forEach(action => {
-            clutter += `
-                <li>
-                    <button id="${action.id}-in-context" type="button"
-                        class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
-                        ${action.text}
-                    </button>
-                </li>
-            `;
+            if (action.id.includes('edit')) {
+                clutter += `
+                    <li>
+                        <a id="${action.id}-in-context" href="${window.location.pathname}/${data.item.id}/edit"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
+                            ${action.text}
+                        </a>
+                    </li>
+                `;
+            } else {
+                clutter += `
+                    <li>
+                        <button id="${action.id}-in-context" type="button"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
+                            ${action.text}
+                        </button>
+                    </li>
+                `;
+            }
         });
     }
 
@@ -47,10 +63,10 @@ function createContextMenu(data) {
 
             clutter += `
                 <li id="ac_in_context">
-                    <form method="POST" action="/update-user-status">
+                    <form method="POST" action="${data.action}">
                         <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]')?.content}">
                         <input type="hidden" name="user_id" value="${data.data.user?.id ?? data.data.uId}">
-                        <input type="hidden" name="status" value="${status}">
+                        <input type="hidden" name="status" value="${data.data.user?.status ?? data.data.status}">
                         <button type="submit"
                             class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer capitalize text-${borderColor} hover:bg-${bgColor} hover:text-${textColor}">
                             ${status.replace('_', ' ')}
@@ -69,10 +85,17 @@ function createContextMenu(data) {
     contextMenu.innerHTML = clutter;
     document.body.appendChild(contextMenu);
 
+    contextMenu.querySelector('#show-details').addEventListener('click', function () {
+        generateModal(data.item);
+    });
+
     // Auto-close on outside click
     const closeMenu = (e) => {
         if (!contextMenu.contains(e.target)) {
-            contextMenu.remove();
+            contextMenu.classList.add('fade-out');
+            contextMenu.addEventListener('animationend', () => {
+                contextMenu.remove();
+            }, { once: true })
             document.removeEventListener('mousedown', closeMenu);
             document.removeEventListener('keydown', escClose);
         }
