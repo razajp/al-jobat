@@ -88,6 +88,60 @@ function createModal(data) {
            `; 
         });
     }
+
+    if (data.fields) {
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        `;
+        data.fields.forEach(field => {
+            if (field.type == 'input') {
+                clutter += `
+                    <div class="form-group relative">
+                        <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label}</label>
+
+                        <div class="relative flex gap-4">
+                            <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                        </div>
+                    </div>
+                `;
+            } else if (field.type == 'select') {
+                let buttonHTML = '';
+                let optionsHTML = '';
+                
+                if (field.btnId) {
+                    buttonHTML = `
+                        <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled="">+</button>
+                    `;
+                }
+
+                if (field.options && field.options.length > 0) {
+                    field.options.forEach((option, key) => {
+                        console.log(option);
+                        optionsHTML += `
+                            <option value="${key}">${option.text}</option>
+                        `;
+                    });
+                }
+
+                clutter += `
+                    <div class="grow form-group">
+                        <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label} *</label>
+                        
+                        <div class="selectParent relative flex gap-4">
+                            <select id="${field.id ?? ''}" name="${field.name ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
+                                ${optionsHTML}
+                            </select>
+                            ${buttonHTML}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+        clutter += `
+            </div>
+        `;
+    }
         
     clutter += `
                         </div>

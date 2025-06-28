@@ -184,10 +184,30 @@
                 method: "POST",
                 action: "{{ route('update-supplier-category') }}",
                 name: 'Manage Category',
+                fields: [
+                    {
+                        type: 'input',
+                        label: 'Supplier Name',
+                        value: item.name,
+                        disabled: true,
+                    },
+                    {
+                        type: 'select',
+                        type: 'select',
+                        label: 'Category',
+                        id: 'category',
+                        options: [@json($categories_options)],
+                        showDefault: true,
+                        class: 'grow',
+                        btnId: 'addCategoryBtn',
+                    }
+                ],
                 bottomActions: [
                     {id: 'add', text: 'Add', type: 'submit'},
                 ],
             }
+            console.log(modalData);
+            
 
             createModal(modalData);
             return;
@@ -206,16 +226,6 @@
                                     label="Supplire Name"
                                     value="${data.supplier_name}" 
                                     disabled
-                                />
-
-                                <x-select 
-                                    label="Category"
-                                    id="category_select"
-                                    :options="$categories_options"
-                                    showDefault
-                                    class="grow"
-                                    withButton
-                                    btnId="addCategoryBtn"
                                 />
                             </div>
                             
