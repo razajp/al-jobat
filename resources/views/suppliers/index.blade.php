@@ -184,6 +184,8 @@
                 method: "POST",
                 action: "{{ route('update-supplier-category') }}",
                 name: 'Manage Category',
+                chips: item.categories,
+                editableChips: true,
                 fields: [
                     {
                         type: 'input',
@@ -226,6 +228,16 @@
                                     label="Supplire Name"
                                     value="${data.supplier_name}" 
                                     disabled
+                                />
+                                
+                                <x-select 
+                                    label="Category"
+                                    id="category_select"
+                                    :options="$categories_options"
+                                    showDefault
+                                    class="grow"
+                                    withButton
+                                    btnId="addCategoryBtn"
                                 />
                             </div>
                             

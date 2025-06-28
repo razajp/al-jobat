@@ -19,7 +19,7 @@ function createModal(data) {
     modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in`;
 
     let clutter = `
-        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in">
+        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in ${data.class}">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
             <div class="${data.class} bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-full max-w-2xl p-6 flex relative">
                 <div id="modal-close" onclick="closeModal('${data.id}')"
@@ -76,19 +76,6 @@ function createModal(data) {
             ${detailsHTML}
     `;
 
-    if (data.chips) {
-        clutter += `
-            <hr class="w-full my-3 border-gray-600">
-        `;
-        data.chips.forEach(chip => {
-           clutter += `
-                <div data-id="${chip.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                    <div class="text tracking-wide">${chip.title}</div>
-                </div>
-           `; 
-        });
-    }
-
     if (data.fields) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
@@ -116,10 +103,19 @@ function createModal(data) {
                 }
 
                 if (field.options && field.options.length > 0) {
-                    field.options.forEach((option, key) => {
-                        console.log(option);
+                    optionsHTML = `<option value="">-- Select Category --</option>`;
+                    
+                    const rawOptions = field.options[0];
+                    const optionsArray = Object.entries(rawOptions).map(([key, obj]) => {
+                        return {
+                            id: key,
+                            text: obj.text
+                        };
+                    });
+
+                    optionsArray.forEach(option => {
                         optionsHTML += `
-                            <option value="${key}">${option.text}</option>
+                            <option value="${option.id}">${option.text}</option>
                         `;
                     });
                 }
@@ -138,9 +134,32 @@ function createModal(data) {
                 `;
             }
         });
+
         clutter += `
             </div>
         `;
+    }
+
+    if (data.chips) {
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+        `;
+        let removeBtn = `
+            <button class="delete cursor-pointer ${data.chips.length <= 1 ? "hidden" : ""}" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                class="size-3 stroke-gray-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        `;
+        data.chips.forEach(chip => {
+           clutter += `
+                <div data-id="${chip.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
+                    <div class="text tracking-wide">${chip.title}</div>
+                    ${data.editableChips ? removeBtn : ''}
+                </div>
+           `; 
+        });
     }
         
     clutter += `
