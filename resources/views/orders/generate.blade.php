@@ -87,14 +87,14 @@
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" value="{{ now()->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
                 
                 <input type="hidden" name="generateInvoiceAfterSave" id="generateInvoiceAfterSave" value="0">
 
                 {{-- title --}}
                 <div class="grow">
-                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" required showDefault
+                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" searchable required showDefault
                         class="grow" withButton btnId="generateOrderBtn" btnText="Select Articles" />
                 </div>
             </div>
@@ -730,17 +730,41 @@
             });
         }
 
-        getDataByDate(document.getElementById('date'));
+        // getDataByDate(document.getElementById('date'));
 
-        function populateOptions(response){
-            const customersOptions = $(response).find('#customer_id').html();
+        function populateOptions(response) {
+            const selectElem = $(response).find('#customer_id')[0]; // Get the raw DOM element
+
             const customerSelectDom = document.getElementById('customer_id');
-            
-            if (customersOptions !== undefined && customersOptions.trim() !== "") {
-                customerSelectDom.innerHTML = customersOptions;
-                customerSelectDom.disabled = false;
-            } else {
-                customerSelectDom.disabled = true;
+
+            // CASE 1: If it's a <select> tag
+            if (selectElem && selectElem.tagName.toLowerCase() === 'select') {
+                const customersOptions = selectElem.innerHTML;
+
+                if (customersOptions && customersOptions.trim() !== "") {
+                    customerSelectDom.innerHTML = customersOptions;
+                    customerSelectDom.disabled = false;
+                } else {
+                    customerSelectDom.disabled = true;
+                }
+
+            // CASE 2: If it's an <input> tag with a .optionsDropdown
+            } else if (selectElem && selectElem.tagName.toLowerCase() === 'input') {
+                const optionsDropdown = $(response).find('.optionsDropdown').html();
+
+                const dropdownUl = customerSelectDom
+                    .closest('.form-group') // adjust if needed based on your structure
+                    .parentElement
+                    .querySelector('.optionsDropdown');
+
+                if (optionsDropdown && optionsDropdown.trim() !== "") {
+                    dropdownUl.innerHTML = optionsDropdown;
+                    customerSelectDom.disabled = false;
+                } else {
+                    customerSelectDom.disabled = true;
+                }
+
+                selectFirstOption('customer_id');
             }
         }
 
@@ -757,7 +781,7 @@
                     cardsDataArray.push(JSON.parse(card.dataset.json));
                 })
 
-                setFilter('all');
+                // setFilter('all');
             }
 
             if (selectedArticles.length > 0) {
@@ -766,79 +790,79 @@
             }
         }
 
-        let filterType;
+        // let filterType;
 
-        function setFilter(filterTypeArg) {
-            filterType = filterTypeArg;
+        // function setFilter(filterTypeArg) {
+        //     filterType = filterTypeArg;
 
-            searchData(document.getElementById('search_box').value);
-        }
+        //     searchData(document.getElementById('search_box').value);
+        // }
 
-        function searchData(search) {
-            search = search.toLowerCase();
+        // function searchData(search) {
+        //     search = search.toLowerCase();
 
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.article_no.toString().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            item.season.toLowerCase().includes(search) ||
-                            item.size.toLowerCase().includes(search)
-                        );
-                        break;
+        //     const filteredData = cardsDataArray.filter(item => {
+        //         switch (filterType) {
+        //             case 'all':
+        //                 return (
+        //                     item.article_no.toString().includes(search) ||
+        //                     item.category.toLowerCase().includes(search) ||
+        //                     item.season.toLowerCase().includes(search) ||
+        //                     item.size.toLowerCase().includes(search)
+        //                 );
+        //                 break;
                         
-                    case '#':
-                        return (
-                            item.article_no.toString().includes(search)
-                        );
-                        break;
+        //             case '#':
+        //                 return (
+        //                     item.article_no.toString().includes(search)
+        //                 );
+        //                 break;
                         
-                    case 'category':
-                        return (
-                            item.category.toLowerCase().includes(search)
-                        );
-                        break;
+        //             case 'category':
+        //                 return (
+        //                     item.category.toLowerCase().includes(search)
+        //                 );
+        //                 break;
                         
-                    case 'season':
-                        return (
-                            item.season.toLowerCase().includes(search)
-                        );
-                        break;
+        //             case 'season':
+        //                 return (
+        //                     item.season.toLowerCase().includes(search)
+        //                 );
+        //                 break;
                         
-                    case 'size':
-                        return (
-                            item.size.toLowerCase().includes(search)
-                        );
-                        break;
+        //             case 'size':
+        //                 return (
+        //                     item.size.toLowerCase().includes(search)
+        //                 );
+        //                 break;
                 
-                    default:
-                        return (
-                            item.article_no.toString().includes(search) ||
-                            item.category.toLowerCase().includes(search) ||
-                            item.season.toLowerCase().includes(search) ||
-                            item.size.toLowerCase().includes(search)
-                        );
-                        break;
-                }
-            });
+        //             default:
+        //                 return (
+        //                     item.article_no.toString().includes(search) ||
+        //                     item.category.toLowerCase().includes(search) ||
+        //                     item.season.toLowerCase().includes(search) ||
+        //                     item.size.toLowerCase().includes(search)
+        //                 );
+        //                 break;
+        //         }
+        //     });
 
-            const cardContainerDom = document.querySelector('.card_container');
-            cardContainerDom.innerHTML = "";
+        //     const cardContainerDom = document.querySelector('.card_container');
+        //     cardContainerDom.innerHTML = "";
 
-            if (filteredData.length === 0) {
-                // Show "No articles found" message if no results
-                const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No articles found</p>"
-                cardContainerDom.innerHTML = noResultMessage;
-            } else {
-                filteredData.forEach(item => {
-                    const cardElement = cardsDom.find(card => card.id == item.id);
-                    if (cardElement) {
-                        cardContainerDom.appendChild(cardElement);
-                    }
-                });
-            }
-        }
+        //     if (filteredData.length === 0) {
+        //         // Show "No articles found" message if no results
+        //         const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No articles found</p>"
+        //         cardContainerDom.innerHTML = noResultMessage;
+        //     } else {
+        //         filteredData.forEach(item => {
+        //             const cardElement = cardsDom.find(card => card.id == item.id);
+        //             if (cardElement) {
+        //                 cardContainerDom.appendChild(cardElement);
+        //             }
+        //         });
+        //     }
+        // }
 
         function validateForNextStep() {
             generateOrder()

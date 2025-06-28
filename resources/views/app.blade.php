@@ -950,6 +950,88 @@
             }, { once: true });
         }, { once: true });
     }
+
+    function selectThisOption(optionLiElem) {
+        const forId = optionLiElem.dataset.for;
+
+        const selectSearch = document.getElementById(forId);
+        const dbInput = document.querySelector(`.dbInput[data-for="${forId}"]`);
+
+        selectSearch.value = optionLiElem.textContent.trim();
+        dbInput.value = optionLiElem.dataset.value;
+
+        // Remove 'selected' from all
+        const allOptions = document.querySelectorAll(`.optionsDropdown li[data-for="${forId}"]`);
+        allOptions.forEach(li => li.classList.remove('selected'));
+
+        // Add 'selected' to current
+        optionLiElem.classList.add('selected');
+
+        // Refresh list visibility
+        searchSelect(selectSearch);
+    }
+
+    function searchSelect(selectSearchInput) {
+        const inputValue = selectSearchInput.value.toLowerCase().trim();
+        const forId = selectSearchInput.id;
+
+        const allOptions = document.querySelectorAll(`.optionsDropdown li[data-for="${forId}"]`);
+
+        const isDefaultSelection = inputValue.startsWith('-- select');
+
+        allOptions.forEach((li) => {
+            const optionText = li.textContent.toLowerCase().trim();
+
+            // Always show "-- Select Customer --"
+            if (optionText.startsWith('-- select')) {
+                li.classList.remove('hidden');
+                return;
+            }
+
+            // If default option is selected, show everything
+            if (isDefaultSelection) {
+                li.classList.remove('hidden');
+                return;
+            }
+
+            // Otherwise filter based on input value
+            if (optionText.includes(inputValue)) {
+                li.classList.remove('hidden');
+            } else {
+                li.classList.add('hidden');
+            }
+        });
+    }
+
+    function validateSelectInput(selectSearchInput) {
+        const inputValue = selectSearchInput.value.toLowerCase().trim();
+        const forId = selectSearchInput.id;
+        const dbInput = document.querySelector(`.dbInput[data-for="${forId}"]`);
+
+        const allOptions = document.querySelectorAll(`.optionsDropdown li[data-for="${forId}"]`);
+
+        let isValid = false;
+
+        allOptions.forEach((li) => {
+            const optionText = li.textContent.toLowerCase().trim();
+            if (optionText === inputValue) {
+                isValid = true;
+            }
+        });
+
+        if (!isValid) {
+            // Clear both fields if no exact match
+            selectFirstOption(forId);
+            searchSelect(selectSearchInput);
+        }
+    }
+
+    function selectFirstOption(forId) {
+        const firstOption = document.querySelector(`.optionsDropdown li[data-for="${forId}"]:not(.hidden)`);
+        if (firstOption) {
+            selectThisOption(firstOption);
+        }
+    }
 </script>
 
 </html>

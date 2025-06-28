@@ -81,6 +81,7 @@
                         :options="$sizes_options"
                         required
                         showDefault
+                        searchable
                     />
                     
                     {{-- season --}}
