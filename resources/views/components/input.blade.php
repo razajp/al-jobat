@@ -31,6 +31,7 @@
     'type2' => '',
     'id2' => '',
     'dataFilterPath' => '',
+    'parentGrow' => false,
 ])
 
 @if ($uppercased)
@@ -82,7 +83,7 @@
 </script>
 @endif
 
-<div class="form-group relative">
+<div class="form-group relative {{$parentGrow ? "grow" : ""}}">
     @if($label)
         <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}{{ $required ? ' *' : '' }}</label>
     @endif
