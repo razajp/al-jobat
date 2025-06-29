@@ -146,4 +146,23 @@ class BankAccountController extends Controller
     {
         //
     }
+
+    public function updateStatus(Request $request)
+    {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+        
+        $bankAccount = BankAccount::find($request->user_id);
+
+        if ($request->status == 'active') {
+            $bankAccount->status = 'in_active';
+            $bankAccount->save();
+        } else {
+            $bankAccount->status = 'active';
+            $bankAccount->save();
+        }
+        return redirect()->back()->with('success', 'Status has been updated successfully!');
+    }
 }

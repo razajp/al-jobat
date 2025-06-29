@@ -46,7 +46,7 @@ function createContextMenu(data) {
             } else {
                 clutter += `
                     <li>
-                        <button id="${action.id}-in-context" type="button"
+                        <button id="${action.id}-in-context" type="button" onclick='${action.onclick}'
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
                             ${action.text}
                         </button>

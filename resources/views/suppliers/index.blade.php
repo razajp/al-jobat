@@ -27,6 +27,12 @@
                 "placeholder" => "Enter phone number",
                 "dataFilterPath" => "details.Phone",
             ],
+            'Category' => [
+                'id' => 'category',
+                'type' => 'select',
+                'options' => $categories_options,
+                'dataFilterPath' => 'categories',
+            ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",
@@ -36,9 +42,6 @@
             ]
         ];
     @endphp
-    <div id="manageCategoryModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <div>
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Suppliers" :search_fields=$searchFields/>
@@ -53,11 +56,11 @@
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('suppliers.create') }}" title="Add New Supplier" icon="fa-plus" />
                     </div>
-                
+
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container py-0 p-3 h-full flex flex-col">
-                                <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                     <div class="text-left pl-5">Supplier</div>
                                     <div class="text-center">Urdu Title</div>
                                     <div class="text-center">Phone</div>
@@ -138,7 +141,7 @@
                 action: "{{ route('update-user-status') }}",
                 actions: [
                     {id: 'edit', text: 'Edit Supplier'},
-                    {id: 'manage-category', text: 'Manage Category'},
+                    {id: 'manage-category', text: 'Manage Category', onclick: `generateManageCategoryModal(${JSON.stringify(data)})`},
                 ],
             };
 
@@ -172,8 +175,6 @@
             createModal(modalData);
         }
 
-        let categoriesArray;
-
         function trackCategoryState(elem) {
             let addCategoryBtn = elem.parentElement.querySelector('button');
 
@@ -183,11 +184,11 @@
                 addCategoryBtn.disabled = true;
             }
 
+            const chipsContainer = elem.parentElement.closest('form').querySelector('#chipsContainer');
             addCategoryBtn.addEventListener('click', () => {
                 let selectedCategory = elem.options[elem.selectedIndex];
-                const chipsContainer = elem.parentElement.closest('form').querySelector('#chipsContainer');
                 const dataIds = Array.from(chipsContainer.children).map(child => child.getAttribute('data-id'));
-                
+
                 if (dataIds.includes(elem.value)) {
                     chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
                     let existingChip = Array.from(chipsContainer.children).find(chip => 
@@ -210,6 +211,7 @@
                     
                     return;
                 } 
+
                 if (elem.value != '') {
                     chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
                     chipsContainer.innerHTML += `
@@ -239,9 +241,17 @@
             })
         }
 
-        function generateManageCategoryModal(item) {
-            console.log(item);
+        function trackAddBtnState(elem, data) {
+            const formDom = elem.closest('form');
+            const chipsContainer = formDom.querySelector('#chipsContainer');
+            const dataIds = Array.from(chipsContainer.children).map(child => child.getAttribute('data-id'));
 
+            let categoriesInp = formDom.querySelector('input[name="categories_array"]');
+            categoriesInp.value = JSON.stringify(dataIds);
+            formDom.submit();
+        }
+
+        function generateManageCategoryModal(item) {
             let modalData = {
                 id: 'manageCategoryModalForm',
                 method: "POST",
@@ -255,6 +265,12 @@
                         label: 'Supplier Name',
                         value: item.name,
                         disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'supplier_id',
+                        value: item.id,
                     },
                     {
                         category: 'input',
@@ -273,182 +289,19 @@
                     }
                 ],
                 bottomActions: [
-                    {id: 'add', text: 'Add', type: 'submit'},
+                    {id: 'add', text: 'Add', onclick: 'trackAddBtnState(this)'},
                 ],
             }
-            console.log(modalData);
             
-
             createModal(modalData);
-            return;
             
-            let data = JSON.parse(item.dataset.json);
-
-            manageCategoryModalDom.innerHTML = `
-                <x-modal id="manageCategoryModalForm" classForBody="p-5 h-[20rem]" closeAction="closeManageCategoryModal" action="{{ route('update-supplier-category') }}">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative">
-                        <div class="flex-1 h-full">
-                            <h5 id="name" class="text-2xl mb-2 text-[var(--text-color)] capitalize font-semibold">Manage Categories</h5>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <x-input 
-                                    label="Supplire Name"
-                                    value="${data.supplier_name}" 
-                                    disabled
-                                />
-                                
-                                <x-select 
-                                    label="Category"
-                                    id="category_select"
-                                    :options="$categories_options"
-                                    showDefault
-                                    class="grow"
-                                    withButton
-                                    btnId="addCategoryBtn"
-                                />
-                            </div>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            <div class="chipsContainer">
-                                <div id="chipsManagmeCategoryModal" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2 text-[var(--text-color)]">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeManageCategoryModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
-
-                        <input type="hidden" id="supplier_id" name="supplier_id" value="${data.id}">
-                        <input type="hidden" id="categories_array" name="categories_array">
-                        <button type="submit"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Update Categories
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
-
-            let chipsClutter = "";
-            data.categories.forEach((category) => {
-                chipsClutter += `
-                    <div data-id="${category.id}" class="chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2">
-                        <div class="text tracking-wide">${category.title}</div>
-                        <button class="delete cursor-pointer ${data.categories.length <= 1 ? "hidden" : ""}" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                            class="size-3 stroke-gray-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-                `
-            });
-
-            let chipsContainerDom = document.getElementById("chipsManagmeCategoryModal");
-            chipsContainerDom.innerHTML = chipsClutter;
-
-            const categorySelectDom = document.getElementById("category_select");
+            const chipsContainer = document.getElementById('manageCategoryModalForm').querySelector('#chipsContainer');
             
-            categorySelectDom.addEventListener("change", (e) => {
-                trackStateOfCategoryBtn(e.target.value);
-            })
-            
-            function trackStateOfCategoryBtn(value){
-                if (value != "") {
-                    addCategoryBtnDom.disabled = false;
-                } else {
-                    addCategoryBtnDom.disabled = true;
-                }
-            }
-
-            const categoriesArrayInput = document.getElementById("categories_array");
-            categoriesArray = data.categories
-            .filter(category => typeof category === 'object')   // Keep only objects
-            .map(category => category.id.toString());   // Extract IDs as strings
-
-
-            addCategoryBtnDom.addEventListener('click', () => {
-                let selectedCategoryId = categorySelectDom.value;  // Get category ID
-                let selectedCategoryName = categorySelectDom.options[categorySelectDom.selectedIndex].text;  // Get category name
-
-                console.log(categoriesArray);
+            chipsContainer.addEventListener('click', (e) => {
                 
-                // Check for duplicates based on ID
-                if (categoriesArray.includes(selectedCategoryId)) {
-                    console.warn('Category already exists!');
-                    
-                    // Highlight the existing chip
-                    let existingChip = Array.from(chipsContainerDom.children).find(chip => 
-                        chip.getAttribute('data-id') === selectedCategoryId
-                    );
-
-                    if (existingChip) {
-                        messageBox.innerHTML = `
-                            <x-alert type="error" :messages="'This category already exists.'" />
-                        `;
-                        messageBoxAnimation();
-                        existingChip.classList.add('bg-[var(--bg-error)]', 'transition', 'duration-300');
-                        setTimeout(() => {
-                            existingChip.classList.remove('bg-[var(--bg-error)]');
-                        }, 5000);  // Remove highlight after 5 seconds
-                        categorySelectDom.value = '';  // Clear selection
-                        addCategoryBtnDom.disabled = true;  // Disable button
-                        categorySelectDom.focus();
-                    }
-
-                    return;  // Stop the function if duplicate is found
-                }
-
-                if (selectedCategoryId) {
-                    // Create the chip element
-                    let chip = document.createElement('div');
-                    chip.className = 'chip border border-gray-600 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 fade-in';
-                    chip.setAttribute('data-id', selectedCategoryId);  // Store ID in a data attribute
-                    chip.innerHTML = `
-                        <div class="text tracking-wide">${selectedCategoryName}</div>
-                        <button class="delete cursor-pointer" type="button">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                                class="size-3 stroke-gray-400">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    `;
-
-                    if (chipsContainerDom) {
-                        chipsContainerDom.appendChild(chip);
-                        categoriesArray.push(selectedCategoryId);  // Store category ID in array
-                        categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
-                        categorySelectDom.value = '';  // Clear selection
-                        addCategoryBtnDom.disabled = true;  // Disable button
-                        categorySelectDom.focus();
-                        const allChips = chipsContainerDom.querySelectorAll('.chip');
-                        allChips.forEach((chip) => {
-                            let deleteBtn = chip.querySelector('.delete')
-                            if (deleteBtn.classList.contains('hidden')) {
-                                deleteBtn.classList.remove('hidden')
-                            }
-                        })
-                    } else {
-                        console.error('Chip container not found!');
-                    }
-                } else {
-                    console.warn('No category selected!');
-                }
-            })
-
-            chipsContainerDom.addEventListener('click', (e) => {
                 const deleteButton = e.target.closest('.delete');
 
                 if (deleteButton) {
-                    const allChips = chipsContainerDom.querySelectorAll('.chip');
-
-                    // Normal delete logic
                     const clickedChip = deleteButton.parentElement;
                     clickedChipId = clickedChip.dataset.id;
 
@@ -456,11 +309,9 @@
 
                     setTimeout(() => {
                         clickedChip.remove();
-                        categoriesArray = categoriesArray.filter(cat => cat !== clickedChipId);
-                        categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
 
                         // Update allChips after deletion
-                        const updatedChips = chipsContainerDom.querySelectorAll('.chip');
+                        const updatedChips = chipsContainer.querySelectorAll('.chip');
 
                         // Agar sirf 1 chip bachi hai toh uska delete button hide karo
                         if (updatedChips.length === 1) {
@@ -471,27 +322,8 @@
                         }
                     }, 300);
                 }
-            });
-
-            openManageCategoryModal();
-        }
-
-        function openManageCategoryModal() {
-            isManageCategoryModalOpened = true;
-            manageCategoryModalDom.classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu()
-        }
-
-        function closeManageCategoryModal() {
-            manageCategoryModalDom.classList.add('fade-out');
-
-            manageCategoryModalDom.addEventListener('animationend', () => {
-                manageCategoryModalDom.classList.add('hidden');
-                manageCategoryModalDom.classList.remove('fade-out');
-            }, {
-                once: true
-            });
+            })
+            return;
         }
     </script>
 @endsection

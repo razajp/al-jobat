@@ -39,11 +39,19 @@ function createModal(data) {
 
     if (data.user?.status || data.status) {
         const [bgColor, hoverBgColor, textColor] = statusColor[data.user?.status ?? data.status] || statusColor.inactive;
-        clutter += `
-            <div id="active_inactive_dot_modal"
-                class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-${textColor} rounded-full">
-            </div>
-        `;
+        if (data.image) {
+            clutter += `
+                <div id="active_inactive_dot_modal"
+                    class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-${textColor} rounded-full">
+                </div>
+            `;
+        } else {
+            clutter += `
+                <div id="active_inactive_dot_modal"
+                    class="absolute top-3 right-3 w-[0.7rem] h-[0.7rem] bg-${textColor} rounded-full">
+                </div>
+            `;
+        }
     }
     
     clutter += `

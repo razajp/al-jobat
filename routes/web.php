@@ -77,6 +77,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
     
     Route::resource('bank-accounts', BankAccountController::class);
+    Route::post('update-bank-account-status', [BankAccountController::class, 'updateStatus'])->name('update-bank-account-status');
     
     Route::resource('cargos', CargoController::class);
     
