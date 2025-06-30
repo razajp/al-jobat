@@ -53,7 +53,8 @@
                 <x-form-title-bar title="Show Suppliers" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($suppliers) > 0)
-                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                        <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                         <x-section-navigation-button link="{{ route('suppliers.create') }}" title="Add New Supplier" icon="fa-plus" />
                     </div>
 
@@ -128,6 +129,11 @@
                 visible: true,
             };
         });
+
+        const activeSuppliers = allDataArray.filter(supplier => supplier.user.status === 'active');
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Supplier: ${allDataArray.length} | Active: ${activeSuppliers.length}`;
 
         function generateContextMenu(e) {
             let item = e.target.closest('.item');

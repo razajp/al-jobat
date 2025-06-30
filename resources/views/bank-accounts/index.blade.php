@@ -64,7 +64,8 @@
                 <x-form-title-bar title="Show Bank Accounts" changeLayoutBtn layout="{{ $authLayout }}" />
 
                 @if (count($bankAccounts) > 0)
-                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                        <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                         <x-section-navigation-button link="{{ route('bank-accounts.create') }}" title="Add New Account" icon="fa-plus" />
                     </div>
 
@@ -141,6 +142,11 @@
                 visible: true,
             };
         });
+
+        const activeAccounts = allDataArray.filter(account => account.status === 'active');
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Bank Account: ${allDataArray.length} | Active: ${activeAccounts.length}`;
 
         function generateContextMenu(e) {
             let item = e.target.closest('.item');

@@ -211,7 +211,7 @@ function createModal(data) {
             } else {
                 clutter += `
                     <button id="${action.id}-in-modal" type="${action.type ?? 'button'}" onclick='${action.onclick}'
-                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                        class="px-4 py-2 bg-${action.id.includes('add') ? '[var(--bg-success)]' : '[var(--secondary-bg-color)]'} border border-${action.id.includes('add') ? '[var(--border-success)]' : 'gray-600'} text-${action.id.includes('add') ? '[var(--border-success)]' : '[var(--secondary-text)]'} rounded-lg hover:bg-${action.id.includes('add') ? '[var(--h-bg-success)]' : '[var(--h-bg-color)]'} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                         ${action.text}
                     </button>
                 `;
@@ -273,9 +273,22 @@ function createModal(data) {
             // Optionally: remove these listeners after first use
             document.removeEventListener('mousedown', closeOnClickOutside);
             document.removeEventListener('keydown', escToClose);
+            document.removeEventListener('keydown', enterToSubmit);
+        }
+    };
+
+    // ✅ enter Key to subbmit
+    const enterToSubmit = (e) => {
+        if (e.key === 'Enter') {
+            const form = modalWrapper.querySelector('form');
+            const btn = form.querySelector('#modal-action button[id*="add"], #modal-action button[id*="update"]');
+            if (btn) {
+                btn.click();
+            }
         }
     };
 
     document.addEventListener('keydown', escToClose);
+    document.addEventListener('keydown', enterToSubmit);
     document.body.appendChild(modalWrapper);
 }
