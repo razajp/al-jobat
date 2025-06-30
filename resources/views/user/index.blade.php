@@ -1,45 +1,80 @@
 @extends('app')
 @section('title', 'Show Users | ' . app('company')->name)
 @section('content')
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
+    @php
+        $searchFields = [
+            "Name" => [
+                "id" => "name",
+                "type" => "text",
+                "placeholder" => "Enter name",
+                "dataFilterPath" => "name",
+            ],
+            "Username" => [
+                "id" => "username",
+                "type" => "text",
+                "placeholder" => "Enter username",
+                "dataFilterPath" => "details.Username",
+            ],
+            'Role' => [
+                'id' => 'role',
+                'type' => 'select',
+                'options' => [
+                    'owner' => ['text' => 'Owner'],
+                    'admin' => ['text' => 'Admin'],
+                    'accountant' => ['text' => 'Accountant'],
+                    'store_keeper' => ['text' => 'Store Keeper '],
+                    'guest' => ['text' => 'Guest'],
+                ],
+                'dataFilterPath' => 'categories',
+            ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'active' => ['text' => 'Active'],
+                    'in_active' => ['text' => 'In Active'],
+                ],
+                'dataFilterPath' => 'status',
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
     <!-- Main Content -->
     <div>
         
         <div class="w-[80%] mx-auto">
-            <x-search-header heading="Users" />
+            <x-search-header heading="Users" :search_fields=$searchFields/>
         </div>
 
         <section class="text-center mx-auto ">
             <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
                 <x-form-title-bar title="Show Users" />
 
                 @if (count($users) > 0)
-                    <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                    <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                        <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                         <x-section-navigation-button link="{{ route('users.create') }}" title="Add New User" icon="fa-plus" />
                     </div>
-                
+
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                            <div class="card_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                    @foreach ($users as $user)
-                                        <div data-json='{{ $user }}'
-                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-4 cursor-pointer overflow-hidden fade-in">
-                                            <x-card :data="[
-                                                'image' => $user->profile_picture == 'default_avatar.png' ? asset('images/default_avatar.png') : asset('storage/uploads/images/' . $user->profile_picture),
-                                                'name' => $user->name,
-                                                'status' => $user->status,
-                                                'details' => [
-                                                    'Username' => $user->username,
-                                                    'Role' => str_replace('_', ' ', $user->role),
-                                                ]
-                                            ]"/>
-                                        </div>
-                                    @endforeach
+                            <div class="card_container py-0 p-3 h-full flex flex-col">
+                                <div id="table-head" class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                                    <div class="text-left pl-5 col-span-2">Name</div>
+                                    <div class="text-left pl-5">Username</div>
+                                    <div class="text-center">Role</div>
+                                    <div class="text-right pr-5">Status</div>
+                                </div>
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
                                 </div>
                             </div>
                         </div>
@@ -54,277 +89,81 @@
                 @endif
             </div>
         </section>
-        <div class="context-menu absolute top-0 text-sm" style="display: none;">
-            <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all duration-300 ease-in-out z-50">
-                <ul class="p-2">
-                    <li>
-                        <button id="show-details" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
-                            Details</button>
-                    </li>
-                    
-                    <li id="ac_in_context" class="hidden">
-                        <form method="POST" action="{{ route('update-user-status') }}">
-                            @csrf
-                            <input type="hidden" id="user_id_context" name="user_id" value="">
-                            <input type="hidden" id="user_status_context" name="status" value="">
-                            <button id="ac_in_btn_context" type="submit"
-                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
-                                Active</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
 
     <script>
-        let currentUserRole = '{{Auth::user()->role}}';
+        let currentUserRole = '{{ Auth::user()->role }}';
+        let authLayout = '{{ $authLayout }}';
 
-        let contextMenu = document.querySelector('.context-menu');
-        let isContextMenuOpened = false;
+        function createRow(data) {
+            return `
+            <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                class="item row relative group grid text- grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                data-json='${JSON.stringify(data)}'>
 
-        function closeContextMenu() {
-            contextMenu.classList.remove('fade-in');
-            contextMenu.style.display = 'none';
-            isContextMenuOpened = false;
+                <span class="text-left pl-5 col-span-2">${data.name}</span>
+                <span class="text-left pl-5">${data.details["Username"]}</span>
+                <span class="text-center capitalize">${data.details["Role"]}</span>
+                <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">${data.user.status}</span>
+            </div>`;
         }
 
-        function openContextMenu() {
-            closeAllDropdowns()
-            contextMenu.classList.add('fade-in');
-            contextMenu.style.display = 'block';
-            isContextMenuOpened = true;
-        }
-
-        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
-
-        contextMenuToggle.forEach(toggle => {
-            toggle.addEventListener('contextmenu', (e) => {
-                generateContextMenu(e);
-            });
+        const fetchedData = @json($users);
+        let allDataArray = fetchedData.map(item => {
+            return {
+                id: item.id,
+                uId: item.id,
+                image: item.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.profile_picture}`,
+                name: item.name,
+                status: item.status,
+                details: {
+                    'Username': item.username,
+                    'Role': item.role,
+                },
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
+                visible: true,
+            };
         });
 
+        const activeUser = allDataArray.filter(user => user.status === 'active');
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Users: ${allDataArray.length} | Active: ${activeUser.length}`;
+
         function generateContextMenu(e) {
-            contextMenu.classList.remove('fade-in');
+            e.preventDefault();
+            let item = e.target.closest('.item');
+            let data = JSON.parse(item.dataset.json);
 
-            let ac_in_btn_context = document.getElementById('ac_in_btn_context');
-            let ac_in_context = document.getElementById('ac_in_context');
-            let item = e.target.closest('.modalToggle');
-            let user = JSON.parse(item.dataset.json);
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                action: "{{ route('update-user-status') }}",
+            };
 
-            ac_in_context.classList.add('hidden');
-
-            if (ac_in_btn_context) {
-                ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                if (user.role == currentUserRole) {
-                } else if (currentUserRole == "owner" && (user.role == "developer" || user.role == "owner")) {
-                } else if (currentUserRole == "admin" && (user.role == "developer" || user.role == "owner" || user.role == "admin")) {
-                } else {
-                    if (user.status === 'active') {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.textContent = 'In Active';
-                    } else {
-                        ac_in_context.classList.remove('hidden');
-                        ac_in_btn_context.classList.remove('text-[var(--border-error)]');
-                        ac_in_btn_context.classList.remove('hover:text-[var(--text-error)]');
-                        ac_in_btn_context.classList.remove('hover:bg-[var(--bg-error)]');
-                        ac_in_btn_context.classList.add('text-[var(--border-success)]');
-                        ac_in_btn_context.classList.add('hover:text-[var(--text-success)]');
-                        ac_in_btn_context.classList.add('hover:bg-[var(--bg-success)]');
-                        ac_in_btn_context.textContent = 'Active';
-                    }
-                }
-            }
-
-            const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
-
-            if (!contextMenu || !wrapper) return;
-
-            const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
-
-            let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
-
-            // Prevent right edge overflow
-            if (x + contextMenu.offsetWidth > wrapperRect.width) {
-                x -= contextMenu.offsetWidth;
-            }
-
-            // Prevent bottom edge overflow
-            if (y + contextMenu.offsetHeight > wrapperRect.height) {
-                y -= contextMenu.offsetHeight;
-            }
-
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-
-            openContextMenu();
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "show-details") {
-                    generateModal(item)
-                }
-            });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "ac_in_btn_context") {
-                    user_id_context = document.getElementById('user_id_context');
-                    user_status_context = document.getElementById('user_status_context');
-                    user_id_context.value = user.id;
-                    user_status_context.value = user.status;
-                    ac_in_btn_context.click();
-                }
-            });
-
-            // Function to remove context menu
-            const removeContextMenu = (event) => {
-                if (!contextMenu.contains(event.target)) {
-                    closeContextMenu();
-                    document.removeEventListener('click', removeContextMenu);
-                    document.removeEventListener('contextmenu', removeContextMenu);
-                }
-            }
-
-            // Wait for a small delay before attaching event listeners to avoid immediate removal
-            setTimeout(() => {
-                document.addEventListener('mousedown', removeContextMenu);
-            }, 10);
+            createContextMenu(contextMenuData);
         }
-
-        let isModalOpened = false;
-        let card = document.querySelectorAll('.modalToggle')
-
-        card.forEach(item => {
-            item.addEventListener('click', () => {
-                generateModal(item)
-            })
-        })
 
         function generateModal(item) {
-            let modalDom = document.getElementById('modal')
-            let user = JSON.parse(item.dataset.json);
+            let data = JSON.parse(item.dataset.json);
 
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" closeAction="closeModal" action="{{ route('update-user-status') }}">
-                    <!-- Modal Content Slot -->
-                    <div id="active_inactive_dot_modal"
-                        class="absolute top-3 left-3 w-[0.7rem] h-[0.7rem] bg-[var(--border-success)] rounded-full">
-                    </div>
-                    <div class="flex items-start relative">
-                        <div class="rounded-[41.5%] h-[15rem] aspect-square overflow-hidden">
-                            <img id="userImage" src="{{ asset('images/default_avatar.png') }}" alt=""
-                                class="w-full h-full object-cover">
-                        </div>
-                
-                        <div class="flex-1 ml-8">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${user.name}</h5>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Username:</strong> <span>${user.username}</span></p>
-                            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm"><strong>Role:</strong> <span>${user.role}</span></p>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
-                        <div id="ac_in_modal">
-                            <input type="hidden" id="user_id" name="user_id" value="${user.id}">
-                            <input type="hidden" id="user_status" name="status" value="${user.status}">
-                            <button id="ac_in_btn" type="submit"
-                                class="px-4 py-2 bg-[var(--bg-error)] border border-[var(--bg-error)] font-semibold rounded-lg hover:bg-[var(--h-bg-error)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                                In Active
-                            </button>
-                        </div>
-                    </x-slot>
-                </x-modal>
-            `;
-            
-            let ac_in_modal = document.getElementById('ac_in_modal');
-            let userImage = document.getElementById('userImage');
-            let ac_in_btn = document.getElementById('ac_in_btn');
-            let active_inactive_dot_modal = document.getElementById('active_inactive_dot_modal');
-
-            ac_in_modal.classList.add("hidden");
-            
-            if (user.role == currentUserRole) {
-            } else if (currentUserRole == "owner" && (user.role == "developer" || user.role == "owner")) {
-            } else if (currentUserRole == "admin" && (user.role == "developer" || user.role == "owner" || user.role == "admin")) {
-            } else {
-                ac_in_modal.classList.remove("hidden");
+            let modalData = {
+                id: 'modalForm',
+                method: "POST",
+                action: "{{ route('update-user-status') }}",
+                image: data.image,
+                name: data.name,
+                details: {
+                    'Username': data.details['Username'],
+                    'Role': data.details['Role'],
+                },
+                profile: true,
             }
 
-            if (user.profile_picture == "default_avatar.png") {
-                userImage.src = `images/default_avatar.png`
-            } else {
-                userImage.src = `storage/uploads/images/${user.profile_picture}`
-            }
-
-            if (user.status === 'active') {
-                ac_in_btn.classList.add('bg-[var(--bg-error)]')
-                ac_in_btn.classList.add('border-[var(--bg-error)]')
-                ac_in_btn.classList.remove('bg-[var(--bg-success)]')
-                ac_in_btn.classList.remove('border-[var(--bg-success)]')
-                ac_in_btn.classList.add('hover:bg-[var(--h-bg-error)]')
-                ac_in_btn.classList.remove('hover:bg-[var(--h-bg-success)]')
-                ac_in_btn.classList.add('text-[var(--text-error)]')
-                ac_in_btn.classList.remove('text-[var(--text-success)]')
-                ac_in_btn.textContent = 'In Active'
-                active_inactive_dot_modal.classList.remove('bg-[var(--border-error)]')
-                active_inactive_dot_modal.classList.add('bg-[var(--border-success)]')
-            } else {
-                ac_in_btn.classList.remove('bg-[var(--bg-error)]')
-                ac_in_btn.classList.remove('border-[var(--bg-error)]')
-                ac_in_btn.classList.add('bg-[var(--bg-success)]')
-                ac_in_btn.classList.add('border-[var(--bg-success)]')
-                ac_in_btn.classList.remove('hover:bg-[var(--h-bg-error)]')
-                ac_in_btn.classList.add('hover:bg-[var(--h-bg-success)]')
-                ac_in_btn.classList.remove('text-[var(--text-error)]')
-                ac_in_btn.classList.add('text-[var(--text-success)]')
-                ac_in_btn.textContent = 'Active'
-                active_inactive_dot_modal.classList.add('bg-[var(--border-error)]')
-                active_inactive_dot_modal.classList.remove('bg-[var(--border-success)]')
-            }
-
-            openModal()
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            if (e.target.id === 'modalForm') {
-                closeModal()
-            }
-        })
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeModal()
-                closeContextMenu()
-            }
-        })
-
-        function openModal() {
-            isModalOpened = true;
-            document.getElementById('modal').classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu()
-        }
-
-        function closeModal() {
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, { once: true });
+            createModal(modalData);
         }
     </script>
 @endsection

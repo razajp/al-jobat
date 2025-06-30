@@ -14,15 +14,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         }
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
         
         $users = User::whereNotIn('role', ['supplier', 'customer'])->get();
-        return view("user.index", compact('users'));
+        return view("user.index", compact('users', 'authLayout'));
     }
 
     /**

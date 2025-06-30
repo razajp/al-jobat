@@ -33,6 +33,7 @@
                 :options="$customers_options"
                 required
                 showDefault
+                searchable
             />
             
             {{-- category --}}

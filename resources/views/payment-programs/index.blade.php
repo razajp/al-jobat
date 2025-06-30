@@ -172,7 +172,7 @@
                                         </div>
                                     @endforeach
                                 </div>
-                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                         </div>
                     </div>
                 </div>

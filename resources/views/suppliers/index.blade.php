@@ -33,6 +33,15 @@
                 'options' => $categories_options,
                 'dataFilterPath' => 'categories',
             ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'active' => ['text' => 'Active'],
+                    'in_active' => ['text' => 'In Active'],
+                ],
+                'dataFilterPath' => 'user.status',
+            ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",
@@ -68,7 +77,7 @@
                                     <div class="text-right">Balance</div>
                                     <div class="text-right pr-5">Status</div>
                                 </div>
-                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)]">No items found</p>
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                                 <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
                                 </div>
                             </div>
