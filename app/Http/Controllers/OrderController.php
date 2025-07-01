@@ -90,18 +90,15 @@ class OrderController extends Controller
         $articles = [];
 
         if ($request->date) {
-            $customers = Customer::with('user', 'orders', 'payments')->where('date', '<=', $request->date)->get();
+            $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
+                $query->where('status', 'active');
+            })->where('date', '<=', $request->date)->get();
 
             foreach ($customers as $customer) {
-                $user = User::where('id', $customer->user_id)->first();
-                $customer['status'] = $user->status;
-    
-                if ($customer->status == 'active') {
-                    $customers_options[(int)$customer->id] = [
-                        'text' => $customer->customer_name . ' | ' . $customer->city->title,
-                        'data_option' => $customer
-                    ];
-                }
+                $customers_options[(int)$customer->id] = [
+                    'text' => $customer->customer_name . ' | ' . $customer->city->title,
+                    'data_option' => $customer
+                ];
             }
             
             $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereNotNull(['category', 'fabric_type'])->whereRaw('ordered_quantity < quantity')->get();

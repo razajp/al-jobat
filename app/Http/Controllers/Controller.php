@@ -27,9 +27,9 @@ class Controller extends BaseController
     {
         switch ($request->category) {
             case 'supplier':
-                $suppliers = Supplier::with('user')->whereHas('user', function ($query) {
+                $suppliers = Supplier::whereHas('user', function ($query) {
                     $query->where('status', 'active');
-                })->get();
+                })->select('id', 'supplier_name')->get()->makeHidden('creator', 'categories');
 
                 foreach ($suppliers as $supplier) {
                     $supplier['balance'] = 0;
@@ -40,9 +40,9 @@ class Controller extends BaseController
                 break;
             
             case 'customer':
-                $customers = Customer::with('user')->whereHas('user', function ($query) {
+                $customers = Customer::with('city:id,title')->whereHas('user', function ($query) {
                     $query->where('status', 'active');
-                })->get();
+                })->select('id', 'customer_name', 'city_id')->get()->makeHidden('creator');
 
                 return $customers;
                 break;

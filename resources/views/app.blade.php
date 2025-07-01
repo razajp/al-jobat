@@ -967,7 +967,11 @@
         // Add 'selected' to current
         optionLiElem.classList.add('selected');
 
-        // Refresh list visibility
+        // Trigger change event manually on the hidden input
+        const changeEvent = new Event('change', { bubbles: true });
+        dbInput.dispatchEvent(changeEvent);
+
+        // Optional: hide dropdown if needed
         searchSelect(selectSearch);
     }
 

@@ -25,7 +25,7 @@
                     'store_keeper' => ['text' => 'Store Keeper '],
                     'guest' => ['text' => 'Guest'],
                 ],
-                'dataFilterPath' => 'categories',
+                'dataFilterPath' => 'details.Role',
             ],
             'Status' => [
                 'id' => 'status',

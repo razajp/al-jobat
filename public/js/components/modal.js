@@ -55,14 +55,14 @@ function createModal(data) {
     }
     
     clutter += `
-        <div class="flex items-start relative h-[15rem]">
+        <div class="flex items-start relative ${(data.class || '').includes('h-') ? 'h-full' : 'h-[15rem]'}">
     `;
     
     if (data.image) {
         clutter += `
-                <div class="${!data.profile ? 'rounded-lg' : 'rounded-[41.5%]'} h-full aspect-square overflow-hidden">
+                <div class="${!data.profile ? 'rounded-lg' : 'rounded-[41.5%]'} ${data.image && data.image == '/images/no_image_icon.png' ? 'scale-75' : ''} h-full aspect-square overflow-hidden">
                     <img id="imageInModal" src="${data.image}" alt=""
-                        class="w-full h-full object-cover">
+                        class="w-full h-full object-cover aspect-square">
                 </div>
         `;
     }
@@ -70,11 +70,16 @@ function createModal(data) {
     let detailsHTML = '';
     if (data.details && typeof data.details === 'object') {
         detailsHTML = Object.entries(data.details).map(([label, value]) => {
+            // If it's an 'hr' entry (you can use any key like 'hr' or '--hr--')
+            if (label === 'hr') {
+                return `<hr class="w-full my-3 border-gray-600">`;
+            }
+
             return `
-            <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize">
-                <strong>${label}:</strong> <span style="opacity: 0.9">${value}</span>
-            </p>
-        `;
+                <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize">
+                    <strong>${label}:</strong> <span style="opacity: 0.9">${value}</span>
+                </p>
+            `;
         }).join('');
     }
 
@@ -83,6 +88,45 @@ function createModal(data) {
             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
             ${detailsHTML}
     `;
+
+    if (data.table) {
+        let headerHTML = '';
+        let bodyHTML = '';
+
+        data.table.headers.forEach(header => {
+            headerHTML += `<div class="${header.class}">${header.label}</div>`;
+        });
+
+        if (data.table.body.length > 0) {
+            data.table.body.forEach((data, index) => {
+                bodyHTML += `
+                    <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                        <div class="w-1/5">${index + 1}</div>
+                        <div class="grow ml-5">${data.title}</div>
+                        <div class="w-1/4">${formatNumbersWithDigits(data.rate, 2, 2)}</div>
+                    </div>
+                `;
+            });
+        } else {
+            bodyHTML += `
+                <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                    <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
+                </div>
+            `;
+        }
+
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+            <div class="w-full text-left grow text-sm">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                    ${headerHTML}
+                </div>
+                <div class="overflow-y-auto my-scrollbar-2">
+                    ${bodyHTML}
+                </div>
+            </div>
+        `;
+    }
 
     if (data.fields) {
         clutter += `

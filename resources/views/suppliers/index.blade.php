@@ -135,6 +135,7 @@
                 onclick: "generateModal(this)",
                 date: item.date,
                 categories: item.categories,
+                profile: true,
                 visible: true,
             };
         });

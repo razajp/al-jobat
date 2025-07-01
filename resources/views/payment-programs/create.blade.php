@@ -23,7 +23,7 @@
 
         <div class="grid grid-cols-2 gap-4">
             {{-- date --}}
-            <x-input label="Date" name="date" id="date" type="date" onchange="trackCustomerState(this)" required />
+            <x-input label="Date" name="date" id="date" type="date" onchange="trackDateState(this)" required />
 
             {{-- cusomer --}}
             <x-select 
@@ -31,9 +31,9 @@
                 name="customer_id"
                 id="customer_id"
                 :options="$customers_options"
+                onchange="trackCustomerState(this)"
                 required
                 showDefault
-                searchable
             />
             
             {{-- category --}}
@@ -50,7 +50,7 @@
             {{-- cusomer --}}
             <x-select 
                 label="Disabled"
-                name="sub_category"
+                name="subCategory"
                 id="subCategory"
                 disabled
                 showDefault
@@ -82,17 +82,17 @@
         customerSelect.disabled = true;
         categorySelectDom.disabled = true;
         
-        function trackCustomerState(dateInputElem) {
+        function trackDateState(dateInputElem) {
             customerSelect.disabled = false;
         }
 
-        customerSelect.addEventListener('change', () => {
-            if (customerSelect.value) {
+        function trackCustomerState(elem) {
+            if (elem.value) {
                 categorySelectDom.disabled = false;
             } else {
                 categorySelectDom.disabled = true;
             }
-        })
+        }
 
         let subCategoryLabelDom = document.querySelector('[for=sub_category]');
         let subCategorySelectDom = document.getElementById('subCategory');
@@ -102,8 +102,14 @@
         remarksInputDom.parentElement.parentElement.classList.add("hidden");
 
         function getCategoryData(value) {
-            if (value != "waiting") {
-                subCategorySelectDom.parentElement.parentElement.classList.remove("hidden");
+            const subCategorySearchInput = document.getElementById('subCategory');
+            const subCategoryHiddenInput = document.querySelector('input.dbInput[data-for="subCategory"]');
+            const subCategoryOptionBox = subCategoryHiddenInput.parentElement.querySelector('ul');
+            const subCategoryWrapper = subCategorySearchInput.closest('.form-group').parentElement.closest('.form-group');
+            const subCategoryLabel = subCategoryWrapper.querySelector('label');
+
+            if (value !== "waiting") {
+                subCategoryWrapper.classList.remove("hidden");
                 remarksInputDom.parentElement.parentElement.classList.add("hidden");
 
                 $.ajax({
@@ -114,96 +120,65 @@
                         category: value,
                     },
                     success: function (response) {
-                        let clutter = `
-                            <option value=''>
-                                -- No option avalaible --
-                            </option>
-                        `;
-                        switch (value) {   
+                        let items = [];
+
+                        switch (value) {
                             case 'self_account':
+                                subCategoryLabel.textContent = 'Self Account';
                                 if (response.length > 0) {
-                                    clutter = '';
-                                    clutter += `
-                                        <option value=''>
-                                            -- Select Self Account --
-                                        </option>
-                                    `;
-                                    subCategorySelectDom.disabled = false;
+                                    items.push(`<li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">-- Select Self Account --</li>`);
+                                    response.forEach(acc => {
+                                        items.push(`<li data-for="subCategory" data-value="${acc.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${acc.account_title} | ${acc.bank.short_title}</li>`);
+                                    });
+                                    subCategorySearchInput.disabled = false;
                                 } else {
-                                    subCategorySelectDom.disabled = true;
-                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                    items.push(`<li class="py-2 px-3 text-gray-400">-- No options available --</li>`);
+                                    subCategorySearchInput.disabled = true;
                                 }
-                        
-                                response.forEach(subCat => {
-                                    clutter += `
-                                        <option value='${subCat.id}'>
-                                            ${subCat.account_title} | ${subCat.bank.short_title}
-                                        </option>
-                                    `;
-                                });
-                                
-                                subCategoryLabelDom.textContent = 'Self Account';
-                                subCategoryFirstOptDom.textContent = '-- Select Self Account --';
                                 break;
-                                
+
                             case 'supplier':
+                                subCategoryLabel.textContent = 'Supplier';
                                 if (response.length > 0) {
-                                    clutter = '';
-                                    clutter += `
-                                        <option value=''>
-                                            -- Select Supplier --
-                                        </option>
-                                    `;
-                                    subCategorySelectDom.disabled = false;
+                                    items.push(`<li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">-- Select Supplier --</li>`);
+                                    response.forEach(sup => {
+                                        items.push(`<li data-for="subCategory" data-value="${sup.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${sup.supplier_name} | Balance: ${formatNumbersWithDigits(sup.balance, 1, 1)}</li>`);
+                                    });
+                                    subCategorySearchInput.disabled = false;
                                 } else {
-                                    subCategorySelectDom.disabled = true;
-                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                    items.push(`<li class="py-2 px-3 text-gray-400">-- No options available --</li>`);
+                                    subCategorySearchInput.disabled = true;
                                 }
-                        
-                                response.forEach(subCat => {
-                                    clutter += `
-                                        <option value='${subCat.id}'>
-                                            ${subCat.supplier_name} | Balance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
-                                        </option>
-                                    `;
-                                });
-                                
-                                subCategoryLabelDom.textContent = 'Supplier';
-                                subCategoryFirstOptDom.textContent = '-- Select Supplier --';
                                 break;
-                            
+
                             case 'customer':
-                                clutter = '';
-                                clutter += `
-                                    <option value=''>
-                                        -- Select Customer --
-                                    </option>
-                                `;
-                        
-                                response.forEach(subCat => {
-                                    if (subCat.id != customerSelect.value) {
-                                        clutter += `
-                                            <option value='${subCat.id}'>
-                                                ${subCat.customer_name} | ${subCat.city} | Baalance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
-                                            </option>
-                                        `;
-                                        subCategorySelectDom.disabled = false;
+                                subCategoryLabel.textContent = 'Customer';
+                                items.push(`<li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">-- Select Customer --</li>`);
+                                response.forEach(cus => {
+                                    if (cus.id != customerSelect.value) {
+                                        items.push(`<li data-for="subCategory" data-value="${cus.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${cus.customer_name} | ${cus.city.title} | Balance: ${formatNumbersWithDigits(cus.balance, 1, 1)}</li>`);
                                     }
                                 });
-                                
-                                subCategoryLabelDom.textContent = 'Customer';
-                                subCategoryFirstOptDom.textContent = '-- Select Customer --';
-                                break;
-                        
-                            default:
+                                subCategorySearchInput.disabled = false;
                                 break;
                         }
 
-                        subCategorySelectDom.innerHTML = clutter;
+                        // ✅ Inject options in the box
+                        subCategoryOptionBox.innerHTML = items.join('');
+
+                        // ✅ Clear previous selection
+                        subCategorySearchInput.value = '';
+                        subCategoryHiddenInput.value = '';
+                    },
+                    error: function (xhr) {
+                        console.error("❌ Error:", xhr.responseText);
+                        subCategoryOptionBox.innerHTML = `<li class="py-2 px-3 text-red-500">Error loading options</li>`;
+                        subCategorySearchInput.disabled = true;
                     }
                 });
             } else {
-                subCategorySelectDom.parentElement.parentElement.classList.add("hidden");
+                // Show remarks input instead of dropdown
+                subCategoryWrapper.classList.add("hidden");
                 remarksInputDom.parentElement.parentElement.classList.remove("hidden");
             }
         }

@@ -155,6 +155,7 @@
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 date: item.date,
+                profile: true,
                 visible: true,
             };
         });

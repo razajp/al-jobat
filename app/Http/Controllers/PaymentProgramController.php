@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class PaymentProgramController extends Controller
@@ -78,11 +79,13 @@ class PaymentProgramController extends Controller
      */
     public function create()
     {
+        $start = microtime(true); // ⏱️ Start timing
+
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
-        
+        }
+
         $lastProgram = PaymentProgram::orderBy('id', 'DESC')->first();
 
         if (!$lastProgram) {
@@ -90,22 +93,28 @@ class PaymentProgramController extends Controller
             $lastProgram->program_no = '0';
         }
 
-        $customers = Customer::with('orders', 'payments')->whereHas('user', function ($query) {
-            $query->where('status', 'active');
-        })->get();
+        $customers = Customer::with('city:id,title')
+            ->whereHas('user', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->select('id', 'customer_name', 'city_id', 'balance') // make sure balance is selected
+            ->get()
+            ->makeHidden('creator');
+
         $customers_options = [];
 
         foreach ($customers as $customer) {
-            $user = $customer['user'];
-            $customer['status'] = $user->status;
-            
             $customers_options[(int)$customer->id] = [
-                'text' => $customer->customer_name . ' | ' . $customer->city->title . ' | Balance: ' . number_format($customer->balance, 1),
+                'text' => $customer->customer_name . ' | ' . ($customer->city->title ?? 'N/A') . ' | Balance: ' . number_format($customer->balance, 1),
                 'data_option' => $customer
             ];
         }
 
-        return view('payment-programs.create', compact('customers_options', 'lastProgram'));
+        $loadTime = round(microtime(true) - $start, 3); // ⏱️ End timing
+
+        Log::info("💡 PaymentProgram create() load time: {$loadTime} seconds");
+
+        return view('payment-programs.create', compact('customers_options', 'lastProgram', 'loadTime'));
     }
 
     /**
