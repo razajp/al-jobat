@@ -262,6 +262,7 @@
                 method: "POST",
                 image: data.image,
                 name: data.name,
+                status: data.status,
                 class: 'p-5 max-w-5xl h-[27rem]',
                 details: {
                     'Category': data.details['Category'],
