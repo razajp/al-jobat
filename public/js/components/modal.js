@@ -131,19 +131,32 @@ function createModal(data) {
     if (data.fields) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-1">
         `;
         data.fields.forEach(field => {
             if (field.category == 'input') {
                 if (field.type != 'hidden') {
+                    let buttonHTML = '';
+                    
+                    if (field.btnId) {
+                        buttonHTML = `
+                            <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>+</button>
+                        `;
+                    }
+                    
                     clutter += `
+                        ${field.grow ? '<div class="grow">' : ''}
+                        ${field.full ? '<div class="col-span-full">' : ''}
                         <div class="form-group relative">
-                            <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label}</label>
+                            <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
-                            <div class="relative flex gap-4">
+                            <div class="relative flex gap-3">
                                 <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                                ${buttonHTML}
                             </div>
                         </div>
+                        ${field.grow ? '</div>' : ''}
+                        ${field.full ? '</div>' : ''}
                     `;
                 } else {
                     clutter += `
@@ -182,12 +195,18 @@ function createModal(data) {
                     <div class="grow form-group">
                         <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label} *</label>
                         
-                        <div class="selectParent relative flex gap-4">
+                        <div class="selectParent relative flex gap-3">
                             <select id="${field.id ?? ''}" name="${field.name ?? ''}" onchange="${field.onchange}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
                                 ${optionsHTML}
                             </select>
                             ${buttonHTML}
                         </div>
+                    </div>
+                `;
+            } else if (field.category == 'hr') {
+                clutter += `
+                    <div class="col-span-full">
+                        <hr class="w-full border-gray-600">
                     </div>
                 `;
             }
@@ -201,7 +220,7 @@ function createModal(data) {
     if (data.chips) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-                <div id="chipsContainer" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2 text-[var(--text-color)]">
+            <div id="chipsContainer" class="w-full flex flex-wrap gap-2 overflow-y-auto my-scrollbar-2 text-[var(--text-color)]">
         `;
 
         let removeBtn = `
@@ -236,7 +255,7 @@ function createModal(data) {
 
         <div id="modal-action"
             class="bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg max-w-3xl w-auto p-3 relative text-sm">
-            <div class="flex gap-4">
+            <div class="flex gap-3">
                 <button onclick="closeModal('${data.id}')" type="button"
                     class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                     Cancel
@@ -289,10 +308,13 @@ function createModal(data) {
     modalWrapper.innerHTML = clutter;
 
     const closeOnClickOutside = (e) => {
-        if (e.target.id === `${data.id}`) {
-            const form = e.target;
-            form.classList.add('scale-out');
-            form.addEventListener('animationend', () => {
+        const clickedId = e.target.id;
+        if (clickedId === `${data.id}-wrapper` || clickedId === `${data.id}`) {
+            const modal = document.getElementById(`${data.id}`);
+            const modalWrapper = document.getElementById(`${data.id}-wrapper`);
+
+            modal.classList.add('scale-out');
+            modal.addEventListener('animationend', () => {
                 modalWrapper.classList.add('fade-out');
                 modalWrapper.addEventListener('animationend', () => {
                     modalWrapper.remove();

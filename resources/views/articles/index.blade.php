@@ -295,6 +295,50 @@
                 });
             }
 
+            if (data.sales_rate == 0) {
+                modalData.bottomActions.push({id: 'add-rates', text: 'Add Rates', onclick: `addRatesModal(${JSON.stringify(data)})`});
+            }
+
+            createModal(modalData);
+        }
+
+        function addRatesModal(item) {
+            let modalData = {
+                id: 'addRatesModalForm',
+                method: "POST",
+                action: "{{ route('update-supplier-category') }}",
+                class: 'max-w-3xl h-[27rem]',
+                name: 'Add Rates',
+                fields: [
+                    {
+                        category: 'input',
+                        value: item.name + ' | ' + item.details.Category + ' | ' + item.details.Season + ' | ' + item.details.Size,
+                        full: true,
+                        disabled: true,
+                    },
+                    {
+                        category: 'hr',
+                    },
+                    {
+                        category: 'input',
+                        label: 'Title',
+                        id: 'title',
+                        placeholder: 'Enter Title',
+                        grow: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Rate',
+                        id: 'rate',
+                        type: 'number',
+                        placeholder: 'Enter Rate',
+                        onchange: 'addRate(this)',
+                        btnId: 'addRrate',
+                    },
+                ],
+                bottomActions: [],
+            }
+            
             createModal(modalData);
         }
     </script>
