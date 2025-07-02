@@ -118,7 +118,7 @@ function createModal(data) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
             <div class="w-full text-left grow text-sm">
-                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
                 <div class="overflow-y-auto my-scrollbar-2">
