@@ -837,16 +837,15 @@
         }
 
         function runDynamicFilter() {
-            console.log("hello");
-            
             const filters = document.querySelectorAll('[data-filter-path]');
             const noItemsError = document.getElementById("noItemsError");
 
             // Group filters by path
             const filterGroups = {};
-
+            
             filters.forEach(filter => {
                 const path = filter.dataset.filterPath;
+                
                 if (!filterGroups[path]) filterGroups[path] = [];
                 filterGroups[path].push(filter);
             });
@@ -883,7 +882,7 @@
 
                             if (!value) continue;
 
-                            if (input.type === "text") {
+                            if (input.type === "text" || input.type === "hidden") {
                                 if (!jsonVal.includes(value)) visible = false;
                             } else if (input.type === "select-one") {
                                 if (jsonVal !== value) visible = false;
@@ -923,7 +922,7 @@
         const debouncedFilter = debounce(runDynamicFilter, 300);
 
         document.querySelectorAll('[data-filter-path]').forEach(input => {
-            const eventType = (input.tagName === 'SELECT' || input.type === 'date') ? 'change' : 'input';
+            const eventType = (input.classList.contains("dbInput") || input.type === 'date') ? 'change' : 'input';
             input.addEventListener(eventType, debouncedFilter);
         });
 

@@ -29,7 +29,7 @@
                         'staff_type' => ['text' => 'Staff Type'],
                         'worker_type' => ['text' => 'Worker Type'],
                     ]"
-                    showDefault='true'
+                    showDefault
                 />
 
                 <!-- title -->
