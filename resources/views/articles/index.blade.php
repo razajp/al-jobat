@@ -249,7 +249,16 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
+                actions: [
+                    {id: 'Update Image', text: 'Update Image', onclick: `generateUpdateImageModal(${JSON.stringify(data)})`},
+                    {id: 'edit', text: 'Edit Article'},
+                ],
             };
+
+            
+            if (data.sales_rate == 0) {
+                contextMenuData.actions.push({id: 'add-rates', text: 'Add Rates', onclick: `generateAddRatesModal(${JSON.stringify(data)})`});
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -284,7 +293,9 @@
                     ],
                     body: data.rates_array,
                 },
-                bottomActions: [],
+                bottomActions: [
+                    {id: 'update-image', text: 'Update Image', onclick: `generateUpdateImageModal(${JSON.stringify(data)})`},
+                ],
             }
 
             if (data.ordered_quantity == 0) {
@@ -296,18 +307,123 @@
             }
 
             if (data.sales_rate == 0) {
-                modalData.bottomActions.push({id: 'add-rates', text: 'Add Rates', onclick: `addRatesModal(${JSON.stringify(data)})`});
+                modalData.bottomActions.push({id: 'add-rates', text: 'Add Rates', onclick: `generateAddRatesModal(${JSON.stringify(data)})`});
             }
 
             createModal(modalData);
         }
 
-        function addRatesModal(item) {
+        let ratesArray = [];
+
+        function enableDisableBtn(elem) {
+            const formDom = elem.closest('form');
+            
+            const btnDom = formDom.querySelector('#addRate');
+            const titleInpDom = formDom.querySelector('#title');
+            const rateInpDom = formDom.querySelector('#rate');
+
+            if (titleInpDom.value != '' && rateInpDom.value != '') {
+                btnDom.disabled = false;
+            } else {
+                btnDom.disabled = true;
+            }
+        }
+
+        function trackRateState(elem) {
+            enableDisableBtn(elem);
+
+            if (elem.dataset.listenerAdded === 'true') return;
+
+            elem.dataset.listenerAdded = 'true'; // Mark as handled
+
+            const formDom = elem.closest('form');
+            const addBtn = formDom.querySelector('#addRate');
+
+            elem.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    addRate(addBtn);
+                }
+            });
+        }
+
+        function deleteRate(elem) {
+            elem.closest('.flex')
+            const formDom = elem.closest('form');
+            const titleInpDom = formDom.querySelector('#title');
+
+            titleInpDom.focus();
+
+            let rate = parseFloat(elem.parentElement.previousElementSibling.innerText);
+
+            let title = elem.parentElement.previousElementSibling.previousElementSibling.innerText;
+            
+            ratesArray = ratesArray.filter(rate => rate.title !== title);
+            
+            renderRateList(elem.closest('#table-body'));
+        }
+
+        function renderRateList(tableBody) {
+            if (ratesArray.length > 0) {
+                tableBody.innerHTML = '';
+                ratesArray.forEach((rate, index) => {
+                    tableBody.innerHTML += `
+                        <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                            <div class="w-1/5">${index + 1}</div>
+                            <div class="grow ml-5">${rate.title}</div>
+                            <div class="w-1/4">${formatNumbersWithDigits(rate.rate, 2, 2)}</div>
+                            <div class="w-[10%] text-center">
+                                <button onclick="deleteRate(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                tableBody.innerHTML = `
+                    <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                        <div class="grow text-center text-[var(--border-error)]">No Rates yet.</div>
+                    </div>
+                `;
+            }
+            renderCalcBottom(tableBody.closest('form').querySelector('#calc-bottom'));
+            let formDom = tableBody.closest('form');
+            let ratesArrayInpDom = formDom.querySelector('input[name=rates_array]');
+            ratesArrayInpDom.value = JSON.stringify(ratesArray);
+        }
+
+        function renderCalcBottom(calcBottomElem) {
+            let totalInpDom = calcBottomElem.querySelector('#total');
+            let salesRateInpDom = calcBottomElem.querySelector('#sales_rate');
+            let pcsPerPacketInpDom = calcBottomElem.querySelector('#pcs_per_packet');
+
+            totalInpDom.value = ratesArray.reduce((sum, item) => sum + (parseFloat(item.rate) || 0), 0).toFixed(2);
+            salesRateInpDom.value = ratesArray.reduce((sum, item) => sum + (parseFloat(item.rate) || 0), 0).toFixed(2);
+        }
+
+        function addRate(elem) {
+            let rateObject = {};
+            const formDom = elem.closest('form');
+            const titleInpDom = formDom.querySelector('#title');
+            const rateInpDom = formDom.querySelector('#rate');
+            const tableBodyDom = formDom.querySelector('#table-body');
+            rateObject.title = titleInpDom.value;
+            rateObject.rate = rateInpDom.value;
+            ratesArray.push(rateObject);
+            titleInpDom.value = '';
+            rateInpDom.value = '';
+            titleInpDom.focus(); 
+            renderRateList(tableBodyDom)
+        }
+
+        function generateAddRatesModal(item) {
             let modalData = {
                 id: 'addRatesModalForm',
                 method: "POST",
-                action: "{{ route('update-supplier-category') }}",
-                class: 'max-w-3xl h-[27rem]',
+                action: "{{ route('add-rate') }}",
+                class: 'max-w-3xl h-[37rem]',
                 name: 'Add Rates',
                 fields: [
                     {
@@ -321,10 +437,24 @@
                     },
                     {
                         category: 'input',
+                        type: 'hidden',
+                        name: 'article_id',
+                        value: item.id,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'rates_array',
+                        value: '[]',
+                    },
+                    {
+                        category: 'input',
                         label: 'Title',
                         id: 'title',
                         placeholder: 'Enter Title',
+                        oninput: 'enableDisableBtn(this)',
                         grow: true,
+                        focus: true,
                     },
                     {
                         category: 'input',
@@ -332,11 +462,58 @@
                         id: 'rate',
                         type: 'number',
                         placeholder: 'Enter Rate',
-                        onchange: 'addRate(this)',
-                        btnId: 'addRrate',
+                        oninput: 'trackRateState(this)',
+                        btnId: 'addRate',
+                        onclick: 'addRate(this)',
                     },
                 ],
-                bottomActions: [],
+                table: {
+                    name: 'Rates',
+                    headers: [
+                        { label: "#", class: "w-1/5" },
+                        { label: "Title", class: "grow ml-5" },
+                        { label: "Rate", class: "w-1/4" },
+                        { label: "Action", class: "w-[10%]" },
+                    ],
+                },
+                calcBottom: [
+                    {label: 'Total - Rs.', name: 'total', value: '0.00', disabled: true},
+                    {label: 'Sales Rate - Rs.', name: 'sales_rate', value: '0.00'},
+                    {label: 'Pcs / Packet', name: 'pcs_per_packet', value: '0'},
+                ],
+                bottomActions: [
+                    {id: 'add', text: 'Add', type: 'submit'}
+                ],
+            }
+            
+            createModal(modalData);
+        }
+
+        function generateUpdateImageModal(item) {
+            let modalData = {
+                id: 'updateImageModalForm',
+                method: "POST",
+                action: "{{ route('update-image') }}",
+                class: 'h-auto',
+                name: 'Update Image',
+                fields: [
+                    {
+                        category: 'input',
+                        value: item.name + ' | ' + item.details.Category + ' | ' + item.details.Season + ' | ' + item.details.Size,
+                        full: true,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'article_id',
+                        value: item.id,
+                    },
+                ],
+                imagePicker: {id: 'image_upload', name: 'image_upload', placeholder: item.image == "no_image_icon.png" ? 'images/no_image_icon.png' : `${item.image}`, uploadText: 'Upload article image'},
+                bottomActions: [
+                    {id: 'add', text: 'Add', type: 'submit'}
+                ],
             }
             
             createModal(modalData);

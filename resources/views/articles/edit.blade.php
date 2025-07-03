@@ -202,7 +202,7 @@
                         </div>
                     </div>
                     @if(is_array($article->rates_array) && count($article->rates_array) > 0)
-                        <input type="hidden" name="rates_array" id="rates_array" value="{{ $article->rates_array }}" />
+                        <input type="hidden" name="rates_array" id="rates_array" value="{{ json_encode($article->rates_array) }}" />
                     @else
                         <input type="hidden" name="rates_array" id="rates_array" value="[]" />
                     @endif

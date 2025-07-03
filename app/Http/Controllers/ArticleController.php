@@ -231,6 +231,7 @@ class ArticleController extends Controller
     {
         // 
     }
+    
     public function updateImage(Request $request)
     {
         $article = Article::where('id', $request->article_id)->first();
@@ -274,6 +275,7 @@ class ArticleController extends Controller
             return redirect()->back()->with('error', 'Please upload an image');
         }
     }
+    
     public function addRate(Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))

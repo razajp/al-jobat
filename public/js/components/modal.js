@@ -84,49 +84,10 @@ function createModal(data) {
     }
 
     clutter += `
-        <div class="flex-1 ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
+        <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
             <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
             ${detailsHTML}
     `;
-
-    if (data.table) {
-        let headerHTML = '';
-        let bodyHTML = '';
-
-        data.table.headers.forEach(header => {
-            headerHTML += `<div class="${header.class}">${header.label}</div>`;
-        });
-
-        if (data.table.body.length > 0) {
-            data.table.body.forEach((data, index) => {
-                bodyHTML += `
-                    <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                        <div class="w-1/5">${index + 1}</div>
-                        <div class="grow ml-5">${data.title}</div>
-                        <div class="w-1/4">${formatNumbersWithDigits(data.rate, 2, 2)}</div>
-                    </div>
-                `;
-            });
-        } else {
-            bodyHTML += `
-                <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                    <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
-                </div>
-            `;
-        }
-
-        clutter += `
-            <hr class="w-full my-3 border-gray-600">
-            <div class="w-full text-left grow text-sm">
-                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
-                    ${headerHTML}
-                </div>
-                <div class="overflow-y-auto my-scrollbar-2">
-                    ${bodyHTML}
-                </div>
-            </div>
-        `;
-    }
 
     if (data.fields) {
         clutter += `
@@ -145,19 +106,24 @@ function createModal(data) {
                     }
                     
                     clutter += `
-                        ${field.grow ? '<div class="grow">' : ''}
-                        ${field.full ? '<div class="col-span-full">' : ''}
-                        <div class="form-group relative">
-                            <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
+                        <div class="${field.grow ? 'grow' : ''} ${field.full ? 'col-span-full' : ''}">
+                            <div class="form-group relative">
+                                <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
-                            <div class="relative flex gap-3">
-                                <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
-                                ${buttonHTML}
+                                <div class="relative flex gap-3">
+                                    <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                                    ${buttonHTML}
+                                </div>
                             </div>
                         </div>
-                        ${field.grow ? '</div>' : ''}
-                        ${field.full ? '</div>' : ''}
                     `;
+                    
+                    if (field.focus) {
+                        setTimeout(() => {
+                            const input = document.getElementById(`${field.id}`);
+                            if (input) input.focus();
+                        }, 0);
+                    }
                 } else {
                     clutter += `
                         <input id="${field.id ?? ''}" type="hidden" name="${field.name ?? ''}" value="${field.value ?? ''}">
@@ -213,6 +179,95 @@ function createModal(data) {
         });
 
         clutter += `
+            </div>
+        `;
+    }
+
+    if (data.imagePicker) {
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+
+            <div class="grid grid-cols-1 md:grid-cols-1">
+                <label for="${data.imagePicker.name}"
+                    class="border-dashed border-2 border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all duration-300 ease-in-out relative">
+                    <input id="${data.imagePicker.id}" type="file" name="${data.imagePicker.name}" accept="image/*"
+                        class="image_upload opacity-0 absolute inset-0 cursor-pointer"
+                        onchange="previewImage(event)" />
+                    <div id="image_preview_${data.imagePicker.id}" class="flex flex-col items-center max-w-[50%]">
+                        <img src="${data.imagePicker.placeholder}" alt="Upload Icon"
+                            class="placeholder_icon w-auto h-full mb-2 rounded-md" id="placeholder_icon_${data.imagePicker.id}" />
+                        <p id="upload_text_${data.imagePicker.id}" class="upload_text text-md text-gray-500">${data.imagePicker.uploadText}</p>
+                    </div>
+                </label>
+            </div>
+        `;
+    }
+
+    if (data.table) {
+        let headerHTML = '';
+        let bodyHTML = '';
+
+        data.table.headers.forEach(header => {
+            headerHTML += `<div class="${header.class}">${header.label}</div>`;
+        });
+
+        if (data.table.body?.length > 0) {
+            data.table.body.forEach((data, index) => {
+                bodyHTML += `
+                    <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                        <div class="w-1/5">${index + 1}</div>
+                        <div class="grow ml-5">${data.title}</div>
+                        <div class="w-1/4">${formatNumbersWithDigits(data.rate, 2, 2)}</div>
+                    </div>
+                `;
+            });
+        } else {
+            bodyHTML += `
+                <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                    <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
+                </div>
+            `;
+        }
+
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+            <div class="w-full text-left grow text-sm">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
+                    ${headerHTML}
+                </div>
+                <div id="table-body" class="overflow-y-auto my-scrollbar-2">
+                    ${bodyHTML}
+                </div>
+            </div>
+        `;
+    }
+
+    if (data.calcBottom && data.calcBottom.length > 0) {
+        let calcBottomClass = '';
+        let fieldsHTML = '';
+        const childCount = data.calcBottom.length;
+
+        if (childCount === 1 || childCount === 3) {
+            calcBottomClass = 'flex';
+        } else if (childCount === 2 || childCount === 4) {
+            calcBottomClass = 'grid', 'grid-cols-2';
+        } else if (childCount === 6) {
+            calcBottomClass = 'grid', 'grid-cols-3';
+        }
+
+        data.calcBottom.forEach(field => {
+            fieldsHTML += `
+                <div class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full ${field.disabled ? 'cursor-not-allowed' : ''}">
+                    <label for="${field.name}" class="text-nowrap grow">${field.label}</label>
+                    <input type="text" required name="${field.name}" id="${field.name}" value="${field.value}" ${field.disabled ? 'disabled' : ''} class="text-right bg-transparent outline-none border-none w-[50%]" />
+                </div>
+            `;
+        });
+
+        clutter += `
+            <hr class="w-full my-3 border-gray-600">
+            <div id="calc-bottom" class="${calcBottomClass} w-full gap-3 text-sm">
+                ${fieldsHTML}
             </div>
         `;
     }
