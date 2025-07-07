@@ -44,7 +44,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- pcs_per_packet  --}}
-                <x-input label="Maste Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter pcs. count per packet" required />
+                <x-input label="Master Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter master unit" required />
 
                 {{-- packets --}}
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />

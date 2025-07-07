@@ -189,7 +189,7 @@ class InvoiceController extends Controller
                 $orderedArticleDb = json_decode($orderDb["articles"], true);
     
                 // Update all matching articles
-                foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference to modify in place
+                foreach ($orderedArticleDb as $orderedArticle) { // Pass by reference to modify in place
                     if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
                         // Update invoice_quantity without overwriting existing value
                         $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];

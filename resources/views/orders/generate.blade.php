@@ -94,7 +94,7 @@
 
                 {{-- title --}}
                 <div class="grow">
-                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" searchable required showDefault
+                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" required showDefault onchange="trackCustomerState(this)"
                         class="grow" withButton btnId="generateOrderBtn" btnText="Select Articles" />
                 </div>
             </div>
@@ -174,8 +174,8 @@
         let isModalOpened = false;
         let isQuantityModalOpened = false;
 
-        customerSelectDom.addEventListener("change", (e) => {
-            let customerDataDom = customerSelectDom.options[customerSelectDom.selectedIndex].getAttribute('data-option');
+        function trackCustomerState(elem) {
+            let customerDataDom = elem.parentElement.querySelector('.optionsDropdown li.selected').getAttribute('data-option');
             customerData = JSON.parse(customerDataDom);
             selectedArticles = [];
             totalOrderedQuantity = 0;
@@ -184,11 +184,8 @@
             renderList();
             generateOrder();
             renderFinals();
-            trackStateOfCategoryBtn(e.target.value);
-        })
 
-        function trackStateOfCategoryBtn(value) {
-            if (value != "") {
+            if (elem.value != "") {
                 generateOrderBtn.disabled = false;
             } else {
                 generateOrderBtn.disabled = true;

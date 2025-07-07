@@ -99,50 +99,12 @@
                                 <div class="text-right pr-5">Status</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
-                                {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                            <div>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                </div>
                             </div>
-                                {{-- @if ($authLayout == 'grid')
-                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($articles as $article)
-                                            <div id="{{ $article->id }}" data-json='{{ $article }}'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'image' => $article->image == 'no_image_icon.png' 
-                                                        ? asset('images/no_image_icon.png') 
-                                                        : asset('storage/uploads/images/' . $article->image),
-                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
-                                                    'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                                    'name' => $article->article_no,
-                                                    'details' => [
-                                                        'Season' => str_replace('_', ' ', $article->season),
-                                                        'Size' => str_replace('_', ' ', $article->size),
-                                                        'Category' => ucfirst(str_replace('_', ' ', $article->category)),
-                                                    ],
-                                                ]" />
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                        <div>Article No.</div>
-                                        <div>Season</div>
-                                        <div>Size</div>
-                                        <div>Category</div>
-                                    </div>
-                                    <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                        @forEach ($articles as $article)
-                                            <div id="{{ $article->id }}" data-json='{{ $article }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                                <span>{{ $article->article_no }}</span>
-                                                <span>{{ str_replace('_', ' ', $article->season) }}</span>
-                                                <span>{{ str_replace('_', " ", $article->size) }}</span>
-                                                <span>{{ ucfirst(str_replace('_', " ", $article->category)) }}</span>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif --}}
-                            </div>
-                        {{-- <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p> --}}
+                        </div>
                     </div>
                 </div>
             @else

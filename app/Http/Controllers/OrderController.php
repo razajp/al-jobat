@@ -23,7 +23,7 @@ class OrderController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
 
-        $orders = Order::with('customer')->get();
+        $orders = Order::with('customer.city')->get();
 
         // Collect all article IDs from ordered articles
         $articleIds = $orders->flatMap(function ($order) {
