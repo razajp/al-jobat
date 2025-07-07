@@ -61,8 +61,17 @@ class FabricController extends Controller
             }
             return strtotime($b['date']) - strtotime($a['date']); // date DESC
         });
+        
+        $fabrics_options = [];
 
-        return view('fabrics.index', compact('finalData'));
+        $fabrics = Setup::where('type', 'fabric')->get();
+        foreach ($fabrics as $fabric) {
+            $fabrics_options[$fabric->title] = ["text" => $fabric->title,];
+        }
+
+        // return $fabrics_options;
+
+        return view('fabrics.index', compact('finalData', 'fabrics_options'));
     }
 
     /**

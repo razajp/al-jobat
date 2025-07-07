@@ -40,7 +40,7 @@
                         class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
                         <i class="text-xs fa-solid fa-filter"></i>
                     </button>
-                    <div class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transform scale-90 transition-all duration-300 ease-in-out z-[100] p-4">
+                    <div class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transition-all duration-300 ease-in-out z-[100] p-4">
                         <div class="header flex justify-between items-center p-1">
                             <h6 class="text-2xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
                             <div onclick="closeAllDropdowns()" class="text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
