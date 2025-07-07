@@ -17,7 +17,7 @@
         <!-- Modals -->
         <div id="modal"
             class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-            <x-modal id="modalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeModal">
+            <x-modal id="modalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closethisModal">
                 <!-- Modal Content Slot -->
                 <div class="flex items-start relative h-full">
                     <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
@@ -368,18 +368,13 @@
                 closeAllDropdowns();
             }
             
-            function closeModal() {
+            function closethisModal() {
                 isModalOpened = false;
                 let modal = document.getElementById('modal');
                 modal.classList.add('fade-out');
-
-                modal.addEventListener('animationend', () => {
-                    modal.classList.add('hidden');
-                    modal.classList.remove('fade-out');
-                }, {
-                    once: true
-                });
-
+                modal.classList.add('hidden');
+                modal.classList.remove('fade-out');
+                
                 setArrayToCustomersArrayInput();
             }
 
@@ -880,6 +875,8 @@
                         order_no: orderNoDom.value
                     },
                     success: function (response) {
+                        console.log(response);
+                        
                         orderedArticles = response.articles;
                         discount = response.discount ?? 0;
                         customerData = response.customer;
@@ -901,7 +898,9 @@
             const articleListDOM = document.getElementById('article-list');
 
             function renderList() {
+                
                 if (orderedArticles && orderedArticles.length > 0) {
+                    console.log('hello');
                     totalAmount = 0;
                     totalQuantityPcs = 0;
 

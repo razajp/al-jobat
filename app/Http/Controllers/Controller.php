@@ -118,7 +118,7 @@ class Controller extends BaseController
             return response()->json(["error" => $validator->errors()->first()]);
         }
 
-        $order = Order::with('customer')->where("order_no", $request->order_no)->first();
+        $order = Order::with('customer.city')->where("order_no", $request->order_no)->first();
         $order->articles = json_decode($order->articles);
 
         if (!$request->boolean('only_order')) {

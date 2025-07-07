@@ -47,9 +47,9 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container py-0 p-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-3 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-left pl-5 col-span-2">Order No.</div>
-                                <div class="text-left pl-5">Customer</div>
-                                <div class="text-right pr-5">Date</div>
+                                <div class="text-center">Order No.</div>
+                                <div class="text-center">Customer</div>
+                                <div class="text-center">Date</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>
@@ -78,18 +78,12 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid text- grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid text- grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="text-left pl-5 col-span-2">${data.name}</span>
-                <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
-                <span class="text-center capitalize">${data.details["Category"]}</span>
-                <span class="text-center capitalize">${data.city}</span>
-                <span class="text-center">${data.phone_number}</span>
-                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
-                <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
-                    ${data.user.status}
-                </span>
+                <span class="text-center">${data.name}</span>
+                <span class="text-center">${data.details["Customer"]}</span>
+                <span class="text-center">${data.details['Date']}</span>
             </div>`;
         }
 
@@ -109,6 +103,92 @@
             };
         });
 
+        function printOrder(elem) {
+            closeAllDropdowns();
+
+            if (elem.parentElement.tagName.toLowerCase() === 'li') {
+                elem.parentElement.parentElement.querySelector('#show-details').click();
+                document.getElementById('modalForm').parentElement.classList.add('hidden');
+            }
+
+            const preview = document.getElementById('preview-container'); // preview content
+
+            // Pehle se agar koi iframe hai to usko remove karein
+            let oldIframe = document.getElementById('printIframe');
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+
+            // Naya iframe banayein
+            let printIframe = document.createElement('iframe');
+            printIframe.id = "printIframe";
+            printIframe.style.position = "absolute";
+            printIframe.style.width = "0px";
+            printIframe.style.height = "0px";
+            printIframe.style.border = "none";
+            printIframe.style.display = "none"; // ✅ Hide iframe
+
+            // Iframe ko body me add karein
+            document.body.appendChild(printIframe);
+
+            let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+            printDocument.open();
+
+            // ✅ Current page ke CSS styles bhi iframe me inject karenge
+            const headContent = document.head.innerHTML;
+
+            printDocument.write(`
+                <html>
+                    <head>
+                        <title>Print Order</title>
+                        ${headContent} <!-- Copy current styles -->
+                        <style>
+                            @media print {
+
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    width: 210mm; /* A4 width */
+                                    height: 297mm; /* A4 height */
+                                    
+                                }
+
+                                .preview-container, .preview-container * {
+                                    page-break-inside: avoid;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    </body>
+                </html>
+            `);
+
+            printDocument.close();
+
+            // Wait for iframe to load and print
+            printIframe.onload = () => {
+                let orderCopy = printDocument.querySelector('#preview-container .order-copy');
+                if (orderCopy) {
+                    orderCopy.textContent = "Order Copy: Office";
+                }
+
+                // Listen for after print in the iframe's window
+                printIframe.contentWindow.onafterprint = () => {
+                    console.log("Print dialog closed");
+                };
+
+                setTimeout(() => {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                }, 1000);
+
+                document.getElementById('modalForm').parentElement.remove();
+            };
+        }
+        
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');
@@ -119,10 +199,9 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
-                action: "{{ route('update-user-status') }}",
                 actions: [
-                    {id: 'edit', text: 'Edit Customer'}
-                ],
+                    {id: 'print', text: 'Print Order', onclick: 'printOrder(this)'}
+                ]
             };
 
             createContextMenu(contextMenuData);
@@ -133,7 +212,10 @@
 
             let modalData = {
                 id: 'modalForm',
-                preview: {type: 'invoice', data: data.data, document: 'Sales Order'},
+                preview: {type: 'order', data: data.data, document: 'Sales Order'},
+                bottomActions: [
+                    {id: 'print', text: 'Print Order', onclick: 'printOrder(this)'}
+                ],
             }
 
             createModal(modalData);

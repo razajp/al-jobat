@@ -105,14 +105,17 @@
                 </li>
             @endif
 
-            @foreach ($options as $optionValue => $optionText)
+            @foreach ($options as $optionValue => $option)
                 <li
                     data-for="{{ $id }}"
                     data-value="{{ $optionValue }}"
                     onmousedown="selectThisOption(this)"
+                    @if (isset($option['data_option']))
+                        data-option="{{ $option['data_option'] }}"
+                    @endif
                     class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 {{ !$isDisabled && $optionValue == $resolvedValue ? 'selected' : '' }}"
                 >
-                    {{ $optionText['text'] }}
+                    {{ $option['text'] }}
                 </li>
             @endforeach
         </ul>

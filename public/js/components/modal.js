@@ -331,7 +331,7 @@ function createModal(data) {
                                 </div>
                             </div>
                             <div class="right">
-                                <div class="invoice-logo text-right">
+                                <div class="logo text-right">
                                     <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">${data.preview.document}</h1>
                                     <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
                                 </div>

@@ -175,17 +175,18 @@
         let isQuantityModalOpened = false;
 
         function trackCustomerState(elem) {
-            let customerDataDom = elem.parentElement.querySelector('.optionsDropdown li.selected').getAttribute('data-option');
-            customerData = JSON.parse(customerDataDom);
-            selectedArticles = [];
-            totalOrderedQuantity = 0;
-            totalOrderAmount = 0;
-            netAmount = 0;
-            renderList();
-            generateOrder();
-            renderFinals();
-
             if (elem.value != "") {
+                let customerDataDom = elem.parentElement.querySelector('.optionsDropdown li.selected').getAttribute('data-option');
+                
+                customerData = JSON.parse(customerDataDom);
+                selectedArticles = [];
+                totalOrderedQuantity = 0;
+                totalOrderAmount = 0;
+                netAmount = 0;
+                renderList();
+                generateOrder();
+                renderFinals();
+
                 generateOrderBtn.disabled = false;
             } else {
                 generateOrderBtn.disabled = true;
@@ -409,8 +410,6 @@
             calculateNetAmount();
             renderTotals();
             closeQuantityModal();
-
-            console.log(selectedArticles);
         }
 
         function deselectArticleAtIndex(index) {
@@ -421,10 +420,7 @@
 
         function deselectThisArticle(index) {
             deselectArticleAtIndex(index);
-
-            console.log(selectedArticles);
             
-
             renderList();
             generateOrder();
 
@@ -714,11 +710,7 @@
                     date: inputElem.value,
                 },
                 success: function(response) {
-                    const customerSelectDom = document.getElementById('customer_id');
-                    if (customerSelectDom.value == "") {
-                        populateOptions(response);
-                    }
-
+                    populateOptions(response);
                     populateCards(response);
                 },
                 error: function() {
@@ -777,8 +769,6 @@
                 cardsDom.forEach((card) => {
                     cardsDataArray.push(JSON.parse(card.dataset.json));
                 })
-
-                // setFilter('all');
             }
 
             if (selectedArticles.length > 0) {
@@ -888,8 +878,6 @@
         }
 
         function reRenderSelectedStateTotal() {
-            console.log(totalOrderedQuantity);
-            
             totalQuantityDOM = document.getElementById('totalOrderedQty');
             totalAmountDOM = document.getElementById('totalOrderAmount');
             renderTotals();
