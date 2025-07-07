@@ -308,23 +308,24 @@ function createModal(data) {
     }
 
     if (data.preview) {
-        let cottonCount = 0;
         let previewData = data.preview.data;
+        let cottonCount = previewData.cotton_count || 0;
         let totalAmount = 0;
         let totalQuantity = 0;
-        let discount = 0;
-        let previousBalance = 0;
-        let netAmount = 0;
-        let currentBalance = 0;
+        let discount = previewData.discount || previewData.shipment?.discount;
+        let previousBalance = previewData.previous_balance || 0;
+        let netAmount = previewData.netAmount || previewData.shipment?.netAmount;
+        let currentBalance = previewData.current_balance;
+
         console.log(previewData);
         
         clutter += `
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
                 <div id="preview" class="preview flex flex-col h-full">
-                    <div id="order" class="order flex flex-col h-full">
-                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 px-5">
+                    <div class="flex flex-col h-full">
+                        <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
-                                <div class="order-logo">
+                                <div class="logo">
                                     <img src="images/${companyData.logo}" alt="Track Point"
                                         class="w-[12rem]" />
                                     <div class='mt-1'>${ companyData.phone_number }</div>
@@ -334,38 +335,41 @@ function createModal(data) {
                                 <div class="logo text-right">
                                     <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">${data.preview.document}</h1>
                                     <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                    ${previewData.shipment_no ? '<div class="mt-1 text-right">Shipment No.: ' + previewData.shipment_no + ' </div>' : ''}
+                                    ${previewData.order_no ? '<div class="mt-1 text-right">Order No.: ' + previewData.order_no + ' </div>' : ''}
                                 </div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div id="order-header" class="order-header w-full flex justify-between px-5">
+                        <div id="header" class="header w-full flex justify-between px-5">
                             <div class="left w-50 space-y-1">
-                                <div class="order-customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
-                                <div class="order-person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
-                                <div class="order-address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
-                                <div class="order-phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
+                                <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
+                                <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
+                                <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
                             </div>
                             <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
-                                <div class="order-date leading-none">Date: ${previewData.date}</div>
-                                <div class="order-number leading-none">Order No.: ${previewData.order_no}</div>
-                                <div class="order-copy leading-none">Order Copy: Customer</div>
-                                <div class="order-copy leading-none">Document: ${data.preview.document}</div>
+                                <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: Customer</div>
+                                <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div id="order-body" class="order-body w-[95%] grow mx-auto">
-                            <div class="order-table w-full">
+                        <div class="body w-[95%] grow mx-auto">
+                            <div class="table w-full">
                                 <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                            <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                            <div class="th text-sm font-medium w-[13%]">Article</div>
-                                            <div class="th text-sm font-medium grow">Description</div>
-                                            <div class="th text-sm font-medium w-[10%]">Pcs.</div>
-                                            <div class="th text-sm font-medium w-[10%]">Packets</div>
-                                            <div class="th text-sm font-medium w-[10%]">Rate</div>
-                                            <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                            <div class="th text-sm font-medium w-[8%]">Dispatch</div>
+                                        <div class="tr grid grid-cols-9 justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                            <div class="th text-sm font-medium ">S.No</div>
+                                            <div class="th text-sm font-medium ">Article</div>
+                                            <div class="th text-sm font-medium col-span-2">Description</div>
+                                            <div class="th text-sm font-medium ">Pcs.</div>
+                                            <div class="th text-sm font-medium ">Packets</div>
+                                            ${data.preview.type == 'invoice' ? '<div class="th text-sm font-medium ">Unit</div>' : ''}
+                                            <div class="th text-sm font-medium ">Rate/Pc.</div>
+                                            <div class="th text-sm font-medium ">Amount</div>
+                                            ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
@@ -373,28 +377,26 @@ function createModal(data) {
                                             const article = orderedArticle.article;
                                             const salesRate = article.sales_rate;
                                             const orderedQuantity = orderedArticle.ordered_quantity;
-                                            const total = parseInt(salesRate) * orderedQuantity;
+                                            const invoiceQuantity = orderedArticle.invoice_quantity;
+                                            const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity);
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                                             totalAmount += total;
-                                            totalQuantity += orderedQuantity;
+                                            totalQuantity += orderedQuantity || invoiceQuantity;
 
                                             return `
                                                 <div>
                                                     <hr class="w-full ${hrClass} border-black">
-                                                    <div class="tr flex justify-between w-full px-4">
-                                                        <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                        <div class="td text-sm font-semibold w-[13%]">${article.article_no}</div>
-                                                        <div class="td text-sm font-semibold grow">${orderedArticle.description}</div>
-                                                        <div class="td text-sm font-semibold w-[10%]">${orderedQuantity}</div>
-                                                        <div class="td text-sm font-semibold w-[10%]">${article?.pcs_per_packet ? Math.floor(orderedArticle.ordered_quantity / article.pcs_per_packet) : 0}</div>
-                                                        <div class="td text-sm font-semibold w-[10%]">
-                                                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(salesRate)}
-                                                        </div>
-                                                        <div class="td text-sm font-semibold w-[10%]">
-                                                            ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(total)}
-                                                        </div>
-                                                        <div class="td text-sm font-semibold w-[8%]"></div>
+                                                    <div class="tr grid grid-cols-9 justify-between w-full px-4">
+                                                        <div class="td text-sm font-semibold ">${index + 1}.</div>
+                                                        <div class="td text-sm font-semibold ">${article.article_no}</div>
+                                                        <div class="td text-sm font-semibold col-span-2">${orderedArticle.description}</div>
+                                                        <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity}</div>
+                                                        <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity) / article.pcs_per_packet) : 0}</div>
+                                                        ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}
+                                                        <div class="td text-sm font-semibold ">${formatNumbersWithDigits(salesRate, 1, 1)}</div>
+                                                        <div class="td text-sm font-semibold ">${formatNumbersWithDigits(total, 1, 1)}</div>
+                                                        ${data.preview.type == 'order' ? '<div class="td text-sm font-semibold "></div>' : ''}
                                                     </div>
                                                 </div>
                                             `;
@@ -404,37 +406,37 @@ function createModal(data) {
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="flex flex-col space-y-2">
-                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Total Quantity - Pcs</div>
-                                    <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US').format(totalQuantity)}</div>
-                                </div>
-                                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Total Amount</div>
-                                    <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(totalAmount)}</div>
-                                </div>
-                                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Discount - %</div>
-                                    <div class="w-1/4 text-right grow">${discount}</div>
-                                </div>
+                        <div class="grid ${data.preview.type == 'order' ? 'grid-cols-3' : 'grid-cols-2'} gap-2">
+                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                <div class="text-nowrap">Total Quantity - Pcs</div>
+                                <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
                             </div>
-                            <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
+                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                <div class="text-nowrap">Total Amount</div>
+                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                            </div>
+                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                <div class="text-nowrap">Discount - %</div>
+                                <div class="w-1/4 text-right grow">${discount}</div>
+                            </div>
+                            ${data.preview.type == 'order' ? `
                                 <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                     <div class="text-nowrap">Previous Balance</div>
                                     <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
                                 </div>
-                                <div
-                                    class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Net Amount</div>
-                                    <div class="w-1/4 text-right grow">${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(netAmount)}</div>
-                                </div>
+                            ` : ''}
+                            <div
+                                class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                                <div class="text-nowrap">Net Amount</div>
+                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
+                            </div>
+                            ${data.preview.type == 'order' ? `
                                 <div
                                     class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                     <div class="text-nowrap">Current Balance</div>
                                     <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
                                 </div>
-                            </div>
+                            ` : ''}
                         </div>
                         <hr class="w-full my-3 border-black">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">

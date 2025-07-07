@@ -120,7 +120,7 @@
             };
         });
 
-        function printOrder(elem) {
+        function printInvoice(elem) {
             closeAllDropdowns();
 
             if (elem.parentElement.tagName.toLowerCase() === 'li') {
@@ -157,7 +157,7 @@
             printDocument.write(`
                 <html>
                     <head>
-                        <title>Print Order</title>
+                        <title>Print Invoice</title>
                         ${headContent} <!-- Copy current styles -->
                         <style>
                             @media print {
@@ -187,9 +187,9 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
-                let orderCopy = printDocument.querySelector('#preview-container .order-copy');
-                if (orderCopy) {
-                    orderCopy.textContent = "Order Copy: Office";
+                let invoiceCopy = printDocument.querySelector('#preview-container .preview-copy');
+                if (invoiceCopy) {
+                    invoiceCopy.textContent = "Invoice Copy: Office";
                 }
 
                 // Listen for after print in the iframe's window
@@ -217,7 +217,7 @@
                 x: e.pageX,
                 y: e.pageY,
                 actions: [
-                    {id: 'print', text: 'Print Order', onclick: 'printOrder(this)'}
+                    {id: 'print', text: 'Print Invoice', onclick: 'printInvoice(this)'}
                 ]
             };
 
@@ -229,9 +229,9 @@
 
             let modalData = {
                 id: 'modalForm',
-                preview: {type: 'order', data: data.data, document: 'Sales Order'},
+                preview: {type: 'invoice', data: data.data, document: 'Sales Invoice'},
                 bottomActions: [
-                    {id: 'print', text: 'Print Order', onclick: 'printOrder(this)'}
+                    {id: 'print', text: 'Print Invoice', onclick: 'printInvoice(this)'}
                 ],
             }
 

@@ -170,7 +170,7 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
-                let orderCopy = printDocument.querySelector('#preview-container .order-copy');
+                let orderCopy = printDocument.querySelector('#preview-container .preview-copy');
                 if (orderCopy) {
                     orderCopy.textContent = "Order Copy: Office";
                 }
