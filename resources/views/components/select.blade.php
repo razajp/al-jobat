@@ -44,7 +44,7 @@
     .optionsDropdown {
         opacity: 0;
         pointer-events: none;
-        transition: .3s ease-in-out all;
+        transition: opacity 0.3s ease-in-out, translate 0.3s ease-in-out;
         translate: 0 -10px;
     }
     .selectParent:has(input:focus) .optionsDropdown {
@@ -64,7 +64,7 @@
         </label>
     @endif
 
-    <div class="selectParent relative flex gap-4">
+    <div class="selectParent flex gap-4">
         {{-- Visible Input --}}
         <x-input
             id="{{ $id }}"
@@ -75,6 +75,7 @@
             :disabled="$isDisabled"
             :value="$isDisabled ? '' : $selectedText"
             :placeholder="$placeholderText"
+            onmousedown="selectClicked(this)"
         />
 
         {{-- Hidden Input --}}
@@ -90,7 +91,7 @@
 
         {{-- Dropdown List --}}
         <ul
-            class="optionsDropdown absolute z-50 top-full mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[14rem] overflow-auto my-scrollbar-2 space-y-0.5"
+            class="optionsDropdown fixed z-50 mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[14rem] overflow-auto my-scrollbar-2 space-y-0.5"
             data-for="{{ $id }}"
         >
             @if ($showDefault === true && $haveOptions)

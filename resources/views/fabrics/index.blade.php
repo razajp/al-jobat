@@ -15,37 +15,28 @@
                 'type' => 'text',
                 'placeholder' => 'Enter supplier name',
                 'oninput' => 'runDynamicFilter()',
-                'dataFilterPath' => 'supplier.supplier_name',
+                'dataFilterPath' => 'supplier_name',
             ],
             'Worker Name' => [
-                'id' => 'worker_name',
+                'id' => 'employee_name',
                 'type' => 'text',
                 'placeholder' => 'Enter worker name',
                 'oninput' => 'runDynamicFilter()',
-                'dataFilterPath' => 'worker.worker_name',
+                'dataFilterPath' => 'employee_name',
             ],
-            'Category' => [
-                'id' => 'category',
+            'Fabric' => [
+                'id' => 'fabric',
                 'type' => 'select',
-                'options' => [
-                    'supplier' => ['text' => 'Supplier'],
-                    'self_account' => ['text' => 'Self Account'],
-                    'customer' => ['text' => 'Customer'],
-                    'waiting' => ['text' => 'Waiting'],
-                ],
+                'options' => $fabrics_options,
                 'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'Category',
+                'dataFilterPath' => 'fabric',
             ],
-            'Status' => [
-                'id' => 'status',
-                'type' => 'select',
-                'options' => [
-                    'paid' => ['text' => 'Paid'],
-                    'unpaid' => ['text' => 'Unpaid'],
-                    'overpaid' => ['text' => 'Overpaid'],
-                ],
-                'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'status',
+            'Tag' => [
+                'id' => 'tag',
+                'type' => 'text',
+                'placeholder' => 'Enter tag',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'tag',
             ],
             'Date Range' => [
                 'id' => 'date_range_start',
@@ -77,7 +68,7 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="data_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                <div class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                                <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
                                     <div class="text-center w-[10%]">Date</div>
                                     <div class="text-center w-[15%]">Supplier / Worker</div>
                                     <div class="text-center w-[10%]">Fabric</div>
@@ -88,27 +79,11 @@
                                     <div class="text-center w-[20%]">Tag</div>
                                     <div class="text-center w-[10%]">Type</div>
                                 </div>
-
-                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @foreach ($finalData as $data)
-                                        <div id="{{ $data['id'] }}" data-json="{{ json_encode($data) }}"
-                                            class="relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center w-[10%]">{{ date('d-M-Y, D', strtotime($data['date'])) }}</span>
-                                            <span class="text-center w-[15%] capitalize">{{ $data['supplier_name'] ?? $data['employee_name'] }}</span>
-                                            <span class="text-center w-[10%] capitalize">{{ $data['fabric'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%] capitalize">{{ $data['remarks'] ??'-' }}</span>
-                                            <span class="text-center w-[10%] capitalize">{{ $data['color'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%] capitalize">{{ $data['unit'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%]">{{ number_format($data['quantity'] ?? '0', 1) }}</span>
-                                            <span class="text-center w-[20%]">{{ $data['tag'] ?? '-' }}</span>
-                                            <span class="text-center w-[10%]">{{ $data['type'] ?? '-' }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
+                                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
+                                <div class="search_container overflow-y-auto grow my-scrollbar-2"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
                 @else
                     <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Fabrics yet</h1>
@@ -120,4 +95,60 @@
             </div>
         </section>
     </div>
+
+    <script>
+        let currentUserRole = '{{ Auth::user()->role }}';
+        let authLayout = 'table';
+
+        function createRow(data) {
+            return `
+            <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                class="item row relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                data-json='${JSON.stringify(data)}'>
+                
+                <span class="text-center w-[10%]">
+                    ${new Date(data.date).toLocaleDateString('en-GB', {
+                        day: '2-digit',
+                        month: 'short',
+                        year: 'numeric',
+                        weekday: 'short'
+                    }).replace(',', '')}
+                </span>
+                <span class="text-center w-[15%] capitalize">${data.supplier_name ?? data.employee_name}</span>
+                <span class="text-center w-[10%] capitalize">${data.fabric ?? "-"}</span>
+                <span class="text-center w-[10%] capitalize">${data.remarks ?? "-"}</span>
+                <span class="text-center w-[10%] capitalize">${data.color ?? "-"}</span>
+                <span class="text-center w-[10%] capitalize">${data.unit ?? "-"}</span>
+                <span class="text-center w-[10%]">${data.quantity ?? "-"}</span>
+                <span class="text-center w-[20%]">${data.tag ?? "-"}</span>
+                <span class="text-center w-[10%]">${data.type ?? "-"}</span>
+            </div>`;
+        }
+
+        const fetchedData = @json($finalData);
+        let allDataArray = fetchedData.map(item => {
+            return {
+                id: item.id,
+                supplier_name: item.supplier_name,
+                employee_name: item.employee_name,
+                fabric: item.fabric,
+                remarks: item.remarks,
+                color: item.color,
+                unit: item.unit,
+                quantity: item.quantity,
+                tag: item.tag,
+                type: item.type,
+                date: item.date,
+                
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
+                
+                profile: true,
+                visible: true,
+            };
+        });
+
+        console.log(allDataArray);
+        
+    </script>
 @endsection

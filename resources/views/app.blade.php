@@ -448,19 +448,19 @@
         
                     if (dropdownMenu.classList.contains('hidden')) {
                         dropdownMenus.forEach(menu => {
-                            menu.classList.remove('opacity-100', 'scale-100');
-                            menu.classList.add('opacity-0', 'scale-95');
+                            menu.classList.remove('opacity-100', "scale-in");
+                            menu.classList.add('opacity-0', "scale-out");
                             menu.classList.add('hidden');
                         });
 
                         dropdownMenu.classList.remove('hidden');
                         setTimeout(() => {
-                            dropdownMenu.classList.add('opacity-100', 'scale-100');
-                            dropdownMenu.classList.remove('opacity-0', 'scale-95');
+                            dropdownMenu.classList.add('opacity-100', "scale-in");
+                            dropdownMenu.classList.remove('opacity-0', "scale-out");
                         }, 10);
                     } else {
-                        dropdownMenu.classList.remove('opacity-100', 'scale-100');
-                        dropdownMenu.classList.add('opacity-0', 'scale-95');
+                        dropdownMenu.classList.remove('opacity-100', "scale-in");
+                        dropdownMenu.classList.add('opacity-0', "scale-out");
                         setTimeout(() => {
                             dropdownMenu.classList.add('hidden');
                         }, 300);
@@ -484,8 +484,9 @@
 
         function closeAllDropdowns() {
             dropdownMenus.forEach(menu => {
-                menu.classList.remove('opacity-100', 'scale-100');
-                menu.classList.add('opacity-0', 'scale-95');
+                // scale-100 scale-95
+                menu.classList.remove('opacity-100', 'scale-in');
+                menu.classList.add('opacity-0', 'scale-out');
                 setTimeout(() => {
                     menu.classList.add('hidden');
                 }, 300);
@@ -832,11 +833,30 @@
 
         renderData(); // initial load
 
+        function renderFilteredData() {
+            if (authLayout == "grid") {
+                tableHead.classList.add("hidden");
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 pb-0 p-2 overflow-y-auto grow my-scrollbar-2";
+            } else {
+                tableHead.classList.remove("hidden");
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3";
+            }
+            search_container.innerHTML = "";
+
+            const html = newlyFilteredData
+                .filter(item => item.visible === true)
+                .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
+                .join('');
+            search_container.insertAdjacentHTML('beforeend', html);
+        }
+
         function getNestedValue(obj, path) {
             return path.split('.').reduce((acc, part) => acc?.[part], obj);
         }
 
+        let newlyFilteredData = [];
         function runDynamicFilter() {
+            newlyFilteredData = [];
             const filters = document.querySelectorAll('[data-filter-path]');
             const noItemsError = document.getElementById("noItemsError");
 
@@ -851,11 +871,12 @@
             });
 
             allDataArray.forEach(item => {
+                let tempItem = item;
                 let visible = true;
 
                 for (const path in filterGroups) {
                     const group = filterGroups[path];
-                    const jsonVal = (getNestedValue(item, path) || "").toString().toLowerCase();
+                    const jsonVal = (getNestedValue(tempItem, path) || "").toString().toLowerCase();
 
                     // Handle date range
                     if (group.length === 2 && group[0].type === "date" && group[1].type === "date") {
@@ -904,9 +925,11 @@
                     if (!visible) break;
                 }
 
-                item.visible = visible;
+                tempItem.visible = visible;
+
+                newlyFilteredData.push(tempItem);
             });
-            renderData();
+            renderFilteredData();
 
             noItemsError.style.display = allDataArray.every(i => i.visible == false) ? "block" : "none";
         }
@@ -1034,6 +1057,18 @@
         if (firstOption) {
             selectThisOption(firstOption);
         }
+    }
+
+    function selectClicked(input) {
+        const inputRect = input.getBoundingClientRect();
+        const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
+
+        console.log(inputRect);
+        
+
+        dropdown.style.width = inputRect.width + "px";
+        dropdown.style.top = (inputRect.top + inputRect.height) + "px";
+        dropdown.style.left = inputRect.left + "px";
     }
 </script>
 
