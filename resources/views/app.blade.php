@@ -974,8 +974,6 @@
     }
 
     function selectThisOption(optionLiElem) {
-        console.log(optionLiElem);
-        
         const forId = optionLiElem.dataset.for;
 
         const selectSearch = document.getElementById(forId);
@@ -1061,13 +1059,13 @@
         }
     }
 
+    document.querySelectorAll(".selectParent .dbInput")
+        .forEach(dbInput => selectFirstOption(dbInput.dataset.for));
+
     function selectClicked(input) {
         const inputRect = input.getBoundingClientRect();
         const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
-
-        console.log(inputRect);
         
-
         dropdown.style.width = inputRect.width + "px";
         dropdown.style.top = (inputRect.top + inputRect.height) + "px";
         dropdown.style.left = inputRect.left + "px";

@@ -17,7 +17,7 @@
 
     <!-- Dropdown Menu -->
     <div
-        class="dropdownMenu text-sm absolute top-0 left-16 hidden group-hover:block border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
+        class="dropdownMenu text-sm absolute top-0 left-16 hidden group-hover:block border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-[1000]">
         <ul class="p-2">
             @foreach ($items as $item)
                 @if ($item['type'] === 'group')

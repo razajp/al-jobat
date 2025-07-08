@@ -96,6 +96,7 @@
                     :options="$categories_options"
                     required
                     showDefault
+                    onchange="trackStateOfCategoryBtn(this)"
                     class="grow"
                     withButton
                     btnId="addCategoryBtn"
@@ -149,12 +150,12 @@
         let categoriesArray = [];
         addCategoryBtnDom.disabled = true;
 
-        categorySelectDom.addEventListener("change", (e) => {
-            trackStateOfCategoryBtn(e.target.value);
-        })
+        // categorySelectDom.addEventListener("change", (e) => {
+        //     trackStateOfCategoryBtn(e.target.value);
+        // })
 
-        function trackStateOfCategoryBtn(value){
-            if (value != "") {
+        function trackStateOfCategoryBtn(elem){
+            if (elem.value != "") {
                 addCategoryBtnDom.disabled = false;
             } else {
                 addCategoryBtnDom.disabled = true;
@@ -171,7 +172,8 @@
             }
 
             let selectedCategoryId = categorySelectDom.value;  // Get category ID
-            let selectedCategoryName = categorySelectDom.options[categorySelectDom.selectedIndex].text;  // Get category name
+            
+            let selectedCategoryName = categorySelectDom.parentElement.parentElement.parentElement.querySelector("ul li.selected").textContent.trim();  // Get category name
 
             // Check for duplicates based on ID
             if (categoriesArray.includes(selectedCategoryId)) {

@@ -167,7 +167,7 @@
             renderList();
 
             if (supplierSelectDom.value != '') {
-                selectedSupplier = JSON.parse(supplierSelectDom.options[supplierSelectDom.selectedIndex].dataset.option);
+                selectedSupplier = JSON.parse(supplierSelectDom.parentElement.parentElement.parentElement.querySelector("ul li.selected").dataset.option);
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
                 dateDom.min = selectedSupplier.date.toString().split('T')[0];

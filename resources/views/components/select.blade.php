@@ -75,7 +75,7 @@
             :disabled="$isDisabled"
             :value="$isDisabled ? '' : $selectedText"
             :placeholder="$placeholderText"
-            onmousedown="selectClicked(this)"
+            onfocus="selectClicked(this)"
         />
 
         {{-- Hidden Input --}}

@@ -122,6 +122,7 @@
                 },
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
+                profile: true,
                 visible: true,
             };
         });
