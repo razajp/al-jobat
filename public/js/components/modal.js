@@ -382,16 +382,16 @@ function createModal(data) {
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
                                     <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
                                 ` : '' }
-                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: Customer</div>
+                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: ${data.preview.type == 'shipment' ? 'Staff' : 'Customer'}</div>
                                 <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="body w-[95%] grow mx-auto">
+                        <div class="body w-full px-5 grow mx-auto">
                             <div class="table w-full">
                                 <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr grid grid-cols-9 justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                        <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                             <div class="th text-sm font-medium ">S.No</div>
                                             <div class="th text-sm font-medium ">Article</div>
                                             <div class="th text-sm font-medium col-span-2">Description</div>
@@ -409,21 +409,22 @@ function createModal(data) {
                                             const salesRate = article.sales_rate;
                                             const orderedQuantity = orderedArticle.ordered_quantity;
                                             const invoiceQuantity = orderedArticle.invoice_quantity;
-                                            const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity);
+                                            const shipmentQuantity = orderedArticle.shipment_quantity;
+                                            const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity || shipmentQuantity);
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                                             totalAmount += total;
-                                            totalQuantity += orderedQuantity || invoiceQuantity;
+                                            totalQuantity += orderedQuantity || invoiceQuantity || shipmentQuantity;
 
                                             return `
                                                 <div>
                                                     <hr class="w-full ${hrClass} border-black">
-                                                    <div class="tr grid grid-cols-9 justify-between w-full px-4">
+                                                    <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
                                                         <div class="td text-sm font-semibold ">${index + 1}.</div>
                                                         <div class="td text-sm font-semibold ">${article.article_no}</div>
                                                         <div class="td text-sm font-semibold col-span-2">${orderedArticle.description}</div>
-                                                        <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity}</div>
-                                                        <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity) / article.pcs_per_packet) : 0}</div>
+                                                        <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity || shipmentQuantity}</div>
+                                                        <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity || shipmentQuantity) / article.pcs_per_packet) : 0}</div>
                                                         ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}
                                                         <div class="td text-sm font-semibold ">${formatNumbersWithDigits(salesRate, 1, 1)}</div>
                                                         <div class="td text-sm font-semibold ">${formatNumbersWithDigits(total, 1, 1)}</div>
@@ -437,7 +438,7 @@ function createModal(data) {
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="grid ${data.preview.type == 'order' ? 'grid-cols-3' : 'grid-cols-2'} gap-2">
+                        <div class="grid ${data.preview.type == 'order' ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5">
                             <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                 <div class="text-nowrap">Total Quantity - Pcs</div>
                                 <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
@@ -470,7 +471,7 @@ function createModal(data) {
                             ` : ''}
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
+                        <div class="tfooter flex w-full text-sm px-5 justify-between mb-4 text-black">
                             <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
