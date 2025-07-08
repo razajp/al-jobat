@@ -109,7 +109,7 @@
         const balanceInput = document.getElementById('balance');
 
         function supplierSelected(supplierElem) {
-            const selectedOptionDataset = supplierElem.options[supplierElem.selectedIndex].getAttribute('data-option');
+            const selectedOptionDataset = supplierElem.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option;
             if (selectedOptionDataset) {
                 const selectedSupplierData = JSON.parse(selectedOptionDataset);
                 
@@ -120,11 +120,15 @@
                 let expenseOptions = "";
                 supplierCategories.forEach(category => {
                     console.log(category);
-                    expenseOptions += `<option value="${category.id}">${category.title}</option>`;
+                    expenseOptions += `
+                        <li data-for="expense" data-value="${category.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${category.title}</li>
+                    `;
                 });
-                expenseOptions += `<option value="adjustment">Adjustment</option>`;
+                expenseOptions += `
+                    <li data-for="expense" data-value="adjustment" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Adjustment</li>
+                `;
 
-                expenseSelect.innerHTML = expenseOptions;
+                expenseSelect.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = expenseOptions;
                 expenseSelect.disabled = false;
             } else {
                 expenseSelect.innerHTML = '<option value="">-- No options available --</option>';

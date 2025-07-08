@@ -93,7 +93,7 @@
                 id: item.id,
                 name: item.shipment_no,
                 details: {
-                    'Amount': item.netAmount,
+                    'Amount': formatNumbersWithDigits(item.netAmount, 1, 1),
                     'Date': formatDate(item.date),
                 },
                 data: item,
