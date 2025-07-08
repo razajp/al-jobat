@@ -371,6 +371,12 @@
             createModal(modalData);
         }
 
+        function goToAddPayment(program) {
+            const url = new URL("{{ route('customer-payments.create') }}", window.location.origin);
+            url.searchParams.set("program_id", program.payment_programs?.id ?? program.id);
+            window.location.href = url.toString();
+        }
+
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');
@@ -381,6 +387,10 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
+                actions: [
+                    {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
+                    {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
+                ],
             };
 
             createContextMenu(contextMenuData);
@@ -411,7 +421,8 @@
                 id: 'modalForm',
                 cards: {name: 'Payment Details', count: 3, data: cardData},
                 bottomActions: [
-                    {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`}
+                    {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
+                    {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
                 ]
             }
 

@@ -974,6 +974,8 @@
     }
 
     function selectThisOption(optionLiElem) {
+        console.log(optionLiElem);
+        
         const forId = optionLiElem.dataset.for;
 
         const selectSearch = document.getElementById(forId);

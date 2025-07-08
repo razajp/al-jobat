@@ -153,26 +153,31 @@
 
         const today = new Date().toISOString().split('T')[0];
 
+        function setOptionOnNthLi(triggerDom, index, key, value = '') {
+            const li = triggerDom.parentElement.parentElement.parentElement?.querySelectorAll('ul li')[index];
+            if (li) li.dataset[key] = value;
+        }
+
         function trackCustomerState() {
-            typeSelectDom.options[2].dataset.option = '';
+            setOptionOnNthLi(typeSelectDom, 2, 'option');
             dateDom.value = '';
             balanceDom.value = '';
             methodSelectDom.value = '';
             typeSelectDom.value = '';
 
             if (customerSelectDom.value != '') {
-                selectedCustomer = JSON.parse(customerSelectDom.options[customerSelectDom.selectedIndex].dataset.option);
+                selectedCustomer = JSON.parse(customerSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected')?.dataset.option || 'null');
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
                 dateDom.min = selectedCustomer.date.toString().split('T')[0];
                 dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
                 selectedCustomerData = selectedCustomer;
-                typeSelectDom.options[2].dataset.option = JSON.stringify(selectedCustomer.payment_programs) ?? '';
+                setOptionOnNthLi(typeSelectDom, 2, 'option', JSON.stringify(selectedCustomer.payment_programs) ?? '');
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
-                typeSelectDom.options[2].dataset.option = '';
+                setOptionOnNthLi(typeSelectDom, 2, 'option');
             }
 
             methodSelectDom.querySelector("option[value='program']")?.remove();
@@ -188,10 +193,12 @@
                 window.history.replaceState({}, document.title, url.toString());
 
                 // select customer
-                for (const option of customerSelectDom.options) {
-                    if (option.value.trim() !== '') {
-                        customerSelectDom.value = option.value;
-                        break; 
+                for (const option of customerSelectDom.parentElement.parentElement.parentElement?.querySelectorAll('ul li')) {
+                    if (option.dataset.value && option.textContent.trim() !== '') {
+                        customerSelectDom.value = option.textContent.trim();
+                        customerSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li.selected`).classList.remove('selected');
+                        customerSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
+                        break;
                     }
                 }
                 trackCustomerState();
@@ -203,24 +210,30 @@
                 const dd = String(today.getDate()).padStart(2, '0');
                 dateDom.value = `${yyyy}-${mm}-${dd}`;
 
+                let typeInp = typeSelectDom.parentElement.parentElement.parentElement?.querySelector('input[type="hidden"]');
                 // select type
-                for (const option of typeSelectDom.options) {
-                    if (option.value.trim() === 'payment_program') {
+                for (const option of typeSelectDom.parentElement.parentElement.parentElement?.querySelectorAll('ul li')) {
+                    if (option.dataset.value.trim() === 'payment_program') {
                         option.dataset.option = JSON.stringify([selectedCustomer.payment_programs]);
-                        typeSelectDom.value = option.value;
+                        typeSelectDom.value = option.textContent.trim();
+                        typeSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li.selected`).classList.remove('selected');
+                        typeSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
+                        typeInp.value = 'payment_program'
                         break; 
                     }
                 }
-
-                trackTypeState(typeSelectDom, true);
+                trackTypeState(typeInp, true);
                 
                 let programSelectDom = document.getElementById('payment_programs');
-                programSelectDom.selectedIndex = 1;
-                let ProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+                programSelectDom.parentElement.parentElement.parentElement.querySelectorAll('ul li')[1].classList.add('selected');
+                let ProgramData = JSON.parse(programSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
+                programSelectDom.value = programSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').textContent.trim();
 
                 if (ProgramData.category != 'waiting') {
                     programSelectDom.dispatchEvent(new Event('change'));
                     methodSelectDom.value = 'program'
+                    methodSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li.selected`).classList.remove('selected');
+                    methodSelectDom.parentElement.parentElement.parentElement?.querySelector(`ul li[data-value="program"]`).classList.add('selected');
                     trackMethodState(methodSelectDom);
                 } else {
                     methodSelectDom.querySelector("option[value='program']")?.remove();
@@ -233,11 +246,14 @@
         function trackTypeState(elem, isNoModal) {
             methodSelectDom.value = '';
             detailsInputsContainer.classList.remove('mb-4');
+            console.log(elem);
             if (elem.value == 'payment_program') {
-                methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
+                methodSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML += `
+                    <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
+                `;
                 detailsInputsContainer.innerHTML = "";
 
-                let allProgramsArray = JSON.parse(typeSelectDom.options[typeSelectDom.selectedIndex].dataset.option);
+                let allProgramsArray = JSON.parse(typeSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
                 
                 detailsInputsContainer.innerHTML = `
                     <div class="col-span-full">
@@ -256,13 +272,19 @@
                 const programSelectDom = document.getElementById('payment_programs');
                 if (allProgramsArray.length > 0) {
                     programSelectDom.disabled = false;
-                    programSelectDom.innerHTML = '<option value="" >-- Select payment program --</option>';
+                    programSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = `
+                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select payment program --</li>
+                    `;
                     allProgramsArray.forEach(program => {
-                        programSelectDom.innerHTML += `<option value="${program.id}" data-option='${JSON.stringify(program)}' >${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)}</option>`;
+                        programSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML += `
+                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)}</li>
+                        `;
                     });
                 } else {
                     programSelectDom.disabled = false;
-                    programSelectDom.innerHTML = `<option value="">-- No options avalaible --</option>`;
+                    programSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = `
+                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- No options avalaible --</li>
+                    `;
                 }
             } else {
                 detailsInputsContainer.innerHTML = "";
@@ -320,7 +342,7 @@
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" required/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
                 `;
             } else if (elem.value == 'adjustment') {
                 detailsDom.innerHTML = `
@@ -332,7 +354,7 @@
                 `;
             } else if (elem.value == 'program') {
                 let programSelectDom = document.getElementById('payment_programs');
-                selectedProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+                selectedProgramData = JSON.parse(programSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
                 if (selectedProgramData.category != 'waiting') {
                     if (selectedProgramData.category != 'waiting') {
                         let beneficiary = '-';
@@ -381,13 +403,19 @@
                     if (bankAccountData) {
                         let bankAccountsSelect = document.getElementById('bank_accounts');
                         bankAccountsSelect.disabled = false;
-                        bankAccountsSelect.innerHTML = '<option value="">-- Select Bank Account --</option>';
+                        bankAccountsSelect.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = `
+                            <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>
+                        `;
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {
-                                bankAccountsSelect.innerHTML += `<option value="${account.id}">${account.account_title} | ${account.bank.short_title}</option>`;
+                                bankAccountsSelect.parentElement.parentElement.parentElement.querySelector('ul').innerHTML += `
+                                    <li data-for="bank_accounts" data-value="${account.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${account.account_title} | ${account.bank.short_title}</li>
+                                `;
                             });
                         } else {
-                            bankAccountsSelect.innerHTML += `<option value="${bankAccountData.id}">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</option>`;
+                            bankAccountsSelect.parentElement.parentElement.parentElement.querySelector('ul').innerHTML += `
+                                <li data-for="bank_accounts" data-value="${bankAccountData.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</li>
+                            `;
                         }
                     }
                 } else {
@@ -397,16 +425,18 @@
         }
 
         function trackProgramState(elem) {
-            let ProgramData = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
+            let ProgramData = JSON.parse(elem.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
 
             if (ProgramData.category != 'waiting') {
-                if (!methodSelectDom.querySelector("option[value='program']")) {
-                    methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
+                if (!methodSelectDom.parentElement.parentElement.parentElement.querySelector('ul li[data-value="program"]')) {
+                    methodSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML += `
+                        <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
+                    `;
                 }
                 methodSelectDom.value = 'program'
                 trackMethodState(methodSelectDom);
             } else {
-                methodSelectDom.querySelector("option[value='program']")?.remove();
+                methodSelectDom.parentElement.parentElement.parentElement.querySelector('ul li[data-value="program"]')?.remove();
                 detailsDom.innerHTML = '';
             }
             trackDateState(dateDom);
@@ -427,9 +457,9 @@
                     return new Date(program.date) <= new Date(elem.value);
                 });
 
-                typeSelectDom.querySelector("option[value='payment_program']").dataset.option = JSON.stringify(filteredPrograms);
+                typeSelectDom.parentElement.parentElement.parentElement.querySelector('ul li[data-value="payment_program"]').dataset.option = JSON.stringify(filteredPrograms);
             } else {
-                let programData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+                let programData = JSON.parse(programSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
                 if (date.value < programData?.date) {
                     dateDom.value = '';
                 }
@@ -441,7 +471,6 @@
             let formDom = document.getElementById('form');
             formDom.reset();
             const record = JSON.parse(button.getAttribute('data-record'));
-            console.log(record);
 
             customerSelectDom.value = record.customer.id;
             trackCustomerState(customerSelectDom);
@@ -453,7 +482,7 @@
             if (programSelectDom) {
                 programSelectDom.value = record.program_id;
                 trackProgramState(programSelectDom);
-                let ProgramData = JSON.parse(programSelectDom.options[programSelectDom.selectedIndex].dataset.option);
+                let ProgramData = JSON.parse(programSelectDom.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option);
     
                 if (ProgramData.category == 'waiting') {
                     if (record.method == 'program') {

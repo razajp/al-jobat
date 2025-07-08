@@ -65,6 +65,8 @@ class CustomerPaymentController extends Controller
         $customers_options = [];
         $programId = $request->query('program_id');
 
+        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->first();
+
         if (!empty($programId)) {
             $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->find($programId);
 
@@ -77,7 +79,7 @@ class CustomerPaymentController extends Controller
                     'data_option' => $program->customer,
                 ]];
         
-                return view("customer-payments.create", compact("customers", "customers_options", "banks_options"));
+                return view("customer-payments.create", compact("customers", "customers_options", "banks_options", 'lastRecord'));
             }
         }
         
@@ -117,8 +119,6 @@ class CustomerPaymentController extends Controller
                 'data_option' => $customer,
             ];
         }
-
-        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->first();
 
         return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord'));
         // return $customers;

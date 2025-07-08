@@ -367,14 +367,21 @@ function createModal(data) {
                         <hr class="w-full my-3 border-black">
                         <div id="header" class="header w-full flex justify-between px-5">
                             <div class="left w-50 space-y-1">
-                                <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
-                                <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
-                                <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
-                                <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                    <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
+                                    <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
+                                    <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
+                                    <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                ` : `
+                                    <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : ''}</div>
+                                `}
                             </div>
                             <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
-                                <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                    <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                ` : '' }
                                 <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: Customer</div>
                                 <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
