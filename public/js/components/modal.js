@@ -21,7 +21,7 @@ function createModal(data) {
     let clutter = `
         <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in ${data.class}">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
-            <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem]' : 'bg-[var(--secondary-bg-color)]'} rounded-2xl shadow-lg w-full max-w-2xl p-6 flex relative">
+            <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem]' : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
                 <div id="modal-close" onclick="closeModal('${data.id}')"
                     class="absolute top-0 -right-4 translate-x-full bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-auto p-3 text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
                     <button type="button"
@@ -109,7 +109,7 @@ function createModal(data) {
                     
                     clutter += `
                         <div class="${field.grow ? 'grow' : ''} ${field.full ? 'col-span-full' : ''}">
-                            <div class="form-group relative">
+                            <div class="form-group relative ${field.hidden ? 'hidden' : ''}">
                                 <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
                                 <div class="relative flex gap-3">
@@ -133,7 +133,7 @@ function createModal(data) {
                 }
             } else if (field.category == 'select') {
                 let buttonHTML = '';
-                let optionsHTML = '';
+                let optionsHTML = '<option value="">-- No options available --</option>';
                 
                 if (field.btnId) {
                     buttonHTML = `
@@ -142,7 +142,7 @@ function createModal(data) {
                 }
 
                 if (field.options && field.options.length > 0) {
-                    optionsHTML = `<option value="">-- Select Category --</option>`;
+                    optionsHTML = `<option value="">-- Select ${field.label} --</option>`;
                     
                     const rawOptions = field.options[0];
                     const optionsArray = Object.entries(rawOptions).map(([key, obj]) => {
@@ -164,7 +164,7 @@ function createModal(data) {
                         <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label} *</label>
                         
                         <div class="selectParent relative flex gap-3">
-                            <select id="${field.id ?? ''}" name="${field.name ?? ''}" onchange="${field.onchange}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
+                            <select id="${field.id ?? ''}" name="${field.name ?? ''}" onchange="${field.onchange}" value="${field.value || ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
                                 ${optionsHTML}
                             </select>
                             ${buttonHTML}
@@ -201,6 +201,30 @@ function createModal(data) {
                         <p id="upload_text_${data.imagePicker.id}" class="upload_text text-md text-gray-500">${data.imagePicker.uploadText}</p>
                     </div>
                 </label>
+            </div>
+        `;
+    }
+
+    if (data.cards) {
+        let cardsHTML = '';
+
+        if (data.cards.data.length > 0) {
+            data.cards.data.forEach(item => {
+                cardsHTML += createCard(item)
+            });
+        } else {
+            cardsHTML= `
+                <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
+            `;
+        }
+
+        clutter += `
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
+                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
+                <hr class="w-full my-3 border-gray-600">
+                <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
+                    ${cardsHTML}
+                </div>
             </div>
         `;
     }

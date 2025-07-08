@@ -120,8 +120,6 @@
                 <span class="w-[10%]">${data.status}</span>
             </div>`;
         }
-
-
         
         const fetchedData = @json($finalData);
         console.log(fetchedData);
@@ -165,11 +163,213 @@
                 payment: item.payment || 0,
                 balance: item.balance || 0,
                 status: item.status || '-',
+                data: item,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 visible: true,
             };
         });
+        
+        let subCategoryDom;
+        let remarksInputDom;
+
+        function getCategoryData(value) {
+            if (value != "waiting") {
+                subCategoryDom.parentElement.parentElement.classList.remove("hidden");
+                remarksInputDom.parentElement.parentElement.classList.add("hidden");
+
+                $.ajax({
+                    url: "/get-category-data",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        category: value,
+                    },
+                    success: function(response) {
+                        let clutter = `
+                            <option value='' selected>
+                                -- No option avalaible --
+                            </option>
+                        `;
+                        switch (value) {
+                            case 'self_account':
+                                if (response.length > 0) {
+                                    clutter = '';
+                                    clutter += `
+                                        <option value='' selected>
+                                            -- Select Self Account --
+                                        </option>
+                                    `;
+                                    subCategoryDom.disabled = false;
+                                } else {
+                                    subCategoryDom.disabled = true;
+                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                }
+
+                                response.forEach(subCat => {
+                                    clutter += `
+                                        <option value='${subCat.id}'>
+                                            ${subCat.account_title} | ${subCat.bank.short_title}
+                                        </option>
+                                    `;
+                                });
+
+                                subCategoryLabelDom.textContent = 'Self Account';
+                                subCategoryFirstOptDom.textContent = '-- Select Self Account --';
+                                break;
+
+                            case 'supplier':
+                                if (response.length > 0) {
+                                    clutter = '';
+                                    clutter += `
+                                        <option value='' selected>
+                                            -- Select Supplier --
+                                        </option>
+                                    `;
+                                    subCategoryDom.disabled = false;
+                                } else {
+                                    subCategoryDom.disabled = true;
+                                    subCategoryFirstOptDom.textContent = '-- No options available --';
+                                }
+
+                                response.forEach(subCat => {
+                                    clutter += `
+                                        <option value='${subCat.id}'>
+                                            ${subCat.supplier_name} | Balance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
+                                        </option>
+                                    `;
+                                });
+
+                                subCategoryLabelDom.textContent = 'Supplier';
+                                subCategoryFirstOptDom.textContent = '-- Select Supplier --';
+                                break;
+
+                            case 'customer':
+                                clutter = '';
+                                clutter += `
+                                    <option value='' selected>
+                                        -- Select Customer --
+                                    </option>
+                                `;
+
+                                response.forEach(subCat => {
+                                    if (subCat.id != customerSelectDom.value) {
+                                        clutter += `
+                                            <option value='${subCat.id}'>
+                                                ${subCat.customer_name} | ${subCat.city} | Baalance: ${formatNumbersWithDigits(subCat.balance, 1, 1)}
+                                            </option>
+                                        `;
+                                        subCategoryDom.disabled = false;
+                                    }
+                                });
+
+                                subCategoryLabelDom.textContent = 'Customer';
+                                subCategoryFirstOptDom.textContent = '-- Select Customer --';
+                                break;
+
+                            default:
+                                break;
+                        }
+
+                        subCategoryDom.innerHTML = clutter;
+                    }
+                });
+            } else {
+                subCategoryDom.parentElement.parentElement.classList.add("hidden");
+                remarksInputDom.parentElement.parentElement.classList.remove("hidden");
+            }
+        }
+
+        function trackCategoryState(elem) {
+            let form = elem.closest('form');
+            subCategoryDom = form.querySelector('#sub_category');
+            subCategoryLabelDom = subCategoryDom.parentElement.parentElement.querySelector('label');
+            subCategoryFirstOptDom = subCategoryDom?.options?.[0];
+            customerSelectDom = form.querySelector('#customer_id');
+            remarksInputDom = form.querySelector('#remarks');
+            
+            if (elem.value != "") {
+                subCategoryDom.disabled = false;
+                getCategoryData(elem.value);    
+            } else {
+                subCategoryDom.disabled = true;
+            }
+        }
+
+        function generateUpdateProgramModal(item) {
+            console.log(item);
+
+            let modalData = {
+                id: 'updateProgramModalForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ route("payment-programs.update-program") }}',
+                name: 'Update Program',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Date',
+                        id: 'date',
+                        value: formatDate(item.name),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Customer',
+                        name: 'customer_id',
+                        id: 'customer_id',
+                        value: item.customer_name,
+                        disabled: true,
+                    },
+                    {
+                        category: 'select',
+                        label: 'Category',
+                        name: 'category',
+                        id: 'category',
+                        options: [@json($categories_options)],
+                        onchange: 'trackCategoryState(this)'
+                    },
+                    {
+                        category: 'select',
+                        label: 'Disabled',
+                        name: 'sub_category',
+                        id: 'sub_category',
+                        options: [],
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'program_id',
+                        value: item.id,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Remarks',
+                        name: 'remarks',
+                        id: 'remarks',
+                        hidden: true,
+                        placeholder: 'Enter remarks here',
+                    },
+                    {
+                        category: 'input',
+                        label: 'Amount',
+                        name: 'amount',
+                        id: 'amount',
+                        value: item.amount,
+                        placeholder: 'Enter amount here',
+                        full: true,
+                        disabled: item.data.order_no != null ? true : false,
+                    },
+                ],
+                bottomActions: [
+                    {id: 'update', text: 'Update Program', type: 'submit'}
+                ]
+            }
+
+            createModal(modalData);
+        }
 
         function generateContextMenu(e) {
             e.preventDefault();
@@ -188,10 +388,31 @@
 
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
+            let cardData = [];
+
+            const sourceArray = Array.isArray(data.data.payments)
+                ? data.data.payments
+                : Array.isArray(data.data.payment_programs)
+                ? data.data.payment_programs
+                : [];
+
+            cardData.push(...sourceArray.map(item => {
+                return {
+                    id: item.id,
+                    name: formatDate(item.date),
+                    details: {
+                        'Amount': item.amount,
+                        'Account': (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'),
+                    },
+                };
+            }));
 
             let modalData = {
                 id: 'modalForm',
-                name: 'Details',
+                cards: {name: 'Payment Details', count: 3, data: cardData},
+                bottomActions: [
+                    {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`}
+                ]
             }
 
             createModal(modalData);

@@ -122,6 +122,8 @@ class PaymentProgramController extends Controller
      */
     public function store(Request $request)
     {
+        return $request;
+
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
@@ -219,7 +221,7 @@ class PaymentProgramController extends Controller
         $validator = Validator::make($request->all(), [
             'program_id' => 'required|integer',
             'category' => 'required|string',
-            'sub_category' => 'required|integer',
+            'sub_category' => 'nullable|integer',
             'remarks' => 'nullable|string',
             'amount' => 'required|numeric',
         ]);
