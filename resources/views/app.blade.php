@@ -851,7 +851,28 @@
         }
 
         function getNestedValue(obj, path) {
-            return path.split('.').reduce((acc, part) => acc?.[part], obj);
+            const parts = path.split('.');
+
+            function resolve(current, parts) {
+                for (let i = 0; i < parts.length; i++) {
+                    const part = parts[i];
+
+                    if (part.endsWith('[]')) {
+                        const key = part.slice(0, -2);
+                        const arr = current?.[key];
+                        if (!Array.isArray(arr)) return [];
+
+                        const remainingPath = parts.slice(i + 1).join('.');
+                        return arr.map(item => resolve(item, remainingPath.split('.')));
+                    }
+
+                    current = current?.[part];
+                    if (current === undefined) return undefined;
+                }
+                return current;
+            }
+
+            return resolve(obj, parts);
         }
 
         let newlyFilteredData = [];
@@ -876,7 +897,9 @@
 
                 for (const path in filterGroups) {
                     const group = filterGroups[path];
-                    const jsonVal = (getNestedValue(tempItem, path) || "").toString().toLowerCase();
+
+                    const rawVal = getNestedValue(tempItem, path);
+                    const jsonVal = Array.isArray(rawVal) ? rawVal : (rawVal || "").toString().toLowerCase();
 
                     // Handle date range
                     if (group.length === 2 && group[0].type === "date" && group[1].type === "date") {
@@ -904,7 +927,9 @@
                             if (!value) continue;
 
                             if (input.type === "text" || input.type === "hidden") {
-                                if (!jsonVal.includes(value)) visible = false;
+                                if (input.classList.contains("dbInput") && !Array.isArray(jsonVal)) {
+                                    jsonVal != value ? visible = false : '';
+                                } else if (!jsonVal.includes(value)) visible = false;
                             } else if (input.type === "select-one") {
                                 if (jsonVal !== value) visible = false;
                             } else if (input.type === "number") {
@@ -950,7 +975,7 @@
         });
 
         function clearAllSearchFields() {
-            document.querySelectorAll('[data-filter-path]').forEach(searchField => {
+            document.querySelectorAll('[data-clearable]').forEach(searchField => {
                 searchField.value = "";
                 debouncedFilter();
             })
@@ -1063,6 +1088,8 @@
         .forEach(dbInput => selectFirstOption(dbInput.dataset.for));
 
     function selectClicked(input) {
+        input.select();
+
         const inputRect = input.getBoundingClientRect();
         const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
         

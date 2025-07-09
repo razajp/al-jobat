@@ -102,7 +102,6 @@
                 visible: true,
             };
         });
-        
 
         function printShipment(elem) {
             closeAllDropdowns();

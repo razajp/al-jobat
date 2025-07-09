@@ -350,7 +350,138 @@ function createModal(data) {
         let netAmount = previewData.netAmount || previewData.shipment?.netAmount;
         let currentBalance = previewData.current_balance;
 
-        console.log(previewData);
+        let invoiceTableHeader = "";
+        let invoiceTableBody = "";
+        let invoiceBottom = "";
+
+        if (data.preview.type == "voucher") {
+            invoiceTableHeader = `
+                <div class="th text-sm font-medium w-[7%]">S.No</div>
+                <div class="th text-sm font-medium w-[11%]">Method</div>
+                <div class="th text-sm font-medium w-1/5">Customer</div>
+                <div class="th text-sm font-medium w-1/4">Account</div>
+                <div class="th text-sm font-medium w-[17%]">Date</div>
+                <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
+                <div class="th text-sm font-medium w-[10%]">Amount</div>
+            `;
+
+            invoiceTableBody = `
+                ${previewData.supplier_payments.map((payment, index) => {
+                console.log(data);
+
+                const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+                return `
+                <div>
+                    <hr class="w-full ${hrClass} border-gray-600">
+                    <div class="tr flex justify-between w-full px-4">
+                        <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                        <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
+                        <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>
+                        <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title ?? '-') + ' | ' +
+                            (payment.bank_account?.bank.short_title ?? '-')}</div>
+                        <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
+                        <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.slip?.slip_no ??
+                            payment.transaction_id ?? '-'}</div>
+                        <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
+                        </div>
+                    </div>
+                </div>
+                `;
+                }).join('')}
+            `;
+
+            invoiceBottom = `
+                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="text-nowrap">Previous Balance - Rs</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance, 1, 1)}</div>
+                </div>
+                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="text-nowrap">Total Payment - Rs</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.total_payment, 1, 1)}</div>
+                </div>
+                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="text-nowrap">Current Balance - Rs</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance - previewData.total_payment, 1, 1)}</div>
+                </div>
+            `;
+        } else {
+            invoiceTableHeader = `
+                <div class="th text-sm font-medium ">S.No</div>
+                <div class="th text-sm font-medium ">Article</div>
+                <div class="th text-sm font-medium col-span-2">Description</div>
+                <div class="th text-sm font-medium ">Pcs.</div>
+                <div class="th text-sm font-medium ">Packets</div>
+                ${data.preview.type == 'invoice' ? '<div class="th text-sm font-medium ">Unit</div>' : ''}
+                <div class="th text-sm font-medium ">Rate/Pc.</div>
+                <div class="th text-sm font-medium ">Amount</div>
+                ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
+            `;
+
+            invoiceTableBody = `
+                ${previewData.articles.map((orderedArticle, index) => {
+                    const article = orderedArticle.article;
+                    const salesRate = article.sales_rate;
+                    const orderedQuantity = orderedArticle.ordered_quantity;
+                    const invoiceQuantity = orderedArticle.invoice_quantity;
+                    const shipmentQuantity = orderedArticle.shipment_quantity;
+                    const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity || shipmentQuantity);
+                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+
+                    totalAmount += total;
+                    totalQuantity += orderedQuantity || invoiceQuantity || shipmentQuantity;
+
+                    return `
+                        <div>
+                            <hr class="w-full ${hrClass} border-black">
+                            <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
+                                <div class="td text-sm font-semibold ">${index + 1}.</div>
+                                <div class="td text-sm font-semibold ">${article.article_no}</div>
+                                <div class="td text-sm font-semibold col-span-2">${orderedArticle.description}</div>
+                                <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity || shipmentQuantity}</div>
+                                <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity || shipmentQuantity) / article.pcs_per_packet) : 0}</div>
+                                ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}
+                                <div class="td text-sm font-semibold ">${formatNumbersWithDigits(salesRate, 1, 1)}</div>
+                                <div class="td text-sm font-semibold ">${formatNumbersWithDigits(total, 1, 1)}</div>
+                                ${data.preview.type == 'order' ? '<div class="td text-sm font-semibold "></div>' : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
+
+            invoiceBottom = `
+                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                    <div class="text-nowrap">Total Quantity - Pcs</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
+                </div>
+                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                    <div class="text-nowrap">Total Amount</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
+                </div>
+                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                    <div class="text-nowrap">Discount - %</div>
+                    <div class="w-1/4 text-right grow">${discount}</div>
+                </div>
+                ${data.preview.type == 'order' ? `
+                    <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                        <div class="text-nowrap">Previous Balance</div>
+                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
+                    </div>
+                ` : ''}
+                <div
+                    class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                    <div class="text-nowrap">Net Amount</div>
+                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
+                </div>
+                ${data.preview.type == 'order' ? `
+                    <div
+                        class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                        <div class="text-nowrap">Current Balance</div>
+                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
+                    </div>
+                ` : ''}
+            `;
+        }
         
         clutter += `
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
@@ -383,15 +514,20 @@ function createModal(data) {
                                     <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
                                 ` : `
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : ''}</div>
+                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : ''}</div>
                                 `}
                             </div>
+                            ${data.preview.type == 'voucher' ? `
+                                <div class="center my-auto ">
+                                    <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier.supplier_name}</div>
+                                </div>
+                            ` : ''}
                             <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
                                 ${data.preview.type == "order" || data.preview.type == "invoice" ? `
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
                                     <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
                                 ` : '' }
-                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: ${data.preview.type == 'shipment' ? 'Staff' : 'Customer'}</div>
+                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: ${data.preview.type == 'shipment' ? 'Staff' : data.preview.type == 'voucher' ? 'Supplier' : 'Customer'}</div>
                                 <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
                         </div>
@@ -400,84 +536,19 @@ function createModal(data) {
                             <div class="table w-full">
                                 <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr grid ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                            <div class="th text-sm font-medium ">S.No</div>
-                                            <div class="th text-sm font-medium ">Article</div>
-                                            <div class="th text-sm font-medium col-span-2">Description</div>
-                                            <div class="th text-sm font-medium ">Pcs.</div>
-                                            <div class="th text-sm font-medium ">Packets</div>
-                                            ${data.preview.type == 'invoice' ? '<div class="th text-sm font-medium ">Unit</div>' : ''}
-                                            <div class="th text-sm font-medium ">Rate/Pc.</div>
-                                            <div class="th text-sm font-medium ">Amount</div>
-                                            ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
+                                        <div class="tr ${data.preview.type == 'voucher' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                            ${invoiceTableHeader}
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
-                                        ${previewData.articles.map((orderedArticle, index) => {
-                                            const article = orderedArticle.article;
-                                            const salesRate = article.sales_rate;
-                                            const orderedQuantity = orderedArticle.ordered_quantity;
-                                            const invoiceQuantity = orderedArticle.invoice_quantity;
-                                            const shipmentQuantity = orderedArticle.shipment_quantity;
-                                            const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity || shipmentQuantity);
-                                            const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-
-                                            totalAmount += total;
-                                            totalQuantity += orderedQuantity || invoiceQuantity || shipmentQuantity;
-
-                                            return `
-                                                <div>
-                                                    <hr class="w-full ${hrClass} border-black">
-                                                    <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
-                                                        <div class="td text-sm font-semibold ">${index + 1}.</div>
-                                                        <div class="td text-sm font-semibold ">${article.article_no}</div>
-                                                        <div class="td text-sm font-semibold col-span-2">${orderedArticle.description}</div>
-                                                        <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity || shipmentQuantity}</div>
-                                                        <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity || shipmentQuantity) / article.pcs_per_packet) : 0}</div>
-                                                        ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}
-                                                        <div class="td text-sm font-semibold ">${formatNumbersWithDigits(salesRate, 1, 1)}</div>
-                                                        <div class="td text-sm font-semibold ">${formatNumbersWithDigits(total, 1, 1)}</div>
-                                                        ${data.preview.type == 'order' ? '<div class="td text-sm font-semibold "></div>' : ''}
-                                                    </div>
-                                                </div>
-                                            `;
-                                        }).join('')}
+                                        ${invoiceTableBody}
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="grid ${data.preview.type == 'order' ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5">
-                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                <div class="text-nowrap">Total Quantity - Pcs</div>
-                                <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
-                            </div>
-                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                <div class="text-nowrap">Total Amount</div>
-                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
-                            </div>
-                            <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                <div class="text-nowrap">Discount - %</div>
-                                <div class="w-1/4 text-right grow">${discount}</div>
-                            </div>
-                            ${data.preview.type == 'order' ? `
-                                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Previous Balance</div>
-                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
-                                </div>
-                            ` : ''}
-                            <div
-                                class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                <div class="text-nowrap">Net Amount</div>
-                                <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
-                            </div>
-                            ${data.preview.type == 'order' ? `
-                                <div
-                                    class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                    <div class="text-nowrap">Current Balance</div>
-                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
-                                </div>
-                            ` : ''}
+                        <div class="grid ${data.preview.type == 'order' || data.preview.type == 'voucher' ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5">
+                            ${invoiceBottom}
                         </div>
                         <hr class="w-full my-3 border-black">
                         <div class="tfooter flex w-full text-sm px-5 justify-between mb-4 text-black">

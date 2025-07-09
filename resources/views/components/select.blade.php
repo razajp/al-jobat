@@ -12,6 +12,7 @@
     'onchange' => '',
     'btnOnclick' => '',
     'dataFilterPath' => '',
+    'dataClearable' => false,
     'searchable' => false,
 ])
 
@@ -76,6 +77,7 @@
             :value="$isDisabled ? '' : $selectedText"
             :placeholder="$placeholderText"
             onfocus="selectClicked(this)"
+            :dataClearable="$dataClearable"
         />
 
         {{-- Hidden Input --}}
@@ -87,6 +89,7 @@
             value="{{ $isDisabled ? '' : $resolvedValue }}"
             {!! $onchange ? 'onchange="' . $onchange . '"' : '' !!}
             {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
+            @if ($dataClearable) data-clearable @endif
         >
 
         {{-- Dropdown List --}}

@@ -31,6 +31,7 @@
     'type2' => '',
     'id2' => '',
     'dataFilterPath' => '',
+    'dataClearable' => false,
     'parentGrow' => false,
 ])
 
@@ -114,6 +115,7 @@
             {{ $onchange ? 'onchange='.$onchange : '' }}
             {!! $oninput ? 'oninput="'.$oninput.'"' : '' !!}
             {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
+            @if ($dataClearable) data-clearable @endif
         />
         @if ($dualInput)
             <input 
@@ -127,7 +129,8 @@
                         ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
                 ]) }}
                 {!! $oninput ? 'oninput="'.$oninput.'"' : '' !!}
-                {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
+                {!! $dataFilterPath ? 'data-clearable="' . $dataFilterPath . '"' : '' !!}
+                {!! $dataClearable ? 'data-clearable="' . $dataClearable . '"' : '' !!}
             />
         @endif
         @if ($withImg)

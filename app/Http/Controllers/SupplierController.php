@@ -42,7 +42,7 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
+            $categories_options[strtolower($supplier_category->short_title)] = ['text' => $supplier_category->title];
         }
         
         // foreach ($suppliers as $supplier) {

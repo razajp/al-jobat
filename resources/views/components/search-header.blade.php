@@ -56,13 +56,13 @@
                             <div class="grid grid-cols-1 gap-4">
                                 @foreach ($search_fields as $search_field => $value)
                                     @if ($value['type'] == "select")
-                                        <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
+                                        <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
                                     @elseif ($value['type'] == "text")
-                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
                                     @elseif (isset($value['type2']) && isset($value['id2']))
-                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
                                     @else
-                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                        <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
                                     @endif
                                 @endforeach
                             </div>

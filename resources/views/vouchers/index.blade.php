@@ -27,75 +27,38 @@
             ]
         ];
     @endphp
-    <!-- Modals -->
-    <div id="modal"
-        class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
 
     <div class="w-[80%] mx-auto">
         <x-search-header heading="Vouchers" :search_fields=$searchFields/>
     </div>
     
-    {{-- <div class="w-[80%] mx-auto">
-        <x-search-header heading="Vouchers" :filter_items="[
-            'all' => 'All',
-            'supplier_name' => 'Supplier Name',
-            'type' => 'Type',
-            'method' => 'Method',
-            'date' => 'Date',
-        ]"/>
-    </div> --}}
-    
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-7 pr-2 relative">
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
             <x-form-title-bar title="Show Vouchers" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($vouchers) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                     <x-section-navigation-button link="{{ route('vouchers.create') }}" title="Add New Payment" icon="fa-plus" />
                 </div>
-                
-                <div class="details h-full">
+
+                <div class="details h-full z-40">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                        <div class="card_container p-5 pr-3">
-                            @if ($authLayout == 'grid')
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                                    @foreach ($vouchers as $voucher)
-                                        <div id="{{ $voucher->id }}" data-json='{{ $voucher }}'
-                                            class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] flex gap-4 py-4 px-5 cursor-pointer overflow-hidden fade-in">
-                                            <x-card :data="[
-                                                'name' => 'Voucher No.: ' . $voucher->voucher_no,
-                                                'details' => [
-                                                    'Supplier' => str_replace('_', ' ',$voucher->supplier->supplier_name),
-                                                    'Date' => date('d-M-Y D', strtotime($voucher->date)),
-                                                    'Amount' => number_format($voucher->total_payment, 1),
-                                                ],
-                                            ]" />
-                                        </div>
-                                    @endforeach
+                        <div class="card_container py-0 p-3 h-full flex flex-col">
+                            <div id="table-head" class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                                <div class="text-center">Supplier</div>
+                                <div class="text-center">Voucher No</div>
+                                <div class="text-center">Date</div>
+                                <div class="text-center">Amount</div>
+                            </div>
+                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
+                            <div>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
                                 </div>
-                            @else
-                                <div class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-center">Supplier</div>
-                                    <div class="text-center">Type</div>
-                                    <div class="text-center">Date</div>
-                                    <div class="text-center">Amount</div>
-                                </div>
-                                <div class="search_container overflow-y-auto grow my-scrollbar-2">
-                                    @forEach ($vouchers as $voucher)
-                                        <div id="{{ $voucher->id }}" data-json='{{ $voucher }}' class="contextMenuToggle modalToggle relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out">
-                                            <span class="text-center">{{ $voucher->supplier->supplier_name }}</span>
-                                            <span class="text-center">{{ str_replace('_', ' ',$voucher->type) }}</span>
-                                            <span class="text-center">{{ date('d-M-Y D', strtotime($voucher->date)) }}</span>
-                                            <span class="text-center">{{ number_format($voucher->amount, 1) }}</span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endif
+                            </div>
                         </div>
-                        <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                     </div>
                 </div>
             @else
@@ -128,434 +91,158 @@
     </section>
 
     <script>
-        let contextMenu = document.querySelector('.context-menu');
-        let isContextMenuOpened = false;
+        let companyData = @json(app('company'));
+        let authLayout = '{{ $authLayout }}';
 
-        function closeContextMenu() {
-            contextMenu.classList.remove('fade-in');
-            contextMenu.style.display = 'none';
-            isContextMenuOpened = false;
+        function createRow(data) {
+            return `
+                <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                    class="item row relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                    data-json='${JSON.stringify(data)}'>
+
+                    <span class="text-center">${data.details["Supplier"]}</span>
+                    <span class="text-center">${data.name}</span>
+                    <span class="text-center">${data.details['Date']}</span>
+                    <span class="text-center">${data.details['Amount']}</span>
+                </div>
+            `;
         }
 
-        function openContextMenu() {
-            closeAllDropdowns()
-            contextMenu.classList.add('fade-in');
-            contextMenu.style.display = 'block';
-            isContextMenuOpened = true;
+        const fetchedData = @json($vouchers);
+        let allDataArray = fetchedData.map(item => {
+            console.log(item);
+            
+            return {
+                id: item.id,
+                name: item.voucher_no,
+                details: {
+                    'Supplier': item.supplier.supplier_name,
+                    'Date': formatDate(item.date),
+                    'Amount': item.total_payment,
+                },
+                data: item,
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
+                visible: true,
+            };
+        });
+
+        function printVoucher(elem) {
+            closeAllDropdowns();
+
+            if (elem.parentElement.tagName.toLowerCase() === 'li') {
+                elem.parentElement.parentElement.querySelector('#show-details').click();
+                document.getElementById('modalForm').parentElement.classList.add('hidden');
+            }
+
+            const preview = document.getElementById('preview-container'); // preview content
+
+            // Pehle se agar koi iframe hai to usko remove karein
+            let oldIframe = document.getElementById('printIframe');
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+
+            // Naya iframe banayein
+            let printIframe = document.createElement('iframe');
+            printIframe.id = "printIframe";
+            printIframe.style.position = "absolute";
+            printIframe.style.width = "0px";
+            printIframe.style.height = "0px";
+            printIframe.style.border = "none";
+            printIframe.style.display = "none"; // ✅ Hide iframe
+
+            // Iframe ko body me add karein
+            document.body.appendChild(printIframe);
+
+            let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+            printDocument.open();
+
+            // ✅ Current page ke CSS styles bhi iframe me inject karenge
+            const headContent = document.head.innerHTML;
+
+            printDocument.write(`
+                <html>
+                    <head>
+                        <title>Print Shipment</title>
+                        ${headContent} <!-- Copy current styles -->
+                        <style>
+                            @media print {
+
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    width: 210mm; /* A4 width */
+                                    height: 297mm; /* A4 height */
+                                    
+                                }
+
+                                .preview-container, .preview-container * {
+                                    page-break-inside: avoid;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    </body>
+                </html>
+            `);
+
+            printDocument.close();
+
+            // Wait for iframe to load and print
+            printIframe.onload = () => {
+                let shipmentCopy = printDocument.querySelector('#preview-container .preview-copy');
+                if (shipmentCopy) {
+                    shipmentCopy.textContent = "Shipment Copy: Office";
+                }
+
+                // Listen for after print in the iframe's window
+                printIframe.contentWindow.onafterprint = () => {
+                    console.log("Print dialog closed");
+                };
+
+                setTimeout(() => {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                }, 1000);
+
+                document.getElementById('modalForm').parentElement.remove();
+            };
         }
-
-        function addContextMenuListenerToCards() {
-            let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
-
-            contextMenuToggle.forEach(toggle => {
-                toggle.addEventListener('contextmenu', (e) => {
-                    generateContextMenu(e);
-                });
-            });
-        }
-
-        addContextMenuListenerToCards();
 
         function generateContextMenu(e) {
-            let item = e.target.closest('.modalToggle');
+            e.preventDefault();
+            let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
-            const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                actions: [
+                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'}
+                ]
+            };
 
-            if (!contextMenu || !wrapper) return;
-
-            const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
-
-            let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
-
-            // Prevent right edge overflow
-            if (x + contextMenu.offsetWidth > wrapperRect.width) {
-                x -= contextMenu.offsetWidth;
-            }
-
-            // Prevent bottom edge overflow
-            if (y + contextMenu.offsetHeight > wrapperRect.height) {
-                y -= contextMenu.offsetHeight;
-            }
-
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-
-            openContextMenu();
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "show-details") {
-                    generateModal(item);
-                }
-            });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "print") {
-                    generateModal(item, 'context');
-                }
-            });
-
-            // Function to remove context menu
-            const removeContextMenu = (event) => {
-                if (!contextMenu.contains(event.target)) {
-                    closeContextMenu();
-                    document.removeEventListener('click', removeContextMenu);
-                    document.removeEventListener('contextmenu', removeContextMenu);
-                }
-            }
-
-            // Wait for a small delay before attaching event listeners to avoid immediate removal
-            setTimeout(() => {
-                document.addEventListener('mousedown', removeContextMenu);
-            }, 10);
+            createContextMenu(contextMenuData);
         }
 
-        const close = document.querySelectorAll('#close');
-
-        let isModalOpened = false;
-
-        close.forEach(function(btn) {
-            btn.addEventListener("click", (e) => {
-                let targetedModal = e.target.closest(".mainModal")
-                if (targetedModal.id == 'modal') {
-                    if (isModalOpened) {
-                        closeModal();
-                    }
-                }
-            });
-        });
-        
-        document.addEventListener('mousedown', (e) => {
-            const { id } = e.target;
-            if (id === 'modalForm') {
-                closeModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                if (isModalOpened == true) {
-                    closeModal();
-                }
-                closeContextMenu();
-            }
-        });
-
-        function addListenerToCards() {
-            let card = document.querySelectorAll('.modalToggle');
-
-            card.forEach(item => {
-                item.addEventListener('click', () => {
-                    if (!isContextMenuOpened) {
-                        generateModal(item, 'open');
-                    }
-                });
-            });
-        }
-        
-        let companyData = @json(app('company'));
-        function generateModal(item, context) {
-            let modalDom = document.getElementById('modal')
+        function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
 
-            modalDom.innerHTML = `
-                <x-modal id="modalForm" classForBody="p-5 max-w-4xl h-[35rem] overflow-y-auto my-scrollbar-2 bg-white text-black" closeAction="closeModal">
-                    <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                        <div id="preview" class="preview flex flex-col h-full">
-                            <div id="preview-document" class="preview-document flex flex-col h-full">
-                                <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
-                                    <div class="left">
-                                        <div class="company-logo">
-                                            <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
-                                                class="w-[12rem]" />
-                                        </div>
-                                    </div>
-                                    <div class="right">
-                                        <div>
-                                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Payment Voucher</h1>
-                                            <div class='mt-1'>${ companyData.phone_number }</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-gray-600">
-                                <div id="preview-header" class="preview-header w-full flex justify-between px-5">
-                                    <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                        <div class="voucher-date leading-none">Date: ${formatDate(data.date)}</div>
-                                        <div class="voucher-number leading-none">Voucher No.: ${data.voucher_no}</div>
-                                    </div>
-                                    <div class="center my-auto">
-                                        <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${data.supplier.supplier_name}</div>
-                                    </div>
-                                    <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                        <div class="preview-copy leading-none">Voucher Copy: Supplier</div>
-                                        <div class="preview-doc leading-none">Document: Payment Voucher</div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-gray-600">
-                                <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
-                                    <div class="preview-table w-full">
-                                        <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
-                                            <div class="thead w-full">
-                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                                    <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Method</div>
-                                                    <div class="th text-sm font-medium w-1/5">Customer</div>
-                                                    <div class="th text-sm font-medium w-1/4">Account</div>
-                                                    <div class="th text-sm font-medium w-[17%]">Date</div>
-                                                    <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
-                                                    <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                                </div>
-                                            </div>
-                                            <div id="tbody" class="tbody w-full">
-                                                ${data.supplier_payments.map((payment, index) => {
-                                                    console.log(data);
-                                                    
-                                                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-                                                    return `
-                                                            <div>
-                                                                <hr class="w-full ${hrClass} border-gray-600">
-                                                                <div class="tr flex justify-between w-full px-4">
-                                                                    <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                                                                    <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>
-                                                                    <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.slip?.slip_no ?? payment.transaction_id ?? '-'}</div>
-                                                                    <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
-                                                                </div>
-                                                            </div>
-                                                        `;
-                                                }).join('')}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-gray-600">
-                                <div class="flex flex-col space-y-2">
-                                    <div id="total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Previous Balance - Rs</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(data.previous_balance, 1, 1)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Total Payment - Rs</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(data.total_payment, 1, 1)}</div>
-                                        </div>
-                                        <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                            <div class="text-nowrap">Current Balance - Rs</div>
-                                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(data.previous_balance - data.total_payment, 1, 1)}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <hr class="w-full my-3 border-gray-600">
-                                <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                                    <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
-                                    <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
-                        <button id="print-in-modal" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Print Voucher
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
-
-            let paymentDetails = document.getElementById('paymentDetails');
-
-            if (data.type == 'cheque') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Cheque No.:</strong> <span>${data.cheque_no}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Cheque Date:</strong> <span>${data.cheque_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Clear Date:</strong> <span>${data.clear_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
-            } else if (data.type == 'slip') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Slip No.:</strong> <span>${data.slip_no}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Slip Date:</strong> <span>${data.slip_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Clear Date:</strong> <span>${data.clear_date}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
-            } else if (data.type == 'online') {
-                paymentDetails.innerHTML = `
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Bank:</strong> <span>${data.bank}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Transition Id:</strong> <span>${data.transition_id}</span></p>
-                    <p class="text-[var(--secondary-text)] mb-1 tracking-wide text-sm capitalize"><strong>Remarks:</strong> <span>${data.remarks}</span></p>
-                `;
+            let modalData = {
+                id: 'modalForm',
+                preview: {type: 'voucher', data: data.data, document: 'Voucher'},
+                bottomActions: [
+                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'}
+                ],
             }
 
-            addListenerToPrintVoucher();
-            if (context == 'context') {
-                document.getElementById('print-in-modal').click();
-            } else {
-                openModal();
-            }
-        }
-
-        addListenerToCards();
-
-        function openModal() {
-            document.getElementById('modal').classList.remove('hidden');
-            document.getElementById('modal').classList.add('flex');
-            isModalOpened = true;
-            closeAllDropdowns();
-            closeContextMenu();
-        }
-        
-        function closeModal() {
-            isModalOpened = false;
-            let modal = document.getElementById('modal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        function addListenerToPrintVoucher() {
-            document.getElementById('print-in-modal').addEventListener('click', (e) => {
-                e.preventDefault();
-                closeAllDropdowns();
-                const preview = document.getElementById('preview-container'); // preview content
-
-                // Pehle se agar koi iframe hai to usko remove karein
-                let oldIframe = document.getElementById('printIframe');
-                if (oldIframe) {
-                    oldIframe.remove();
-                }
-
-                // Naya iframe banayein
-                let printIframe = document.createElement('iframe');
-                printIframe.id = "printIframe";
-                printIframe.style.position = "absolute";
-                printIframe.style.width = "0px";
-                printIframe.style.height = "0px";
-                printIframe.style.border = "none";
-                printIframe.style.display = "none"; // ✅ Hide iframe
-
-                // Iframe ko body me add karein
-                document.body.appendChild(printIframe);
-
-                let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
-                printDocument.open();
-
-                // ✅ Current page ke CSS styles bhi iframe me inject karenge
-                const headContent = document.head.innerHTML;
-
-                printDocument.write(`
-                    <html>
-                        <head>
-                            <title>Print Voucher</title>
-                            ${headContent} <!-- Copy current styles -->
-                            <style>
-                                @media print {
-
-                                    body {
-                                        margin: 0;
-                                        padding: 0;
-                                        width: 210mm; /* A4 width */
-                                        height: 297mm; /* A4 height */
-                                        
-                                    }
-
-                                    .preview-container, .preview-container * {
-                                        page-break-inside: avoid;
-                                    }
-                                }
-                            </style>
-                        </head>
-                        <body>
-                            <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
-                            <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
-                        </body>
-                    </html>
-                `);
-
-                printDocument.close();
-
-                // Wait for iframe to load and print
-                printIframe.onload = () => {
-
-                    // Select the preview-copy div and update its text
-                    let previewCopy = printDocument.querySelector('#preview-container .preview-copy');
-
-                    if (previewCopy) {
-                        previewCopy.textContent = "Voucher Copy: Office"; // Change text to "order Copy: Office"
-                    }
-
-                    setTimeout(() => {
-                        printIframe.contentWindow.focus();
-                        printIframe.contentWindow.print();
-                        document.body.removeChild(printIframe); // Remove iframe after printing
-                    }, 1000);
-                }
-            });
-        }
-
-        // Function for Search
-        function filterData(search) {
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.supplier.supplier_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'supplier_name':
-                        return (
-                            item.supplier.supplier_name.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'type':
-                        return (
-                            item.type.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'method':
-                        return (
-                            item.method.toLowerCase().includes(search)
-                        );
-                        break;
-                        
-                    case 'date':
-                        return (
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
-                
-                    default:
-                        return (
-                            item.supplier.supplier_name.toLowerCase().includes(search) ||
-                            item.type.toLowerCase().includes(search) ||
-                            item.method.toLowerCase().includes(search) ||
-                            item.date.toLowerCase().includes(search)
-                        );
-                        break;
-                }
-            });
-
-            return filteredData;
+            createModal(modalData);
         }
     </script>
 @endsection

@@ -31,7 +31,7 @@
                 'id' => 'category',
                 'type' => 'select',
                 'options' => $categories_options,
-                'dataFilterPath' => 'categories',
+                'dataFilterPath' => 'categories[].short_title',
             ],
             'Status' => [
                 'id' => 'status',
@@ -119,7 +119,9 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                image: item.user.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.user.profile_picture}`,
+                image: item.user.profile_picture === 'default_avatar.png' 
+                    ? '/images/default_avatar.png' 
+                    : `/storage/uploads/images/${item.user.profile_picture}`,
                 name: item.supplier_name,
                 details: {
                     'Urdu Title': item.urdu_title,
@@ -134,7 +136,10 @@
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 date: item.date,
-                categories: item.categories,
+                categories: item.categories?.map(cat => ({
+                    ...cat,
+                    short_title: cat.short_title?.toLowerCase() || ""
+                })) || [],
                 profile: true,
                 visible: true,
             };
