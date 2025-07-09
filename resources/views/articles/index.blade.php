@@ -228,6 +228,16 @@
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
 
+            let tableBody = [];
+
+            tableBody = data.rates_array.map((item, index) => {
+                return [
+                    data = {data: index+1, class: 'w-1/5'},
+                    data = {data: item.title, class: 'grow ml-5'},
+                    data = {data: item.rate, class: 'w-1/4'},
+                ]
+            })
+
             let modalData = {
                 id: 'modalForm',
                 method: "POST",
@@ -253,7 +263,7 @@
                         { label: "Title", class: "grow ml-5" },
                         { label: "Rate", class: "w-1/4" }
                     ],
-                    body: data.rates_array,
+                    body: tableBody,
                 },
                 bottomActions: [
                     {id: 'update-image', text: 'Update Image', onclick: `generateUpdateImageModal(${JSON.stringify(data)})`},
