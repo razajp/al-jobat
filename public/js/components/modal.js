@@ -21,7 +21,7 @@ function createModal(data) {
     let clutter = `
         <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in ${data.class}">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
-            <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem]' : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
+            <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem] py-0' : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
                 <div id="modal-close" onclick="closeModal('${data.id}')"
                     class="absolute top-0 -right-4 translate-x-full bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-auto p-3 text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
                     <button type="button"
@@ -237,13 +237,22 @@ function createModal(data) {
             headerHTML += `<div class="${header.class}">${header.label}</div>`;
         });
 
+        console.log(data.table.body);
         if (data.table.body?.length > 0) {
-            data.table.body.forEach((data, index) => {
+            data.table.body.forEach(data => {
+                const rowHTML = data.map(item => {
+                    if (item.checkbox) {
+                        return `
+                            <input type="checkbox" name="selected_customers[]"
+                                class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                        `;
+                    } else {
+                        return `<div class="${item.class}">${item.data}</div>`;
+                    }
+               }).join('');
                 bodyHTML += `
                     <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                        <div class="w-1/5">${index + 1}</div>
-                        <div class="grow ml-5">${data.title}</div>
-                        <div class="w-1/4">${formatNumbersWithDigits(data.rate, 2, 2)}</div>
+                        ${rowHTML}
                     </div>
                 `;
             });
@@ -345,7 +354,7 @@ function createModal(data) {
         
         clutter += `
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
-                <div id="preview" class="preview flex flex-col h-full">
+                <div id="preview" class="preview flex flex-col h-full py-6">
                     <div class="flex flex-col h-full">
                         <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
@@ -391,7 +400,7 @@ function createModal(data) {
                             <div class="table w-full">
                                 <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                        <div class="tr grid ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                             <div class="th text-sm font-medium ">S.No</div>
                                             <div class="th text-sm font-medium ">Article</div>
                                             <div class="th text-sm font-medium col-span-2">Description</div>

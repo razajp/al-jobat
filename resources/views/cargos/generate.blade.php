@@ -1,54 +1,6 @@
 @extends('app')
 @section('title', 'Generate Cargo List | ' . app('company')->name)
 @section('content')
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color))] fade-in">
-        <x-modal id="ModalForm" classForBody="p-5 pt-4 max-w-6xl h-[45rem]" closeAction="closeModal">
-            <!-- Modal Content Slot -->
-            <div class="flex items-start relative h-full">
-                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col pt-2 pr-1">
-                    <x-search-header heading="Invoices" toFrom_label="Invoice No:" toFrom toFrom_type="text"/>
-
-                    @if (count($invoices) > 0)
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                @foreach ($invoices as $invoice)
-                                    <div id="{{ $invoice->id }}" data-json='{{ $invoice }}'
-                                        class="invoice-card card relative border flex items-center justify-between border-gray-600 shadow rounded-xl min-w-[100px] py-3 px-4 cursor-pointer overflow-hidden fade-in">
-                                        <div class="text-start {{ isset($data['image']) ? "pt-1" : "" }}">
-                                            <h5 class="text-lg text-[var(--text-color)] capitalize font-semibold leading-none">
-                                                Invoice No: {{ $invoice->invoice_no }}
-                                            </h5>
-                                        </div>
-                                        <input type="checkbox" name="selected_customers[]"
-                                            class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-[var(--border-error)] text-center h-full">Not Found</div>
-                    @endif
-                </div>
-
-                <div id="select-all-checkbox-parent" class="absolute z-[999] bottom-1.5 right-0 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer">
-                    <div class="bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--text-color)] px-4 py-2 rounded-xl flex gap-3 items-center justify-between">
-                        <span>Select All</span>
-                        <input type="checkbox" id="select-all-checkbox" class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer pointer-events-none">
-                    </div>
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                    Close
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
-
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
@@ -148,46 +100,26 @@
         })
 
         function generateModal() {
-            openModal();
-        }
+            let data = @json($invoices);
+            let cardData = [];
 
-        function openModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            renderList();
-
-            isModalOpened = false;
-            let modal = document.getElementById('modal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-
-            finalTotalCottonsDOM.textContent = totalCottonCount;
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'ModalForm') {
-                closeModal();
+            if (data.length > 0) {
+                cardData.push(data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.invoice_no,
+                        checkbox: true,
+                    };
+                }));
             }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeModal();
+            
+            let modalData = {
+                id: 'modalForm',
+                cards: {name: 'Invoices', count: 4, data: cardData},
             }
-        })
+
+            createModal(modalData);
+        }
 
         function deselectInvoiceAtIndex(index) {
             if (index !== -1) {

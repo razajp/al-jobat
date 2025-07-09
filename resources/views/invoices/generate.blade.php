@@ -5,81 +5,6 @@
 @php
     $invoiceType = Auth::user()->invoice_type;
 @endphp
-
-    @if ($invoiceType == 'shipment')
-        <style>
-            .checkbox-container:has(.row-checkbox:checked) input[type="number"] {
-                pointer-events: all;
-                opacity: 1;
-            }
-        </style>
-    
-        <!-- Modals -->
-        <div id="modal"
-            class="mainModal hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-            <x-modal id="modalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closethisModal">
-                <!-- Modal Content Slot -->
-                <div class="flex items-start relative h-full">
-                    <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                        <div class="pr-5 pt-1">
-                            <x-search-header heading="Customers" :filter_items="[
-                                'all' => 'All',
-                                '#' => 'Article No.',
-                                'category' => 'Category',
-                                'season' => 'Season',
-                                'size' => 'Size',
-                            ]"/>
-                        </div>
-            
-                        <div class="flex items-center justify-between bg-[var(--h-bg-color)] rounded-lg px-4 py-2 mb-3 shadow-sm border border-[var(--h-border-color)]">
-                            <div class="text-sm font-medium">
-                                Selected: <span id="selected-count" class="text-[var(--primary-color)] font-semibold">0</span> / 
-                                <span id="total-count">0</span> customers
-                            </div>
-                            <div class="text-sm font-medium">
-                                Max Cottons: <span id="max-cottons-count" class="text-[var(--primary-color)] font-semibold">0</span>
-                            </div>
-                        </div>
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'><!-- HEADER BAR -->
-                            <div class="text-center flex bg-[var(--h-bg-color)] rounded-lg font-medium py-2 items-center select-none">
-                                <div class="text-left pl-5 flex items-center w-[12%]">Select</div>
-                                <div class="grow">Customer</div>
-                                <div class="w-[15%]">Urdu Title</div>
-                                <div class="w-[15%]">Category</div>
-                                <div class="w-[15%]">Balance</div>
-                                <div class="w-[15%]">Status</div>
-                            </div>
-                        
-                            <div id="customer-container" class="search_container overflow-y-auto grow my-scrollbar-2">
-                                
-                            </div>
-                        </div>
-                        
-                        <div class="flex w-full gap-4 text-sm mt-5">
-                            <div
-                                class="total-qty flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                                <div class="grow">Total Quantity - Pcs</div>
-                                <div id="totalOrderedQty">0</div>
-                            </div>
-                            <div
-                                class="final flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                                <div class="grow">Total Amount - Rs.</div>
-                                <div id="totalOrderAmount">0.0</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal Action Slot -->
-                <x-slot name="actions">
-                    <button onclick="closeModal()" type="button"
-                        class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                        Close
-                    </button>
-                </x-slot>
-            </x-modal>
-        </div>
-    @endif
-
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-[100]">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
@@ -331,18 +256,18 @@
                     },
                     success: function (response) {
                         if (!response.error) {
-                            openModal();
+                            generateModal(response.customers);
 
-                            shipmentArticles = response.shipment.articles;
-                            discount = response.shipment.discount ?? 0;
+                            // shipmentArticles = response.shipment.articles;
+                            // discount = response.shipment.discount ?? 0;
                             allCustomers = response.customers;
 
-                            renderCustomers(allCustomers)
-                            renderList();
-                            renderCalcBottom();
-                            calculateNoOfSelectableCustomers(response.shipment.articles);
-                            document.getElementById('total-count').textContent = allCustomers.length ?? 0;
-                            addListners();
+                            // renderCustomers(allCustomers)
+                            // renderList();
+                            // renderCalcBottom();
+                            // calculateNoOfSelectableCustomers(response.shipment.articles);
+                            // document.getElementById('total-count').textContent = allCustomers.length ?? 0;
+                            // addListners();
                         }
                     }
                 });
@@ -361,21 +286,37 @@
                 document.getElementById('max-cottons-count').textContent = maxCottonCount;
             }
 
-            function openModal() {
-                document.getElementById('modal').classList.remove('hidden');
-                document.getElementById('modal').classList.add('flex');
-                isModalOpened = true;
-                closeAllDropdowns();
-            }
-            
-            function closethisModal() {
-                isModalOpened = false;
-                let modal = document.getElementById('modal');
-                modal.classList.add('fade-out');
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
+            function generateModal(data) {
+                console.log(data[0]);
+                let tableBody = [];
+
+                tableBody = data.map(item => {
+                    return [
+                        {checkbox: true},
+                        {data: item.customer_name, class: 'grow text-center'},
+                        {data: item.urdu_title, class: 'w-[15%] text-center'},
+                        {data: item.category, class: 'w-[15%] text-center'},
+                        {data: item.balance, class: 'w-[15%] text-center'},
+                    ]
+                })
                 
-                setArrayToCustomersArrayInput();
+                let modalData = {
+                    id: 'modalForm',
+                    name: 'Customers',
+                    table: {
+                        name: 'Customers',
+                        headers: [
+                            {label: 'Select', class: 'text-left pl-5 flex items-center w-[12%]'},
+                            {label: 'Customer', class: 'grow text-center'},
+                            {label: 'Urdu Title', class: 'w-[15%] text-center'},
+                            {label: 'Category', class: 'w-[15%] text-center'},
+                            {label: 'Balance', class: 'w-[15%] text-center'},
+                        ],
+                        body: tableBody,
+                    }
+                }
+
+                createModal(modalData);
             }
 
             function setArrayToCustomersArrayInput() {
@@ -616,7 +557,7 @@
             }
 
             function renderCustomers(customers) {
-                const container = document.getElementById('customer-container');
+                const container = document.getElementById('table-body');
                 container.innerHTML = ''; // Clear previous content
 
                 customers.forEach(customer => {
