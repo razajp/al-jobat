@@ -237,7 +237,6 @@ function createModal(data) {
             headerHTML += `<div class="${header.class}">${header.label}</div>`;
         });
 
-        console.log(data.table.body);
         if (data.table.body?.length > 0) {
             data.table.body.forEach(data => {
                 const rowHTML = data.map(item => {
@@ -252,8 +251,8 @@ function createModal(data) {
 
                     if (item.checkbox) {
                         checkboxHTML = `
-                            <input type="checkbox" name="selected_customers[]"
-                                class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                            <input ${item.checked ? 'checked' : ''} type="checkbox" name="selected_customers[]"
+                                class="row-checkbox mr-2 shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
                         `;
                     }
 
