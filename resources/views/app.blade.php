@@ -256,6 +256,11 @@
         .open-dropdown:hover .open-dropdown-hover\:block {
             display: block;
         }
+
+        input.row-checkbox:checked + input {
+            opacity: 1 !important;
+            pointer-events: all !important;
+        }
     </style>
     
     @vite('resources/css/app.css')

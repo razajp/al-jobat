@@ -247,30 +247,39 @@
             });
 
             function getShipmentDetails() {
-                $.ajax({
-                    url: "/get-shipment-details",
-                    type: "POST",
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        shipment_no: shipmentNoDom.value
-                    },
-                    success: function (response) {
-                        if (!response.error) {
-                            generateModal(response.customers);
+                if (allCustomers.length > 0) {
+                    generateModal(allCustomers);
+                    updateSelectedCount();
+                    renderList();
+                    renderCalcBottom();
+                    calculateNoOfSelectableCustomers(shipmentArticles);
+                    document.getElementById('total-count').value = allCustomers.length ?? 0;
+                    addListners();
+                    updateCustomerRowsState();
+                } else {
+                    $.ajax({
+                        url: "/get-shipment-details",
+                        type: "POST",
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                            shipment_no: shipmentNoDom.value
+                        },
+                        success: function (response) {
+                            if (!response.error) {
+                                shipmentArticles = response.shipment.articles;
+                                discount = response.shipment.discount ?? 0;
+                                allCustomers = response.customers;
 
-                            shipmentArticles = response.shipment.articles;
-                            discount = response.shipment.discount ?? 0;
-                            allCustomers = response.customers;
-
-                            // renderCustomers(allCustomers)
-                            renderList();
-                            renderCalcBottom();
-                            calculateNoOfSelectableCustomers(response.shipment.articles);
-                            document.getElementById('total-count').value = allCustomers.length ?? 0;
-                            addListners();
+                                generateModal(allCustomers);
+                                renderList();
+                                renderCalcBottom();
+                                calculateNoOfSelectableCustomers(shipmentArticles);
+                                document.getElementById('total-count').value = allCustomers.length ?? 0;
+                                addListners();
+                            }
                         }
-                    }
-                });
+                    });
+                }
             }
 
             function calculateNoOfSelectableCustomers(articlesArray) {
@@ -287,18 +296,34 @@
             }
 
             function generateModal(data) {
-                console.log(data[0]);
                 let tableBody = [];
 
                 tableBody = data.map(item => {
+                    const selected = selectedCustomersArray.find(c => c.id === item.id);
+                    const isSelected = !!selected;
+
                     return [
-                        data = {checkbox: true, class: 'text-left pl-5 flex items-center w-[12%]', jsonData: item, input: {name: 'cotton_count', class: 'cottonCount', type: 'number', value: '1', min: '1', oninput: 'validateCottonCount(this)', onclick: 'this.select()'}},
-                        data = {data: item.customer_name, class: 'grow text-center'},
-                        data = {data: item.urdu_title, class: 'w-[15%] text-center'},
-                        data = {data: item.category, class: 'w-[15%] text-center'},
-                        data = {data: item.balance, class: 'w-[15%] text-center'},
-                    ]
-                })
+                        {
+                            checkbox: true,
+                            checked: isSelected,
+                            class: 'text-left pl-5 flex items-center w-[12%]',
+                            jsonData: item,
+                            input: {
+                                name: 'cotton_count',
+                                class: 'cottonCount',
+                                type: 'number',
+                                value: selected?.cotton_count || '1',
+                                min: '1',
+                                oninput: 'validateCottonCount(this)',
+                                onclick: 'this.select()'
+                            }
+                        },
+                        { data: item.customer_name, class: 'grow text-center' },
+                        { data: item.urdu_title, class: 'w-[15%] text-center' },
+                        { data: item.category, class: 'w-[15%] text-center' },
+                        { data: item.balance, class: 'w-[15%] text-center' },
+                    ];
+                });
                 
                 let modalData = {
                     id: 'modalForm',
@@ -531,6 +556,8 @@
                 const customerRows = document.querySelectorAll('.customer-row');
                 
                 const availableCottonCount = getAvailableCottonCount();
+                console.log(availableCottonCount);
+                
                 
                 customerRows.forEach((customerRow, index) => {
                     if (availableCottonCount > 0) {
