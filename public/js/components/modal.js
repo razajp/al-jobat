@@ -207,7 +207,6 @@ function createModal(data) {
 
     if (data.cards) {
         let cardsHTML = '';
-
         if (data.cards.data.length > 0) {
             data.cards.data.forEach(item => {
                 cardsHTML += createCard(item)
@@ -220,7 +219,7 @@ function createModal(data) {
 
         clutter += `
             <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
-                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
+                <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
                 <hr class="w-full my-3 border-gray-600">
                 <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
                     ${cardsHTML}
@@ -283,7 +282,7 @@ function createModal(data) {
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-            <div class="w-full h-[80.5%] text-left text-sm overflow-hidden">
+            <div class="w-full ${data.table.scrollable ? 'h-[80.5%] overflow-hidden' : 'h-auto'} text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
@@ -421,6 +420,35 @@ function createModal(data) {
                     <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance - previewData.total_payment, 1, 1)}</div>
                 </div>
             `;
+        } else if (data.preview.type == "cargo_list") {
+            invoiceTableHeader = `
+                <div class="th text-sm font-medium w-[7%]">S.No</div>
+                <div class="th text-sm font-medium w-1/5">Date</div>
+                <div class="th text-sm font-medium w-1/6">Invoice No.</div>
+                <div class="th text-sm font-medium w-1/6">Cotton</div>
+                <div class="th text-sm font-medium grow">Customer</div>
+                <div class="th text-sm font-medium w-[12%]">City</div>
+            `;
+
+            invoiceTableBody = `
+                ${previewData.invoices.map((invoice, index) => {
+                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+
+                    return `
+                        <div>
+                            <hr class="w-full ${hrClass} border-black">
+                            <div class="tr flex justify-between w-full px-4">
+                                <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                                <div class="td text-sm font-semibold w-1/5">${formatDate(invoice.date)}</div>
+                                <div class="td text-sm font-semibold w-1/6">${invoice.invoice_no}</div>
+                                <div class="td text-sm font-semibold w-1/6">${invoice.cotton_count}</div>
+                                <div class="td text-sm font-semibold grow capitalize">${invoice.customer.customer_name}</div>
+                                <div class="td text-sm font-semibold w-[12%]">${invoice.customer.city.title}</div>
+                            </div>
+                        </div>
+                    `;
+                }).join('')}
+            `;
         } else {
             invoiceTableHeader = `
                 <div class="th text-sm font-medium ">S.No</div>
@@ -531,12 +559,12 @@ function createModal(data) {
                                     <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
                                 ` : `
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : ''}</div>
+                                    <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
                                 `}
                             </div>
-                            ${data.preview.type == 'voucher' ? `
+                            ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? `
                                 <div class="center my-auto ">
-                                    <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier.supplier_name}</div>
+                                    <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
                                 </div>
                             ` : ''}
                             <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
@@ -544,7 +572,7 @@ function createModal(data) {
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
                                     <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
                                 ` : '' }
-                                <div class="preview-copy leading-none capitalize">${data.preview.type} Copy: ${data.preview.type == 'shipment' ? 'Staff' : data.preview.type == 'voucher' ? 'Supplier' : 'Customer'}</div>
+                                <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' ? 'Staff' : data.preview.type == 'voucher' ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
                                 <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
                         </div>
@@ -553,7 +581,7 @@ function createModal(data) {
                             <div class="table w-full">
                                 <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
                                     <div class="thead w-full">
-                                        <div class="tr ${data.preview.type == 'voucher' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                        <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
                                             ${invoiceTableHeader}
                                         </div>
                                     </div>
@@ -563,7 +591,7 @@ function createModal(data) {
                                 </div>
                             </div>
                         </div>
-                        <hr class="w-full my-3 border-black">
+                        ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
                         <div class="grid ${data.preview.type == 'order' || data.preview.type == 'voucher' ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5">
                             ${invoiceBottom}
                         </div>
@@ -612,9 +640,9 @@ function createModal(data) {
             }
         });
     }
-
-
-    if (data.details && data.details['Balance'] && data.details['Balance'] == 0.0) {
+    
+    if (data.details && data.details['Balance'] == 0.0) {
+        console.log(data.status);
         if (data.user?.status || data.status) {
             let status = data.user?.status ?? data.status;
             const [bgColor, hoverBgColor, textColor] = statusColor[status == 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;

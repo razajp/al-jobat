@@ -51,10 +51,6 @@
             ]
         ];
     @endphp
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <div>
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Employees" :search_fields=$searchFields/>
@@ -98,35 +94,6 @@
                 @endif
             </div>
         </section>
-        <div class="context-menu absolute top-0 text-sm" style="display: none;">
-            <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transform transition-all duration-300 ease-in-out z-50">
-                <ul class="p-2">
-                    <li>
-                        <button id="show-details" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
-                            Details</button>
-                    </li>
-                    
-                    <li>
-                        <button id="edit-in-context" type="button"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit 
-                            Employee</button>
-                    </li>
-
-                    <li id="ac_in_context" class="hidden">
-                        <form method="POST" action="{{ route('update-user-status') }}">
-                            @csrf
-                            <input type="hidden" id="user_id_context" name="user_id" value="">
-                            <input type="hidden" id="user_status_context" name="status" value="">
-                            <button id="ac_in_btn_context" type="submit"
-                                class="flex w-full items-center text-left px-4 py-2 font-medium rounded-md transition-all duration-300 ease-in-out cursor-pointer">In
-                                Active</button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
 
     <script>
@@ -153,6 +120,7 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
+                uId: item.id,
                 status: item.status,
                 image: item.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.profile_picture}`,
                 name: item.employee_name,
@@ -165,98 +133,29 @@
                 onclick: "generateModal(this)",
                 joining_date: item.joining_date,
                 cnic_no: item.cnic_no,
+                profile: true,
                 visible: true,
             };
         });
 
-        let contextMenu = document.querySelector('.context-menu');
-        let isContextMenuOpened = false;
-
-        function closeContextMenu() {
-            contextMenu.classList.remove('fade-in');
-            contextMenu.style.display = 'none';
-            isContextMenuOpened = false;
-        }
-
-        function openContextMenu() {
-            closeAllDropdowns()
-            contextMenu.classList.add('fade-in');
-            contextMenu.style.display = 'block';
-            isContextMenuOpened = true;
-        }
-
-        let contextMenuToggle = document.querySelectorAll('.contextMenuToggle');
-
-        contextMenuToggle.forEach(toggle => {
-            toggle.addEventListener('contextmenu', (e) => {
-                generateContextMenu(e);
-            });
-        });
-
         function generateContextMenu(e) {
-            contextMenu.classList.remove('fade-in');
-
+            e.preventDefault();
             let item = e.target.closest('.item');
             let data = JSON.parse(item.dataset.json);
 
-            const wrapper = document.querySelector(".wrapper"); // Replace with your wrapper's ID
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                action: "{{ route('update-employee-status') }}",
+                actions: [
+                    {id: 'edit', text: 'Edit Employee', dataId: data.id}
+                ],
+            };
 
-            if (!contextMenu || !wrapper) return;
-
-            const wrapperRect = wrapper.getBoundingClientRect(); // Get wrapper's position
-
-            let x = e.clientX - wrapperRect.left; // Adjust X relative to wrapper
-            let y = e.clientY - wrapperRect.top; // Adjust Y relative to wrapper
-
-            // Prevent right edge overflow
-            if (x + contextMenu.offsetWidth > wrapperRect.width) {
-                x -= contextMenu.offsetWidth;
-            }
-
-            // Prevent bottom edge overflow
-            if (y + contextMenu.offsetHeight > wrapperRect.height) {
-                y -= contextMenu.offsetHeight;
-            }
-
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-
-            openContextMenu();
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "show-details") {
-                    generateModal(item)
-                }
-            });
-
-            document.addEventListener('mousedown', (e) => {
-                if (e.target.id === "edit-in-context") {
-                    window.location.href = "{{ route('employees.edit', ':id') }}".replace(':id', data.id);
-                }
-            });
-            // Function to remove context menu
-            const removeContextMenu = (event) => {
-                if (!contextMenu.contains(event.target)) {
-                    closeContextMenu();
-                    document.removeEventListener('click', removeContextMenu);
-                    document.removeEventListener('contextmenu', removeContextMenu);
-                }
-            }
-
-            // Wait for a small delay before attaching event listeners to avoid immediate removal
-            setTimeout(() => {
-                document.addEventListener('mousedown', removeContextMenu);
-            }, 10);
+            createContextMenu(contextMenuData);
         }
-
-        let isModalOpened = false;
-        let card = document.querySelectorAll('.modalToggle')
-
-        card.forEach(item => {
-            item.addEventListener('click', () => {
-                generateModal(item);
-            });
-        });
 
         function generateModal(item) {
             let modalDom = document.getElementById('modal')
@@ -282,80 +181,11 @@
                 },
                 profile: true,
                 bottomActions: [
-                    {id: 'edit-in-modal', text: 'Edit Employee'}
+                    {id: 'edit-in-modal', text: 'Edit Employee', dataId: data.id}
                 ],
             }
 
-            modalDom.innerHTML = createModal(modalData);
-
-            let editInModalDom = document.getElementById('edit-in-modal');
-
-            editInModalDom.addEventListener('click', () => {
-                window.location.href = "{{ route('employees.edit', ':id') }}".replace(':id', data.id);
-            });
-
-            openModal()
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const { id } = e.target;
-            if (id === 'modalForm') {
-                closeModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeContextMenu();
-                closeModal();
-            }
-        })
-
-        function openModal() {
-            isModalOpened = true;
-            document.getElementById('modal').classList.remove('hidden');
-            closeAllDropdowns();
-            closeContextMenu();
-        }
-
-        function closeModal() {
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        const categorySearchDom = document.getElementById('category');
-        const typeSearchDom = document.getElementById('type');
-
-        if (categorySearchDom) {
-            categorySearchDom.addEventListener('change', () => {
-                setTypeOptions(categorySearchDom.value);
-            });
-        }
-
-        function setTypeOptions(category) {
-            typeSearchDom.innerHTML = '<option value="">-- Select Type --</option>';
-            let allTypes = @json($all_types);
-            allTypes.forEach(type => {
-                if (category != '') {
-                    if (type.category === category) {
-                        const option = document.createElement('option');
-                        option.value = type.text;
-                        option.textContent = type.text;
-                        typeSearchDom.appendChild(option);
-                    }
-                } else {
-                    const option = document.createElement('option');
-                    option.value = type.text;
-                    option.textContent = type.text;
-                    typeSearchDom.appendChild(option);
-                }
-            });
+            createModal(modalData);
         }
     </script>
 @endsection

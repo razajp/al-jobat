@@ -55,19 +55,6 @@
             ]
         ];
     @endphp
-    <!-- Modals -->
-    {{-- article details modal --}}
-    {{-- <div id="modal"
-        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div> --}}
-    {{-- add image modal --}}
-    {{-- <div id="updateImageModal"
-        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div> --}}
-    {{-- add rate modal --}}
-    {{-- <div id="addRateModal"
-        class="mainModal hidden fixed inset-0 z-[100] text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div> --}}
     
     {{-- header --}}
     <div class="w-[80%] mx-auto">
@@ -115,39 +102,6 @@
                         New</a>
                 </div>
             @endif
-        </div>
-
-        <div class="context-menu absolute top-0 left-0 text-sm z-50" style="display: none;">
-            <div
-                class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-md rounded-xl transform transition-all duration-300 ease-in-out z-50">
-                <ul class="p-2">
-                    <li>
-                        <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Show
-                            Details</button>
-                    </li>
-                    <li>
-                        <button id="show-details" type="button"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Print
-                            Article</button>
-                    </li>
-                    <li id="edit-article-in-context" class="hidden">
-                        <button id="edit-article-in-context-btn"
-                            class="w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Edit
-                            Article</button>
-                    </li>
-                    <li id="update-img-in-context">
-                        <button id="update-img-in-context-btn"
-                            class="font-medium text-[var(--border-warning)] w-full px-4 py-2 text-left hover:bg-[var(--bg-warning)] hover:text-[var(--text-warning)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Update
-                            Image</button>
-                    </li>
-                    <li id="add-rate-in-context" class="hidden">
-                        <button id="add-rate-in-context-btn"
-                            class="font-medium text-[var(--border-success)] w-full px-4 py-2 text-left hover:bg-[var(--bg-success)] hover:text-[var(--text-success)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">Add
-                            Rate</button>
-                    </li>
-                </ul>
-            </div>
         </div>
     </section>
 
@@ -232,9 +186,9 @@
 
             tableBody = data.rates_array.map((item, index) => {
                 return [
-                    data = {data: index+1, class: 'w-1/5'},
-                    data = {data: item.title, class: 'grow ml-5'},
-                    data = {data: item.rate, class: 'w-1/4'},
+                    {data: index+1, class: 'w-1/5'},
+                    {data: item.title, class: 'grow ml-5'},
+                    {data: item.rate, class: 'w-1/4'},
                 ]
             })
 

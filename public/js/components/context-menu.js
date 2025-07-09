@@ -56,11 +56,11 @@ function createContextMenu(data) {
         });
     }
 
-    if (data.data.details?.Balance == 0.0) {
+    if (data.data.details && data.data.details['Balance'] == 0.0) {
         if (data.data.user?.status || data.data.status) {
             let status = data.data.user?.status ?? data.data.status;
             const [bgColor, textColor, borderColor] = statusColor[status === 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;
-
+            
             clutter += `
                 <li id="ac_in_context">
                     <form method="POST" action="${data.action}">

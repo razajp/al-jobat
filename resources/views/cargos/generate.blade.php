@@ -78,7 +78,7 @@
 
         const lastCargo = @json($last_cargo);
         const modalDom = document.getElementById("modal");
-        const selectAllCheckbox = document.getElementById("select-all-checkbox");
+        // const selectAllCheckbox = document.getElementById("select-all-checkbox");
         const generateListBtn = document.getElementById("generateListBtn");
         const cargoListDOM = document.getElementById('cargo-list');
         const finalTotalCottonsDOM = document.getElementById('finalTotalCottons');
@@ -104,11 +104,13 @@
             let cardData = [];
 
             if (data.length > 0) {
-                cardData.push(data.map(item => {
+                cardData.push(...data.map(item => {
                     return {
                         id: item.id,
                         name: item.invoice_no,
+                        data: item,
                         checkbox: true,
+                        onclick: 'selectThisInvoice(this)',
                     };
                 }));
             }
@@ -128,15 +130,11 @@
         }
 
         function deselectThisInvoice(index) {
-            document.getElementById(selectedInvoicesArray[index].id).querySelector("input[type=checkbox]").checked = false;
-            
-            totalCottonCount -= selectedInvoicesArray[index].cotton_count;
+            totalCottonCount -=  selectedInvoicesArray[index].cotton_count;
             
             deselectInvoiceAtIndex(index);
 
             renderList();
-            
-            finalTotalCottonsDOM.textContent = totalCottonCount;
         }
 
         function renderList() {
@@ -165,6 +163,7 @@
                 cargoListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Invoices Yet</div>`;
             }
+            finalTotalCottonsDOM.textContent = totalCottonCount;
             updateInputinvoicesArray();
         }
         renderList();
@@ -270,13 +269,7 @@
             }
         }
 
-        document.querySelectorAll(".invoice-card").forEach((card)=>{
-            card.addEventListener("click", ()=>{
-                onClickInvoice(card);
-            });
-        });
-
-        function onClickInvoice(invoiceElem) {
+        function selectThisInvoice(invoiceElem) {
             let checkbox = invoiceElem.querySelector("input[type='checkbox']")
             checkbox.checked = !checkbox.checked;
 
@@ -292,92 +285,94 @@
         }
 
         function selectInvoice(invoiceElem) {
-            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+            const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
 
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
             if (index == -1) {
                 selectedInvoicesArray.push(invoiceData);
                 totalCottonCount += invoiceData.cotton_count;
             }
+            renderList()
         }
 
         function deselectInvoice(invoiceElem) {
-            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+            const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
 
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
             if (index > -1) {
                 selectedInvoicesArray.splice(index, 1);
                 totalCottonCount -= invoiceData.cotton_count;
 
-                selectAllCheckbox.checked = false;
+                // selectAllCheckbox.checked = false;
             }
+            renderList()
         }
 
-        function deselectAllInvoices() {
-            document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
-                checkbox.checked = false;
-            });
+        // function deselectAllInvoices() {
+        //     document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
+        //         checkbox.checked = false;
+        //     });
             
-            selectedInvoicesArray = [];
-            totalCottonCount = 0;
-            selectAllCheckbox.checked = false;
-        }
+        //     selectedInvoicesArray = [];
+        //     totalCottonCount = 0;
+        //     selectAllCheckbox.checked = false;
+        // }
 
         function validateForNextStep() {
             generateCargoListPreview()
             return true;
         }
 
-        const fromInput = document.getElementById("from");
-        const toInput = document.getElementById("to");
-        const cards = document.querySelectorAll(".invoice-card");
+        // const fromInput = document.getElementById("from");
+        // const toInput = document.getElementById("to");
+        // const cards = document.querySelectorAll(".invoice-card");
 
-        function getInvoiceNumber(str) {
-            // Converts '25-0001' => 250001 (as number)
-            return parseInt(str.replace("-", ""));
-        }
+        // function getInvoiceNumber(str) {
+        //     // Converts '25-0001' => 250001 (as number)
+        //     return parseInt(str.replace("-", ""));
+        // }
 
-        function filterCards() {
-            const fromVal = getInvoiceNumber(fromInput.value);
-            const toVal = getInvoiceNumber(toInput.value);
+        // function filterCards() {
+        //     const fromVal = getInvoiceNumber(fromInput.value);
+        //     const toVal = getInvoiceNumber(toInput.value);
 
-            deselectAllInvoices();
+        //     deselectAllInvoices();
 
-            cards.forEach(card => {
-                const data = JSON.parse(card.getAttribute("data-json"));
-                const invoiceNum = getInvoiceNumber(data.invoice_no);
+        //     cards.forEach(card => {
+        //         const data = JSON.parse(card.getAttribute("data-json"));
+        //         const invoiceNum = getInvoiceNumber(data.invoice_no);
 
-                // Determine if the card should be shown
-                const show = (
-                    (!fromVal || invoiceNum >= fromVal) &&
-                    (!toVal || invoiceNum <= toVal)
-                );
+        //         // Determine if the card should be shown
+        //         const show = (
+        //             (!fromVal || invoiceNum >= fromVal) &&
+        //             (!toVal || invoiceNum <= toVal)
+        //         );
 
-                card.style.display = show ? "flex" : "none";
-            });
-        }
+        //         card.style.display = show ? "flex" : "none";
+        //     });
+        // }
 
-        fromInput.addEventListener("input", filterCards);
-        toInput.addEventListener("input", filterCards);
+        // fromInput.addEventListener("input", filterCards);
+        // toInput.addEventListener("input", filterCards);
 
-        const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
-        selectAllCheckboxParent.addEventListener('click', ()=>{
-            selectAllCheckbox.checked = !selectAllCheckbox.checked;
+        // const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
+        // selectAllCheckboxParent.addEventListener('click', ()=>{
+        //     selectAllCheckbox.checked = !selectAllCheckbox.checked;
 
-            selectAllScript();
-        });
+        //     selectAllScript();
+        // });
         
-        function selectAllScript() {
-            let invoiceCards = document.querySelectorAll(".invoice-card");
-            invoiceCards.forEach(card => {
-                if (card.style.display != "none") {
-                    const checkbox = card.querySelector("input[type='checkbox']");
-                    checkbox.checked = selectAllCheckbox.checked;
+        // function selectAllScript() {
+        //     let invoiceCards = document.querySelectorAll(".invoice-card");
+        //     invoiceCards.forEach(card => {
+        //         if (card.style.display != "none") {
+        //             const checkbox = card.querySelector("input[type='checkbox']");
+        //             checkbox.checked = selectAllCheckbox.checked;
                     
-                    toggleInvoice(card, checkbox);
-                }
-            });
-        }
+        //             toggleInvoice(card, checkbox);
+        //         }
+        //     });
+        // }
         
         function addListenerToPrintAndSaveBtn() {
             document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {

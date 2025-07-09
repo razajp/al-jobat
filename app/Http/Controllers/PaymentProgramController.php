@@ -122,8 +122,6 @@ class PaymentProgramController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
-
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');

@@ -1,58 +1,6 @@
 @extends('app')
 @section('title', 'Add Bilty | ' . app('company')->name)
 @section('content')
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color))] fade-in">
-        <x-modal id="ModalForm" classForBody="p-5 pt-4 max-w-6xl h-[45rem]" closeAction="closeModal">
-            <!-- Modal Content Slot -->
-            <div class="flex items-start relative h-full">
-                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col pt-2 pr-1">
-                    <x-search-header heading="Invoices" toFrom_label="Invoice No:" toFrom toFrom_type="text" :filter_items="[
-                        'all' => 'Invoice No.',
-                        'city' => 'City'
-                    ]"/>
-
-                    @if (count($invoices) > 0)
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-                                @foreach ($invoices as $invoice)
-                                    <div id="{{ $invoice->id }}" data-json='{{ $invoice }}'
-                                        class="invoice-card card relative border flex items-center justify-between border-gray-600 shadow rounded-xl min-w-[100px] py-3 px-4 cursor-pointer overflow-hidden fade-in">
-                                        <div class="text-start {{ isset($data['image']) ? "pt-1" : "" }}">
-                                            <h5 class="text-lg mb-2 text-[var(--text-color)] capitalize font-semibold leading-none">
-                                                Invoice No: {{ $invoice->invoice_no }}
-                                            </h5>
-                                            {{ $invoice->customer->customer_name }} | {{ $invoice->customer->city->title }}
-                                        </div>
-                                        <input type="checkbox" name="selected_customers[]"
-                                            class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-[var(--border-error)] text-center h-full">Not Found</div>
-                    @endif
-                </div>
-
-                <div id="select-all-checkbox-parent" class="absolute z-[999] bottom-1.5 right-0 hover:scale-105 transition-all duration-300 ease-in-out cursor-pointer">
-                    <div class="bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--text-color)] px-4 py-2 rounded-xl flex gap-3 items-center justify-between">
-                        <span>Select All</span>
-                        <input type="checkbox" id="select-all-checkbox" class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer pointer-events-none">
-                    </div>
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                    Close
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
-
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-6xl mx-auto">
@@ -138,46 +86,69 @@
         })
 
         function generateModal() {
-            openModal();
-        }
+            let data = @json($invoices);
+            let cardData = [];
 
-        function openModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            renderList();
-
-            isModalOpened = false;
-            let modal = document.getElementById('modal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-
-            finalTotalCottonsDOM.textContent = totalCottonCount;
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'ModalForm') {
-                closeModal();
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.invoice_no,
+                        details: {
+                            '': `${item.customer.customer_name} | ${item.customer.city.title}`,
+                        },
+                        data: item,
+                        checkbox: true,
+                        onclick: 'selectThisInvoice(this)',
+                    };
+                }));
             }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeModal();
+            
+            let modalData = {
+                id: 'modalForm',
+                cards: {name: 'Invoices', count: 3, data: cardData},
             }
-        })
+
+            createModal(modalData);
+        }
+
+        // function openModal() {
+        //     isModalOpened = true;
+        //     closeAllDropdowns();
+        //     document.getElementById('modal').classList.remove('hidden');
+        // }
+
+        // function closeModal() {
+        //     renderList();
+
+        //     isModalOpened = false;
+        //     let modal = document.getElementById('modal');
+        //     modal.classList.add('fade-out');
+
+        //     modal.addEventListener('animationend', () => {
+        //         modal.classList.add('hidden');
+        //         modal.classList.remove('fade-out');
+        //     }, {
+        //         once: true
+        //     });
+
+        //     finalTotalCottonsDOM.textContent = totalCottonCount;
+        // }
+
+        // document.addEventListener('mousedown', (e) => {
+        //     const {
+        //         id
+        //     } = e.target;
+        //     if (id === 'ModalForm') {
+        //         closeModal();
+        //     }
+        // });
+
+        // document.addEventListener('keydown', (e) => {
+        //     if (e.key === 'Escape' && isModalOpened) {
+        //         closeModal();
+        //     }
+        // })
 
         function deselectInvoiceAtIndex(index) {
             if (index !== -1) {
@@ -186,8 +157,6 @@
         }
 
         function deselectThisInvoice(index) {
-            document.getElementById(selectedInvoicesArray[index].id).querySelector("input[type=checkbox]").checked = false;
-            
             totalCottonCount -= selectedInvoicesArray[index].cotton_count;
             
             deselectInvoiceAtIndex(index);
@@ -334,13 +303,7 @@
             }
         }
 
-        document.querySelectorAll(".invoice-card").forEach((card)=>{
-            card.addEventListener("click", ()=>{
-                onClickInvoice(card);
-            });
-        });
-
-        function onClickInvoice(invoiceElem) {
+        function selectThisInvoice(invoiceElem) {
             let checkbox = invoiceElem.querySelector("input[type='checkbox']")
             checkbox.checked = !checkbox.checked;
 
@@ -356,7 +319,7 @@
         }
 
         function selectInvoice(invoiceElem) {
-            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+            const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
             console.log(invoiceData);
             
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
@@ -364,10 +327,11 @@
                 selectedInvoicesArray.push(invoiceData);
                 totalCottonCount += invoiceData.cotton_count;
             }
+            renderList()
         }
 
         function deselectInvoice(invoiceElem) {
-            const invoiceData = JSON.parse(invoiceElem.dataset.json);
+            const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
 
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
             if (index > -1) {
@@ -376,6 +340,7 @@
 
                 selectAllCheckbox.checked = false;
             }
+            renderList()
         }
 
         function deselectAllInvoices() {
@@ -393,98 +358,98 @@
             return true;
         }
 
-        const searchInput = document.getElementById("search_box");
-        const fromInput = document.getElementById("from");
-        const toInput = document.getElementById("to");
-        const cards = document.querySelectorAll(".invoice-card");
-        const cardsContainer = document.querySelector(".search_container");
+        // const searchInput = document.getElementById("search_box");
+        // const fromInput = document.getElementById("from");
+        // const toInput = document.getElementById("to");
+        // const cards = document.querySelectorAll(".invoice-card");
+        // const cardsContainer = document.querySelector(".search_container");
 
-        function getInvoiceNumber(str) {
-            // Converts '25-0001' => 250001 (as number)
-            return parseInt(str.replace("-", ""));
-        }
+        // function getInvoiceNumber(str) {
+        //     // Converts '25-0001' => 250001 (as number)
+        //     return parseInt(str.replace("-", ""));
+        // }
 
-        function filterCards() {
-            clearSerialOrSearch("search");
+        // function filterCards() {
+        //     clearSerialOrSearch("search");
             
-            const fromVal = getInvoiceNumber(fromInput.value);
-            const toVal = getInvoiceNumber(toInput.value);
+        //     const fromVal = getInvoiceNumber(fromInput.value);
+        //     const toVal = getInvoiceNumber(toInput.value);
 
-            cards.forEach(card => {
-                const data = JSON.parse(card.getAttribute("data-json"));
-                const invoiceNum = getInvoiceNumber(data.invoice_no);
+        //     cards.forEach(card => {
+        //         const data = JSON.parse(card.getAttribute("data-json"));
+        //         const invoiceNum = getInvoiceNumber(data.invoice_no);
 
-                // Determine if the card should be shown
-                const show = (
-                    (!fromVal || invoiceNum >= fromVal) &&
-                    (!toVal || invoiceNum <= toVal)
-                );
+        //         // Determine if the card should be shown
+        //         const show = (
+        //             (!fromVal || invoiceNum >= fromVal) &&
+        //             (!toVal || invoiceNum <= toVal)
+        //         );
 
-                card.style.display = show ? "flex" : "none";
-            });
-        }
+        //         card.style.display = show ? "flex" : "none";
+        //     });
+        // }
 
-        fromInput.addEventListener("input", filterCards);
-        toInput.addEventListener("input", filterCards);
+        // fromInput.addEventListener("input", filterCards);
+        // toInput.addEventListener("input", filterCards);
 
-        function filterData(search) {
-            clearSerialOrSearch("serial");
+        // function filterData(search) {
+        //     clearSerialOrSearch("serial");
 
-            const filteredData = cardsDataArray.filter(item => {
-                switch (filterType) {
-                    case 'all':
-                        return (
-                            item.invoice_no.toString().includes(search)
-                        );
-                        break;
+        //     const filteredData = cardsDataArray.filter(item => {
+        //         switch (filterType) {
+        //             case 'all':
+        //                 return (
+        //                     item.invoice_no.toString().includes(search)
+        //                 );
+        //                 break;
                 
-                    default:
-                        return (
-                            item.invoice_no.toString().includes(search)
-                        );
-                        break;
-                }
-            });
+        //             default:
+        //                 return (
+        //                     item.invoice_no.toString().includes(search)
+        //                 );
+        //                 break;
+        //         }
+        //     });
 
-            return filteredData;
-        }
+        //     return filteredData;
+        // }
 
-        function clearSerialOrSearch(serialOrSearch) {
-            if (serialOrSearch == "serial") {
-                toInput.value = "";
-                fromInput.value = "";
+        // function clearSerialOrSearch(serialOrSearch) {
+        //     if (serialOrSearch == "serial") {
+        //         toInput.value = "";
+        //         fromInput.value = "";
 
-                cards.forEach(card=>{
-                    card.style.display = "flex";
-                });
-            } else {
-                searchInput.value = "";
-                cardsContainer.innerHTML = "";
+        //         cards.forEach(card=>{
+        //             card.style.display = "flex";
+        //         });
+        //     } else {
+        //         searchInput.value = "";
+        //         cardsContainer.innerHTML = "";
                 
-                cards.forEach(card=>{
-                    cardsContainer.appendChild(card);
-                });
-            }
-        }
+        //         cards.forEach(card=>{
+        //             cardsContainer.appendChild(card);
+        //         });
+        //     }
+        // }
 
-        const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
-        selectAllCheckboxParent.addEventListener('click', ()=>{
-            selectAllCheckbox.checked = !selectAllCheckbox.checked;
+        // const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
+        // selectAllCheckboxParent.addEventListener('click', ()=>{
+        //     selectAllCheckbox.checked = !selectAllCheckbox.checked;
 
-            selectAllScript();
-        });
+        //     selectAllScript();
+        // });
         
-        function selectAllScript() {
-            let invoiceCards = document.querySelectorAll(".invoice-card");
-            invoiceCards.forEach(card => {
-                if (card.style.display != "none") {
-                    const checkbox = card.querySelector("input[type='checkbox']");
-                    checkbox.checked = selectAllCheckbox.checked;
+        // function selectAllScript() {
+        //     let invoiceCards = document.querySelectorAll(".invoice-card");
+        //     invoiceCards.forEach(card => {
+        //         if (card.style.display != "none") {
+        //             const checkbox = card.querySelector("input[type='checkbox']");
+        //             checkbox.checked = selectAllCheckbox.checked;
                     
-                    toggleInvoice(card, checkbox);
-                }
-            });
-        }
+        //             toggleInvoice(card, checkbox);
+        //         }
+        //     });
+        // }
 
         function setCottonCount(invoiceId, cottonCount) {
             const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);

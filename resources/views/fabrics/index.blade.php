@@ -56,7 +56,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div
-                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
+                class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
                 <x-form-title-bar title="Show Fabrics" />
 
                 @if (count($finalData) > 0)
@@ -64,11 +64,11 @@
                         <x-section-navigation-button link="{{ route('fabrics.create') }}" title="Add New Fabric"
                             icon="fa-plus" />
                     </div>
-                
+
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                            <div class="data_container pt-4 p-5 pr-3 h-full flex flex-col">
-                                <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
+                            <div class="card_container py-0 p-3 h-full flex flex-col">
+                                <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                     <div class="text-center w-[10%]">Date</div>
                                     <div class="text-center w-[15%]">Supplier / Worker</div>
                                     <div class="text-center w-[10%]">Fabric</div>
@@ -80,7 +80,11 @@
                                     <div class="text-center w-[10%]">Type</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                                <div class="search_container overflow-y-auto grow my-scrollbar-2"></div>
+                                <div>
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                        {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -106,14 +110,7 @@
                 class="item row relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
                 
-                <span class="text-center w-[10%]">
-                    ${new Date(data.date).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                        weekday: 'short'
-                    }).replace(',', '')}
-                </span>
+                <span class="text-center w-[10%]">${formatDate(data.date)}</span>
                 <span class="text-center w-[15%] capitalize">${data.supplier_name ?? data.employee_name}</span>
                 <span class="text-center w-[10%] capitalize">${data.fabric ?? "-"}</span>
                 <span class="text-center w-[10%] capitalize">${data.remarks ?? "-"}</span>
@@ -139,11 +136,6 @@
                 tag: item.tag,
                 type: item.type,
                 date: item.date,
-                
-                oncontextmenu: "generateContextMenu(event)",
-                onclick: "generateModal(this)",
-                
-                profile: true,
                 visible: true,
             };
         });
