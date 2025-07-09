@@ -258,16 +258,16 @@
                         if (!response.error) {
                             generateModal(response.customers);
 
-                            // shipmentArticles = response.shipment.articles;
-                            // discount = response.shipment.discount ?? 0;
+                            shipmentArticles = response.shipment.articles;
+                            discount = response.shipment.discount ?? 0;
                             allCustomers = response.customers;
 
                             // renderCustomers(allCustomers)
-                            // renderList();
-                            // renderCalcBottom();
-                            // calculateNoOfSelectableCustomers(response.shipment.articles);
-                            // document.getElementById('total-count').textContent = allCustomers.length ?? 0;
-                            // addListners();
+                            renderList();
+                            renderCalcBottom();
+                            calculateNoOfSelectableCustomers(response.shipment.articles);
+                            document.getElementById('total-count').value = allCustomers.length ?? 0;
+                            addListners();
                         }
                     }
                 });
@@ -283,7 +283,7 @@
                 maxCottonCount = Math.min(...countOfCottonsOfArticles);
                 ogMaxCottonCount = maxCottonCount;
 
-                document.getElementById('max-cottons-count').textContent = maxCottonCount;
+                document.getElementById('max-cottons-count').value = maxCottonCount;
             }
 
             function generateModal(data) {
@@ -292,16 +292,17 @@
 
                 tableBody = data.map(item => {
                     return [
-                        {checkbox: true},
-                        {data: item.customer_name, class: 'grow text-center'},
-                        {data: item.urdu_title, class: 'w-[15%] text-center'},
-                        {data: item.category, class: 'w-[15%] text-center'},
-                        {data: item.balance, class: 'w-[15%] text-center'},
+                        data = {checkbox: true, class: 'text-left pl-5 flex items-center w-[12%]', jsonData: item, input: {name: 'cotton_count', class: 'cottonCount', type: 'number', value: '1', min: '1', oninput: 'validateCottonCount(this)', onclick: 'this.select()'}},
+                        data = {data: item.customer_name, class: 'grow text-center'},
+                        data = {data: item.urdu_title, class: 'w-[15%] text-center'},
+                        data = {data: item.category, class: 'w-[15%] text-center'},
+                        data = {data: item.balance, class: 'w-[15%] text-center'},
                     ]
                 })
                 
                 let modalData = {
                     id: 'modalForm',
+                    class: 'h-[45rem] max-w-6xl',
                     name: 'Customers',
                     table: {
                         name: 'Customers',
@@ -313,7 +314,14 @@
                             {label: 'Balance', class: 'w-[15%] text-center'},
                         ],
                         body: tableBody,
-                    }
+                        selectableRow: true,
+                        scrollable: true,
+                    },
+                    calcBottom: [
+                        {label: 'Total Customers', name: 'total-count', value: '0', disabled: true},
+                        {label: 'Selected Customers', name: 'selected-count', value: '0', disabled: true},
+                        {label: 'Max Cottons Count', name: 'max-cottons-count', value: '0', disabled: true},
+                    ],
                 }
 
                 createModal(modalData);
@@ -329,21 +337,6 @@
                 })
                 customersArrayInput.value = JSON.stringify(finalCustomersArray);
             }
-            
-            document.addEventListener('mousedown', (e) => {
-                const { id } = e.target;
-                if (id === 'modalForm') {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    if (isModalOpened == true) {
-                        closeModal();
-                    }
-                }
-            });
             
             shipmentNoDom.addEventListener('input', (e) => {
                 let value = e.target.value;
@@ -423,7 +416,7 @@
                 const checkboxes = document.querySelectorAll('.row-checkbox');
                 const selected = document.querySelectorAll('.row-checkbox:checked').length;
 
-                document.getElementById('selected-count').textContent = selected;
+                document.getElementById('selected-count').value = selected;
             }
 
             function addListners() {
@@ -436,7 +429,6 @@
                 document.querySelectorAll('.row-toggle').forEach(row => {
                     row.addEventListener('click', function (e) {
                         if (e.target.tagName.toLowerCase() === 'input') return;
-
                         const checkbox = this.querySelector('.row-checkbox');
                         checkbox.checked = !checkbox.checked;
                         checkbox.dispatchEvent(new Event('change')); // trigger count + update
@@ -537,9 +529,9 @@
 
             function updateCustomerRowsState() {
                 const customerRows = document.querySelectorAll('.customer-row');
-
+                
                 const availableCottonCount = getAvailableCottonCount();
-
+                
                 customerRows.forEach((customerRow, index) => {
                     if (availableCottonCount > 0) {
                         customerRow.style.pointerEvents = 'all';
@@ -562,7 +554,7 @@
 
                 customers.forEach(customer => {
                     const html = `
-                        <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}' class="customer-row contextMenuToggle modalToggle relative text-center group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out row-toggle select-none" >
+                        <div id="customer-${customer.id}" data-json='${JSON.stringify(customer)}' class="customer-row contextMenuToggle modalToggle relative text-center group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out >
                             <span class="text-left pl-5 flex items-center gap-4 checkbox-container w-[12%]">
                                 <input type="checkbox" name="selected_customers[]"
                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />

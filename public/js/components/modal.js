@@ -34,7 +34,7 @@ function createModal(data) {
                 </div>
                 
                 <div class="flex flex-col w-full">
-                    <div class="w-full h-full overflow-y-auto my-scrollbar-2">
+                    <div class="w-full h-full ${!data.table.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
 
     if (data.user?.status || data.status) {
@@ -85,7 +85,7 @@ function createModal(data) {
 
     if (data.name) {
         clutter += `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full ${!data.table.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
                 <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
                 ${detailsHTML}
         `;
@@ -241,17 +241,35 @@ function createModal(data) {
         if (data.table.body?.length > 0) {
             data.table.body.forEach(data => {
                 const rowHTML = data.map(item => {
+                    let checkboxHTML = '';
+                    let inputHTML = '';
+
+                    if (item.input) {
+                        inputHTML = `
+                            <input class="${item.input.class || ''} w-[70%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="${item.input.type || 'text'}" name="${item.input.name || ''}" value="${item.input.value || ''}" min="${item.input.min || ''}" oninput="${item.input.oninput || ''}" onclick="${item.input.onclick || ''}" />
+                        `;
+                    }
+
                     if (item.checkbox) {
-                        return `
+                        checkboxHTML = `
                             <input type="checkbox" name="selected_customers[]"
                                 class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                        `;
+                    }
+
+                    if (item.checkbox || item.input) {
+                        return `
+                            <div class="${item.class}">
+                                ${checkboxHTML}
+                                ${inputHTML}
+                            </div>
                         `;
                     } else {
                         return `<div class="${item.class}">${item.data}</div>`;
                     }
                }).join('');
                 bodyHTML += `
-                    <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                    <div id='${data[0].jsonData?.id}' ${data[0].jsonData ? `data-json='${JSON.stringify(data[0].jsonData)}'` : ''} data class="flex justify-between items-center border-t border-gray-600 py-2 px-4 ${data[0].checkbox ? 'cursor-pointer row-toggle select-none customer-row hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out' : ''}" ${data[0].checkbox ? 'onclick="console.log(this)"' : ''}>
                         ${rowHTML}
                     </div>
                 `;
@@ -266,11 +284,11 @@ function createModal(data) {
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-            <div class="w-full text-left grow text-sm">
+            <div class="w-full h-[80.5%] text-left text-sm overflow-hidden">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
-                <div id="table-body" class="overflow-y-auto my-scrollbar-2">
+                <div id="table-body" class="overflow-y-auto my-scrollbar-2 h-full">
                     ${bodyHTML}
                 </div>
             </div>
@@ -285,9 +303,9 @@ function createModal(data) {
         if (childCount === 1 || childCount === 3) {
             calcBottomClass = 'flex';
         } else if (childCount === 2 || childCount === 4) {
-            calcBottomClass = 'grid', 'grid-cols-2';
+            calcBottomClass = 'grid grid-cols-2';
         } else if (childCount === 6) {
-            calcBottomClass = 'grid', 'grid-cols-3';
+            calcBottomClass = 'grid grid-cols-3';
         }
 
         data.calcBottom.forEach(field => {
