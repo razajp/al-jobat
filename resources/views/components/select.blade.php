@@ -77,6 +77,7 @@
             :value="$isDisabled ? '' : $selectedText"
             :placeholder="$placeholderText"
             onfocus="selectClicked(this)"
+            onkeydown="selectKeyDown(event, this)"
             :dataClearable="$dataClearable"
         />
 

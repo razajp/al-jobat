@@ -56,7 +56,7 @@
         const quantityErrorDom = document.getElementById('quantity-error');
 
         function trackTagSelect(elem) {
-            const selectedTag = JSON.parse(elem.options[elem.selectedIndex].getAttribute('data-option') ?? '{}');
+            const selectedTag = JSON.parse(elem.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
             unitInoDom.value = selectedTag.unit;
             avalaibleStockInpDom.value = selectedTag.avalaible_sock;
         }

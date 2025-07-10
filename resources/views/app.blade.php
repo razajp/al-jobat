@@ -1041,20 +1041,30 @@
             // Always show "-- Select Customer --"
             if (optionText.startsWith('-- select')) {
                 li.classList.remove('hidden');
+                li.innerHTML = li.textContent; // Remove highlight
                 return;
             }
 
             // If default option is selected, show everything
             if (isDefaultSelection) {
                 li.classList.remove('hidden');
+                li.innerHTML = li.textContent; // Remove highlight
                 return;
             }
 
             // Otherwise filter based on input value
-            if (optionText.includes(inputValue)) {
+            if (optionText.includes(inputValue) && inputValue.length > 0) {
                 li.classList.remove('hidden');
+                // Highlight the matching part
+                const originalText = li.textContent;
+                const regex = new RegExp(`(${inputValue})`, 'ig');
+                li.innerHTML = originalText.replace(regex, '<mark class="bg-yellow-200 text-black rounded">$1</mark>');
+            } else if (optionText.includes(inputValue)) {
+                li.classList.remove('hidden');
+                li.innerHTML = li.textContent; // Remove highlight if input is empty
             } else {
                 li.classList.add('hidden');
+                li.innerHTML = li.textContent; // Remove highlight
             }
         });
     }
@@ -1101,6 +1111,48 @@
         dropdown.style.width = inputRect.width + "px";
         dropdown.style.top = (inputRect.top + inputRect.height) + "px";
         dropdown.style.left = inputRect.left + "px";
+    }
+
+    function selectKeyDown(event, input) {
+        const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
+        const options = dropdown.querySelectorAll("li");
+
+        function scrollIntoViewIfNeeded(element) {
+            if (element && typeof element.scrollIntoView === "function") {
+            element.scrollIntoView({ block: "nearest", inline: "nearest" });
+            }
+        }
+
+        if (event.key === "ArrowDown") {
+            event.preventDefault();
+            const selected = dropdown.querySelector("li.selected");
+            let next = selected ? selected.nextElementSibling : options[0];
+            if (next) {
+            options.forEach(li => li.classList.remove("selected"));
+            next.classList.add("selected");
+            input.value = next.textContent.trim();
+            scrollIntoViewIfNeeded(next);
+            }
+        } else if (event.key === "ArrowUp") {
+            event.preventDefault();
+            const selected = dropdown.querySelector("li.selected");
+            let prev = selected ? selected.previousElementSibling : options[options.length - 1];
+            if (prev) {
+            options.forEach(li => li.classList.remove("selected"));
+            prev.classList.add("selected");
+            input.value = prev.textContent.trim();
+            scrollIntoViewIfNeeded(prev);
+            }
+        } else if (event.key === "Enter") {
+            event.preventDefault();
+            const selected = dropdown.querySelector("li.selected");
+            if (selected) {
+            selectThisOption(selected);
+            input.blur();
+            }
+        } else if (event.key === "Escape") {
+            input.blur();
+        }
     }
 </script>
 

@@ -139,9 +139,9 @@
             const unitSelect = document.getElementById('unit');
             const tagInput = document.getElementById('tag');
 
-            const selectedSupplier = JSON.parse(supplierSelect.options[supplierSelect.selectedIndex].getAttribute('data-option') ?? '{}');
-            const selectedFabric = JSON.parse(fabricSelect.options[fabricSelect.selectedIndex].getAttribute('data-option') ?? '{}');
-            const selectedColor = colorSelect.options[colorSelect.selectedIndex].getAttribute('data-option') ?? '';
+            const selectedSupplier = JSON.parse(supplierSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
+            const selectedFabric = JSON.parse(fabricSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
+            const selectedColor = colorSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '';
             
             // Generate supplier code
             const supplierName = selectedSupplier.supplier_name ?? '';

@@ -146,6 +146,7 @@
         let chequeBookSerialDom = document.getElementById('cheque_book_serial');
         let remarksLabelDom = document.querySelector('[for=remarks]');
         let subCategorySelectDom = document.getElementById('subCategory');
+        let subCategorySelectOptionsDom = subCategorySelectDom.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
         let subCategoryFirstOptDom = subCategorySelectDom.children[0];
         accountNoLabelDom.parentElement.classList.add('hidden');
         chequeBookSerialDom.classList.add('hidden');
@@ -167,21 +168,21 @@
                                 accountNoLabelDom.parentElement.classList.add('hidden');
                                 chequeBookSerialDom.classList.add('hidden');
                                 clutter += `
-                                    <option value=''>
+                                    <li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]">
                                         -- Select Supplier --
-                                    </option>
+                                    </li>
                                 `;
                         
                                 response.forEach(subCat => {
                                     clutter += `
-                                        <option value='${subCat.id}'>
+                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
                                             ${subCat.supplier_name}
-                                        </option>
+                                        </li>
                                     `;
                                 });
                                 
                                 subCategoryLabelDom.textContent = 'Supplier';
-                                subCategoryFirstOptDom.textContent = '-- Select Supplier --';
+                                // subCategoryFirstOptDom.textContent = '-- Select Supplier --';
                                 subCategorySelectDom.disabled = false;
                                 break;
 
@@ -191,21 +192,21 @@
                                 accountNoLabelDom.parentElement.classList.add('hidden');
                                 chequeBookSerialDom.classList.add('hidden');
                                 clutter += `
-                                    <option value=''>
+                                    <li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]">
                                         -- Select Customer --
-                                    </option>
+                                    </li>
                                 `;
                         
                                 response.forEach(subCat => {
                                     clutter += `
-                                        <option value='${subCat.id}'>
+                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
                                             ${subCat.customer_name}
-                                        </option>
+                                        </li>
                                     `;
                                 });
 
                                 subCategoryLabelDom.textContent = 'Customer';
-                                subCategoryFirstOptDom.textContent = '-- Select Customer --';
+                                // subCategoryFirstOptDom.textContent = '-- Select Customer --';
                                 subCategorySelectDom.disabled = false;
                                 break;
                                 
@@ -227,12 +228,12 @@
                                     </option>
                                 `;
 
-                                subCategoryFirstOptDom.textContent = '-- No Options --';
+                                // subCategoryFirstOptDom.textContent = '-- No Options --';
                                 subCategoryLabelDom.textContent = 'Disabled';
                                 subCategorySelectDom.disabled = true;
                                 break;
                         }
-                        subCategorySelectDom.innerHTML = clutter;
+                        subCategorySelectOptionsDom.innerHTML = clutter;
                     }
                 });
             }

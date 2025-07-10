@@ -28,6 +28,7 @@
                     name="category"
                     id="category"
                     :options="$categories_options"
+                    onchange="trackCategoryChange()"
                     required
                     showDefault
                 />
@@ -149,12 +150,19 @@
         const salaryInpDom = document.getElementById('salary');
         const salaryLabelDom = document.querySelector(`label[for="${salaryInpDom.id}"]`);
 
-        categorySelectDom.addEventListener('change', function() {
-            if (categorySelectDom.value == 'staff') {
+        function trackCategoryChange() {
+            let clutter = '';
+            if (categorySelectDom.value == 'Staff') {
                 const typeArray = allTypes.staff_type
                 
+                console.log(typeArray);
+                
                 if (typeArray.length > 0) {
-                    typeSelectDom.innerHTML = `<option value="" >-- Select Type --</option>`;
+                    clutter = `
+                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
+                            -- Select Type --
+                        </li>
+                    `;
                     typeSelectDom.disabled = false;
                 }
 
@@ -163,13 +171,21 @@
                 salaryLabelDom.textContent = "Salary *"
 
                 typeArray.forEach(type => {
-                    typeSelectDom.innerHTML += `<option value="${type.id}" >${type.title}</option>`;
+                    clutter += `
+                        <li data-for="type" data-value="${type.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                            ${type.title}
+                        </li>
+                    `;
                 });
-            } else if (categorySelectDom.value == 'worker') {
+            } else if (categorySelectDom.value == 'Worker') {
                 const typeArray = allTypes.worker_type
                 
                 if (typeArray.length > 0) {
-                    typeSelectDom.innerHTML = `<option value="" >-- Select Type --</option>`;
+                    clutter = `
+                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
+                            -- Select Type --
+                        </li>
+                    `;
                     typeSelectDom.disabled = false;
                 }
                 
@@ -178,16 +194,26 @@
                 salaryLabelDom.textContent = "Salary"
 
                 typeArray.forEach(type => {
-                    typeSelectDom.innerHTML += `<option value="${type.id}" >${type.title}</option>`;
+                    clutter += `
+                        <li data-for="type" data-value="${type.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                            ${type.title}
+                        </li>
+                    `;
                 });
             } else {
                 salaryInpDom.disabled = true;
                 salaryInpDom.required = false;
                 salaryLabelDom.textContent = "Salary"
-                typeSelectDom.innerHTML = '<option value="" >-- No options available --</option>';
+                clutter = `
+                    <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
+                        -- No options available --
+                    </li>
+                `;
                 typeSelectDom.disabled = true;
             }
-        });
+
+            typeSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = clutter;
+        }
 
         function validateForNextStep() {
             return true;

@@ -12,28 +12,6 @@
             'adjustment' => ['text' => 'Adjustment'],
         ];
     @endphp
-    <!-- Modal -->
-    <div id="modal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-        <x-modal id="modalForm" classForBody="p-4" closeAction="closeModal">
-            <div class="flex items-start relative h-full">
-                <div id="paymentDetails" class="flex-1 overflow-y-auto my-scrollbar-2">
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out">
-                    Close
-                </button>
-                <button onclick="addPaymentDetails()" type="button"
-                    class="px-4 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out">
-                    Add
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"
@@ -103,7 +81,6 @@
     </form>
 
     <script>
-        const modalDom = document.getElementById("modal");
         let supplierSelectDom = document.getElementById('supplier_id');
         let methodSelectDom = document.getElementById('method');
         let dateDom = document.getElementById('date');
@@ -118,41 +95,6 @@
 
         let paymentDetailsArray = [];
         let allPayments = [];
-        let isModalOpened = false;
-
-        function openModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('modal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            isModalOpened = false;
-            let modal = document.getElementById('modal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'modalForm') {
-                closeModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeModal();
-            }
-        });
 
         let selectedSupplier;
 
@@ -194,6 +136,8 @@
         enterDetailsBtn.disabled = true;
 
         function trackMethodState(elem) {
+            let fieldsData = [];
+
             if (elem.value != '') {
                 enterDetailsBtn.disabled = false;
 
@@ -207,97 +151,133 @@
             }
 
             if (elem.value == 'cash') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                // paymentDetailsDom.innerHTML += `
+                //     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                //         {{-- amount --}}
+                //         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                    </div>
-                `;
+                //         {{-- remarks --}}
+                //         <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                //     </div>
+                // `;
+                fieldsData.push({
+                    name: 'amount',
+                    label: 'Amount',
+                    type: 'number',
+                    required: true,
+                    placeholder: 'Enter amount',
+                });
             } else if (elem.value == 'cheque') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- cheque_id --}}
-                        <x-select label="Cheque" name="cheque_id" id="cheque_id" required showDefault />
+                // paymentDetailsDom.innerHTML += `
+                //     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                //         {{-- cheque_id --}}
+                //         <x-select label="Cheque" name="cheque_id" id="cheque_id" required showDefault />
 
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
-                        <input type="hidden" id="selected" />
+                //         {{-- amount --}}
+                //         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+                //         <input type="hidden" id="selected" />
 
-                        {{-- remarks --}}
-                        <div class="col-span-full">
-                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                        </div>
-                    </div>
-                `;
+                //         {{-- remarks --}}
+                //         <div class="col-span-full">
+                //             <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                //         </div>
+                //     </div>
+                // `;
 
-                let chequeSelectDom = document.getElementById('cheque_id');
-                let selectedDom = document.getElementById('selected');
-                
-                let allCheques = @json($cheques);
-
-                const filteredCheques = allCheques.filter(cheque => {
-                    return new Date(cheque.date) <= new Date(dateDom.value);
+                fieldsData.push({
+                    name: 'cheque_id',
+                    label: 'Cheque',
+                    type: 'select',
+                    required: true,
+                    options: @json($cheques->pluck('amount', 'id')->toArray()),
                 });
 
-                filteredCheques.forEach(cheque => {
-                    chequeSelectDom.innerHTML += `<option value="${cheque.id}" data-option='${JSON.stringify(cheque)}'>${cheque.amount} | ${cheque.customer.customer_name} | ${cheque.customer.city.title}</option>`;
-                })
+                fieldsData.push({
+                    name: 'selected',
+                    label: 'Selected',
+                    type: 'hidden',
+                });
 
-                if (filteredCheques.length > 0) {
-                    chequeSelectDom.disabled = false;
-                }
+                // let chequeSelectDom = document.getElementById('cheque_id');
+                // let selectedDom = document.getElementById('selected');
+                
+                // let allCheques = @json($cheques);
 
-                chequeSelectDom.addEventListener('change', () => {
-                    let selectedOption = chequeSelectDom.options[chequeSelectDom.selectedIndex];
-                    let selectedCheque = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+                // const filteredCheques = allCheques.filter(cheque => {
+                //     return new Date(cheque.date) <= new Date(dateDom.value);
+                // });
 
-                    selectedDom.value = JSON.stringify(selectedCheque);
-                    document.getElementById('amount').value = selectedCheque.amount;
-                })
+                // filteredCheques.forEach(cheque => {
+                //     chequeSelectDom.innerHTML += `<option value="${cheque.id}" data-option='${JSON.stringify(cheque)}'>${cheque.amount} | ${cheque.customer.customer_name} | ${cheque.customer.city.title}</option>`;
+                // })
+
+                // if (filteredCheques.length > 0) {
+                //     chequeSelectDom.disabled = false;
+                // }
+
+                // chequeSelectDom.addEventListener('change', () => {
+                //     let selectedOption = chequeSelectDom.options[chequeSelectDom.selectedIndex];
+                //     let selectedCheque = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                //     selectedDom.value = JSON.stringify(selectedCheque);
+                //     document.getElementById('amount').value = selectedCheque.amount;
+                // })
             } else if (elem.value == 'slip') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- slip_id --}}
-                        <x-select label="Slip" name="slip_id" id="slip_id" required showDefault />
+                // paymentDetailsDom.innerHTML += `
+                //     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
+                //         {{-- slip_id --}}
+                //         <x-select label="Slip" name="slip_id" id="slip_id" required showDefault />
 
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
-                        <input type="hidden" id="selected" />
+                //         {{-- amount --}}
+                //         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required readonly/>
+                //         <input type="hidden" id="selected" />
 
-                        {{-- remarks --}}
-                        <div class="col-span-full">
-                            <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                        </div>
-                    </div>
-                `;
+                //         {{-- remarks --}}
+                //         <div class="col-span-full">
+                //             <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                //         </div>
+                //     </div>
+                // `;
 
-                let slipSelectDom = document.getElementById('slip_id');
-                let selectedDom = document.getElementById('selected');
-
-                let allSlips = @json($slips);
-
-                const filteredSlips = allSlips.filter(slip => {
-                    return new Date(slip.date) <= new Date(dateDom.value);
+                fieldsData.push({
+                    category: 'select',
+                    name: 'slip_id',
+                    label: 'Slip',
+                    required: true,
+                    options: @json($slips->pluck('amount', 'id')->toArray()),
                 });
 
-                filteredSlips.forEach(slip => {
-                    slipSelectDom.innerHTML += `<option value="${slip.id}" data-option='${JSON.stringify(slip)}'>${slip.amount} | ${slip.customer.customer_name} | ${slip.customer.city.title}</option>`;
-                })
+                fieldsData.push({
+                    category: 'input',
+                    name: 'selected',
+                    label: 'Selected',
+                    type: 'hidden',
+                });
 
-                if (filteredSlips.length > 0) {
-                    slipSelectDom.disabled = false;
-                }
+                // let slipSelectDom = document.getElementById('slip_id');
+                // let selectedDom = document.getElementById('selected');
+
+                // let allSlips = @json($slips);
+
+                // const filteredSlips = allSlips.filter(slip => {
+                //     return new Date(slip.date) <= new Date(dateDom.value);
+                // });
+
+                // filteredSlips.forEach(slip => {
+                //     slipSelectDom.innerHTML += `<option value="${slip.id}" data-option='${JSON.stringify(slip)}'>${slip.amount} | ${slip.customer.customer_name} | ${slip.customer.city.title}</option>`;
+                // })
+
+                // if (filteredSlips.length > 0) {
+                //     slipSelectDom.disabled = false;
+                // }
                 
-                slipSelectDom.addEventListener('change', () => {
-                    let selectedOption = slipSelectDom.options[slipSelectDom.selectedIndex];
-                    let selectedSlip = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+                // slipSelectDom.addEventListener('change', () => {
+                //     let selectedOption = slipSelectDom.options[slipSelectDom.selectedIndex];
+                //     let selectedSlip = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
-                    selectedDom.value = JSON.stringify(selectedSlip);
-                    document.getElementById('amount').value = selectedSlip.amount;
-                })
+                //     selectedDom.value = JSON.stringify(selectedSlip);
+                //     document.getElementById('amount').value = selectedSlip.amount;
+                // })
             } else if (elem.value == 'program') {
                 paymentDetailsDom.innerHTML += `
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
@@ -496,14 +476,29 @@
                 `;
             }
 
-            if (elem.value != '') {
-                gotoStep(2)
-                openModal()
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.invoice_no,
+                        data: item,
+                        checkbox: true,
+                        onclick: 'selectThisInvoice(this)',
+                    };
+                }));
             }
+            
+            let modalData = {
+                id: 'modalForm',
+                name: 'Payment Details',
+                fields: fieldsData,
+            }
+
+            createModal(modalData);
         }
 
         function addPaymentDetails() {
-            closeModal();
+            // closeModal();
             let detail = {};
             let allDetail = {};
             const inputs = paymentDetailsDom.querySelectorAll('input:not([disabled])');
