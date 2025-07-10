@@ -154,7 +154,7 @@ function createModal(data) {
 
                     optionsArray.forEach(option => {
                         optionsHTML += `
-                            <option value="${option.id}">${option.text}</option>
+                            <option value="${option.id}" data-option='${JSON.stringify(option.data_option)}'>${option.text}</option>
                         `;
                     });
                 }

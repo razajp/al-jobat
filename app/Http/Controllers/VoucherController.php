@@ -44,8 +44,24 @@ class VoucherController extends Controller
         };
 
         $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city', 'cheque')->doesntHave('cheque')->get();
+        $cheques_options = [];
+        
+        foreach ($cheques as $cheque) {
+            $cheques_options[(int)$cheque->id] = [
+                'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                'data_option' => $cheque,
+            ];
+        }
 
         $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city', 'slip')->doesntHave('slip')->get();
+        $slips_options = [];
+
+        foreach ($slips as $slip) {
+            $slips_options[(int)$slip->id] = [
+                'text' => $slip->slip_no . ' - ' . $slip->amount,
+                'data_option' => $slip,
+            ];
+        }
 
         $self_accounts = BankAccount::where('category', 'self')->with('bank')->get();
 
@@ -96,7 +112,7 @@ class VoucherController extends Controller
             $last_voucher['voucher_no'] = '00/101';
         }
 
-        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques', 'slips', 'self_accounts', 'last_voucher'));
+        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'last_voucher'));
     }
 
     /**
