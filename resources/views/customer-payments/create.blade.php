@@ -169,11 +169,11 @@
                 selectedCustomer = JSON.parse(customerSelectDom.closest(".selectParent")?.querySelector('ul li.selected')?.dataset.option || 'null');
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
-                dateDom.min = selectedCustomer.date.toString().split('T')[0];
+                dateDom.min = selectedCustomer?.date.toString().split('T')[0];
                 dateDom.max = today;
-                balanceDom.value = formatNumbersWithDigits(selectedCustomer.balance, 1, 1);
+                balanceDom.value = formatNumbersWithDigits(selectedCustomer?.balance || 0, 1, 1);
                 selectedCustomerData = selectedCustomer;
-                setOptionOnNthLi(typeSelectDom, 2, 'option', JSON.stringify(selectedCustomer.payment_programs) ?? '');
+                setOptionOnNthLi(typeSelectDom, 2, 'option', JSON.stringify(selectedCustomer?.payment_programs) ?? '');
             } else {
                 dateDom.disabled = true;
                 methodSelectDom.disabled = true;
@@ -246,7 +246,6 @@
         function trackTypeState(elem, isNoModal) {
             methodSelectDom.value = '';
             detailsInputsContainer.classList.remove('mb-4');
-            console.log(elem);
             if (elem.value == 'payment_program') {
                 methodSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
                     <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
@@ -428,13 +427,15 @@
             let ProgramData = JSON.parse(elem.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
 
             if (ProgramData.category != 'waiting') {
-                if (!methodSelectDom.closest(".selectParent").querySelector('ul li[data-value="program"]')) {
+                const desiredMethod = methodSelectDom.closest(".selectParent").querySelector('ul li[data-value="program"]');
+                if (!desiredMethod) {
                     methodSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
                         <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
                     `;
                 }
-                methodSelectDom.value = 'program'
-                trackMethodState(methodSelectDom);
+                desiredMethod.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                // methodSelectDom.value = 'program'
+                // trackMethodState(methodSelectDom);
             } else {
                 methodSelectDom.closest(".selectParent").querySelector('ul li[data-value="program"]')?.remove();
                 detailsDom.innerHTML = '';
@@ -444,7 +445,8 @@
 
         function trackDateState(elem) {
             let programSelectDom = document.getElementById('payment_programs');
-            if (!programSelectDom || programSelectDom.value == '' ) {
+
+            if (typeSelectDom.value == "Payment Program" && (!programSelectDom || programSelectDom.value == '')) {
                 let totalPrograms = selectedCustomer.payment_programs;
                 typeSelectDom.value = '';
                 trackTypeState(typeSelectDom);
@@ -471,67 +473,115 @@
             let formDom = document.getElementById('form');
             formDom.reset();
             const record = JSON.parse(button.getAttribute('data-record'));
-
-            console.log(record.customer.id);
-
-            customerSelectDom.value = record.customer.id;
-            trackCustomerState(customerSelectDom);
-
-            typeSelectDom.value = record.type;
-            trackTypeState(typeSelectDom);
             
-            let programSelectDom = document.getElementById('payment_programs');
-            if (programSelectDom) {
-                programSelectDom.value = record.program_id;
-                trackProgramState(programSelectDom);
-                let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
-    
-                if (ProgramData.category == 'waiting') {
-                    if (record.method == 'program') {
-                        methodSelectDom.value = '';
-                    } else {
-                        methodSelectDom.value = record.method;
-                    }
-                } else {
-                    if (!methodSelectDom.querySelector("option[value='program']")) {
-                        methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
-                    }
-                    methodSelectDom.value = record.method;
+            const desiredCustomer = customerSelectDom.closest(".selectParent").querySelector(`ul li[data-value="${record.customer.id}"]`);
+            desiredCustomer?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+
+            // desiredType
+            const desiredType = typeSelectDom.closest(".selectParent").querySelector(`ul li[data-value="${record.type}"]`);
+            desiredType?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+
+            if (record.program_id) {
+                // desired program
+                let programSelectDom = document.getElementById('payment_programs');
+                if (programSelectDom) {
+                    // Find the li with the matching program_id and select it
+                    let desiredProgram = programSelectDom.closest(".selectParent").querySelector(`ul li[data-value="${record.program_id}"]`);
+                    desiredProgram?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                 }
-            } else {
-                methodSelectDom.value = record.method;
-            }
-            trackMethodState(methodSelectDom);
+            } else if(record.method) {
+                const desiredMethod = methodSelectDom.closest(".selectParent").querySelector(`ul li[data-value="${record.method}"]`);
+                desiredMethod?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
-            function setValueIfExists(id, value) {
-                const el = document.getElementById(id);
-                if (el) el.value = value;
-            }
+                // Helper to set value if element exists
+                function setValueIfExists(id, value) {
+                    const el = document.getElementById(id);
+                    if (el) el.value = value;
+                }
 
-            if (record.method === 'cash') {
-                setValueIfExists('amount', record.amount);
-                setValueIfExists('remarks', record.remarks);
-            } else if (record.method === 'cheque') {
-                setValueIfExists('bank', record.bank?.id);
-                setValueIfExists('amount', record.amount);
-                setValueIfExists('cheque_date', record.cheque_date);
-                setValueIfExists('cheque_no', record.cheque_no);
-                setValueIfExists('remarks', record.remarks);
-                setValueIfExists('clear_date', record.clear_date);
-            } else if (record.method === 'slip') {
-                setValueIfExists('amount', record.amount);
-                setValueIfExists('slip_date', record.slip_date);
-                setValueIfExists('slip_no', record.slip_no);
-                setValueIfExists('remarks', record.remarks);
-                setValueIfExists('clear_date', record.clear_date);
-            } else if (record.method === 'adjustment') {
-                setValueIfExists('amount', record.amount);
-                setValueIfExists('remarks', record.remarks);
-            } else if (record.method === 'program') {
-                setValueIfExists('amount', record.amount);
-                setValueIfExists('bank_accounts', record.bank_account_id);
-                setValueIfExists('remarks', record.remarks);
+                setTimeout(() => {
+                    if (record.method === 'cash') {
+                        setValueIfExists('amount', record.amount);
+                        setValueIfExists('remarks', record.remarks);
+                    } else if (record.method === 'cheque') {
+                        // Set custom select for bank
+                        const bankSelectDom = document.getElementById('bank');
+                        if (bankSelectDom && record.bank_id) {
+                            const desiredBank = bankSelectDom.closest('.selectParent').querySelector(`ul li[data-value="${record.bank_id}"]`);
+                            desiredBank?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                        }
+                        setValueIfExists('amount', record.amount);
+                        setValueIfExists('cheque_date', record.cheque_date);
+                        setValueIfExists('remarks', record.remarks);
+                        setValueIfExists('clear_date', record.clear_date);
+                    } else if (record.method === 'slip') {
+                        setValueIfExists('amount', record.amount);
+                        setValueIfExists('slip_date', record.slip_date);
+                        setValueIfExists('remarks', record.remarks);
+                        setValueIfExists('clear_date', record.clear_date);
+                    } else if (record.method === 'adjustment') {
+                        setValueIfExists('amount', record.amount);
+                        setValueIfExists('remarks', record.remarks);
+                    }
+                }, 100);
             }
+            
+
+            // typeSelectDom.value = record.type;
+            // trackTypeState(typeSelectDom);
+            
+            // let programSelectDom = document.getElementById('payment_programs');
+            // if (programSelectDom) {
+            //     programSelectDom.value = record.program_id;
+            //     trackProgramState(programSelectDom);
+            //     let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
+    
+            //     if (ProgramData.category == 'waiting') {
+            //         if (record.method == 'program') {
+            //             methodSelectDom.value = '';
+            //         } else {
+            //             methodSelectDom.value = record.method;
+            //         }
+            //     } else {
+            //         if (!methodSelectDom.querySelector("option[value='program']")) {
+            //             methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
+            //         }
+            //         methodSelectDom.value = record.method;
+            //     }
+            // } else {
+            //     methodSelectDom.value = record.method;
+            // }
+            // trackMethodState(methodSelectDom);
+
+            // function setValueIfExists(id, value) {
+            //     const el = document.getElementById(id);
+            //     if (el) el.value = value;
+            // }
+
+            // if (record.method === 'cash') {
+            //     setValueIfExists('amount', record.amount);
+            //     setValueIfExists('remarks', record.remarks);
+            // } else if (record.method === 'cheque') {
+            //     setValueIfExists('bank', record.bank?.id);
+            //     setValueIfExists('amount', record.amount);
+            //     setValueIfExists('cheque_date', record.cheque_date);
+            //     setValueIfExists('cheque_no', record.cheque_no);
+            //     setValueIfExists('remarks', record.remarks);
+            //     setValueIfExists('clear_date', record.clear_date);
+            // } else if (record.method === 'slip') {
+            //     setValueIfExists('amount', record.amount);
+            //     setValueIfExists('slip_date', record.slip_date);
+            //     setValueIfExists('slip_no', record.slip_no);
+            //     setValueIfExists('remarks', record.remarks);
+            //     setValueIfExists('clear_date', record.clear_date);
+            // } else if (record.method === 'adjustment') {
+            //     setValueIfExists('amount', record.amount);
+            //     setValueIfExists('remarks', record.remarks);
+            // } else if (record.method === 'program') {
+            //     setValueIfExists('amount', record.amount);
+            //     setValueIfExists('bank_accounts', record.bank_account_id);
+            //     setValueIfExists('remarks', record.remarks);
+            // }
         }
     </script>
 @endsection
