@@ -38,7 +38,7 @@
                     {{-- <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search {{ $heading }}..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' /> --}}
                     <button id="filter-btn" type="button"
                         class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
-                        <i class="text-xs fa-solid fa-filter"></i>
+                        <i class="text-xs fa-solid fa-filter"></i> Search & Filter
                     </button>
                     <div class="dropdownMenu flex flex-col text-sm absolute top-2 bottom-2 right-2 hidden border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl opacity-0 transition-all duration-300 ease-in-out z-[100] p-4">
                         <div class="header flex justify-between items-center p-1">

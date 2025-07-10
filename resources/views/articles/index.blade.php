@@ -64,7 +64,7 @@
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
             <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($articles) > 0)
@@ -393,6 +393,7 @@
                         onclick: 'addRate(this)',
                     },
                 ],
+                fieldsGridCount: '2',
                 table: {
                     name: 'Rates',
                     headers: [
@@ -436,6 +437,7 @@
                         value: item.id,
                     },
                 ],
+                fieldsGridCount: '2',
                 imagePicker: {id: 'image_upload', name: 'image_upload', placeholder: item.image == "no_image_icon.png" ? 'images/no_image_icon.png' : `${item.image}`, uploadText: 'Upload article image'},
                 bottomActions: [
                     {id: 'add', text: 'Add', type: 'submit'}

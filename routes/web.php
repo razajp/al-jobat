@@ -47,9 +47,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     })->name('home');
 
     Route::post('update-theme', [AuthController::class, 'updateTheme']);
-    
-    Route::get('add-setup', [SetupController::class, 'addSetup'])->name('addSetup');
-    Route::post('add-setup', [SetupController::class, 'addSetupPost'])->name('addSetupPost');
+
+    Route::resource('setups', SetupController::class);
 
     Route::resource('suppliers', SupplierController::class);
     Route::post('update-supplier-category', [SupplierController::class, 'updateSupplierCategory'])->name('update-supplier-category');

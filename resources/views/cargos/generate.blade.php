@@ -10,7 +10,7 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('cargos.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-4xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Generate Cargo List" />
 
@@ -110,6 +110,7 @@
                         name: item.invoice_no,
                         data: item,
                         checkbox: true,
+                        checked: selectedInvoicesArray.some(selected => selected.id === item.id),
                         onclick: 'selectThisInvoice(this)',
                     };
                 }));

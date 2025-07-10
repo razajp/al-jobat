@@ -68,7 +68,7 @@ class CustomerPaymentController extends Controller
         $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->first();
 
         if (!empty($programId)) {
-            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->find($programId);
+            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->where('balance', '>', 0)->find($programId);
 
             if ($program && $program->customer) {
                 $customers = $program->customer->toArray();
@@ -83,9 +83,18 @@ class CustomerPaymentController extends Controller
             }
         }
         
-        $customers = Customer::with('orders', 'payments', 'paymentPrograms.subCategory.bankAccounts.bank')->whereHas('user', function ($query) {
+        $customers = Customer::with([
+            'orders',
+            'payments',
+            'paymentPrograms' => function ($query) {
+                $query->where('balance', '>', 0);
+            },
+            'paymentPrograms.subCategory.bankAccounts.bank'
+        ])
+        ->whereHas('user', function ($query) {
             $query->where('status', 'active');
-        })->paginate('10');
+        })->select('id', 'customer_name', 'city_id', 'payment_programs', 'date')
+        ->get();
 
         foreach ($customers as $customer) {
             foreach ($customer->paymentPrograms as $program) {
@@ -111,8 +120,6 @@ class CustomerPaymentController extends Controller
             foreach ($customer['payments'] as $payment) {
                 $customer['totalPayment'] += $payment->amount;
             }
-
-            // $customer['balance'] = $customer['totalAmount'] - $customer['totalPayment'];
 
             $customers_options[(int)$customer->id] = [
                 'text' => $customer->customer_name . ' | ' . $customer->city->title,

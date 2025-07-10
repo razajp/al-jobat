@@ -8,7 +8,16 @@ use Illuminate\Support\Facades\Validator;
 
 class SetupController extends Controller
 {
-    public function addSetup()
+    public function index() {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $setups = Setup::all();
+        return view('setups.index', compact('setups',));
+    }
+    public function create()
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
@@ -17,7 +26,7 @@ class SetupController extends Controller
         
         return view('setups.add');
     }
-    public function addSetupPost(Request $request)
+    public function store(Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {

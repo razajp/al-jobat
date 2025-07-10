@@ -14,7 +14,7 @@
     <div class="row max-w-3xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('suppliers.update', ['supplier' => $supplier->id]) }}" method="POST" enctype="multipart/form-data"
-            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 grow relative overflow-hidden">
             @csrf
             @method('PUT')
             <x-form-title-bar title="Edit Supplier" />

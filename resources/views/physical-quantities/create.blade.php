@@ -14,7 +14,7 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('physical-quantities.store') }}" method="post"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-5xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-5xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Physical Quantity" />
 

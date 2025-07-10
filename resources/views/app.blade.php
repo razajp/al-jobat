@@ -62,18 +62,18 @@
             --h-secondary-bg-color: hsl(0, 0%, 96%);
             --text-color: #1f2937;
             --secondary-text: #4b5563;
-            --bg-warning: hsl(45, 100%, 87%);
-            --bg-success: hsl(130, 100%, 87%);
-            --bg-error: hsl(360, 100%, 87%);
-            --h-bg-warning: hsl(45, 100%, 80%);
-            --h-bg-success: hsl(130, 100%, 80%);
-            --h-bg-error: hsl(360, 100%, 80%);
-            --border-warning: hsl(45, 100%, 45%);
-            --border-success: hsl(130, 100%, 45%);
-            --border-error: hsl(360, 100%, 45%);
-            --text-warning: hsl(45, 75%, 40%);
-            --text-success: hsl(130, 75%, 40%);
-            --text-error: hsl(360, 75%, 40%);
+            --bg-warning: hsl(45, 100%, 80%);
+            --bg-success: hsl(130, 100%, 80%);
+            --bg-error: hsl(360, 100%, 80%);
+            --h-bg-warning: hsl(45, 100%, 75%);
+            --h-bg-success: hsl(130, 100%, 75%);
+            --h-bg-error: hsl(360, 100%, 75%);
+            --border-warning: hsl(45, 100%, 40%);
+            --border-success: hsl(130, 100%, 40%);
+            --border-error: hsl(360, 100%, 40%);
+            --text-warning: hsl(45, 75%, 35%);
+            --text-success: hsl(130, 75%, 35%);
+            --text-error: hsl(360, 75%, 35%);
             --glass-border-color: #000000;
         }
 

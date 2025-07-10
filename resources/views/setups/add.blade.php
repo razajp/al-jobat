@@ -4,11 +4,11 @@
 <!-- Main Content -->
 
     <div class="max-w-lg mx-auto">
-        <x-search-header heading="Add Setup"/>
+        <x-search-header heading="Add Setup" link linkText="Show Setups" linkHref="{{ route('setups.index') }}"/>
     </div>
 
     <!-- Form -->
-    <form id="add-setups-form" action="{{route('addSetup')}}" method="post"
+    <form id="add-setups-form" action="{{route('setups.store')}}" method="post"
         class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-lg mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Setups" />

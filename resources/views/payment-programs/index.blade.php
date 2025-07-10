@@ -57,7 +57,7 @@
     <!-- Main Content -->
     <section class="text-center mx-auto">
         <div
-            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 relative">
+            class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
             <x-form-title-bar title="Show Payment Programs" />
 
             @if (count($finalData) > 0)
@@ -363,6 +363,7 @@
                         disabled: item.data.order_no != null ? true : false,
                     },
                 ],
+                fieldsGridCount: '2',
                 bottomActions: [
                     {id: 'update', text: 'Update Program', type: 'submit'}
                 ]

@@ -9,7 +9,7 @@
 
     <!-- Form -->
     <form id="form" action="{{ route('bilties.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-6xl mx-auto relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-6xl mx-auto relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Bilty" />
 
@@ -99,6 +99,7 @@
                         },
                         data: item,
                         checkbox: true,
+                        checked: selectedInvoicesArray.some(selected => selected.id === item.id) || false,
                         onclick: 'selectThisInvoice(this)',
                     };
                 }));
@@ -112,44 +113,6 @@
 
             createModal(modalData);
         }
-
-        // function openModal() {
-        //     isModalOpened = true;
-        //     closeAllDropdowns();
-        //     document.getElementById('modal').classList.remove('hidden');
-        // }
-
-        // function closeModal() {
-        //     renderList();
-
-        //     isModalOpened = false;
-        //     let modal = document.getElementById('modal');
-        //     modal.classList.add('fade-out');
-
-        //     modal.addEventListener('animationend', () => {
-        //         modal.classList.add('hidden');
-        //         modal.classList.remove('fade-out');
-        //     }, {
-        //         once: true
-        //     });
-
-        //     finalTotalCottonsDOM.textContent = totalCottonCount;
-        // }
-
-        // document.addEventListener('mousedown', (e) => {
-        //     const {
-        //         id
-        //     } = e.target;
-        //     if (id === 'ModalForm') {
-        //         closeModal();
-        //     }
-        // });
-
-        // document.addEventListener('keydown', (e) => {
-        //     if (e.key === 'Escape' && isModalOpened) {
-        //         closeModal();
-        //     }
-        // })
 
         function deselectInvoiceAtIndex(index) {
             if (index !== -1) {
@@ -332,6 +295,8 @@
         }
 
         function deselectInvoice(invoiceElem) {
+            console.log('hello');
+            
             const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
 
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
@@ -339,7 +304,7 @@
                 selectedInvoicesArray.splice(index, 1);
                 totalCottonCount -= invoiceData.cotton_count;
 
-                selectAllCheckbox.checked = false;
+                // selectAllCheckbox.checked = false;
             }
             renderList()
         }
@@ -358,100 +323,7 @@
             generateCargoListPreview()
             return true;
         }
-
-        // const searchInput = document.getElementById("search_box");
-        // const fromInput = document.getElementById("from");
-        // const toInput = document.getElementById("to");
-        // const cards = document.querySelectorAll(".invoice-card");
-        // const cardsContainer = document.querySelector(".search_container");
-
-        // function getInvoiceNumber(str) {
-        //     // Converts '25-0001' => 250001 (as number)
-        //     return parseInt(str.replace("-", ""));
-        // }
-
-        // function filterCards() {
-        //     clearSerialOrSearch("search");
-            
-        //     const fromVal = getInvoiceNumber(fromInput.value);
-        //     const toVal = getInvoiceNumber(toInput.value);
-
-        //     cards.forEach(card => {
-        //         const data = JSON.parse(card.getAttribute("data-json"));
-        //         const invoiceNum = getInvoiceNumber(data.invoice_no);
-
-        //         // Determine if the card should be shown
-        //         const show = (
-        //             (!fromVal || invoiceNum >= fromVal) &&
-        //             (!toVal || invoiceNum <= toVal)
-        //         );
-
-        //         card.style.display = show ? "flex" : "none";
-        //     });
-        // }
-
-        // fromInput.addEventListener("input", filterCards);
-        // toInput.addEventListener("input", filterCards);
-
-        // function filterData(search) {
-        //     clearSerialOrSearch("serial");
-
-        //     const filteredData = cardsDataArray.filter(item => {
-        //         switch (filterType) {
-        //             case 'all':
-        //                 return (
-        //                     item.invoice_no.toString().includes(search)
-        //                 );
-        //                 break;
-                
-        //             default:
-        //                 return (
-        //                     item.invoice_no.toString().includes(search)
-        //                 );
-        //                 break;
-        //         }
-        //     });
-
-        //     return filteredData;
-        // }
-
-        // function clearSerialOrSearch(serialOrSearch) {
-        //     if (serialOrSearch == "serial") {
-        //         toInput.value = "";
-        //         fromInput.value = "";
-
-        //         cards.forEach(card=>{
-        //             card.style.display = "flex";
-        //         });
-        //     } else {
-        //         searchInput.value = "";
-        //         cardsContainer.innerHTML = "";
-                
-        //         cards.forEach(card=>{
-        //             cardsContainer.appendChild(card);
-        //         });
-        //     }
-        // }
-
-        // const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
-        // selectAllCheckboxParent.addEventListener('click', ()=>{
-        //     selectAllCheckbox.checked = !selectAllCheckbox.checked;
-
-        //     selectAllScript();
-        // });
         
-        // function selectAllScript() {
-        //     let invoiceCards = document.querySelectorAll(".invoice-card");
-        //     invoiceCards.forEach(card => {
-        //         if (card.style.display != "none") {
-        //             const checkbox = card.querySelector("input[type='checkbox']");
-        //             checkbox.checked = selectAllCheckbox.checked;
-                    
-        //             toggleInvoice(card, checkbox);
-        //         }
-        //     });
-        // }
-
         function setCottonCount(invoiceId, cottonCount) {
             const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);
             if (invoice) {

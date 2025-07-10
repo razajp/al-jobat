@@ -81,13 +81,13 @@
             </div>
             <div class="w-full flex justify-end mt-4">
                 <button type="submit"
-                    class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                    class="px-10 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] hover:border-[var(--border-success)] hover:scale-90 transition-all duration-300 ease-in-out cursor-pointer">
                     <i class='fas fa-save mr-1'></i> Save
                 </button>
             </div>
         </form>
 
-        <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--h-bg-color)] w-[40%] pt-12 relative overflow-hidden fade-in">
+        <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--glass-border-color)]/20 w-[40%] pt-12 relative overflow-hidden fade-in">
             <x-form-title-bar title="Last Record" />
 
             <!-- Step last record -->
@@ -124,7 +124,7 @@
                         
                         <div class="flex items-end">
                             <button type="button" data-record='@json($lastRecord)' onclick="repeatThisRecord(this)"
-                                class="w-full px-6 py-1 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] transition-all 0.3s ease-in-out cursor-pointer">
+                                class="w-full px-6 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] hover:border-[var(--border-warning)] hover:scale-90 transition-all duration-300 ease-in-out cursor-pointer">
                                 <i class='fas fa-repeat mr-1'></i> Repeat
                             </button>
                         </div>
@@ -271,12 +271,13 @@
                 const programSelectDom = document.getElementById('payment_programs');
                 if (allProgramsArray.length > 0) {
                     programSelectDom.disabled = false;
+                    programSelectDom.value = '-- Select payment program --';
                     programSelectDom.closest(".selectParent").querySelector('ul').innerHTML = `
                         <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select payment program --</li>
                     `;
                     allProgramsArray.forEach(program => {
                         programSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
-                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)}</li>
+                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 capitalize">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)} | ${program.category}</li>
                         `;
                     });
                 } else {
@@ -287,7 +288,7 @@
                 }
             } else {
                 detailsInputsContainer.innerHTML = "";
-                methodSelectDom.querySelector("option[value='program']")?.remove();
+                methodSelectDom.closest(".selectParent").querySelector("ul li[data-value='program']")?.remove();
                 methodSelectDom.value = '';
             }
             trackMethodState(methodSelectDom);
@@ -402,6 +403,7 @@
                     if (bankAccountData) {
                         let bankAccountsSelect = document.getElementById('bank_accounts');
                         bankAccountsSelect.disabled = false;
+                        bankAccountsSelect.value = '-- Select Bank Account --';
                         bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML = `
                             <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>
                         `;
@@ -434,8 +436,6 @@
                     `;
                 }
                 desiredMethod.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                // methodSelectDom.value = 'program'
-                // trackMethodState(methodSelectDom);
             } else {
                 methodSelectDom.closest(".selectParent").querySelector('ul li[data-value="program"]')?.remove();
                 detailsDom.innerHTML = '';
@@ -525,63 +525,6 @@
                     }
                 }, 100);
             }
-            
-
-            // typeSelectDom.value = record.type;
-            // trackTypeState(typeSelectDom);
-            
-            // let programSelectDom = document.getElementById('payment_programs');
-            // if (programSelectDom) {
-            //     programSelectDom.value = record.program_id;
-            //     trackProgramState(programSelectDom);
-            //     let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
-    
-            //     if (ProgramData.category == 'waiting') {
-            //         if (record.method == 'program') {
-            //             methodSelectDom.value = '';
-            //         } else {
-            //             methodSelectDom.value = record.method;
-            //         }
-            //     } else {
-            //         if (!methodSelectDom.querySelector("option[value='program']")) {
-            //             methodSelectDom.innerHTML += `<option data-option="" value="program"> Program </option>`;
-            //         }
-            //         methodSelectDom.value = record.method;
-            //     }
-            // } else {
-            //     methodSelectDom.value = record.method;
-            // }
-            // trackMethodState(methodSelectDom);
-
-            // function setValueIfExists(id, value) {
-            //     const el = document.getElementById(id);
-            //     if (el) el.value = value;
-            // }
-
-            // if (record.method === 'cash') {
-            //     setValueIfExists('amount', record.amount);
-            //     setValueIfExists('remarks', record.remarks);
-            // } else if (record.method === 'cheque') {
-            //     setValueIfExists('bank', record.bank?.id);
-            //     setValueIfExists('amount', record.amount);
-            //     setValueIfExists('cheque_date', record.cheque_date);
-            //     setValueIfExists('cheque_no', record.cheque_no);
-            //     setValueIfExists('remarks', record.remarks);
-            //     setValueIfExists('clear_date', record.clear_date);
-            // } else if (record.method === 'slip') {
-            //     setValueIfExists('amount', record.amount);
-            //     setValueIfExists('slip_date', record.slip_date);
-            //     setValueIfExists('slip_no', record.slip_no);
-            //     setValueIfExists('remarks', record.remarks);
-            //     setValueIfExists('clear_date', record.clear_date);
-            // } else if (record.method === 'adjustment') {
-            //     setValueIfExists('amount', record.amount);
-            //     setValueIfExists('remarks', record.remarks);
-            // } else if (record.method === 'program') {
-            //     setValueIfExists('amount', record.amount);
-            //     setValueIfExists('bank_accounts', record.bank_account_id);
-            //     setValueIfExists('remarks', record.remarks);
-            // }
         }
     </script>
 @endsection

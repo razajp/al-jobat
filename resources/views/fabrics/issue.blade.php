@@ -10,7 +10,7 @@
     <div class="row max-w-3xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('fabrics.issuePost') }}" method="post" enctype="multipart/form-data"
-            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 grow relative overflow-hidden">
             @csrf
             <x-form-title-bar title="Issue Fabric" />
             <!-- Step 1: Basic Information -->

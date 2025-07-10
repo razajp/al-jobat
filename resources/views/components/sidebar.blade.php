@@ -335,9 +335,9 @@
             <div
                 class="dropdownMenu text-sm absolute bottom-0 left-16 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
                 <ul class="p-2">
-                    <!-- Add Setups -->
+                    <!-- Setups -->
                     <li>
-                        <a href="{{ route('addSetup') }}"
+                        <a href="{{ route('setups.index') }}"
                             class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
                             <i class="fas fa-cog text-[var(--secondary-color)] mr-3"></i>
                             Setups
@@ -449,8 +449,8 @@
 
             <!-- Additional Links -->
             <div class="flex flex-col space-y-2 w-full mt-2">
-                <x-mobile-menu-item href="{{ route('addSetup') }}" title="Setups"
-                    active="{{ request()->is('add-setup') }}" />
+                <x-mobile-menu-item href="{{ route('setups.index') }}" title="Setups"
+                    active="{{ request()->is('setups') }}" />
 
                 <x-mobile-menu-item title="Theme" asButton="true" id="themeToggleMobile" />
 

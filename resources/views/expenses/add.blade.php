@@ -10,7 +10,7 @@
     <div class="row max-w-5xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('expenses.store') }}" method="post" enctype="multipart/form-data"
-            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 grow relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 grow relative overflow-hidden">
             @csrf
             <x-form-title-bar title="Add Expense" />
             <!-- Step 1: Basic Information -->
@@ -56,7 +56,7 @@
         </form>
 
         <div
-            class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--h-bg-color)] w-[35%] pt-12 relative overflow-hidden fade-in">
+            class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--glass-border-color)]/20 w-[35%] pt-14 relative overflow-hidden fade-in">
             <x-form-title-bar title="Last Record" />
 
             <!-- Step 1: Basic Information -->
