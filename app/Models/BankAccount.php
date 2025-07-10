@@ -24,7 +24,7 @@ class BankAccount extends Model
         'date' => 'date',
     ];
 
-    protected $appends = ['available_cheques'];
+    protected $appends = ['balance', 'available_cheques'];
 
     protected static function booted()
     {
@@ -84,4 +84,41 @@ class BankAccount extends Model
         // Return available cheque numbers
         return array_values($available);
     }
+
+    public function getBalanceAttribute()
+    {
+        return $this->calculateBalance();
+    }
+    public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
+    {
+        $customerPaymetns = CustomerPayment::where('bank_account_id', $this->id);
+        $supplierPaymetns = SupplierPayment::where('bank_account_id', $this->id);
+    
+        // Handle different date scenarios
+        if ($fromDate && $toDate) {
+            if ($includeGivenDate) {
+                $customerPaymetns->whereBetween('date', [$fromDate, $toDate]);
+                $supplierPaymetns->whereBetween('date', [$fromDate, $toDate]);
+            } else {
+                $customerPaymetns->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $supplierPaymetns->where('date', '>', $fromDate)->where('date', '<', $toDate);
+            }
+        } elseif ($fromDate) {
+            $operator = $includeGivenDate ? '>=' : '>';
+            $customerPaymetns->where('date', $operator, $fromDate);
+            $supplierPaymetns->where('date', $operator, $fromDate);
+        } elseif ($toDate) {
+            $operator = $includeGivenDate ? '<=' : '<';
+            $customerPaymetns->where('date', $operator, $toDate);
+            $supplierPaymetns->where('date', $operator, $toDate);
+        }
+    
+        // Calculate totals
+        $totalPayments = $customerPaymetns->sum('netAmount') ?? 0;
+        $totalPays = $supplierPaymetns->sum('amount') ?? 0;
+
+        $balance = $totalPayments - $totalPays;
+
+        return $formatted ? number_format($balance, 1, '.', ',') : $balance;
+    }    
 }

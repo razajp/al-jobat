@@ -135,6 +135,84 @@
         const enterDetailsBtn = document.getElementById("enterDetailsBtn");
         enterDetailsBtn.disabled = true;
 
+        function trackChequeState(elem) {
+            let selectedCheque = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
+            let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
+            
+            amountInpDom.value = selectedCheque.amount;
+        }
+
+        function trackSlipState(elem) {
+            let selectedSlip = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
+            let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
+
+            amountInpDom.value = selectedSlip.amount;
+        }
+
+        let selectedDom;
+        
+        function updateSelectedAccount(elem) {
+            let selectedOption = elem.options[elem.selectedIndex];
+            let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+            elem.closest('form').querySelector('input[name="selected"]').value = JSON.stringify(selectedAccount);
+        }
+
+        let availableChequesArray = [];
+        let debounceTimer;
+
+        function trackChequeNo(elem) {
+            // Clear any existing timer
+            clearTimeout(debounceTimer);
+
+            // Debounce: wait 500ms after user stops typing
+            debounceTimer = setTimeout(function () {
+                // Get the input value
+                const inputVal = elem.value.trim();
+
+                // Update availableChequesArray
+                availableChequesArray = JSON.parse(elem.closest('form').querySelector('input[name="selected"]').value).available_cheques;
+
+                // Check if value is a valid number
+                if (!inputVal || isNaN(inputVal)) {
+                    showError("Please enter a valid cheque number.");
+                    return;
+                }
+
+                // Convert input to number for comparison
+                const chequeNo = parseInt(inputVal);
+
+                // Validate
+                if (!availableChequesArray.includes(chequeNo)) {
+                    showError("This cheque number is not available.");
+                    elem.closest('form').querySelector('input[name="amount"]').value = '';
+                    elem.closest('form').querySelector('input[name="amount"]').disabled = true;
+                } else {
+                    clearError(); // Clear any previous error
+                    elem.closest('form').querySelector('input[name="amount"]').disabled = false;
+                }
+
+            }, 300); // 500ms debounce
+        }
+
+        function showError(message) {
+            // You can show error in any way — e.g., a span or alert
+            const errorBox = document.getElementById('cheque_no-error');
+            if (errorBox) {
+                errorBox.textContent = message;
+                errorBox.style.display = 'block';
+            } else {
+                alert(message); // fallback
+            }
+        }
+        
+        function clearError() {
+            const errorBox = document.getElementById('cheque_no-error');
+            if (errorBox) {
+                errorBox.textContent = '';
+                errorBox.style.display = 'none';
+            }
+        }
+
         function trackMethodState(elem) {
             let fieldsData = [];
 
@@ -155,6 +233,7 @@
                         label: 'Cheque',
                         required: true,
                         options: [@json($cheques_options)],
+                        onchange: 'trackChequeState(this)'
                     },
                     {
                         category: 'input',
@@ -178,7 +257,8 @@
                         name: 'slip_id',
                         label: 'Slip',
                         required: true,
-                        options: @json($slips_options),
+                        options: [@json($slips_options)],
+                        onchange: 'trackSlipState(this)',
                     },
                     {
                         category: 'input',
@@ -199,7 +279,8 @@
                 fieldsData.push(
                     {
                         category: 'select',
-                        name: 'program',
+                        name: 'program_id',
+                        id: 'program',
                         label: 'Program',
                         required: true,
                         options: [],
@@ -207,6 +288,7 @@
                     {
                         category: 'input',
                         name: 'amount',
+                        id: 'amount',
                         label: 'Amount',
                         type: 'number',
                         required: true,
@@ -216,132 +298,117 @@
                     {
                         category: 'input',
                         name: 'selected',
+                        id: 'selected',
                         type: 'hidden',
                     },
                     {
                         category: 'input',
-                        name: 'program_id',
+                        name: 'payment_id',
+                        id: 'payment_id',
                         type: 'hidden',
                     },
                 );
             } else if (elem.value == 'self_cheque') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- self_account --}}
-                        <x-select label="Self Account" name="bank_account_id" id="self_account" required showDefault />
-
-                        {{-- cheque_no --}}
-                        <x-input label="Cheque No." type="number" placeholder="Enter cheque no." name="cheque_no" id="cheque_no" required/>
-                        <input type="hidden" id="selected" />
-
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                    </div>
-                `;
-
-                let selfAccountSelectDom = document.getElementById('self_account');
-                let chequeNoInpDom = document.getElementById('cheque_no');
-                let amountInpDom = document.getElementById('amount');
-                let selectedDom = document.getElementById('selected');
-
-                let allSelfAccounts = @json($self_accounts);
-
-                const filteredAccounts = allSelfAccounts.filter(account => {
-                    return new Date(account.date) <= new Date(dateDom.value);
-                });
-
-                if (filteredAccounts.length > 0) {
-                    selfAccountSelectDom.innerHTML = '<option value="">-- Select self account --</option>'
-                    selfAccountSelectDom.disabled = false;
-                }
-
-                filteredAccounts.forEach(account => {
-                    selfAccountSelectDom.innerHTML += `<option value="${account.id}" data-option='${JSON.stringify(account)}'>${account.account_title} | ${account.bank.short_title} | ${account.account_no}</option>`;
-                })
-
-                selfAccountSelectDom.addEventListener('change', () => {
-                    let selectedOption = selfAccountSelectDom.options[selfAccountSelectDom.selectedIndex];
-                    let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-                    
-                    selectedDom.value = JSON.stringify(selectedAccount);
-                })
-
-                let availableChequesArray = [];
-                let debounceTimer;
-
-                chequeNoInpDom.addEventListener('input', function () {
-                    // Clear any existing timer
-                    clearTimeout(debounceTimer);
-
-                    // Debounce: wait 500ms after user stops typing
-                    debounceTimer = setTimeout(function () {
-                        // Get the input value
-                        const inputVal = chequeNoInpDom.value.trim();
-
-                        // Update availableChequesArray
-                        availableChequesArray = JSON.parse(selectedDom.value).available_cheques;
-
-                        // Check if value is a valid number
-                        if (!inputVal || isNaN(inputVal)) {
-                            showError("Please enter a valid cheque number.");
-                            return;
-                        }
-
-                        // Convert input to number for comparison
-                        const chequeNo = parseInt(inputVal);
-
-                        // Validate
-                        if (!availableChequesArray.includes(chequeNo)) {
-                            showError("This cheque number is not available.");
-                            amountInpDom.value = '';
-                            amountInpDom.disabled = true;
-                        } else {
-                            clearError(); // Clear any previous error
-                            amountInpDom.disabled = false;
-                        }
-
-                    }, 300); // 500ms debounce
-                });
-
-                function showError(message) {
-                    // You can show error in any way — e.g., a span or alert
-                    const errorBox = document.getElementById('cheque_no-error');
-                    if (errorBox) {
-                        errorBox.textContent = message;
-                        errorBox.style.display = 'block';
-                    } else {
-                        alert(message); // fallback
+                fieldsData.push(
+                    {
+                        category: 'select',
+                        name: 'bank_account_id',
+                        label: 'Self Account',
+                        required: true,
+                        options: [@json($self_accounts_options)],
+                        onchange: 'updateSelectedAccount(this)',
+                    },
+                    {
+                        category: 'input',
+                        name: 'cheque_no',
+                        label: 'Cheque No.',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter cheque no.',
+                        oninput: 'trackChequeNo(this)'
+                    },
+                    {
+                        category: 'input',
+                        name: 'amount',
+                        label: 'Amount',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter amount',
+                    },
+                    {
+                        category: 'input',
+                        name: 'selected',
+                        type: 'hidden',
                     }
-                }
-                
-                function clearError() {
-                    const errorBox = document.getElementById('cheque_no-error');
-                    if (errorBox) {
-                        errorBox.textContent = '';
-                        errorBox.style.display = 'none';
-                    }
-                }
+                );
             } else if (elem.value == 'atm') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- self_account --}}
-                        <x-select label="Self Account" name="bank_account_id" id="self_account" required showDefault />
+                fieldsData.push(
+                    {
+                        category: 'select',
+                        name: 'bank_account_id',
+                        label: 'Self Account',
+                        required: true,
+                        options: [@json($self_accounts_options)],
+                        onchange: 'updateSelectedAccount(this)',
+                    },
+                    {
+                        category: 'input',
+                        name: 'reff_no',
+                        label: 'Reff. No.',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter reff no.',
+                    },
+                    {
+                        category: 'input',
+                        name: 'amount',
+                        label: 'Amount',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter amount',
+                    },
+                    {
+                        category: 'input',
+                        name: 'selected',
+                        type: 'hidden',
+                    }
+                );
+            } else if (elem.value == 'adjustment') {
+                fieldsData.push(
+                    {
+                        category: 'input',
+                        name: 'amount',
+                        label: 'Amount',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter amount',
+                    },
+                );
+            }
 
-                        {{-- reff_no --}}
-                        <x-input label="Reff. No." type="number" placeholder="Enter reff no." name="reff_no" id="reff_no" required/>
+            if (elem.value != '') {
+                fieldsData.push({
+                    category: 'input',
+                    name: 'remarks',
+                    label: 'Remarks',
+                    type: 'text',
+                    required: true,
+                    placeholder: 'Enter remarks',
+                });
+                
+                let modalData = {
+                    id: 'modalForm',
+                    name: 'Payment Details',
+                    fields: fieldsData,
+                    bottomActions: [
+                        {id: 'add-payment-details', text: 'Add Payment', onclick: 'addPaymentDetails()'},
+                    ],
+                }
 
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                createModal(modalData);
 
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                    </div>
-                `;
-
-                let selfAccountSelectDom = document.getElementById('self_account');
+                let amountInpDom = document.getElementById('amount');
+                selectedDom = document.getElementById('selected');
 
                 let allSelfAccounts = @json($self_accounts);
 
@@ -349,75 +416,37 @@
                     return new Date(account.date) <= new Date(dateDom.value);
                 });
 
-                if (filteredAccounts.length > 0) {
-                    selfAccountSelectDom.innerHTML = '<option value="">-- Select self account --</option>'
-                    selfAccountSelectDom.disabled = false;
+                let paymentSelectDom = document.getElementById('program');
+
+                let allPayments = selectedSupplier.payments;
+
+                const filteredPayments = allPayments.filter(payment => {
+                    return new Date(payment.date) <= new Date(dateDom.value);
+                });
+
+                filteredPayments.forEach(payment => {
+                    paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
+                })
+
+                if (filteredPayments.length > 0) {
+                    paymentSelectDom.disabled = false;
                 }
 
-                filteredAccounts.forEach(account => {
-                    selfAccountSelectDom.innerHTML += `<option value="${account.id}" data-option='${JSON.stringify(account)}'>${account.account_title} | ${account.bank.short_title} | ${account.account_no}</option>`;
+                paymentSelectDom.addEventListener('change', () => {
+                    let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
+                    let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                    selectedDom.value = JSON.stringify(selectedPayment);
+                    document.getElementById('amount').value = selectedPayment.amount;
+                    document.getElementById('payment_id').value = selectedPayment.id;
                 })
-
-                selfAccountSelectDom.addEventListener('change', () => {
-                    let selectedOption = selfAccountSelectDom.options[selfAccountSelectDom.selectedIndex];
-                    let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-                })
-            } else if (elem.value == 'adjustment') {
-                paymentDetailsDom.innerHTML += `
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-1">
-                        {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-
-                        {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
-                    </div>
-                `;
-            } else {
-                paymentDetailsDom.innerHTML += `
-                    <div class="text-center text-[var(--border-error)]">Select Valid Method.</div>
-                `;
             }
-            
-            let modalData = {
-                id: 'modalForm',
-                name: 'Payment Details',
-                fields: fieldsData,
-            }
-
-            createModal(modalData);
-
-            let paymentSelectDom = document.getElementById('program');
-            let selectedDom = document.getElementById('selected');
-
-            let allPayments = selectedSupplier.payments;
-
-            const filteredPayments = allPayments.filter(payment => {
-                return new Date(payment.date) <= new Date(dateDom.value);
-            });
-
-            filteredPayments.forEach(payment => {
-                paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
-            })
-
-            if (filteredPayments.length > 0) {
-                paymentSelectDom.disabled = false;
-            }
-
-            paymentSelectDom.addEventListener('change', () => {
-                let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
-                let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-
-                selectedDom.value = JSON.stringify(selectedPayment);
-                document.getElementById('amount').value = selectedPayment.amount;
-                document.getElementById('payment_id').value = selectedPayment.id;
-            })
         }
 
         function addPaymentDetails() {
-            // closeModal();
             let detail = {};
             let allDetail = {};
-            const inputs = paymentDetailsDom.querySelectorAll('input:not([disabled])');
+            const inputs = document.querySelectorAll('#modalForm input:not([disabled])');
 
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
@@ -438,7 +467,7 @@
                 }
             });
 
-            const selectBankAccount = paymentDetailsDom.querySelector("select");
+            const selectBankAccount = document.querySelector("#modalForm select");
             if (selectBankAccount) {
                 detail[selectBankAccount.getAttribute('name')] = selectBankAccount.value;
             }
@@ -455,6 +484,7 @@
                 allPayments.push(allDetail);
                 renderList();
             }
+            closeModal('modalForm');
         }
 
         function renderList() {

@@ -7,12 +7,7 @@
         'b' => ['text'  => 'B'],
 ];
 @endphp
-    <!-- Modal -->
-    <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <!-- Main Content -->
-
     <div class="max-w-5xl mx-auto">
         <x-search-header heading="Add Physical Quantity" link linkText="Show Physical Quantities" linkHref="{{ route('physical-quantities.index') }}"/>
     </div>
@@ -98,7 +93,6 @@
     </form>
 
     <script>
-        const articleModalDom = document.getElementById("articleModal");
         const articleSelectInputDOM = document.getElementById("article");
         const articleIdInputDOM = document.getElementById("article_id");
         const articleImageShowDOM = document.getElementById("img-article");
@@ -123,87 +117,39 @@
         })
 
         function generateArticlesModal() {
-            articleModalDom.innerHTML = `
-                <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Articles</h5>
-                            
-                            <hr class="border-gray-600 my-3">
-                
-                            @if (count($articles) > 0)
-                                <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                                    <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                        @foreach ($articles as $article)
-                                            <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='selectThisArticle(this)'
-                                                class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                                <x-card :data="[
-                                                    'image' => $article->image == 'no_image_icon.png' 
-                                                        ? asset('images/no_image_icon.png') 
-                                                        : asset('storage/uploads/images/' . $article->image),
-                                                    'status' => $article->sales_rate == '0.00' ? 'no_rate' : 'transparent',
-                                                    'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                                    'name' => '#' . $article->article_no,
-                                                    'details' => [
-                                                        'Season' => $article->season,
-                                                        'Size' => $article->size,
-                                                        'Category' => $article->category,
-                                                    ],
-                                                ]" />
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @else
-                                <div class="text-[var(--border-error)] text-center font-medium h-full col-span-full">Data Not Found</div>
-                            @endif
-                        </div>
-                    </div>
-                </x-modal>
-            `;
+            let data = @json($articles);
+            let cardData = [];
 
-            openArticlesModal();
-        }
-
-        function openArticlesModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('articleModal').classList.remove('hidden');
-        }
-
-        function closeArticlesModal() {
-            isModalOpened = false;
-            let modal = document.getElementById('articleModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'articlesModalForm') {
-                closeArticlesModal();
+            console.log(data);
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.article_no,
+                        image: item.image == 'no_image_icon.png' ? '/images/no_image_icon.png' : `/storage/uploads/images/${item.image}`,
+                        details: {
+                            "Category": item.category,
+                            "Season": item.season,
+                            "Size": item.size,
+                        },
+                        data: item,
+                        onclick: 'selectThisArticle(this)',
+                    };
+                }));
             }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeArticlesModal();
+            
+            let modalData = {
+                id: 'modalForm',
+                cards: {name: 'Articles', count: 3, data: cardData},
             }
-        });
+
+            createModal(modalData);
+        }
 
         let selectedArticle = null;
 
         function selectThisArticle(articleElem) {
-            selectedArticle = JSON.parse(articleElem.getAttribute('data-json'));
+            selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
 
             articleIdInputDOM.value = selectedArticle.id;
             let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
@@ -212,7 +158,7 @@
             articleImageShowDOM.classList.remove('opacity-0');
             articleImageShowDOM.src = articleElem.querySelector('img').src
             
-            closeArticlesModal();
+            closeModal('modalForm');
             trackFieldsDisability();
             calculateTotal();
 

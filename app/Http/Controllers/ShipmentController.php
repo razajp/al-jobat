@@ -80,8 +80,15 @@ class ShipmentController extends Controller
             $last_shipment = new Shipment();
             $last_shipment->shipment_no = '0000';
         }
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'articles' => $articles
+            ]);
+        }
 
-        return view('shipments.generate', compact('customers_options', 'articles', 'last_shipment'));
+        return view('shipments.generate', compact('customers_options', 'last_shipment'));
         // return $articles;
     }
 

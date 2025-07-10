@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('category');
             $table->nullableMorphs('sub_category');
             $table->string('bank_id');
-            $table->string('account_title');
+            $table->string('account_title')->unique();
             $table->date('date');
             $table->string('remarks')->nullable();
-            $table->string('account_no')->nullable();
+            $table->string('account_no')->unique()->nullable();
             $table->string('chqbk_serial_start')->nullable();
             $table->string('chqbk_serial_end')->nullable();
             $table->string('status')->default('active');

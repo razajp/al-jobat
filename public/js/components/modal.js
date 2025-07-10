@@ -33,7 +33,7 @@ function createModal(data) {
                     </button>
                 </div>
                 
-                <div class="flex flex-col w-full">
+                <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full">
                     <div class="w-full h-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
 
@@ -55,7 +55,7 @@ function createModal(data) {
     }
     
     clutter += `
-        <div class="flex items-start relative ${(data.class || '').includes('h-') ? 'h-full' : 'h-[15rem]'}">
+        <div class="flex ${data.flex_col ? 'flex-col' : ''} items-start relative ${(data.class || '').includes('h-') ? 'h-full' : 'h-[15rem]'}">
     `;
     
     if (data.image) {
@@ -85,7 +85,7 @@ function createModal(data) {
 
     if (data.name) {
         clutter += `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
                 <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
                 ${detailsHTML}
         `;
@@ -94,7 +94,7 @@ function createModal(data) {
     if (data.fields) {
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 p-1">
+            <div class="grid grid-cols-${data.fieldsGridCount} w-full gap-3 p-1">
         `;
         data.fields.forEach(field => {
             if (field.category == 'input') {
@@ -117,6 +117,8 @@ function createModal(data) {
                                     ${buttonHTML}
                                 </div>
                             </div>
+
+                            <div id="${field.name}-error" class="absolute -bottom-5 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
                         </div>
                     `;
                     
@@ -148,11 +150,14 @@ function createModal(data) {
                     const optionsArray = Object.entries(rawOptions).map(([key, obj]) => {
                         return {
                             id: key,
-                            text: obj.text
+                            text: obj.text,
+                            data_option: obj.data_option || '{}'
                         };
                     });
 
                     optionsArray.forEach(option => {
+                        console.log(option);
+                        
                         optionsHTML += `
                             <option value="${option.id}" data-option='${JSON.stringify(option.data_option)}'>${option.text}</option>
                         `;
@@ -187,20 +192,22 @@ function createModal(data) {
 
     if (data.imagePicker) {
         clutter += `
-            <hr class="w-full my-3 border-gray-600">
+            <div>
+                <hr class="w-full my-3 border-gray-600">
 
-            <div class="grid grid-cols-1 md:grid-cols-1">
-                <label for="${data.imagePicker.name}"
-                    class="border-dashed border-2 border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all duration-300 ease-in-out relative">
-                    <input id="${data.imagePicker.id}" type="file" name="${data.imagePicker.name}" accept="image/*"
-                        class="image_upload opacity-0 absolute inset-0 cursor-pointer"
-                        onchange="previewImage(event)" />
-                    <div id="image_preview_${data.imagePicker.id}" class="flex flex-col items-center max-w-[50%]">
-                        <img src="${data.imagePicker.placeholder}" alt="Upload Icon"
-                            class="placeholder_icon w-auto h-full mb-2 rounded-md" id="placeholder_icon_${data.imagePicker.id}" />
-                        <p id="upload_text_${data.imagePicker.id}" class="upload_text text-md text-gray-500">${data.imagePicker.uploadText}</p>
-                    </div>
-                </label>
+                <div class="grid grid-cols-1 md:grid-cols-1">
+                    <label for="${data.imagePicker.name}"
+                        class="border-dashed border-2 border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center cursor-pointer hover:border-primary transition-all duration-300 ease-in-out relative">
+                        <input id="${data.imagePicker.id}" type="file" name="${data.imagePicker.name}" accept="image/*"
+                            class="image_upload opacity-0 absolute inset-0 cursor-pointer"
+                            onchange="previewImage(event)" />
+                        <div id="image_preview_${data.imagePicker.id}" class="flex flex-col items-center max-w-[50%]">
+                            <img src="${data.imagePicker.placeholder}" alt="Upload Icon"
+                                class="placeholder_icon w-auto h-full mb-2 rounded-md" id="placeholder_icon_${data.imagePicker.id}" />
+                            <p id="upload_text_${data.imagePicker.id}" class="upload_text text-md text-gray-500">${data.imagePicker.uploadText}</p>
+                        </div>
+                    </label>
+                </div>
             </div>
         `;
     }
@@ -218,7 +225,7 @@ function createModal(data) {
         }
 
         clutter += `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full overflow-y-auto my-scrollbar-2">
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
                 <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
                 <hr class="w-full my-3 border-gray-600">
                 <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
@@ -310,15 +317,17 @@ function createModal(data) {
             fieldsHTML += `
                 <div class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full ${field.disabled ? 'cursor-not-allowed' : ''}">
                     <label for="${field.name}" class="text-nowrap grow">${field.label}</label>
-                    <input type="text" required name="${field.name}" id="${field.name}" value="${field.value}" ${field.disabled ? 'disabled' : ''} class="text-right bg-transparent outline-none border-none w-[50%]" />
+                    <input type="text" required name="${field.name}" id="${field.name}" max="${field.max}" value="${field.value}" ${field.disabled ? 'disabled' : ''} class="text-right bg-transparent outline-none border-none w-[50%]" />
                 </div>
             `;
         });
 
         clutter += `
-            <hr class="w-full my-3 border-gray-600">
-            <div id="calc-bottom" class="${calcBottomClass} w-full gap-3 text-sm">
-                ${fieldsHTML}
+            <div class="w-full">
+                <hr class="w-full my-3 border-gray-600">
+                <div id="calc-bottom" class="${calcBottomClass} w-full gap-3 text-sm">
+                    ${fieldsHTML}
+                </div>
             </div>
         `;
     }

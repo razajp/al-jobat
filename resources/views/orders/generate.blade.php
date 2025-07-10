@@ -1,74 +1,6 @@
 @extends('app')
 @section('title', 'Generate Order | ' . app('company')->name)
 @section('content')
-    <!-- Modal -->
-    <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-        <x-modal id="articlesModalForm" classForBody="p-5 max-w-7xl h-[45rem]" closeAction="closeArticlesModal">
-            <!-- Modal Content Slot -->
-            <div class="flex items-start relative h-full">
-                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                    <x-search-header heading="Articles" :filter_items="[
-                        'all' => 'All',
-                        '#' => 'Article No.',
-                        'category' => 'Category',
-                        'season' => 'Season',
-                        'size' => 'Size',
-                    ]"/>
-        
-                    @if (count($articles) > 0)
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($articles as $article)
-                                    <div data-json='{{ $article }}' id='{{ $article->id }}' onclick='generateQuantityModal(this)'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'image' => $article->image == 'no_image_icon.png' 
-                                                ? asset('images/no_image_icon.png') 
-                                                : asset('storage/uploads/images/' . $article->image),
-                                            'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                            'name' => '#' . $article->article_no,
-                                            'details' => [
-                                                'Season' => $article->season,
-                                                'Size' => $article->size,
-                                                'Category' => $article->category,
-                                            ],
-                                        ]" />
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-[var(--border-error)] text-center h-full">Article Not Found</div>
-                    @endif
-                    
-                    <div class="flex w-full gap-4 text-sm mt-5">
-                        <div
-                            class="total-qty flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                            <div class="grow">Total Quantity - Pcs</div>
-                            <div id="totalOrderedQty">0</div>
-                        </div>
-                        <div
-                            class="final flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                            <div class="grow">Total Amount - Rs.</div>
-                            <div id="totalOrderAmount">0.0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeArticlesModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                    Close
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
-
-    <div id="quantityModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
@@ -94,7 +26,7 @@
 
                 {{-- title --}}
                 <div class="grow">
-                    <x-select label="Customer" name="customer_id" id="customer_id" :options="$customers_options" required showDefault onchange="trackCustomerState(this)"
+                    <x-select label="Customer" name="customer_id" id="customer_id" :options="[]" required showDefault onchange="trackCustomerState(this)"
                         class="grow" withButton btnId="generateOrderBtn" btnText="Select Articles" />
                 </div>
             </div>
@@ -159,6 +91,7 @@
         let totalOrderedQuantity = 0;
         let totalOrderAmount = 0;
         let netAmount = 0;
+        let articles;
 
         const lastOrder = @json($last_order);
         let customerData;
@@ -198,8 +131,42 @@
         })
 
         function generateArticlesModal() {
-            openArticlesModal();
-            setDropdownListeners();
+            let data = articles;
+            let cardData = [];
+
+            console.log(data);
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.article_no,
+                        image: item.image == 'no_image_icon.png' ? '/images/no_image_icon.png' : `/storage/uploads/images/${item.image}`,
+                        details: {
+                            "Category": item.category,
+                            "Season": item.season,
+                            "Size": item.size,
+                        },
+                        data: item,
+                        onclick: 'generateQuantityModal(this)',
+                    };
+                }));
+            }
+            
+            let modalData = {
+                id: 'modalForm',
+                class: 'h-[80%] w-full',
+                cards: {name: 'Articles', count: 3, data: cardData},
+                flex_col: true,
+                calcBottom: [
+                    {label: 'Total Quantity - Pcs', name: 'totalShipmentedQty', value: '0', disabled: true},
+                    {label: 'Total Amount - Rs.', name: 'totalShipmentAmount', value: '0.0', disabled: true},
+                ],
+            }
+
+            createModal(modalData);
+            
+            totalQuantityDOM = document.querySelector('#modalForm #totalShipmentedQty');
+            totalAmountDOM = document.querySelector('#modalForm #totalShipmentAmount');
 
             document.querySelectorAll('.card .quantity-label').forEach(previousQuantityLabel => {
                 previousQuantityLabel.remove();
@@ -222,99 +189,64 @@
                 });
             }
 
-            totalQuantityDOM = document.getElementById('totalOrderedQty');
-            totalAmountDOM = document.getElementById('totalOrderAmount');
-
+            calculateTotalOrderedQuantity();
+            calculateTotalOrderAmount();
+            calculateNetAmount();
             renderTotals();
-        }
-
-        function openArticlesModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('articleModal').classList.remove('hidden');
-        }
-
-        function closeArticlesModal() {
-            generateDecription();
+            generateDescription();
             renderList();
             generateOrder();
             renderFinals();
-
-            isModalOpened = false;
-            let modal = document.getElementById('articleModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
         }
 
         function generateQuantityModal(elem) {
-            let data = JSON.parse(elem.dataset.json);
+            let data = JSON.parse(elem.dataset.json).data;
+            
+            let modalData = {
+                id: 'QuantityModalForm',
+                name: 'Enter Quantity',
+                class: 'h-auto',
+                fields: [
+                    {
+                        category: 'input',
+                        value: `${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs.`,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Current Stock - Pcs.',
+                        value: formatNumbersDigitLess(data.quantity - data.ordered_quantity),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Current Stock - Pcs.',
+                        value: formatNumbersDigitLess(data.physical_quantity),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        name: 'quantity',
+                        id: 'quantity',
+                        type: 'number',
+                        label: 'Quantity - Pcs.',
+                        placeholder: 'Enter quantity in pcs.',
+                        required: true,
+                        oninput: "checkMax(this)",
+                    },
+                ],
+                fieldsGridCount: '1',
+                bottomActions: [
+                    {id: 'setQuantityBtn', text: 'Set Quantity', onclick: `setQuantity(${data.id})`},
+                ],
+            }
+
+            createModal(modalData);
+            
             let physicalQuantity = 0;
 
             const physicalQuantityInpDom = document.getElementById('physical_quantity');
             const dateInpDom = document.getElementById('date');
-
-            quantityModalDom.innerHTML = `
-                <x-modal id="quantityModalForm" classForBody="p-5" closeAction="closeQuantityModal">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
-
-                            <x-input 
-                                value="${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${formatNumbersDigitLess(data.quantity)} | ${formatNumbersWithDigits(data.sales_rate, 1, 1)} - Rs." 
-                                disabled
-                            />
-
-                            <hr class="border-gray-600 mt-3">
-
-                            <div class="w-2/3 mx-auto p-5 flex flex-col gap-4">
-                                <x-input 
-                                    label="Current Stock - Pcs."
-                                    value="${formatNumbersDigitLess(data.quantity - data.ordered_quantity)}" 
-                                    disabled
-                                />
-                                
-                                <x-input 
-                                    label="Physical Stock - Pcs."
-                                    id="physical_quantity"
-                                    value="${formatNumbersDigitLess(data.physical_quantity)}" 
-                                    disabled
-                                />
-                                
-                                <x-input 
-                                    label="Quantity - Pcs."
-                                    name="quantity" 
-                                    id="quantity" 
-                                    type="text" 
-                                    placeholder="Enter quantity in pcs." 
-                                    required
-                                    validateMax
-                                    max="${data.quantity - data.ordered_quantity}"
-                                    oninput="checkMax(this)"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeQuantityModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Cancel
-                        </button>
-                        <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            Set Quantity
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
 
             let quantityLabel = elem.querySelector('.quantity-label');
 
@@ -322,55 +254,18 @@
                 document.getElementById("quantity").value = parseInt(quantityLabel.textContent.replace(/\D/g, ""));
             }
 
-            openQuantityModal();
             document.getElementById("quantity").focus();
             document.getElementById("quantity").addEventListener('keydown', (e) => {
                 if (e.key == 'Enter') {
-                    document.getElementById("setQuantityBtn").click();
+                    document.getElementById("setQuantityBtn-in-modal").click();
                 }
             })
         }
 
-        function openQuantityModal() {
-            isQuantityModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('quantityModal').classList.remove('hidden');
-        }
-
-        function closeQuantityModal() {
-            isQuantityModalOpened = false;
-            let modal = document.getElementById('quantityModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'articlesModalForm') {
-                closeArticlesModal();
-            } else if (id === 'quantityModalForm') {
-                closeQuantityModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeArticlesModal();
-                closeQuantityModal();
-            }
-        })
-
         function setQuantity(cardId) {
+            closeModal('QuantityModalForm');
             let targetCard = document.getElementById(cardId);
-            let cardData = JSON.parse(targetCard.dataset.json);
+            let cardData = JSON.parse(targetCard.dataset.json).data;
             let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
             let quantityInputDOM = document.getElementById("quantity");
 
@@ -405,11 +300,13 @@
                 selectedArticles.push(cardData);
             }
 
+            generateDescription();
             calculateTotalOrderedQuantity();
             calculateTotalOrderAmount();
             calculateNetAmount();
             renderTotals();
-            closeQuantityModal();
+            renderList();
+            renderFinals();
         }
 
         function deselectArticleAtIndex(index) {
@@ -462,22 +359,17 @@
             }).format(totalOrderAmount);
         }
 
-        function generateDecription() {
+        function generateDescription() {
             selectedArticles.forEach((selectedArticle, index) => {
                 selectedArticle.description = `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
             });
         }
 
         function calculateNetAmount() {
-            let totalAmount = parseFloat(totalOrderAmount.replace(/,/g, ''));
+            let totalAmount = parseFloat(totalOrderAmount);
             let discount = document.getElementById('discount').value;
             let discountAmount = totalAmount - (totalAmount * (discount / 100));
             netAmount = discountAmount;
-            netAmount = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            }).format(netAmount);
-            renderFinals();
         }
 
         discountDOM.addEventListener('input', calculateNetAmount);
@@ -487,8 +379,8 @@
         });
 
         function renderTotals() {
-            totalQuantityDOM.textContent = totalOrderedQuantity;
-            totalAmountDOM.textContent = totalOrderAmount;
+            totalQuantityDOM.value = totalOrderedQuantity;
+            totalAmountDOM.value = totalOrderAmount;
         }
 
         const orderListDOM = document.getElementById('order-list');
@@ -657,11 +549,11 @@
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Quantity - Pcs</div>
-                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.textContent}</div>
+                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.value}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Amount</div>
-                                    <div class="w-1/4 text-right grow">${totalAmountDOM.textContent}</div>
+                                    <div class="w-1/4 text-right grow">${totalAmountDOM.value}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Discount - %</div>
@@ -704,14 +596,14 @@
 
         function getDataByDate(inputElem) {
             $.ajax({
-                url: '{{ route('orders.create') }}',
+                url: '{{ route("orders.create") }}',
                 method: 'GET',
                 data: {
                     date: inputElem.value,
                 },
                 success: function(response) {
-                    populateOptions(response);
-                    populateCards(response);
+                    populateOptions(response.customers_options);
+                    articles = response.articles || [];
                 },
                 error: function() {
                     alert('Error submitting form');
@@ -721,60 +613,21 @@
 
         // getDataByDate(document.getElementById('date'));
 
-        function populateOptions(response) {
-            const selectElem = $(response).find('#customer_id')[0]; // Get the raw DOM element
-
+        function populateOptions(customers_options) {
             const customerSelectDom = document.getElementById('customer_id');
-
-            // CASE 1: If it's a <select> tag
-            if (selectElem && selectElem.tagName.toLowerCase() === 'select') {
-                const customersOptions = selectElem.innerHTML;
-
-                if (customersOptions && customersOptions.trim() !== "") {
-                    customerSelectDom.innerHTML = customersOptions;
-                    customerSelectDom.disabled = false;
-                } else {
-                    customerSelectDom.disabled = true;
-                }
-
-            // CASE 2: If it's an <input> tag with a .optionsDropdown
-            } else if (selectElem && selectElem.tagName.toLowerCase() === 'input') {
-                const optionsDropdown = $(response).find('.optionsDropdown').html();
-
-                const dropdownUl = customerSelectDom
-                    .closest('.form-group') // adjust if needed based on your structure
-                    .parentElement
-                    .querySelector('.optionsDropdown');
-
-                if (optionsDropdown && optionsDropdown.trim() !== "") {
-                    dropdownUl.innerHTML = optionsDropdown;
-                    customerSelectDom.disabled = false;
-                } else {
-                    customerSelectDom.disabled = true;
-                }
-
-                selectFirstOption('customer_id');
-            }
-        }
-
-        function populateCards(response) {
-            const articleModal = $(response).find('#articleModal').html();
-            const articleModalDom = document.getElementById('articleModal');
-
-            if (articleModal !== undefined && articleModal.trim() !== "") {
-                articleModalDom.innerHTML = articleModal;
-
-                cardsDom = $(articleModal).find('.card_container').children().toArray();
-
-                cardsDom.forEach((card) => {
-                    cardsDataArray.push(JSON.parse(card.dataset.json));
-                })
-            }
-
-            if (selectedArticles.length > 0) {
-                reRenderSelectedState();
-                reRenderSelectedStateTotal();
-            }
+            customerSelectDom.disabled = false;
+            customerSelectDom.parentElement.parentElement.parentElement.querySelector('input[id="customer_id"]').value = "-- Select Customer --";
+            const dropdownUl = customerSelectDom.parentElement.parentElement.parentElement.querySelector('ul');
+            dropdownUl.innerHTML = ""; // Clear existing options
+            optionsHTML = `
+                <li data-for="customer_id" data-value="" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected">-- Select Customer --</li>
+            `;
+            customers_options.forEach(customer => {
+                optionsHTML += `
+                    <li data-for="customer_id" data-value="${customer.data_option.id}" onmousedown="selectThisOption(this)" data-option='${JSON.stringify(customer.data_option)}' class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">${customer.text}</li>
+                `;
+            });
+            dropdownUl.innerHTML = optionsHTML;
         }
 
         // let filterType;

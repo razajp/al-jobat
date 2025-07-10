@@ -64,6 +64,14 @@ class VoucherController extends Controller
         }
 
         $self_accounts = BankAccount::where('category', 'self')->with('bank')->get();
+        $self_accounts_options = [];
+
+        foreach ($self_accounts as $account) {
+            $self_accounts_options[(int)$account->id] = [
+                'text' => $account->account_title . ' - ' . $account->bank->title,
+                'data_option' => $account,
+            ];
+        }
 
         $suppliers_options = [];
 
@@ -112,7 +120,7 @@ class VoucherController extends Controller
             $last_voucher['voucher_no'] = '00/101';
         }
 
-        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'last_voucher'));
+        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'self_accounts_options', 'last_voucher'));
     }
 
     /**

@@ -117,6 +117,7 @@
             
             let modalData = {
                 id: 'modalForm',
+                class: 'h-[80%] w-full',
                 cards: {name: 'Invoices', count: 4, data: cardData},
             }
 

@@ -119,8 +119,16 @@ class OrderController extends Controller
             $last_order = new Order();
             $last_order->order_no = '00-0000';
         }
+        
+        if ($request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'articles' => $articles,
+                'customers_options' => array_values($customers_options),
+            ]);
+        }
 
-        return view('orders.generate', compact('customers_options', 'articles', 'last_order'));
+        return view('orders.generate', compact('last_order'));
         // return $articles;
     }
 

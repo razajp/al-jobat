@@ -1,79 +1,6 @@
 @extends('app')
 @section('title', 'Generate Shipment | ' . app('company')->name)
 @section('content')
-    <!-- Modal -->
-    <div id="articleModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color))] fade-in">
-        <x-modal id="articlesModalForm" classForBody="p-5 max-w-6xl h-[45rem]" closeAction="closeArticlesModal">
-            <!-- Modal Content Slot -->
-            <div class="flex items-start relative h-full">
-                <div class="flex-1 h-full overflow-y-auto my-scrollbar-2 flex flex-col">
-                    <div class="pr-5 pt-1">
-                        <x-search-header heading="Articles" :filter_items="[
-                            'all' => 'All',
-                            '#' => 'Article No.',
-                            'category' => 'Category',
-                            'season' => 'Season',
-                            'size' => 'Size',
-                        ]" />
-                    </div>
-
-                    @if (count($articles) > 0)
-                        <div class='overflow-y-auto my-scrollbar-2 pt-2 grow'>
-                            <div class="card_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-                                @foreach ($articles as $article)
-                                    <div data-json='{{ $article }}' id='{{ $article->id }}'
-                                        onclick='generateQuantityModal(this)'
-                                        class="contextMenuToggle modalToggle card relative border border-gray-600 shadow rounded-xl min-w-[100px] h-[8rem] flex gap-4 p-2 cursor-pointer overflow-hidden fade-in">
-                                        <x-card :data="[
-                                            'image' =>
-                                                $article->image == 'no_image_icon.png'
-                                                    ? asset('images/no_image_icon.png')
-                                                    : asset('storage/uploads/images/' . $article->image),
-                                            'classImg' => $article->image == 'no_image_icon.png' ? 'p-2' : 'rounded-md',
-                                            'name' => $article->article_no,
-                                            'details' => [
-                                                'Season' => $article->season,
-                                                'Size' => $article->size,
-                                                'Category' => $article->category,
-                                            ],
-                                        ]" />
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
-                    @else
-                        <div class="text-[var(--border-error)] text-center h-full">Article Not Found</div>
-                    @endif
-
-                    <div class="flex w-full gap-4 text-sm mt-5">
-                        <div
-                            class="total-qty flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                            <div class="grow">Total Quantity - Pcs</div>
-                            <div id="totalShipmentedQty">0</div>
-                        </div>
-                        <div
-                            class="final flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 w-full">
-                            <div class="grow">Total Amount - Rs.</div>
-                            <div id="totalShipmentAmount">0.0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Modal Action Slot -->
-            <x-slot name="actions">
-                <button onclick="closeArticlesModal()" type="button"
-                    class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                    Close
-                </button>
-            </x-slot>
-        </x-modal>
-    </div>
-    
-    <div id="quantityModal"
-        class="hidden fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in">
-    </div>
-    
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
@@ -167,6 +94,7 @@
         let totalShipmentQuantity = 0;
         let totalShipmentAmount = 0;
         let netAmount = 0;
+        let articles;
 
         const lastShipment = @json($last_shipment);
         const articleModalDom = document.getElementById("articleModal");
@@ -193,8 +121,51 @@
         })
 
         function generateArticlesModal() {
-            openArticlesModal();
-            setDropdownListeners();
+            let data = articles;
+            let cardData = [];
+
+            console.log(data);
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.article_no,
+                        image: item.image == 'no_image_icon.png' ? '/images/no_image_icon.png' : `/storage/uploads/images/${item.image}`,
+                        details: {
+                            "Category": item.category,
+                            "Season": item.season,
+                            "Size": item.size,
+                        },
+                        data: item,
+                        onclick: 'generateQuantityModal(this)',
+                    };
+                }));
+            }
+            
+            let modalData = {
+                id: 'modalForm',
+                class: 'h-[80%] w-full',
+                cards: {name: 'Articles', count: 3, data: cardData},
+                flex_col: true,
+                calcBottom: [
+                    {label: 'Total Quantity - Pcs', name: 'totalShipmentedQty', value: '0', disabled: true},
+                    {label: 'Total Amount - Rs.', name: 'totalShipmentAmount', value: '0.0', disabled: true},
+                ],
+            }
+
+            createModal(modalData);
+
+            totalQuantityDOM = document.querySelector('#modalForm #totalShipmentedQty');
+            totalAmountDOM = document.querySelector('#modalForm #totalShipmentAmount');
+
+            calculateNetAmount();
+            calculateTotalShipmentQuantity();
+            calculateTotalShipmentAmount();
+            renderTotals();
+            generateDescription();
+            renderList();
+            generateShipment();
+            renderFinals();
 
             document.querySelectorAll('.card .quantity-label').forEach(previousQuantityLabel => {
                 previousQuantityLabel.remove();
@@ -216,102 +187,56 @@
                     }
                 });
             }
-
-            totalQuantityDOM = document.getElementById('totalShipmentedQty');
-            totalAmountDOM = document.getElementById('totalShipmentAmount');
-
-            renderTotals();
-        }
-
-        function openArticlesModal() {
-            isModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('articleModal').classList.remove('hidden');
-            // setFilter('all');
-        }
-
-        function closeArticlesModal() {
-            generateDecription();
-            renderList();
-            generateShipment();
-            renderFinals();
-
-            isModalOpened = false;
-            let modal = document.getElementById('articleModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
         }
 
         function generateQuantityModal(elem) {
-            let data = JSON.parse(elem.dataset.json);
+            let data = JSON.parse(elem.dataset.json).data;
+            
+            let modalData = {
+                id: 'QuantityModalForm',
+                name: 'Enter Quantity',
+                class: 'h-auto',
+                fields: [
+                    {
+                        category: 'input',
+                        value: `${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs.`,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Current Stock - Pcs.',
+                        value: formatNumbersDigitLess(data.quantity - data.ordered_quantity),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Current Stock - Pcs.',
+                        value: formatNumbersDigitLess(data.physical_quantity),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        name: 'quantity',
+                        id: 'quantity',
+                        type: 'number',
+                        label: 'Quantity - Pcs.',
+                        placeholder: 'Enter quantity in pcs.',
+                        required: true,
+                        oninput: "checkMax(this)",
+                    },
+                ],
+                fieldsGridCount: '1',
+                bottomActions: [
+                    {id: 'setQuantityBtn', text: 'Set Quantity', onclick: `setQuantity(${data.id})`},
+                ],
+            }
+
+            createModal(modalData);
+            
             let physicalQuantity = 0;
 
             const physicalQuantityInpDom = document.getElementById('physical_quantity');
             const dateInpDom = document.getElementById('date');
-
-            quantityModalDom.innerHTML = `
-                <x-modal id="quantityModalForm" classForBody="p-5" closeAction="closeQuantityModal">
-                    <!-- Modal Content Slot -->
-                    <div class="flex items-start relative h-full">
-                        <div class="flex-1 h-full overflow-y-auto my-scrollbar-2">
-                            <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">Article Details</h5>
-
-                            <x-input 
-                                value="${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs." 
-                                disabled
-                            />
-
-                            <hr class="border-gray-600 mt-3">
-
-                            <div class="w-2/3 mx-auto p-5 flex flex-col gap-4">
-                                <x-input 
-                                    label="Current Stock - Pcs."
-                                    value="${formatNumbersDigitLess(data.quantity - data.ordered_quantity)}" 
-                                    disabled
-                                />
-                                
-                                <x-input 
-                                    label="Physical Stock - Pcs."
-                                    id="physical_quantity"
-                                    value="${formatNumbersDigitLess(data.physical_quantity)}" 
-                                    disabled
-                                />
-                                
-                                <x-input 
-                                    label="Quantity - Pcs."
-                                    name="quantity" 
-                                    id="quantity" 
-                                    type="text" 
-                                    placeholder="Enter quantity in pcs." 
-                                    required
-                                    
-                                    validateMax
-                                    max="${data.quantity - data.ordered_quantity}"
-                                    oninput="checkMax(this)"
-                                />
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Modal Action Slot -->
-                    <x-slot name="actions">
-                        <button onclick="closeQuantityModal()" type="button"
-                            class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer">
-                            Cancel
-                        </button>
-                        <button type="button" id="setQuantityBtn" onclick="setQuantity(${data.id})"
-                            class="px-5 py-2 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer">
-                            Set Quantity
-                        </button>
-                    </x-slot>
-                </x-modal>
-            `;
 
             let quantityLabel = elem.querySelector('.quantity-label');
 
@@ -319,56 +244,18 @@
                 document.getElementById("quantity").value = parseInt(quantityLabel.textContent.replace(/\D/g, ""));
             }
 
-            openQuantityModal();
-
+            document.getElementById("quantity").focus();
             document.getElementById("quantity").addEventListener('keydown', (e) => {
                 if (e.key == 'Enter') {
-                    document.getElementById("setQuantityBtn").click();
+                    document.getElementById("setQuantityBtn-in-modal").click();
                 }
             })
         }
 
-        function openQuantityModal() {
-            isQuantityModalOpened = true;
-            closeAllDropdowns();
-            document.getElementById('quantityModal').classList.remove('hidden');
-            document.getElementById("quantity").focus()
-        }
-
-        function closeQuantityModal() {
-            isQuantityModalOpened = false;
-            let modal = document.getElementById('quantityModal');
-            modal.classList.add('fade-out');
-
-            modal.addEventListener('animationend', () => {
-                modal.classList.add('hidden');
-                modal.classList.remove('fade-out');
-            }, {
-                once: true
-            });
-        }
-
-        document.addEventListener('mousedown', (e) => {
-            const {
-                id
-            } = e.target;
-            if (id === 'articlesModalForm') {
-                closeArticlesModal();
-            } else if (id === 'quantityModalForm') {
-                closeQuantityModal();
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isModalOpened) {
-                closeArticlesModal();
-                closeQuantityModal();
-            }
-        })
-
         function setQuantity(cardId) {
+            closeModal('QuantityModalForm');
             let targetCard = document.getElementById(cardId);
-            let cardData = JSON.parse(targetCard.dataset.json);
+            let cardData = JSON.parse(targetCard.dataset.json).data;
             let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
             let quantityInputDOM = document.getElementById("quantity");
 
@@ -403,14 +290,12 @@
                 selectedArticles.push(cardData);
             }
 
+            generateDescription();
             calculateTotalShipmentQuantity();
             calculateTotalShipmentAmount();
             calculateNetAmount();
             renderTotals();
-            closeQuantityModal();
-
-            console.log(selectedArticles);
-
+            renderList();
         }
 
         function deselectArticleAtIndex(index) {
@@ -421,9 +306,6 @@
 
         function deselectThisArticle(index) {
             deselectArticleAtIndex(index);
-
-            console.log(selectedArticles);
-
 
             renderList();
             generateShipment();
@@ -457,22 +339,19 @@
             selectedArticles.forEach(selectedArticle => {
                 totalShipmentAmount += selectedArticle.shipmentQuantity * selectedArticle.sales_rate;
             });
-
-            totalShipmentAmount = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            }).format(totalShipmentAmount);
         }
 
-        function generateDecription() {
-            selectedArticles.forEach((selectedArticle, index) => {
+        function generateDescription() {
+            console.log(selectedArticles);
+            
+            selectedArticles.forEach(selectedArticle => {
                 selectedArticle.description =
-                    `${selectedArticle.size} | ${selectedArticle.category} | ${selectedArticle.season}`;
+                    `${selectedArticle.size} | ${selectedArticle.category.replace(/_/g, ' ')} | ${selectedArticle.season}`;
             });
         }
 
         function calculateNetAmount() {
-            let totalAmount = parseFloat(totalShipmentAmount.replace(/,/g, ''));
+            let totalAmount = parseFloat(totalShipmentAmount);
             let discount = document.getElementById('discount').value;
             let discountAmount = totalAmount - (totalAmount * (discount / 100));
             netAmount = discountAmount;
@@ -490,8 +369,8 @@
         });
 
         function renderTotals() {
-            totalQuantityDOM.textContent = totalShipmentQuantity;
-            totalAmountDOM.textContent = totalShipmentAmount;
+            totalQuantityDOM.value = totalShipmentQuantity;
+            totalAmountDOM.value = totalShipmentAmount;
         }
 
         const orderListDOM = document.getElementById('shipment-list');
@@ -504,7 +383,7 @@
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[10%]">${selectedArticle.article_no}</div>
                             <div class="w-1/6">${selectedArticle.shipmentQuantity} pcs</div>
-                            <div class="grow">${selectedArticle.description}</div>
+                            <div class="grow capitalize">${selectedArticle.description}</div>
                             <div class="w-1/6">${selectedArticle.sales_rate}</div>
                             <div class="w-1/5">${selectedArticle.sales_rate * selectedArticle.shipmentQuantity}</div>
                             <div class="w-[10%] text-center">
@@ -650,11 +529,11 @@
                             <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Quantity - Pcs</div>
-                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.textContent}</div>
+                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.value}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Amount</div>
-                                    <div class="w-1/4 text-right grow">${totalAmountDOM.textContent}</div>
+                                    <div class="w-1/4 text-right grow">${totalAmountDOM.value}</div>
                                 </div>
                             </div>
                             <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
@@ -689,26 +568,27 @@
         function getDataByDate(inputElem) {
             trackStateOfgenerateBtn(inputElem.value);
             $.ajax({
-                url: '{{ route('shipments.create') }}',
+                url: '{{ route("shipments.create") }}',
                 method: 'GET',
                 data: {
                     date: inputElem.value,
                 },
                 success: function(response) {
-                    const articleModal = $(response).find('#articleModal').html();
-                    const articleModalDom = document.getElementById('articleModal');
+                    // const articleModal = $(response).find('#articleModal').html();
+                    // const articleModalDom = document.getElementById('articleModal');
 
-                    if (articleModal !== undefined && articleModal.trim() !== "") {
-                        articleModalDom.innerHTML = articleModal;
-                        // addListenerToCards();
-                        // addContextMenuListenerToCards();
+                    // if (articleModal !== undefined && articleModal.trim() !== "") {
+                    //     articleModalDom.innerHTML = articleModal;
+                    //     // addListenerToCards();
+                    //     // addContextMenuListenerToCards();
 
-                        cardsDom = $(articleModal).find('.card_container').children().toArray();
+                    //     cardsDom = $(articleModal).find('.card_container').children().toArray();
 
-                        cardsDom.forEach((card) => {
-                            cardsDataArray.push(JSON.parse(card.dataset.json));
-                        })
-                    }
+                    //     cardsDom.forEach((card) => {
+                    //         cardsDataArray.push(JSON.parse(card.dataset.json));
+                    //     })
+                    // }
+                    articles = response.articles;
                 },
                 error: function() {
                     alert('Error submitting form');
