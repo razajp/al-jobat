@@ -645,7 +645,7 @@ class CustomerSeeder extends Seeder
                 "date" => "2024-01-01 00:00:00",
                 "password" => "1234",
                 "city" => "Sheikhupura",
-                "username" => "abdullah",
+                "username" => "abdullahsh",
                 "phone_number" => "03004298468",
                 "address" => ""
             ],
@@ -14217,7 +14217,7 @@ class CustomerSeeder extends Seeder
                 "date" => "2024-01-01 00:00:00",
                 "password" => "1234",
                 "city" => "Sialkot",
-                "username" => "zubair",
+                "username" => "zubairslk",
                 "phone_number" => "03349737468",
                 "address" => ""
             ],

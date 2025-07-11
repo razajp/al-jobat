@@ -196,8 +196,7 @@
                 for (const option of customerSelectDom.closest(".selectParent")?.querySelectorAll('ul li')) {
                     if (option.dataset.value && option.textContent.trim() !== '') {
                         customerSelectDom.value = option.textContent.trim();
-                        customerSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
-                        customerSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
+                        customerSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                         break;
                     }
                 }
@@ -218,6 +217,7 @@
                         typeSelectDom.value = option.textContent.trim();
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
+                        typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                         typeInp.value = 'payment_program'
                         break; 
                     }

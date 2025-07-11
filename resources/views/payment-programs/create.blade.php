@@ -50,7 +50,7 @@
             {{-- cusomer --}}
             <x-select 
                 label="Disabled"
-                name="subCategory"
+                name="sub_category"
                 id="subCategory"
                 disabled
                 showDefault

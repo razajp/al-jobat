@@ -117,7 +117,7 @@ class BankAccount extends Model
         $totalPayments = $customerPaymetns->sum('netAmount') ?? 0;
         $totalPays = $supplierPaymetns->sum('amount') ?? 0;
 
-        $balance = $totalPayments - $totalPays;
+        $balance = $totalPays - $totalPayments;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }    

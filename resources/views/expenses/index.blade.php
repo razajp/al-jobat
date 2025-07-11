@@ -69,8 +69,10 @@
                                 <div>Remarks</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                            <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
-                                {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                            <div>
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                </div>
                             </div>
                         </div>
                     </div>
