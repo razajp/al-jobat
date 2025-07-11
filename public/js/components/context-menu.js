@@ -56,7 +56,7 @@ function createContextMenu(data) {
         });
     }
 
-    if (data.data.details && data.data.details['Balance'] == 0.0) {
+    if ((data.data.details && data.data.details['Balance'] == 0.0) || data.forceStatusBtn) {
         if (data.data.user?.status || data.data.status) {
             let status = data.data.user?.status ?? data.data.status;
             const [bgColor, textColor, borderColor] = statusColor[status === 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;

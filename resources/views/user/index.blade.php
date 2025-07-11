@@ -73,8 +73,10 @@
                                     <div class="text-right pr-5">Status</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
-                                    {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                <div>
+                                    <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
+                                        {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -138,12 +140,15 @@
             let data = JSON.parse(item.dataset.json);
 
             let contextMenuData = {
-                item: item,
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
                 action: "{{ route('update-user-status') }}",
             };
+            
+            if (currentUserRole != data.details['Role']) {
+                contextMenuData.forceStatusBtn = true;
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -153,6 +158,8 @@
 
             let modalData = {
                 id: 'modalForm',
+                uId: data.id,
+                status: data.status,
                 method: "POST",
                 action: "{{ route('update-user-status') }}",
                 image: data.image,
@@ -162,6 +169,7 @@
                     'Role': data.details['Role'],
                 },
                 profile: true,
+                forceStatusBtn: true,
             }
 
             createModal(modalData);

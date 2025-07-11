@@ -650,7 +650,7 @@ function createModal(data) {
         });
     }
     
-    if (data.details && data.details['Balance'] == 0.0) {
+    if ((data.details && data.details['Balance'] == 0.0) || data.forceStatusBtn) {
         console.log(data.status);
         if (data.user?.status || data.status) {
             let status = data.user?.status ?? data.status;
