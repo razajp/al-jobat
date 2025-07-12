@@ -49,6 +49,7 @@
                     placeholder="Enter employee name" 
                     required 
                     capitalized
+                    dataValidate="required|letters"
                 />
                 
                 <!-- urdu_title -->

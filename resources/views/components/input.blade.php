@@ -33,6 +33,8 @@
     'dataFilterPath' => '',
     'dataClearable' => false,
     'parentGrow' => false,
+    'dataValidate' => '',
+    'dataClean' => '',
 ])
 
 @if ($uppercased)
@@ -110,6 +112,8 @@
                     ($type == 'date' ? 'py-[7px]' : 'py-2') .
                     ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
             ]) }}
+            {{ $dataValidate ? 'data-validate='.$dataValidate : '' }}
+            {{ $dataClean ? 'data-clean='.$dataClean : '' }}
             {{ $validateMax ? 'max='.$max : '' }}
             {{ $validateMin ? 'min='.$min : '' }}
             {{ $onchange ? 'onchange='.$onchange : '' }}

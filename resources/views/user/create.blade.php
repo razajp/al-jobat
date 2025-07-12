@@ -34,13 +34,23 @@
         <div class="step1 space-y-6 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Name --}}
-                <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized data-validate="required|letters" />
+                <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized dataValidate="required|letters" />
 
                 {{-- Username --}}
-                <x-input label="Username" name="username" id="username" placeholder="Enter username" required data-validate="required|alphanumeric|lowercase|unique:username" />
+                {{-- <x-input label="Username" name="username" id="username" placeholder="Enter username" required data-validate="required|alphanumeric|lowercase|unique:username" /> --}}
+
+                <x-input
+                    label="Username"
+                    name="username"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                    data-validate="required|alphanumeric|lowercase|unique:username"
+                    data-clean="lowercase|alphanumeric|no-space"
+                />
 
                 {{-- Password --}}
-                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required data-validate="required|min:4|alphanumeric|lowercase" />
+                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required dataValidate="required|min:4|alphanumeric|lowercase" />
 
                 {{-- Role --}}
                 <x-select label="Role" name="role" id="role" :options="$roleOptions" />
@@ -54,113 +64,8 @@
         </div>
     </form>
     <script>
-        const nameDom = document.getElementById("name");
-        const nameError = document.getElementById("name-error");
-        const users = @json($users);
-        const usernameDom = document.getElementById("username");
-        const usernameError = document.getElementById("username-error");
-        const passwordDom = document.getElementById("password");
-        const passwordError = document.getElementById("password-error");
-
-        function validateName() {
-            // Validate Name
-            if (nameDom.value === "") {
-                nameDom.classList.add("border-[var(--border-error)]");
-                nameError.classList.remove("hidden");
-                nameError.textContent = "Name field is required.";
-                return false;
-            } else {
-                nameDom.classList.remove("border-[var(--border-error)]");
-                nameError.classList.add("hidden");
-                return true;
-            }
-        }
-
-        function validateUsername() {
-            // Clean input: remove special chars and spaces, convert to lowercase
-            let rawValue = usernameDom.value;
-            let cleanedValue = rawValue.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            // Update the input field with cleaned value
-            usernameDom.value = cleanedValue;
-
-            // Validation: Empty field
-            if (cleanedValue === "") {
-                usernameDom.classList.add("border-[var(--border-error)]");
-                usernameError.classList.remove("hidden");
-                usernameError.textContent = "Username field is required.";
-                return false;
-
-            // Validation: Already taken
-            } else if (users.some(user => user.username === cleanedValue)) {
-                usernameDom.classList.add("border-[var(--border-error)]");
-                usernameError.classList.remove("hidden");
-                usernameError.textContent = "Username is already taken.";
-                return false;
-
-            // Valid
-            } else {
-                usernameDom.classList.remove("border-[var(--border-error)]");
-                usernameError.classList.add("hidden");
-                return true;
-            }
-        }
-
-        function validatePassword() {
-            // Clean input: convert to lowercase and remove everything except a-z and 0-9
-            let rawValue = passwordDom.value;
-            let cleanedValue = rawValue.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-            // Update the field with the cleaned value
-            passwordDom.value = cleanedValue;
-
-            // Validate cleaned value
-            if (cleanedValue === "") {
-                passwordDom.classList.add("border-[var(--border-error)]");
-                passwordError.classList.remove("hidden");
-                passwordError.textContent = "Password field is required.";
-                return false;
-            } else if (cleanedValue.length < 4) {
-                passwordDom.classList.add("border-[var(--border-error)]");
-                passwordError.classList.remove("hidden");
-                passwordError.textContent = "Password must be at least 4 characters.";
-                return false;
-            } else {
-                passwordDom.classList.remove("border-[var(--border-error)]");
-                passwordError.classList.add("hidden");
-                return true;
-            }
-        }
-
-        passwordDom.addEventListener("input", function() {
-            validatePassword()
-        })
-
-        usernameDom.addEventListener("input", function() {
-            validateUsername()
-        });
-
-        nameDom.addEventListener("input", function() {
-            validateName()
-        });
-
         function validateForNextStep() {
-            let isValidName = validateName();
-            let isValidUsername = validateUsername();
-            let isValidPasswird = validatePassword();
-
-            let isValid = isValidName || isValidUsername || isValidPasswird;
-
-            if (!isValid) {
-                messageBox.innerHTML = `
-                    <x-alert type="error" :messages="'Invalid details, please correct them.'" />
-                `;
-                messageBoxAnimation();
-            } else {
-                isValid = true
-            }
-
-            return isValid;
+            return true;
         }
     </script>
 @endsection

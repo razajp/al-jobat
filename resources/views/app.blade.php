@@ -275,7 +275,7 @@
         }
     </script>
     <script src="{{ asset('jquery.js') }}"></script>
-
+    <script src="{{ asset('js/validate-inputs.js') }}"></script>
     <script>
         let closeOnClickOutside;
         let escToClose;
