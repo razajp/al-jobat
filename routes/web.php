@@ -69,12 +69,14 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::get('print-invoices', [InvoiceController::class, 'print'])->name('invoices.print');
     
     Route::resource('customer-payments', CustomerPaymentController::class);
+    Route::post('customer-payments/{id}/clear', [CustomerPaymentController::class, 'clear'])->name('customer-payments.clear');
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
     
     Route::resource('payment-programs', PaymentProgramController::class);
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
-    
+    Route::post('payment-programs/{id}/mark-paid', [PaymentProgramController::class, 'markPaid'])->name('payment-programs.mark-paid');
+
     Route::resource('bank-accounts', BankAccountController::class);
     Route::post('update-bank-account-status', [BankAccountController::class, 'updateStatus'])->name('update-bank-account-status');
     

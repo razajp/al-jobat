@@ -113,7 +113,7 @@ function createModal(data) {
                                 <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
                                 <div class="relative flex gap-3">
-                                    <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                                    <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" min="${field.min}" max="${field.max}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
                                     ${buttonHTML}
                                 </div>
                             </div>
@@ -639,6 +639,16 @@ function createModal(data) {
                         ${action.text}
                     </a>
                 `;
+            } else if (action.link) {
+                clutter += `
+                    <form id="${action.id}-form" action="${action.link}" method="POST" class="inline-block">
+                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
+                        <button id="${action.id}-in-modal" type="${action.type ?? 'submit'}"
+                            class="px-4 py-2 bg-${action.id.includes('add') ? '[var(--bg-success)]' : '[var(--secondary-bg-color)]'} border hover:border-${action.id.includes('add') ? '[var(--border-success)] border-[var(--bg-success)]' : 'gray-600 border-gray-600'} text-${action.id.includes('add') ? '[var(--border-success)]' : '[var(--secondary-text)]'} rounded-lg hover:bg-${action.id.includes('add') ? '[var(--h-bg-success)]' : '[var(--h-bg-color)]'} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                            ${action.text}
+                        </button>
+                    </form>
+                `;
             } else {
                 clutter += `
                     <button id="${action.id}-in-modal" type="${action.type ?? 'button'}" onclick='${action.onclick}'
@@ -675,7 +685,7 @@ function createModal(data) {
     `;
     modalWrapper.innerHTML = clutter;
 
-    const closeOnClickOutside = (e) => {
+    closeOnClickOutside = (e) => {
         const clickedId = e.target.id;
         if (clickedId === `${data.id}-wrapper` || clickedId === `${data.id}`) {
             const modal = document.getElementById(`${data.id}`);
@@ -688,12 +698,15 @@ function createModal(data) {
                     modalWrapper.remove();
                 }, { once: true });
             }, { once: true });
+            document.removeEventListener('mousedown', closeOnClickOutside);
+            document.removeEventListener('keydown', escToClose);
+            document.removeEventListener('keydown', enterToSubmit);
         }
     };
     document.addEventListener('mousedown', closeOnClickOutside);
 
     // ✅ Escape Key to Close
-    const escToClose = (e) => {
+    escToClose = (e) => {
         if (e.key === 'Escape') {
             const form = modalWrapper.querySelector('form');
             form.classList.add('scale-out');
@@ -712,7 +725,7 @@ function createModal(data) {
     };
 
     // ✅ enter Key to subbmit
-    const enterToSubmit = (e) => {
+    enterToSubmit = (e) => {
         if (e.key === 'Enter') {
             const form = modalWrapper.querySelector('form');
             const btn = form.querySelector('#modal-action button[id*="add"], #modal-action button[id*="update"]');

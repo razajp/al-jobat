@@ -8,17 +8,18 @@
             "type" => "text",
             "placeholder" => "Enter customer name",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "customer.customer_name",
+            "dataFilterPath" => "name",
         ],
         "Type" => [
             "id" => "type",
             "type" => "select",
             "options" => [
                         'normal' => ['text' => 'Normal'],
-                        'payment_program' => ['text' => 'Payment Program'],
+                        'payment program' => ['text' => 'Payment Program'],
+                        'recovery' => ['text' => 'Recovery'],
                     ],
             "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "type",
+            "dataFilterPath" => "details.Type",
         ],
         "Method" => [
             "id" => "method",
@@ -31,7 +32,7 @@
                         'adjustment' => ['text' => 'Adjustment'],
                     ],
             "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "method",
+            "dataFilterPath" => "details.Method",
         ],
         "Date Range" => [
             "id" => "date_range_start",
@@ -115,7 +116,7 @@
                     'Type': item.type.replace('_', ' '),
                     'Method': item.method,
                     'Date': formatDate(item.date),
-                    'Amount': item.amount,
+                    'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
                 data: item,
                 oncontextmenu: "generateContextMenu(event)",
@@ -123,6 +124,41 @@
                 visible: true,
             };
         });
+
+        function generateClearModal(data) {
+            console.log(data);
+
+            let modalData = {
+                id: 'clearModal',
+                class: 'h-auto',
+                name: 'Clear Payment',
+                method: 'POST',
+                action: `/customer-payments/${data.id}/clear`,
+                fields: [
+                    {
+                        category: 'input',
+                        name: 'clear_date',
+                        label: 'Clear Date',
+                        type: 'date',
+                        min: (data.cheque_date || data.slip_date)?.split('T')[0],
+                        max: new Date().toISOString().split('T')[0],
+                        required: true,
+                    },
+                    {
+                        category: 'input',
+                        name: 'remarks',
+                        label: 'Remarks',
+                        type: 'text',
+                        placeholder: 'Enter remarks',
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'clear', text: 'Clear', type: 'submit'},
+                ],
+            };
+            createModal(modalData);
+        }
         
         function generateContextMenu(e) {
             e.preventDefault();
@@ -135,6 +171,12 @@
                 x: e.pageX,
                 y: e.pageY,
             };
+            
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
+                contextMenuData.actions = [
+                    {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                ];
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -157,10 +199,17 @@
                     ...(data.data.transition_id && { 'Transition Id': data.data.transition_id }),
                     ...(data.data.bank && { 'Bank': data.data.bank }),
                     ...(data.data.cheque_date && { 'Cheque Date': formatDate(data.data.cheque_date) }),
-                    ...(data.data.slip_date && { 'Slip Date': data.data.slip_date }),
-                    ...(data.data.clear_date && { 'Clear Date': data.data.clear_date }),
+                    ...(data.data.slip_date && { 'Slip Date': formatDate(data.data.slip_date) }),
+                    ...(data.data.clear_date && { 'Clear Date': formatDate(data.data.clear_date) }),
+                    ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued || 'Not Issue' }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
+            }
+
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
+                modalData.bottomActions = [
+                    {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                ];
             }
 
             createModal(modalData);

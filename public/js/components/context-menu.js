@@ -43,6 +43,15 @@ function createContextMenu(data) {
                         </a>
                     </li>
                 `;
+            } else if (action.link) {
+                clutter += `
+                    <li>
+                        <a id="${action.id}-in-context" href="${action.link}"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
+                            ${action.text}
+                        </a>
+                    </li>
+                `;
             } else {
                 clutter += `
                     <li>

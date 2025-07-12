@@ -418,30 +418,32 @@
                     return new Date(account.date) <= new Date(dateDom.value);
                 });
 
-                let paymentSelectDom = document.getElementById('program');
+                if (elem.value == 'program') {
+                    let paymentSelectDom = document.getElementById('program');
 
-                let allPayments = selectedSupplier.payments;
+                    let allPayments = selectedSupplier.payments;
 
-                const filteredPayments = allPayments.filter(payment => {
-                    return new Date(payment.date) <= new Date(dateDom.value);
-                });
+                    const filteredPayments = allPayments.filter(payment => {
+                        return new Date(payment.date) <= new Date(dateDom.value);
+                    });
 
-                filteredPayments.forEach(payment => {
-                    paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
-                })
+                    filteredPayments.forEach(payment => {
+                        paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
+                    })
 
-                if (filteredPayments.length > 0) {
-                    paymentSelectDom.disabled = false;
+                    if (filteredPayments.length > 0) {
+                        paymentSelectDom.disabled = false;
+                    }
+
+                    paymentSelectDom.addEventListener('change', () => {
+                        let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
+                        let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                        selectedDom.value = JSON.stringify(selectedPayment);
+                        document.getElementById('amount').value = selectedPayment.amount;
+                        document.getElementById('payment_id').value = selectedPayment.id;
+                    })
                 }
-
-                paymentSelectDom.addEventListener('change', () => {
-                    let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
-                    let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-
-                    selectedDom.value = JSON.stringify(selectedPayment);
-                    document.getElementById('amount').value = selectedPayment.amount;
-                    document.getElementById('payment_id').value = selectedPayment.id;
-                })
             }
         }
 
@@ -601,7 +603,7 @@
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
-                                        ${allPayments.map((payment, index) => {
+                                        ${paymentDetailsArray.map((payment, index) => {
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             return `
                                                     <div>

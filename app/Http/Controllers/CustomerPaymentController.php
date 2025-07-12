@@ -24,6 +24,12 @@ class CustomerPaymentController extends Controller
         
         $payments = CustomerPayment::with("customer")->get();
 
+        $payments->each(function ($payment) {
+            if ($payment->cheque()->exists()) {
+                $payment['issued'] = 'Issued';
+            }
+        });
+
         foreach ($payments as $payment) {
             if ($payment['clear_date'] == null) {
                 if ($payment['type'] == 'cheque' || $payment['type'] == 'slip'){
@@ -177,7 +183,7 @@ class CustomerPaymentController extends Controller
         $currentProgram = PaymentProgram::find($request->program_id);
         
         if (isset($currentProgram)) {
-            if ($currentProgram->balance >= 1000 && $currentProgram->balance <= 0.0) {
+            if ($currentProgram->balance <= 1000 && $currentProgram->balance >= 0) {
                 $currentProgram->status = 'Paid';
                 $currentProgram->save();
             } else if ($currentProgram->balance < 0.0) {
@@ -223,5 +229,32 @@ class CustomerPaymentController extends Controller
     public function destroy(CustomerPayment $customerPayment)
     {
         //
+    }
+    /**
+     * Clear the specified customer payment.
+     */
+    public function clear($id, Request $request) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'clear_date' => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $data = $request->all();
+
+        $data['clear_date'] = $request->clear_date;
+        $data['remarks'] = $request->remarks;
+
+        $customerPayment = CustomerPayment::findOrFail($id);
+        $customerPayment->update($data);
+        $customerPayment->save();
+
+        return redirect()->back()->with('success', 'Payment cleared successfully.');
     }
 }

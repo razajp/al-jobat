@@ -118,7 +118,7 @@
                 details: {
                     'Supplier': item.supplier.supplier_name,
                     'Date': formatDate(item.date),
-                    'Amount': item.total_payment,
+                    'Amount': formatNumbersWithDigits(item.total_payment, 1, 1),
                 },
                 data: item,
                 oncontextmenu: "generateContextMenu(event)",

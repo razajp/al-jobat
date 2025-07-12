@@ -277,6 +277,10 @@
     <script src="{{ asset('jquery.js') }}"></script>
 
     <script>
+        let closeOnClickOutside;
+        let escToClose;
+        let enterToSubmit;
+
         function formatDate(date) {
             const inputDate = new Date(date);
 
@@ -987,7 +991,6 @@
         }
     @endif
     
-    
     function closeModal(modalId) {
         const modal = document.getElementById(`${modalId}-wrapper`);
         const modalForm = modal.querySelector('form');
@@ -1001,6 +1004,9 @@
                 modal.remove();
             }, { once: true });
         }, { once: true });
+        document.removeEventListener('mousedown', closeOnClickOutside);
+        document.removeEventListener('keydown', escToClose);
+        document.removeEventListener('keydown', enterToSubmit);
     }
 
     function selectThisOption(optionLiElem) {

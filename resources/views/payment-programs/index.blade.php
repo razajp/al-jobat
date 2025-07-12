@@ -74,7 +74,7 @@
                                 <div class="w-[15%]">Customer</div>
                                 <div class="w-[10%]">O/P No.</div>
                                 <div class="w-[10%]">Category</div>
-                                <div class="w-[10%]">Beneficiary</div>
+                                <div class="w-[15%]">Beneficiary</div>
                                 <div class="w-[10%]">Amount</div>
                                 <div class="w-[10%]">Document</div>
                                 <div class="w-[10%]">Payment</div>
@@ -113,8 +113,8 @@
                 <span class="w-[10%]">${data.name}</span>
                 <span class="w-[15%]">${data.customer_name}</span>
                 <span class="w-[10%]">${data.o_p_no}</span>
-                <span class="w-[10%]">${data.category}</span>
-                <span class="w-[10%]">${data.beneficiary}</span>
+                <span class="w-[10%] capitalize">${data.category.replace(/_/g, ' ')}</span>
+                <span class="w-[15%]">${data.beneficiary}</span>
                 <span class="w-[10%]">${formatNumbersWithDigits(data.amount, 1, 1)}</span>
                 <span class="w-[10%]">${data.discount}</span>
                 <span class="w-[10%]">${formatNumbersWithDigits(data.payment, 1, 1)}</span>
@@ -390,11 +390,15 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
-                actions: [
+            };
+
+            if (data.status != 'Paid' && data.status != 'Overpaid') {
+                contextMenuData.actions = [
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
-                ],
-            };
+                    {id: 'mark-paid', text: 'Mark as Paid', link: `payment-programs/${data.id}/mark-paid`},
+                ];
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -414,8 +418,9 @@
                     id: item.id,
                     name: formatDate(item.date),
                     details: {
-                        'Amount': item.amount,
+                        'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                         'Account': (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'),
+                        'Method': item.method,
                     },
                 };
             }));
@@ -423,10 +428,16 @@
             let modalData = {
                 id: 'modalForm',
                 cards: {name: 'Payment Details', count: 3, data: cardData},
-                bottomActions: [
+            }
+
+            console.log(data);
+            
+            if (data.status != 'Paid' && data.status != 'Overpaid') {
+                modalData.bottomActions = [
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
-                ]
+                    {id: 'mark-paid', text: 'Mark as Paid', link: `payment-programs/${data.id}/mark-paid`},
+                ];
             }
 
             createModal(modalData);

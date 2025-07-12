@@ -227,14 +227,16 @@
                 let programSelectDom = document.getElementById('payment_programs');
                 programSelectDom.closest(".selectParent").querySelectorAll('ul li')[1].classList.add('selected');
                 let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
-                programSelectDom.value = programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').textContent.trim();
+                // programSelectDom.value = programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').textContent.trim();
+                programSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
                 if (ProgramData.category != 'waiting') {
                     programSelectDom.dispatchEvent(new Event('change'));
                     methodSelectDom.value = 'program'
                     methodSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
                     methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).classList.add('selected');
-                    trackMethodState(methodSelectDom);
+                    methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    // trackMethodState(methodSelectDom);
                 } else {
                     methodSelectDom.querySelector("option[value='program']")?.remove();
                 }
