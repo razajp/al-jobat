@@ -639,16 +639,6 @@ function createModal(data) {
                         ${action.text}
                     </a>
                 `;
-            } else if (action.link) {
-                clutter += `
-                    <form id="${action.id}-form" action="${action.link}" method="POST" class="inline-block">
-                        <input type="hidden" name="_token" value="${document.querySelector('meta[name="csrf-token"]').content}">
-                        <button id="${action.id}-in-modal" type="${action.type ?? 'submit'}"
-                            class="px-4 py-2 bg-${action.id.includes('add') ? '[var(--bg-success)]' : '[var(--secondary-bg-color)]'} border hover:border-${action.id.includes('add') ? '[var(--border-success)] border-[var(--bg-success)]' : 'gray-600 border-gray-600'} text-${action.id.includes('add') ? '[var(--border-success)]' : '[var(--secondary-text)]'} rounded-lg hover:bg-${action.id.includes('add') ? '[var(--h-bg-success)]' : '[var(--h-bg-color)]'} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                            ${action.text}
-                        </button>
-                    </form>
-                `;
             } else {
                 clutter += `
                     <button id="${action.id}-in-modal" type="${action.type ?? 'button'}" onclick='${action.onclick}'

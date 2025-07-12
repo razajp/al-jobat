@@ -266,25 +266,18 @@ class PaymentProgramController extends Controller
         return redirect()->route('payment-programs.index')->with('success', 'Program updated successfully.');
     }
 
-    public function markPaid(Request $request, $id)
+    public function markPaid($id, Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $validator = Validator::make($request->all(), [
-            'id' => 'required|integer|exists:payment_programs,id',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
-        }
         $program = PaymentProgram::find($id);
-
+        
         $program->status = 'Paid';
         $program->save();
 
-        return redirect()->route('payment-programs.index')->with('success', 'Program marked as paid.');
+        return redirect()->route('payment-programs.index')->with('success', 'Program marked as paid successfully.');
     }
 }

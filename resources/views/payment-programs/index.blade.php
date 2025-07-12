@@ -380,6 +380,12 @@
             window.location.href = url.toString();
         }
 
+        function goToMarkPaid(program) {
+            const url = new URL("{{ route('payment-programs.mark-paid', ':id') }}", window.location.origin);
+            url.pathname = url.pathname.replace(':id', program.id);
+            window.location.href = url.toString();
+        }
+
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');
@@ -396,7 +402,7 @@
                 contextMenuData.actions = [
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
-                    {id: 'mark-paid', text: 'Mark as Paid', link: `payment-programs/${data.id}/mark-paid`},
+                    {id: 'mark-paid', text: 'Mark as Paid', onclick: `goToMarkPaid(${JSON.stringify(data)})`},
                 ];
             }
 
@@ -429,14 +435,12 @@
                 id: 'modalForm',
                 cards: {name: 'Payment Details', count: 3, data: cardData},
             }
-
-            console.log(data);
             
             if (data.status != 'Paid' && data.status != 'Overpaid') {
                 modalData.bottomActions = [
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
-                    {id: 'mark-paid', text: 'Mark as Paid', link: `payment-programs/${data.id}/mark-paid`},
+                    {id: 'mark-paid', text: 'Mark as Paid', onclick: `goToMarkPaid(${JSON.stringify(data)})`},
                 ];
             }
 

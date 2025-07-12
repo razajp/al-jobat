@@ -34,14 +34,13 @@
         <div class="step1 space-y-6 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Name --}}
-                <x-input label="Name" name="name" id="name" placeholder="Enter name" required />
+                <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized data-validate="required|letters" />
 
                 {{-- Username --}}
-                <x-input label="Username" name="username" id="username" placeholder="Enter username" required />
+                <x-input label="Username" name="username" id="username" placeholder="Enter username" required data-validate="required|alphanumeric|lowercase|unique:username" />
 
                 {{-- Password --}}
-                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password"
-                    required />
+                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required data-validate="required|min:4|alphanumeric|lowercase" />
 
                 {{-- Role --}}
                 <x-select label="Role" name="role" id="role" :options="$roleOptions" />
@@ -78,17 +77,28 @@
         }
 
         function validateUsername() {
-            // Validate Username
-            if (usernameDom.value === "") {
+            // Clean input: remove special chars and spaces, convert to lowercase
+            let rawValue = usernameDom.value;
+            let cleanedValue = rawValue.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            // Update the input field with cleaned value
+            usernameDom.value = cleanedValue;
+
+            // Validation: Empty field
+            if (cleanedValue === "") {
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username field is required.";
                 return false;
-            } else if (users.some(user => user.username === usernameDom.value)) {
+
+            // Validation: Already taken
+            } else if (users.some(user => user.username === cleanedValue)) {
                 usernameDom.classList.add("border-[var(--border-error)]");
                 usernameError.classList.remove("hidden");
                 usernameError.textContent = "Username is already taken.";
                 return false;
+
+            // Valid
             } else {
                 usernameDom.classList.remove("border-[var(--border-error)]");
                 usernameError.classList.add("hidden");
@@ -97,13 +107,20 @@
         }
 
         function validatePassword() {
-            // Validate Password
-            if (passwordDom.value === "") {
+            // Clean input: convert to lowercase and remove everything except a-z and 0-9
+            let rawValue = passwordDom.value;
+            let cleanedValue = rawValue.toLowerCase().replace(/[^a-z0-9]/g, '');
+
+            // Update the field with the cleaned value
+            passwordDom.value = cleanedValue;
+
+            // Validate cleaned value
+            if (cleanedValue === "") {
                 passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password field is required.";
                 return false;
-            } else if (passwordDom.value.length < 4) {
+            } else if (cleanedValue.length < 4) {
                 passwordDom.classList.add("border-[var(--border-error)]");
                 passwordError.classList.remove("hidden");
                 passwordError.textContent = "Password must be at least 4 characters.";
