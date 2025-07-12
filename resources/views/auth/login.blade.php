@@ -7,12 +7,12 @@
 
         <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
-            <!-- User Name -->
+            <!-- Username -->
             <x-input 
-                label="User Name" 
+                label="Username" 
                 name="username" 
                 id="username" 
-                placeholder="Confirm your user name" 
+                placeholder="Confirm your username" 
                 required 
             />
 

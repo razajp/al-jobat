@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call(SetupSeeder::class);
         
         $this->call(SupplierSeeder::class);
+        
+        $this->call(SupplierBankAccountSeeder::class);
     }
 }

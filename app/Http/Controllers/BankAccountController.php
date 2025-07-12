@@ -6,7 +6,6 @@ use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\Setup;
 use App\Models\Supplier;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
