@@ -247,16 +247,16 @@
             });
 
             function getShipmentDetails() {
-                if (allCustomers.length > 0) {
-                    generateModal(allCustomers);
-                    updateSelectedCount();
-                    renderList();
-                    renderCalcBottom();
-                    calculateNoOfSelectableCustomers(shipmentArticles);
-                    document.getElementById('total-count').value = allCustomers.length ?? 0;
-                    addListners();
-                    updateCustomerRowsState();
-                } else {
+                // if (allCustomers.length > 0) {
+                //     generateModal(allCustomers);
+                //     updateSelectedCount();
+                //     renderList();
+                //     renderCalcBottom();
+                //     calculateNoOfSelectableCustomers(shipmentArticles);
+                //     document.getElementById('total-count').value = allCustomers.length ?? 0;
+                //     addListners();
+                //     updateCustomerRowsState();
+                // } else {
                     $.ajax({
                         url: "/get-shipment-details",
                         type: "POST",
@@ -280,7 +280,7 @@
                         }
                     });
                 }
-            }
+            // }
 
             function calculateNoOfSelectableCustomers(articlesArray) {
                 let countOfCottonsOfArticles = [];
@@ -318,7 +318,7 @@
                                 onclick: 'this.select()'
                             }
                         },
-                        { data: item.customer_name, class: 'grow text-center' },
+                        { data: item.customer_name + ' | ' + item.city.title, class: 'grow text-center' },
                         { data: item.urdu_title, class: 'w-[15%] text-center' },
                         { data: item.category, class: 'w-[15%] text-center' },
                         { data: item.balance, class: 'w-[15%] text-center' },

@@ -398,8 +398,10 @@
                 
                 let modalData = {
                     id: 'modalForm',
+                    class: 'h-auto',
                     name: 'Payment Details',
                     fields: fieldsData,
+                    fieldsGridCount: '2',
                     bottomActions: [
                         {id: 'add-payment-details', text: 'Add Payment', onclick: 'addPaymentDetails()'},
                     ],

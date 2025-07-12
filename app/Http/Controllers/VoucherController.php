@@ -68,7 +68,7 @@ class VoucherController extends Controller
 
         foreach ($self_accounts as $account) {
             $self_accounts_options[(int)$account->id] = [
-                'text' => $account->account_title . ' - ' . $account->bank->title,
+                'text' => $account->account_title . ' - ' . $account->bank->short_title,
                 'data_option' => $account,
             ];
         }

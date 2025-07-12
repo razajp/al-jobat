@@ -262,20 +262,23 @@ class Controller extends BaseController
             return response()->json(['error' => 'No articles found for this shipment']);
         }
         
-        $Allcustomers = Customer::with(['invoices.shipment', 'user', 'city'])->whereIn('category', ['regular', 'site'])->whereHas('user', function ($query) {
-            $query->where('status', 'active');
-        })->when($shipment->city === 'karachi', function ($query) {
-            $query->whereHas('city', function ($q) {
-                $q->where('title', 'Karachi');
-            });
-        })
-        ->when($shipment->city === 'other', function ($query) {
-            $query->whereHas('city', function ($q) {
-                $q->where('title', '!=', 'Karachi');
-            });
-        })
-        // For 'all', no additional shipment.city condition
-        ->get();
+        $Allcustomers = Customer::with(['invoices.shipment', 'user', 'city'])
+            ->whereIn('category', ['regular', 'site'])
+            ->whereHas('user', function ($query) {
+                $query->where('status', 'active');
+            })
+            ->when(strtolower($shipment->city) === 'karachi', function ($query) {
+                $query->whereHas('city', function ($q) {
+                    $q->where('title', 'Karachi');
+                });
+            })
+            ->when(strtolower($shipment->city) === 'lahore', function ($query) {
+                $query->whereHas('city', function ($q) {
+                    $q->where('title', '!=', 'Karachi');
+                });
+            })
+            // For 'all', no city filter
+            ->get();
 
         $Customers = $Allcustomers->filter(function ($customer) use ($shipment) {
             // Check if any of the customer's invoices match the shipment number

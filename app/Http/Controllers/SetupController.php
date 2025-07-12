@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Validator;
 class SetupController extends Controller
 {
     public function index() {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
@@ -19,7 +19,7 @@ class SetupController extends Controller
     }
     public function create()
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
@@ -28,7 +28,7 @@ class SetupController extends Controller
     }
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };

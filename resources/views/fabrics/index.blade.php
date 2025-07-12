@@ -71,13 +71,13 @@
                                 <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                     <div class="text-center w-[10%]">Date</div>
                                     <div class="text-center w-[15%]">Supplier / Worker</div>
+                                    <div class="text-center w-[10%]">Type</div>
                                     <div class="text-center w-[10%]">Fabric</div>
-                                    <div class="text-center w-[10%]">Remarks</div>
                                     <div class="text-center w-[10%]">Color</div>
                                     <div class="text-center w-[10%]">Unit</div>
                                     <div class="text-center w-[10%]">Quantity</div>
                                     <div class="text-center w-[20%]">Tag</div>
-                                    <div class="text-center w-[10%]">Type</div>
+                                    <div class="text-center w-[10%]">Remarks</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                                 <div>
@@ -112,13 +112,13 @@
                 
                 <span class="text-center w-[10%]">${formatDate(data.date)}</span>
                 <span class="text-center w-[15%] capitalize">${data.supplier_name ?? data.employee_name}</span>
+                <span class="text-center w-[10%]">${data.type ?? "-"}</span>
                 <span class="text-center w-[10%] capitalize">${data.fabric ?? "-"}</span>
-                <span class="text-center w-[10%] capitalize">${data.remarks ?? "-"}</span>
                 <span class="text-center w-[10%] capitalize">${data.color ?? "-"}</span>
                 <span class="text-center w-[10%] capitalize">${data.unit ?? "-"}</span>
                 <span class="text-center w-[10%]">${data.quantity ?? "-"}</span>
                 <span class="text-center w-[20%]">${data.tag ?? "-"}</span>
-                <span class="text-center w-[10%]">${data.type ?? "-"}</span>
+                <span class="text-center w-[10%] capitalize">${data.remarks ?? "-"}</span>
             </div>`;
         }
 
