@@ -402,6 +402,7 @@
                         { label: "Rate", class: "w-1/4" },
                         { label: "Action", class: "w-[10%]" },
                     ],
+                    scrollable: true,
                 },
                 calcBottom: [
                     {label: 'Total - Rs.', name: 'total', value: '0.00', disabled: true},

@@ -283,7 +283,7 @@
                 </div>
             @endif
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
                 <div class="relative group">
                     <x-nav-link-item label="Fabrics"
                         svgIcon='
