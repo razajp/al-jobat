@@ -78,7 +78,7 @@ class FabricController extends Controller
      * Show the form for creating a new resource.
      */
     public function create()
-    {if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+    {if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
@@ -117,7 +117,7 @@ class FabricController extends Controller
      */
     public function store(Request $request)
     {
-        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper')) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
@@ -172,7 +172,7 @@ class FabricController extends Controller
 
     public function issue()
     {
-        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
@@ -211,7 +211,7 @@ class FabricController extends Controller
     }
 
     public function issuePost(Request $request) {
-        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
