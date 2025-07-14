@@ -243,12 +243,19 @@
                     ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued || 'Not Issue' }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
+                bottomActions: [],
             }
 
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
-                modalData.bottomActions = [
+                modalData.bottomActions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                ];
+                );
+            }
+            
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.issued == null) {
+                modalData.bottomActions.push(
+                    {id: 'transfer', text: 'Transfer', onclick: `generateTransferModal(${JSON.stringify(data.data)})`},
+                );
             }
 
             createModal(modalData);

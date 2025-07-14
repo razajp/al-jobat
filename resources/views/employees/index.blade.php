@@ -129,7 +129,7 @@
                 details: {
                     'Category': item.category,
                     'Type': item.type.title,
-                    'Balance': item.balance ?? 0,
+                    'Balance': formatNumbersWithDigits(item.balance, 1, 1) ?? 0,
                 },
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",

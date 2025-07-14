@@ -398,7 +398,7 @@ function createModal(data) {
 
             invoiceTableBody = `
                 ${previewData.supplier_payments.map((payment, index) => {
-                console.log(data);
+                console.log('hello', payment);
 
                 const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                 return `
@@ -408,10 +408,10 @@ function createModal(data) {
                         <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                         <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
                         <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title ?? '-') + ' | ' +
+                        <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' +
                             (payment.bank_account?.bank.short_title ?? '-')}</div>
                         <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.slip?.slip_no ??
+                        <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
                             payment.transaction_id ?? '-'}</div>
                         <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
                         </div>

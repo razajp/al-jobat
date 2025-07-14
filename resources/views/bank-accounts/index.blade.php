@@ -141,7 +141,7 @@
                 details: {
                     'Name': item.sub_category?.customer_name ?? item.sub_category?.supplier_name ?? item.account_title,
                     'Category': item.category,
-                    'Balance': item.balance ?? 0,
+                    'Balance': formatNumbersWithDigits(item.balance, 1, 1) ?? 0,
                 },
                 accountNo: item.account_no ?? 0,
                 bank: item.bank.title + " | " + item.bank.short_title,
@@ -188,7 +188,7 @@
                     'Category': data.details['Category'],
                     'Bank': data.bank,
                     'Date': formatDate(data.date),
-                    'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
+                    'Balance': data.details['Balance'],
                 },
             }
 

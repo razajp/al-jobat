@@ -144,7 +144,7 @@
                 details: {
                     'Urdu Title': item.urdu_title,
                     'Category': item.category,
-                    'Balance': item.balance,
+                    'Balance': formatNumbersWithDigits(item.balance, 1, 1),
                 },
                 person_name: item.person_name,
                 phone_number: item.phone_number,
@@ -200,7 +200,7 @@
                     'Person Name': data.person_name,
                     'Username': data.user.username,
                     'Phone Number': data.phone_number,
-                    'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
+                    'Balance': data.details['Balance'],
                     'Category': data.details['Category'],
                     'City': data.city,
                 },

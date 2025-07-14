@@ -294,11 +294,26 @@
         }
 
         function formatNumbersDigitLess(number) {
-            return new Intl.NumberFormat('en-US').format(number);
+            number = Number(number);
+            let formatted = new Intl.NumberFormat('en-US').format(Math.abs(number));
+
+            if (number < 0) {
+                return `<span style="color:red !important">-(${formatted})</spanp>`;
+            }
+            return formatted;
         }
 
         function formatNumbersWithDigits(number, maxFraction, minFraction) {
-            return new Intl.NumberFormat('en-US', { maximumFractionsDigits:maxFraction, minimumFractionDigits:minFraction}).format(number);
+            number = Number(number);
+            let formatted = new Intl.NumberFormat('en-US', {
+                maximumFractionDigits: maxFraction,
+                minimumFractionDigits: minFraction
+            }).format(Math.abs(number));
+
+            if (number < 0) {
+                return `<span style="color:red !important">-(${formatted})</span>`;
+            }
+            return formatted;
         }
     </script>
     
