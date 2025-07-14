@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Loading... | Al Jobat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html {
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9fafb;
+    }
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    /* Logo Top-Left */
+    .company-logo {
+      position: absolute;
+      top: 20px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .company-logo img {
+      height: 40px;
+    }
+
+    .company-logo span {
+      font-size: 16px;
+      font-weight: 600;
+      color: #555;
+    }
+
+    /* Software Name Centered */
+    .software-name {
+      font-size: 30px;
+      font-weight: bold;
+      color: #222;
+      margin-bottom: 10px;
+      animation: fadeIn 1.4s ease-in-out;
+      letter-spacing: 1px;
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: #777;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .dots {
+      display: flex;
+      gap: 10px;
+      margin-top: 30px;
+    }
+
+    .dots span {
+      width: 10px;
+      height: 10px;
+      background: #007bff;
+      border-radius: 50%;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .dots span:nth-child(2) { animation-delay: 0.2s; }
+    .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    .loading-task {
+      margin-top: 25px;
+      font-size: 15px;
+      color: #444;
+      min-height: 24px;
+      animation: fadeIn 1s ease;
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% {
+        transform: scale(0.9);
+        opacity: 0.5;
+      }
+      40% {
+        transform: scale(1.2);
+        opacity: 1;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    #content {
+      display: none;
+      padding: 40px;
+      text-align: center;
+    }
+
+    #content h2 {
+      font-size: 28px;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loader -->
+  <div id="loader">
+
+    <!-- Company Logo Top-Left -->
+    <div class="company-logo">
+      <img src="/public/images/sparkpair_logo.png" alt="Company Logo" />
+    </div>
+
+    <!-- Software Center Info -->
+    <div class="software-name">Al Jobat</div>
+    <div class="tagline">Your smart business assistant</div>
+
+    <div class="dots">
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="loading-task" id="loadingTask">Initializing workspace...</div>
+  </div>
+
+  <!-- Actual Content -->
+  <div id="content">
+    <h2>Welcome to Al Jobat</h2>
+    <p>All systems are ready. Let’s begin.</p>
+  </div>
+
+  <!-- Script for messages -->
+  <script>
+    const messages = [
+      "Warming up your workspace...",
+      "Preparing the perfect experience...",
+      "Optimizing system performance...",
+      "Finalizing configurations...",
+      "Polishing user interface...",
+      "Aligning data pipelines...",
+      "Calibrating smart components...",
+      "Packing your smart dashboard...",
+      "Dusting off the interface...",
+      "Loading up insights and tools...",
+      "Igniting core modules...",
+      "Assembling powerful features..."
+    ];
+
+    const taskEl = document.getElementById('loadingTask');
+    let index = 0;
+
+    const tipCycle = setInterval(() => {
+      index = (index + 1) % messages.length;
+      taskEl.textContent = messages[index];
+    }, 2500);
+
+    // Fake loading simulation
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        clearInterval(tipCycle);
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('content').style.display = 'block';
+      }, 8000); // simulate data load (8s)
+    });
+  </script>
+
+</body>
+</html>

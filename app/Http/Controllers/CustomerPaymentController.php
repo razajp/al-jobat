@@ -93,7 +93,7 @@ class CustomerPaymentController extends Controller
             'orders',
             'payments',
             'paymentPrograms' => function ($query) {
-                $query->where('balance', '>', 0);
+                $query->where('status', 'Unpaid');
             },
             'paymentPrograms.subCategory.bankAccounts.bank'
         ])
