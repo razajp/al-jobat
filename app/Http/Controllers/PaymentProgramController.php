@@ -34,16 +34,21 @@ class PaymentProgramController extends Controller
                 return $order;
             });
 
+        $ordersArray = [];
+
         foreach($orders as $order) {
-            $order['payment'] = 0;
-            $order['balance'] = 0;
-            if ($order['paymentPrograms'] && $order['paymentPrograms']['payments']) {
-                foreach($order['paymentPrograms']['payments'] as $payment) {
-                    $order['payment'] += $payment['amount'];
-                }
-                $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
-            }
+            $order['paymentPrograms']['customer'] = $order['customer'];
+            $ordersArray[] = $order['paymentPrograms'];
+            // $order['payment'] = 0;
+            // $order['balance'] = 0;
+            // if ($order['paymentPrograms'] && $order['paymentPrograms']['payments']) {
+            //     foreach($order['paymentPrograms']['payments'] as $payment) {
+            //         $order['payment'] += $payment['amount'];
+            //     }
+            //     $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
+            // }
         }
+
         // Fetch and sort payment programs by date and created_at
         $paymentPrograms = PaymentProgram::with('customer.city', 'subCategory')
             ->where('order_no', null)
@@ -57,8 +62,10 @@ class PaymentProgramController extends Controller
             });
 
         // Convert collections to arrays
-        $ordersArray = $orders->toArray();
+        // $ordersArray = $orders->toArray();
         $paymentProgramsArray = $paymentPrograms->toArray();
+
+        // return $ordersArray;
 
         // Combine both arrays manually
         $finalData = array_merge($ordersArray, $paymentProgramsArray);
@@ -217,11 +224,11 @@ class PaymentProgramController extends Controller
     public function updateProgram(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'program_id' => 'required|integer',
+            'program_id' => 'required|integer|exists:payment_programs,id',
             'category' => 'required|string',
             'sub_category' => 'nullable|integer',
             'remarks' => 'nullable|string',
-            'amount' => 'required|numeric',
+            'amount' => 'nullable|integer',
         ]);
 
         if ($validator->fails()) {

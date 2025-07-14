@@ -352,11 +352,6 @@
             selectedArticles.forEach(selectedArticle => {
                 totalOrderAmount += selectedArticle.orderedQuantity * selectedArticle.sales_rate;
             });
-
-            totalOrderAmount = new Intl.NumberFormat('en-US', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1
-            }).format(totalOrderAmount);
         }
 
         function generateDescription() {
@@ -366,7 +361,7 @@
         }
 
         function calculateNetAmount() {
-            let totalAmount = parseFloat(totalOrderAmount);
+            let totalAmount = totalOrderAmount;
             let discount = document.getElementById('discount').value;
             let discountAmount = totalAmount - (totalAmount * (discount / 100));
             netAmount = discountAmount;
@@ -379,8 +374,8 @@
         });
 
         function renderTotals() {
-            totalQuantityDOM.value = totalOrderedQuantity;
-            totalAmountDOM.value = totalOrderAmount;
+            totalQuantityDOM.value = formatNumbersWithDigits(totalOrderedQuantity, 1, 1);
+            totalAmountDOM.value = formatNumbersWithDigits(totalOrderAmount, 1, 1);
         }
 
         const orderListDOM = document.getElementById('order-list');
@@ -415,11 +410,11 @@
         renderList();
 
         function renderFinals() {
-            finalOrderedQuantity.textContent = totalOrderedQuantity;
-            finalOrderAmount.textContent = totalOrderAmount;
+            finalOrderedQuantity.textContent = formatNumbersWithDigits(totalOrderedQuantity, 1, 1);
+            finalOrderAmount.textContent = formatNumbersWithDigits(totalOrderAmount, 1, 1);
             finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
-            finalNetAmount.value = netAmount;
-            finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + parseFloat(finalNetAmount.value.replace(/,/g, '')), 1, 1);
+            finalNetAmount.value = formatNumbersWithDigits(netAmount, 1, 1);
+            finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + netAmount, 1, 1);
         }
 
         function updateInputOrderedArticles() {

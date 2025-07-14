@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
 use App\Models\PaymentProgram;
@@ -25,7 +26,7 @@ class CustomerPaymentController extends Controller
         $payments = CustomerPayment::with("customer")->get();
 
         $payments->each(function ($payment) {
-            if ($payment->cheque()->exists()) {
+            if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
                 $payment['issued'] = 'Issued';
             }
         });
@@ -42,9 +43,18 @@ class CustomerPaymentController extends Controller
             }
         }
 
+        $self_accounts = BankAccount::with('bank')->where('category', 'self')->where('status', 'active')->get();
+        $self_accounts_options = [];
+
+        foreach ($self_accounts as $self_account) {
+            $self_accounts_options[(int)$self_account->id] = [
+                'text' => $self_account->account_title . ' | ' . $self_account->bank->short_title,
+            ];
+        }
+
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        return view("customer-payments.index", compact("payments", "authLayout"));
+        return view("customer-payments.index", compact("payments", "self_accounts_options", "authLayout"));
     }
 
     /**
@@ -258,5 +268,30 @@ class CustomerPaymentController extends Controller
         $customerPayment->save();
 
         return redirect()->back()->with('success', 'Payment cleared successfully.');
+    }
+    
+    public function transfer($id, Request $request) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'bank_account_id' => 'required|integer|exists:bank_accounts,id',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $data = $request->all();
+
+        $data['bank_account_id'] = $request->bank_account_id;
+        $data['remarks'] = $request->remarks;
+
+        $customerPayment = CustomerPayment::findOrFail($id);
+        $customerPayment->update($data);
+        $customerPayment->save();
+
+        return redirect()->back()->with('success', 'Cheque transferd successfully.');
     }
 }

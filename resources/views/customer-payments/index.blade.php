@@ -164,20 +164,17 @@
             console.log(data);
 
             let modalData = {
-                id: 'clearModal',
+                id: 'transferModal',
                 class: 'h-auto',
-                name: 'Clear Payment',
+                name: 'Cheque Transfer',
                 method: 'POST',
-                action: `/customer-payments/${data.id}/clear`,
+                action: `/customer-payments/${data.id}/transfer`,
                 fields: [
                     {
-                        category: 'input',
-                        name: 'clear_date',
-                        label: 'Clear Date',
-                        type: 'date',
-                        min: (data.cheque_date || data.slip_date)?.split('T')[0],
-                        max: new Date().toISOString().split('T')[0],
-                        required: true,
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required showDefault />
+                        `,
                     },
                     {
                         category: 'input',
@@ -189,7 +186,7 @@
                 ],
                 fieldsGridCount: '2',
                 bottomActions: [
-                    {id: 'clear', text: 'Clear', type: 'submit'},
+                    {id: 'transfer', text: 'Transfer', type: 'submit'},
                 ],
             };
             createModal(modalData);
