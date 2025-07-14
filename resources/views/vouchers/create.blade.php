@@ -150,48 +150,75 @@
         }
 
         let selectedDom;
+        let availableChequesArray = [];
         
         function updateSelectedAccount(elem) {
-            let selectedOption = elem.options[elem.selectedIndex];
+            let selectedOption = elem.nextElementSibling.querySelector('li.selected');
             let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
             elem.closest('form').querySelector('input[name="selected"]').value = JSON.stringify(selectedAccount);
+
+            availableChequesArray = selectedAccount.available_cheques;
+
+            fetchChequeNumbers();
         }
 
-        let availableChequesArray = [];
-        let debounceTimer;
+        function fetchChequeNumbers() {
+            const chequeNoSelect = document.querySelector("#cheque_no");
+            const chequeNoDropdown = document.querySelector("ul.optionsDropdown[data-for='cheque_no']");
+
+            const usedChequeNumbers = paymentDetailsArray.map(p => String(p.cheque_no));
+            const filteredCheques = availableChequesArray.filter(chequeNo => !usedChequeNumbers.includes(String(chequeNo)));
+
+            let clutter = `
+                <li data-for="cheque_no" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
+                    -- Select Cheque Number --
+                </li>
+                ${filteredCheques.map(chequeNo => `
+                    <li data-for="cheque_no" data-value="${chequeNo}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                        ${chequeNo}
+                    </li>
+                `).join('')}
+            `;
+
+            chequeNoDropdown.innerHTML = clutter;
+            chequeNoSelect.disabled = false;
+        }
+
+        // let debounceTimer;
 
         function trackChequeNo(elem) {
-            // Clear any existing timer
-            clearTimeout(debounceTimer);
+            // // Clear any existing timer
+            // clearTimeout(debounceTimer);
 
-            // Debounce: wait 500ms after user stops typing
-            debounceTimer = setTimeout(function () {
-                // Get the input value
-                const inputVal = elem.value.trim();
+            // // Debounce: wait 500ms after user stops typing
+            // debounceTimer = setTimeout(function () {
+            //     // Get the input value
+            //     const inputVal = elem.value.trim();
 
-                // Update availableChequesArray
-                availableChequesArray = JSON.parse(elem.closest('form').querySelector('input[name="selected"]').value).available_cheques;
+            //     // Update availableChequesArray
+            //     availableChequesArray = JSON.parse(elem.closest('form').querySelector('input[name="selected"]').value).available_cheques;
 
-                // Check if value is a valid number
-                if (!inputVal || isNaN(inputVal)) {
-                    showError("Please enter a valid cheque number.");
-                    return;
-                }
+            //     // Check if value is a valid number
+            //     if (!inputVal || isNaN(inputVal)) {
+            //         showError("Please enter a valid cheque number.");
+            //         return;
+            //     }
 
-                // Convert input to number for comparison
-                const chequeNo = parseInt(inputVal);
+            //     // Convert input to number for comparison
+            //     const chequeNo = parseInt(inputVal);
 
-                // Validate
-                if (!availableChequesArray.includes(chequeNo)) {
-                    showError("This cheque number is not available.");
-                    elem.closest('form').querySelector('input[name="amount"]').value = '';
-                    elem.closest('form').querySelector('input[name="amount"]').disabled = true;
-                } else {
-                    clearError(); // Clear any previous error
-                    elem.closest('form').querySelector('input[name="amount"]').disabled = false;
-                }
+            //     // Validate
+            //     if (!availableChequesArray.includes(chequeNo)) {
+            //         showError("This cheque number is not available.");
+            //         elem.closest('form').querySelector('input[name="amount"]').value = '';
+            //         elem.closest('form').querySelector('input[name="amount"]').disabled = true;
+            //     } else {
+            //         clearError(); // Clear any previous error
+            //         elem.closest('form').querySelector('input[name="amount"]').disabled = false;
+            //     }
 
-            }, 300); // 500ms debounce
+            // }, 300); // 500ms debounce
         }
 
         function showError(message) {
@@ -309,23 +336,20 @@
                     },
                 );
             } else if (elem.value == 'self_cheque') {
+                console.log(availableChequesArray);
+                
                 fieldsData.push(
                     {
-                        category: 'select',
-                        name: 'bank_account_id',
-                        label: 'Self Account',
-                        required: true,
-                        options: [@json($self_accounts_options)],
-                        onchange: 'updateSelectedAccount(this)',
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="updateSelectedAccount(this)" showDefault />
+                        `,
                     },
                     {
-                        category: 'input',
-                        name: 'cheque_no',
-                        label: 'Cheque No.',
-                        type: 'number',
-                        required: true,
-                        placeholder: 'Enter cheque no.',
-                        oninput: 'trackChequeNo(this)'
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Cheque No." name="cheque_no" id="cheque_no" required onchange="" showDefault />
+                        `,
                     },
                     {
                         category: 'input',
@@ -394,6 +418,7 @@
                     type: 'text',
                     required: true,
                     placeholder: 'Enter remarks',
+                    enterToSubmitListener: true,
                 });
                 
                 let modalData = {
@@ -405,6 +430,7 @@
                     bottomActions: [
                         {id: 'add-payment-details', text: 'Add Payment', onclick: 'addPaymentDetails()'},
                     ],
+                    defaultListener: false,
                 }
 
                 createModal(modalData);

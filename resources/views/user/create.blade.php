@@ -50,7 +50,7 @@
                 />
 
                 {{-- Password --}}
-                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required dataValidate="required|min:4|alphanumeric|lowercase" />
+                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required dataValidate="required|min:2|alphanumeric|lowercase" />
 
                 {{-- Role --}}
                 <x-select label="Role" name="role" id="role" :options="$roleOptions" />

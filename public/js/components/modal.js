@@ -113,7 +113,7 @@ function createModal(data) {
                                 <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
                                 <div class="relative flex gap-3">
-                                    <input id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" min="${field.min}" max="${field.max}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                                    <input onkeydown="${field.enterToSubmitListener ? 'enterToSubmit(event)' : ''}" id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" min="${field.min}" max="${field.max}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
                                     ${buttonHTML}
                                 </div>
                             </div>
@@ -180,6 +180,12 @@ function createModal(data) {
                 clutter += `
                     <div class="col-span-full">
                         <hr class="w-full border-gray-600">
+                    </div>
+                `;
+            } else if (field.category == 'explicitHtml') {
+                clutter += `
+                    <div class="">
+                        ${field.html}
                     </div>
                 `;
             }
@@ -726,6 +732,8 @@ function createModal(data) {
     };
 
     document.addEventListener('keydown', escToClose);
-    document.addEventListener('keydown', enterToSubmit);
+    if (data.defaultListener !== false) {
+        document.addEventListener('keydown', enterToSubmit);
+    }
     document.body.appendChild(modalWrapper);
 }

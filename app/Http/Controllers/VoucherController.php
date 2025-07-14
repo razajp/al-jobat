@@ -63,7 +63,8 @@ class VoucherController extends Controller
             ];
         }
 
-        $self_accounts = BankAccount::where('category', 'self')->with('bank')->get();
+        $self_accounts = BankAccount::where('category', 'self')->with('bank')->get()->makeHidden('creator');
+        
         $self_accounts_options = [];
 
         foreach ($self_accounts as $account) {

@@ -1121,40 +1121,45 @@
 
     function selectKeyDown(event, input) {
         const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
-        const options = dropdown.querySelectorAll("li");
+        const allOptions = dropdown.querySelectorAll("li");
+        const options = Array.from(allOptions).filter(li => !li.classList.contains("hidden"));
 
         function scrollIntoViewIfNeeded(element) {
             if (element && typeof element.scrollIntoView === "function") {
-            element.scrollIntoView({ block: "nearest", inline: "nearest" });
+                element.scrollIntoView({ block: "nearest", inline: "nearest" });
             }
         }
 
         if (event.key === "ArrowDown") {
             event.preventDefault();
-            const selected = dropdown.querySelector("li.selected");
-            let next = selected ? selected.nextElementSibling : options[0];
+            const selected = dropdown.querySelector("li.selected:not(.hidden)");
+            let next = selected
+                ? options[options.indexOf(selected) + 1]
+                : options[0];
             if (next) {
-            options.forEach(li => li.classList.remove("selected"));
-            next.classList.add("selected");
-            input.value = next.textContent.trim();
-            scrollIntoViewIfNeeded(next);
+                options.forEach(li => li.classList.remove("selected"));
+                next.classList.add("selected");
+                input.value = next.textContent.trim();
+                scrollIntoViewIfNeeded(next);
             }
         } else if (event.key === "ArrowUp") {
             event.preventDefault();
-            const selected = dropdown.querySelector("li.selected");
-            let prev = selected ? selected.previousElementSibling : options[options.length - 1];
+            const selected = dropdown.querySelector("li.selected:not(.hidden)");
+            let prev = selected
+                ? options[options.indexOf(selected) - 1]
+                : options[options.length - 1];
             if (prev) {
-            options.forEach(li => li.classList.remove("selected"));
-            prev.classList.add("selected");
-            input.value = prev.textContent.trim();
-            scrollIntoViewIfNeeded(prev);
+                options.forEach(li => li.classList.remove("selected"));
+                prev.classList.add("selected");
+                input.value = prev.textContent.trim();
+                scrollIntoViewIfNeeded(prev);
             }
         } else if (event.key === "Enter") {
             event.preventDefault();
-            const selected = dropdown.querySelector("li.selected");
+            const selected = dropdown.querySelector("li.selected:not(.hidden)");
             if (selected) {
-            selectThisOption(selected);
-            input.blur();
+                selectThisOption(selected);
+                input.blur();
             }
         } else if (event.key === "Escape") {
             input.blur();
