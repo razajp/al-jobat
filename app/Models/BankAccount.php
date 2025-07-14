@@ -92,7 +92,7 @@ class BankAccount extends Model
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $customerPaymetns = CustomerPayment::where('bank_account_id', $this->id);
-        $supplierPaymetns = SupplierPayment::where('bank_account_id', $this->id);
+        $supplierPaymetns = SupplierPayment::where('bank_account_id', $this->id)->whereNotNull('voucher_id');
     
         // Handle different date scenarios
         if ($fromDate && $toDate) {
@@ -114,10 +114,10 @@ class BankAccount extends Model
         }
     
         // Calculate totals
-        $totalPayments = $customerPaymetns->sum('netAmount') ?? 0;
+        $totalPayments = $customerPaymetns->sum('amount') ?? 0;
         $totalPays = $supplierPaymetns->sum('amount') ?? 0;
 
-        $balance = $totalPays - $totalPayments;
+        $balance = $totalPayments - $totalPays;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }    

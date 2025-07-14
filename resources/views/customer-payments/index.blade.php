@@ -159,6 +159,41 @@
             };
             createModal(modalData);
         }
+
+        function generateTransferModal(data) {
+            console.log(data);
+
+            let modalData = {
+                id: 'clearModal',
+                class: 'h-auto',
+                name: 'Clear Payment',
+                method: 'POST',
+                action: `/customer-payments/${data.id}/clear`,
+                fields: [
+                    {
+                        category: 'input',
+                        name: 'clear_date',
+                        label: 'Clear Date',
+                        type: 'date',
+                        min: (data.cheque_date || data.slip_date)?.split('T')[0],
+                        max: new Date().toISOString().split('T')[0],
+                        required: true,
+                    },
+                    {
+                        category: 'input',
+                        name: 'remarks',
+                        label: 'Remarks',
+                        type: 'text',
+                        placeholder: 'Enter remarks',
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'clear', text: 'Clear', type: 'submit'},
+                ],
+            };
+            createModal(modalData);
+        }
         
         function generateContextMenu(e) {
             e.preventDefault();
@@ -170,12 +205,19 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
+                actions: [],
             };
             
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
-                contextMenuData.actions = [
+                contextMenuData.actions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                ];
+                );
+            }
+            
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.issued == null) {
+                contextMenuData.actions.push(
+                    {id: 'transfer', text: 'Transfer', onclick: `generateTransferModal(${JSON.stringify(data.data)})`},
+                );
             }
 
             createContextMenu(contextMenuData);

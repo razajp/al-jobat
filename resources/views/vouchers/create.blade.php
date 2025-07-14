@@ -155,12 +155,28 @@
         function updateSelectedAccount(elem) {
             let selectedOption = elem.nextElementSibling.querySelector('li.selected');
             let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+            console.log(selectedAccount);
+            
 
             elem.closest('form').querySelector('input[name="selected"]').value = JSON.stringify(selectedAccount);
 
             availableChequesArray = selectedAccount.available_cheques;
 
-            fetchChequeNumbers();
+            if (elem.closest('form').querySelector('input[name="cheque_no"]')) {
+                fetchChequeNumbers();
+            }
+            
+            const amountInput = elem.closest('form').querySelector('input[name="amount"]');
+
+            const matchingPayments = paymentDetailsArray.filter(item => 
+                item.bank_account_id == selectedAccount.id
+            );
+
+            const totalAmount = matchingPayments.reduce((sum, item) => {
+                return sum + parseFloat(item.amount || 0);
+            }, 0);
+
+            amountInput.dataset.validate += `|max:${selectedAccount.balance - totalAmount}`;
         }
 
         function fetchChequeNumbers() {
@@ -185,61 +201,6 @@
             chequeNoSelect.disabled = false;
         }
 
-        // let debounceTimer;
-
-        function trackChequeNo(elem) {
-            // // Clear any existing timer
-            // clearTimeout(debounceTimer);
-
-            // // Debounce: wait 500ms after user stops typing
-            // debounceTimer = setTimeout(function () {
-            //     // Get the input value
-            //     const inputVal = elem.value.trim();
-
-            //     // Update availableChequesArray
-            //     availableChequesArray = JSON.parse(elem.closest('form').querySelector('input[name="selected"]').value).available_cheques;
-
-            //     // Check if value is a valid number
-            //     if (!inputVal || isNaN(inputVal)) {
-            //         showError("Please enter a valid cheque number.");
-            //         return;
-            //     }
-
-            //     // Convert input to number for comparison
-            //     const chequeNo = parseInt(inputVal);
-
-            //     // Validate
-            //     if (!availableChequesArray.includes(chequeNo)) {
-            //         showError("This cheque number is not available.");
-            //         elem.closest('form').querySelector('input[name="amount"]').value = '';
-            //         elem.closest('form').querySelector('input[name="amount"]').disabled = true;
-            //     } else {
-            //         clearError(); // Clear any previous error
-            //         elem.closest('form').querySelector('input[name="amount"]').disabled = false;
-            //     }
-
-            // }, 300); // 500ms debounce
-        }
-
-        function showError(message) {
-            // You can show error in any way — e.g., a span or alert
-            const errorBox = document.getElementById('cheque_no-error');
-            if (errorBox) {
-                errorBox.textContent = message;
-                errorBox.style.display = 'block';
-            } else {
-                alert(message); // fallback
-            }
-        }
-        
-        function clearError() {
-            const errorBox = document.getElementById('cheque_no-error');
-            if (errorBox) {
-                errorBox.textContent = '';
-                errorBox.style.display = 'none';
-            }
-        }
-
         function trackMethodState(elem) {
             let fieldsData = [];
 
@@ -260,7 +221,7 @@
                         label: 'Cheque',
                         required: true,
                         options: [@json($cheques_options)],
-                        onchange: 'trackChequeState(this)'
+                        onchange: 'trackCSelfhequeState(this)'
                     },
                     {
                         category: 'input',
@@ -348,16 +309,14 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select class="" label="Cheque No." name="cheque_no" id="cheque_no" required onchange="" showDefault />
+                            <x-select class="" label="Cheque No." name="cheque_no" id="cheque_no" required showDefault />
                         `,
                     },
                     {
-                        category: 'input',
-                        name: 'amount',
-                        label: 'Amount',
-                        type: 'number',
-                        required: true,
-                        placeholder: 'Enter amount',
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
+                        `,
                     },
                     {
                         category: 'input',
@@ -368,12 +327,10 @@
             } else if (elem.value == 'atm') {
                 fieldsData.push(
                     {
-                        category: 'select',
-                        name: 'bank_account_id',
-                        label: 'Self Account',
-                        required: true,
-                        options: [@json($self_accounts_options)],
-                        onchange: 'updateSelectedAccount(this)',
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="updateSelectedAccount(this)" showDefault />
+                        `,
                     },
                     {
                         category: 'input',
@@ -384,12 +341,10 @@
                         placeholder: 'Enter reff no.',
                     },
                     {
-                        category: 'input',
-                        name: 'amount',
-                        label: 'Amount',
-                        type: 'number',
-                        required: true,
-                        placeholder: 'Enter amount',
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
+                        `,
                     },
                     {
                         category: 'input',

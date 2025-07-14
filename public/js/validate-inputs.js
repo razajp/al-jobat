@@ -34,6 +34,14 @@ function validateInput(input) {
             }
         }
 
+        if (rule.startsWith('max:')) {
+            const max = parseInt(rule.split(':')[1]);
+            if (parseFloat(value) > max) {
+                error = `Maximum allowed value is ${max}.`;
+                value = max; // optionally reset to max value
+            }
+        }
+
         if (rule.startsWith('unique:')) {
             const field = rule.split(':')[1];
             if (typeof window[field + 's'] !== 'undefined') {

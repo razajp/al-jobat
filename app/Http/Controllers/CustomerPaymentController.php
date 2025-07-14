@@ -175,8 +175,10 @@ class CustomerPaymentController extends Controller
         if (isset($data['program_id']) && $data['program_id']) {
             $program = PaymentProgram::find($data['program_id']);
             if ($program && $data['method'] == 'program') {
-                $data['supplier_id'] = $program->sub_category_id;
-                SupplierPayment::create($data);
+                if ($program['category'] == 'supplier') {
+                    $data['supplier_id'] = $program->sub_category_id;
+                    SupplierPayment::create($data);
+                }
             }
         }
 
