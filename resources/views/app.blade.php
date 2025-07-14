@@ -298,7 +298,7 @@
             let formatted = new Intl.NumberFormat('en-US').format(Math.abs(number));
 
             if (number < 0) {
-                return `<span style="color:red !important">-(${formatted})</spanp>`;
+                return `<span style="color:red !important" class="font-medium">-(${formatted})</spanp>`;
             }
             return formatted;
         }
@@ -311,7 +311,7 @@
             }).format(Math.abs(number));
 
             if (number < 0) {
-                return `<span style="color:red !important">-(${formatted})</span>`;
+                return `<span style="color:red !important" class="font-medium">-(${formatted})</span>`;
             }
             return formatted;
         }

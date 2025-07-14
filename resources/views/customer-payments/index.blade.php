@@ -159,38 +159,6 @@
             };
             createModal(modalData);
         }
-
-        function generateTransferModal(data) {
-            console.log(data);
-
-            let modalData = {
-                id: 'transferModal',
-                class: 'h-auto',
-                name: 'Cheque Transfer',
-                method: 'POST',
-                action: `/customer-payments/${data.id}/transfer`,
-                fields: [
-                    {
-                        category: 'explicitHtml',
-                        html: `
-                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required showDefault />
-                        `,
-                    },
-                    {
-                        category: 'input',
-                        name: 'remarks',
-                        label: 'Remarks',
-                        type: 'text',
-                        placeholder: 'Enter remarks',
-                    },
-                ],
-                fieldsGridCount: '2',
-                bottomActions: [
-                    {id: 'transfer', text: 'Transfer', type: 'submit'},
-                ],
-            };
-            createModal(modalData);
-        }
         
         function generateContextMenu(e) {
             e.preventDefault();
@@ -208,12 +176,6 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 contextMenuData.actions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                );
-            }
-            
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.issued == null) {
-                contextMenuData.actions.push(
-                    {id: 'transfer', text: 'Transfer', onclick: `generateTransferModal(${JSON.stringify(data.data)})`},
                 );
             }
 
@@ -249,12 +211,6 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 modalData.bottomActions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                );
-            }
-            
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.issued == null) {
-                modalData.bottomActions.push(
-                    {id: 'transfer', text: 'Transfer', onclick: `generateTransferModal(${JSON.stringify(data.data)})`},
                 );
             }
 

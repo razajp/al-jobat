@@ -221,7 +221,7 @@
                         label: 'Cheque',
                         required: true,
                         options: [@json($cheques_options)],
-                        onchange: 'trackCSelfhequeState(this)'
+                        onchange: 'trackChequeState(this)'
                     },
                     {
                         category: 'input',

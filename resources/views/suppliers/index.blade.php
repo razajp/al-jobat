@@ -128,7 +128,7 @@
                 details: {
                     'Urdu Title': item.urdu_title,
                     'Phone': item.phone_number,
-                    'Balance': item.balance,
+                    'Balance': formatNumbersWithDigits(item.balance, 1, 1),
                 },
                 user: {
                     id: item.user.id,
@@ -184,7 +184,7 @@
                     'Urud Title': data.details['Urdu Title'],
                     'Username': data.user.username,
                     'Phone Number': data.details['Phone'],
-                    'Balance': formatNumbersWithDigits(data.details['Balance'], 1, 1),
+                    'Balance': data.details['Balance'],
                 },
                 chips: data.categories,
                 user: data.user,
