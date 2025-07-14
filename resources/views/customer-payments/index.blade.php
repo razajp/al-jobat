@@ -159,6 +159,77 @@
             };
             createModal(modalData);
         }
+
+        function generatePartialClearModal(data) {
+            console.log(data);
+
+            let modalData = {
+                id: 'partialClearModal',
+                class: 'h-auto',
+                name: 'Clear Payment',
+                method: 'POST',
+                action: `/customer-payments/${data.id}/clear`,
+                fields: [
+                    {
+                        category: 'input',
+                        name: 'clear_date',
+                        label: 'Clear Date',
+                        type: 'date',
+                        min: (data.cheque_date || data.slip_date)?.split('T')[0],
+                        max: new Date().toISOString().split('T')[0],
+                        required: true,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
+                        `,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required/>
+                        `,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff. no." required/>
+                        `,
+                    },
+                    {
+                        category: 'input',
+                        name: 'remarks',
+                        label: 'Remarks',
+                        type: 'text',
+                        placeholder: 'Enter remarks',
+                        full: true
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'clear', text: 'Clear', type: 'submit'},
+                ],
+            };
+            createModal(modalData);
+
+            let bankAccounts = data.cheque?.supplier?.bank_accounts;
+            let form = document.querySelector('#partialClearModal');
+            let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
+            let bankAccountDom = form.querySelector('ul[data-for="bank_account_id"]');
+            
+            bankAccountInpDom.disabled = false;
+            bankAccountInpDom.value = '-- Select bank account --';
+            options = `
+                <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected>-- Select bank account --</li>
+            `;
+            bankAccounts.forEach(bankAccount => {
+                options += `
+                    <li data-for="bank_account_id" data-value="${bankAccount.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">${bankAccount.account_title}</li>
+                `;
+            });
+            bankAccountDom.innerHTML = options;
+        }
         
         function generateContextMenu(e) {
             e.preventDefault();
@@ -211,6 +282,7 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 modalData.bottomActions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                    {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                 );
             }
 

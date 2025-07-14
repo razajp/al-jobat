@@ -7,6 +7,7 @@ use App\Models\Customer;
 use App\Models\CustomerPayment;
 use App\Models\PaymentProgram;
 use App\Models\Setup;
+use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -23,7 +24,7 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = CustomerPayment::with("customer")->get();
+        $payments = CustomerPayment::with("customer", 'cheque')->get();
 
         $payments->each(function ($payment) {
             if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
@@ -36,6 +37,10 @@ class CustomerPaymentController extends Controller
                 if ($payment['type'] == 'cheque' || $payment['type'] == 'slip'){
                     $payment['clear_date'] = 'Pending';
                 }
+            }
+
+            if ($payment['cheque'] && $payment['cheque']['supplier_id']) {
+                $payment['cheque']['supplier'] = Supplier::with('bankAccounts')->find($payment['cheque']['supplier_id']);
             }
 
             if ($payment['remarks'] == null) {

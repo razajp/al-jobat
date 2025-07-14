@@ -296,10 +296,6 @@
         function formatNumbersDigitLess(number) {
             number = Number(number);
             let formatted = new Intl.NumberFormat('en-US').format(Math.abs(number));
-
-            if (number < 0) {
-                return `<span style="color:red !important" class="font-medium">-(${formatted})</spanp>`;
-            }
             return formatted;
         }
 
@@ -309,10 +305,6 @@
                 maximumFractionDigits: maxFraction,
                 minimumFractionDigits: minFraction
             }).format(Math.abs(number));
-
-            if (number < 0) {
-                return `<span style="color:red !important" class="font-medium">-(${formatted})</span>`;
-            }
             return formatted;
         }
     </script>
