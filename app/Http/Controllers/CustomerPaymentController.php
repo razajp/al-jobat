@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
+use App\Models\PartialClear;
 use App\Models\PaymentProgram;
 use App\Models\Setup;
 use App\Models\Supplier;
@@ -273,6 +274,33 @@ class CustomerPaymentController extends Controller
         $customerPayment->save();
 
         return redirect()->back()->with('success', 'Payment cleared successfully.');
+    }
+
+    public function partialClear($id, Request $request) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'clear_date' => 'required|date',
+            'bank_account_id' => 'required|integer|exists:bank_accounts,id',
+            'amount' => 'required|integer',
+            'reff_no' => 'required|string',
+            'remarks' => 'nullable|string',
+        ]);
+
+        return $request;
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $data = $request->all();
+        $data['payment_id'] = $id;
+
+        PartialClear::create($data);
+
+        return redirect()->back()->with('success', 'Payment partial cleared successfully.');
     }
     
     public function transfer($id, Request $request) {
