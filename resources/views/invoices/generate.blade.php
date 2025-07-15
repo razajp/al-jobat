@@ -5,6 +5,68 @@
 @php
     $invoiceType = Auth::user()->invoice_type;
 @endphp
+
+    @php
+        $searchFields = [
+            "Customer Name" => [
+                "id" => "customer_name",
+                "type" => "text",
+                "placeholder" => "Enter customer name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "customer_name",
+            ],
+            "Category" => [
+                "id" => "category",
+                "type" => "select",
+                "options" => [
+                            'self' => ['text' => 'Self'],
+                            'customer' => ['text' => 'Customer'],
+                            'supplier' => ['text' => 'Supplier'],
+                        ],
+                "onchange" => "runDynamicFilter()",
+                "dataFilterPath" => "details.Category",
+            ],
+            "Name" => [
+                "id" => "name",
+                "type" => "text",
+                "placeholder" => "Enter name",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "details.Name",
+            ],
+            "Account No" => [
+                "id" => "account_no",
+                "type" => "text",
+                "placeholder" => "Enter account no",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "accountNo",
+            ],
+            "Bank" => [
+                "id" => "bank",
+                "type" => "text",
+                "placeholder" => "Enter bank",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "bank",
+            ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'active' => ['text' => 'Active'],
+                    'in_active' => ['text' => 'In Active'],
+                ],
+                'dataFilterPath' => 'status',
+            ],
+            "Date Range" => [
+                "id" => "date_range_start",
+                "type" => "date",
+                "id2" => "date_range_end",
+                "type2" => "date",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "date",
+            ]
+        ];
+    @endphp
+
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-[100]">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
@@ -56,7 +118,6 @@
                     $(btn).prop("disabled", false);
                 }
             });
-
 
             moveHighlight(btn, btnType);
         }
@@ -329,6 +390,21 @@
                     id: 'modalForm',
                     class: 'h-[45rem] max-w-6xl',
                     name: 'Customers',
+                    searchFilter: {
+                        fieldsHtml: `
+                            @foreach ($searchFields as $search_field => $value)
+                                @if ($value['type'] == "select")
+                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
+                                @elseif ($value['type'] == "text")
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                                @elseif (isset($value['type2']) && isset($value['id2']))
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                @else
+                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                                @endif
+                            @endforeach
+                        `,
+                    },
                     table: {
                         name: 'Customers',
                         headers: [

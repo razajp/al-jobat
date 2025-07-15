@@ -2,7 +2,7 @@
 
 @if ($includesDropdown)
     <!-- Main Icon Button -->
-    <button
+    <button onclick="openDropDown(event, this)"
         class="nav-link {{ strtolower($label) }} dropdown-trigger text-[var(--text-color)] p-3 rounded-[41.5%] group-hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative">
         @if ($icon)
             <i class="{{ $icon }} group-hover:text-[var(--primary-color)]"></i>
@@ -17,7 +17,7 @@
 
     <!-- Dropdown Menu -->
     <div
-        class="dropdownMenu text-sm absolute top-0 left-16 hidden group-hover:block border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
+        class="dropdownMenu text-sm absolute top-0 left-16 hidden border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl opacity-0 transform scale-95 transition-all duration-300 ease-in-out z-50">
         <ul class="p-2">
             @foreach ($items as $item)
                 @if ($item['type'] === 'group')

@@ -312,11 +312,20 @@
                     ]" />
                 </div>
             @endif
+
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+                <div class="relative group">
+                    <x-nav-link-item label="Productions" icon="fas fa-users" includesDropdown :items="[
+                        ['type' => 'link', 'href' => route('productions.index'), 'label' => 'Show Productions'],
+                        ['type' => 'link', 'href' => route('productions.create'), 'label' => 'Add Production'],
+                    ]" />
+                </div>
+            @endif
         </nav>
 
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
             <!-- User Avatar -->
-            <button type="button"
+            <button type="button" onclick="openDropDown(event, this)"
                 class="w-10 h-10 ml-1.5 mb-1 flex items-center justify-center rounded-[41.5%] cursor-pointer transition-all duration-300 ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
                 @if (Auth::user()->profile_picture == 'default_avatar.png')
                     <img src="{{ asset('images/default_avatar.png') }}" class="w-full h-full object-cover"

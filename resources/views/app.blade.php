@@ -460,47 +460,35 @@
                 notificationElem.remove();
             });
         }
-        
-        let dropdownMenus, dropdownTriggers;
 
-        // drop down toggle
-        function setDropdownListeners(params) {
-            dropdownTriggers = document.querySelectorAll('.dropdown-trigger');
-            dropdownMenus = document.querySelectorAll('.dropdownMenu');
-        
-            dropdownTriggers.forEach((trigger, index) => {
-                const dropdownMenu = dropdownMenus[index];
-        
-                trigger.onclick = (e) => {
-                    e.stopPropagation();
-        
-                    if (dropdownMenu.classList.contains('hidden')) {
-                        dropdownMenus.forEach(menu => {
-                            menu.classList.remove('opacity-100', "scale-in");
-                            menu.classList.add('opacity-0', "scale-out");
-                            menu.classList.add('hidden');
-                        });
+        function openDropDown(e, trigger) {
+            e.stopPropagation();
 
-                        dropdownMenu.classList.remove('hidden');
-                        setTimeout(() => {
-                            dropdownMenu.classList.add('opacity-100', "scale-in");
-                            dropdownMenu.classList.remove('opacity-0', "scale-out");
-                        }, 10);
-                    } else {
-                        dropdownMenu.classList.remove('opacity-100', "scale-in");
-                        dropdownMenu.classList.add('opacity-0', "scale-out");
-                        setTimeout(() => {
-                            dropdownMenu.classList.add('hidden');
-                        }, 300);
-                    }
-                }
-            });
+            const relatedDropDownMenu = trigger.nextElementSibling;
+
+            if (relatedDropDownMenu.classList.contains('hidden')) {
+                closeAllDropdowns(relatedDropDownMenu); // Pass the one to skip
+
+                relatedDropDownMenu.classList.remove('hidden');
+                setTimeout(() => {
+                    relatedDropDownMenu.classList.add('opacity-100', "scale-in");
+                    relatedDropDownMenu.classList.remove('opacity-0', "scale-out");
+                }, 10);
+            } else {
+                relatedDropDownMenu.classList.remove('opacity-100', "scale-in");
+                relatedDropDownMenu.classList.add('opacity-0', "scale-out");
+                setTimeout(() => {
+                    relatedDropDownMenu.classList.add('hidden');
+                }, 300);
+            }
         }
-        setDropdownListeners();
 
-        function closeAllDropdowns() {
+        function closeAllDropdowns(skipElement = null) {
+            const dropdownMenus = document.querySelectorAll('.dropdownMenu');
+
             dropdownMenus.forEach(menu => {
-                // scale-100 scale-95
+                if (menu === skipElement) return; // Skip the one we want to keep open
+
                 menu.classList.remove('opacity-100', 'scale-in');
                 menu.classList.add('opacity-0', 'scale-out');
                 setTimeout(() => {

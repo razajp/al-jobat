@@ -36,7 +36,7 @@
                 <!-- Search Input -->
                 <div class="search-input">
                     {{-- <x-input name="search_box" id="search_box" oninput="searchData(this.value)" placeholder="🔍 Search {{ $heading }}..." withButton btnId="filter-btn" btnClass="dropdown-trigger" btnText='<i class="text-xs fa-solid fa-filter"></i>' /> --}}
-                    <button id="filter-btn" type="button"
+                    <button id="filter-btn" type="button" onclick="openDropDown(event, this)"
                         class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
                         <i class="text-xs fa-solid fa-filter"></i> Search & Filter
                     </button>

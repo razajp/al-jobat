@@ -86,8 +86,54 @@ function createModal(data) {
     if (data.name) {
         clutter += `
             <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
-                <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
+                <div class="flex justify-between">
+                    <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
+                    ${data.searchFilter ? renderSearchFilter() : ''}
+                </div>
                 ${detailsHTML}
+        `;
+    }
+
+    function renderSearchFilter() {
+        return `
+            <div id="search-form" class="search-box shrink-0">
+                <!-- Search Input -->
+                <div class="search-input">
+                    <button id="filter-btn" type="button" onclick="openDropDown(event, this)"
+                        class="dropdown-trigger bg-[var(--primary-color)] px-3 py-2.5 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer flex gap-2 items-center font-semibold">
+                        <i class="text-xs fa-solid fa-filter"></i> Search & Filter
+                    </button>
+                    <div class="dropdownMenu flex flex-col text-sm fixed top-2 bottom-2 right-2 border border-gray-600 w-sm bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-xl rounded-2xl transition-all duration-300 ease-in-out z-[100] p-4 opacity-0 hidden">
+                        <div class="header flex justify-between items-center p-1">
+                            <h6 class="text-2xl text-[var(--text-color)] font-semibold leading-none ml-1">Search & Filter</h6>
+                            <div onclick="closeAllDropdowns()" class="text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
+                                <button type="button" class="z-10 text-gray-400 hover:text-gray-600 hover:scale-[0.95] transition-all duration-300 ease-in-out cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6" style="display: inline">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <hr class="border-gray-600 my-4 w-full">
+                        <div class="grow overflow-y-auto my-scrollbar-2 p-1">
+                            <div class="grid grid-cols-1 gap-4">
+                                ${data.searchFilter.fieldsHtml}
+                            </div>
+                        </div>
+                        <hr class="border-gray-600 my-4 w-full">
+                        <div class="flex gap-4 p-1">
+                            <button type="button" onclick="closeAllDropdowns()"
+                                class="flex-1 px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                                Cancel
+                            </button>
+                            <button type="button" onclick="clearAllSearchFields()"
+                                class="flex-1 px-4 py-2 bg-[var(--bg-error)] border border-[var(--bg-error)] text-[var(--text-error)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-error)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                                Clear
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
     }
 
@@ -299,7 +345,7 @@ function createModal(data) {
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
-                <div id="table-body" class="overflow-y-auto my-scrollbar-2 h-full">
+                <div id="table-body" class="search_container overflow-y-auto my-scrollbar-2 h-full">
                     ${bodyHTML}
                 </div>
             </div>

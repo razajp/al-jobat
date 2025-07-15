@@ -75,7 +75,7 @@
 
                 <div class="details h-full z-40">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
-                        <div class="card_container py-0 p-3 h-full flex flex-col">
+                        <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-left pl-5 col-span-2">Customer</div>
                                 <div class="text-left pl-5">Urdu Title</div>
