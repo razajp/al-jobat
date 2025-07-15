@@ -168,7 +168,7 @@
                 class: 'h-auto',
                 name: 'Clear Payment',
                 method: 'POST',
-                action: `/customer-payments/${data.id}/clear`,
+                action: `/customer-payments/${data.id}/partial-clear`,
                 fields: [
                     {
                         category: 'input',
@@ -182,7 +182,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
+                            <x-select class="" label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
                         `,
                     },
                     {
@@ -224,6 +224,8 @@
                 <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected>-- Select bank account --</li>
             `;
             bankAccounts.forEach(bankAccount => {
+                console.log(bankAccount);
+                
                 options += `
                     <li data-for="bank_account_id" data-value="${bankAccount.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">${bankAccount.account_title}</li>
                 `;
@@ -247,6 +249,7 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 contextMenuData.actions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                    {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                 );
             }
 

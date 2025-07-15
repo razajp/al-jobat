@@ -71,6 +71,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     
     Route::resource('customer-payments', CustomerPaymentController::class);
     Route::post('customer-payments/{id}/clear', [CustomerPaymentController::class, 'clear'])->name('customer-payments.clear');
+    Route::post('customer-payments/{id}/partial-clear', [CustomerPaymentController::class, 'partialClear'])->name('customer-payments.partial-clear');
     Route::post('customer-payments/{id}/transfer', [CustomerPaymentController::class, 'transfer'])->name('customer-payments.transfer');
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
