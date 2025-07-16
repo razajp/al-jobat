@@ -25,7 +25,7 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = CustomerPayment::with("customer", 'cheque')->get();
+        $payments = CustomerPayment::with("customer", 'cheque', 'partialRecord')->get();
 
         $payments->each(function ($payment) {
             if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
@@ -35,13 +35,26 @@ class CustomerPaymentController extends Controller
 
         foreach ($payments as $payment) {
             if ($payment['clear_date'] == null) {
-                if ($payment['type'] == 'cheque' || $payment['type'] == 'slip'){
+                if ($payment['type'] == 'cheque' || $payment['type'] == 'slip') {
                     $payment['clear_date'] = 'Pending';
                 }
             }
 
             if ($payment['cheque'] && $payment['cheque']['supplier_id']) {
                 $payment['cheque']['supplier'] = Supplier::with('bankAccounts')->find($payment['cheque']['supplier_id']);
+            }
+
+            if (!empty($payment['partialRecord'])) {
+                $clearAmount = collect($payment['partialRecord'])->sum('amount');
+                $payment['clear_amount'] = $clearAmount;
+
+                if (floatval($clearAmount) >= floatval($payment['amount'])) {
+                    // Get last partial record's clear date
+                    $lastPartial = collect($payment['partialRecord'])->last();
+                    if (isset($lastPartial['clear_date'])) {
+                        $payment['clear_date'] = $lastPartial['clear_date'];
+                    }
+                }
             }
 
             if ($payment['remarks'] == null) {
@@ -276,7 +289,7 @@ class CustomerPaymentController extends Controller
         return redirect()->back()->with('success', 'Payment cleared successfully.');
     }
 
-    public function partialClear($id, Request $request) {
+    public function partialClear(Request $request, $id) {
         if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
@@ -288,8 +301,6 @@ class CustomerPaymentController extends Controller
             'reff_no' => 'required|string',
             'remarks' => 'nullable|string',
         ]);
-
-        return $request;
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator);

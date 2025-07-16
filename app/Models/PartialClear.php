@@ -12,11 +12,13 @@ class PartialClear extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date',
+        'payment_id',
+        'clear_date',
         'bank_account_id',
         'amount',
         'reff_no',
         'remarks',
+        'creator_id',
     ];
 
     protected $hidden = [
@@ -26,7 +28,7 @@ class PartialClear extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'clear_date' => 'date',
     ];
 
     protected static function booted()

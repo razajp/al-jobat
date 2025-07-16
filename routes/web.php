@@ -15,6 +15,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\PaymentProgramController;
+use App\Http\Controllers\PaymetnTransferController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
@@ -73,6 +74,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('customer-payments/{id}/clear', [CustomerPaymentController::class, 'clear'])->name('customer-payments.clear');
     Route::post('customer-payments/{id}/partial-clear', [CustomerPaymentController::class, 'partialClear'])->name('customer-payments.partial-clear');
     Route::post('customer-payments/{id}/transfer', [CustomerPaymentController::class, 'transfer'])->name('customer-payments.transfer');
+
+    Route::resource('payment-transfer', PaymetnTransferController::class);
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
     

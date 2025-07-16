@@ -91,4 +91,9 @@ class CustomerPayment extends Model
     {
         return $this->hasOne(SupplierPayment::class, "slip_id");
     }
+    
+    public function partialRecord()
+    {
+        return $this->hasMany(PartialClear::class, "payment_id");
+    }
 }

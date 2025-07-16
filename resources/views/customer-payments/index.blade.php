@@ -221,7 +221,7 @@
             bankAccountInpDom.disabled = false;
             bankAccountInpDom.value = '-- Select bank account --';
             options = `
-                <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected>-- Select bank account --</li>
+                <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected "">-- Select bank account --</li>
             `;
             bankAccounts.forEach(bankAccount => {
                 console.log(bankAccount);
@@ -249,6 +249,11 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 contextMenuData.actions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                );
+            }
+            
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null && data.data.issued == 'Issued') {
+                contextMenuData.actions.push(
                     {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                 );
             }
@@ -276,6 +281,7 @@
                     ...(data.data.cheque_date && { 'Cheque Date': formatDate(data.data.cheque_date) }),
                     ...(data.data.slip_date && { 'Slip Date': formatDate(data.data.slip_date) }),
                     ...(data.data.clear_date && { 'Clear Date': formatDate(data.data.clear_date) }),
+                    ...(data.data.clear_amount && { 'Clear Amount': formatNumbersWithDigits(data.data.clear_amount, 1, 1) }),
                     ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued || 'Not Issue' }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
@@ -285,6 +291,11 @@
             if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
                 modalData.bottomActions.push(
                     {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                );
+            }
+
+            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null && data.data.issued == 'Issued') {
+                modalData.bottomActions.push(
                     {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                 );
             }

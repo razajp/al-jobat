@@ -10,7 +10,7 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
-        <x-progress-bar :steps="['Select Work', 'Upload Image']" :currentStep="1" />
+        <x-progress-bar :steps="['Enter Details', 'Upload Image']" :currentStep="1" />
     </div>
 
     <!-- Form -->

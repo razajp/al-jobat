@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('partial_clears', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('paymetn_id')->constrained('customer_payment')->onDelete('cascade');
-            $table->date('date');
+            $table->foreignId('payment_id')->constrained('customer_payments')->onDelete('cascade');
+            $table->date('clear_date');
             $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->integer('amount');
             $table->string('reff_no')->unique();
             $table->string('remarks')->nullable();
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }

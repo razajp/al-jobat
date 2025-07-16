@@ -295,7 +295,7 @@
 
         function formatNumbersDigitLess(number) {
             number = Number(number);
-            let formatted = new Intl.NumberFormat('en-US').format(Math.abs(number));
+            let formatted = new Intl.NumberFormat('en-US').format(number);
             return formatted;
         }
 
@@ -304,7 +304,7 @@
             let formatted = new Intl.NumberFormat('en-US', {
                 maximumFractionDigits: maxFraction,
                 minimumFractionDigits: minFraction
-            }).format(Math.abs(number));
+            }).format(number);
             return formatted;
         }
     </script>
