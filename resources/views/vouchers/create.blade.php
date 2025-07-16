@@ -12,6 +12,87 @@
             'adjustment' => ['text' => 'Adjustment'],
         ];
     @endphp
+
+    <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-[100]">
+        <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
+            <!-- Highlight rectangle -->
+            <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
+            
+            <!-- Buttons -->
+            <button
+                id="supplierBtn"
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setVoucherType(this, 'Supplier')"
+            >
+                <div class="hidden md:block">Supplier</div>
+                <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
+            </button>
+            <button
+                id="selfAccountBtn"
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setVoucherType(this, 'Self Account')"
+            >
+                <div class="hidden md:block">Self Account</div>
+                <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
+            </button>
+        </div>
+    </div>
+
+    {{-- <script>
+        let btnTypeGlobal = "order";
+
+        function setVoucherType(btn, btnType) {
+            // check if its already selected
+            if (btnTypeGlobal == btnType) {
+                return;
+            }
+
+            $.ajax({
+                url: "/set-invoice-type",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    invoice_type: btnType
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to update invoice type.");
+                    $(btn).prop("disabled", false);
+                }
+            });
+
+            moveHighlight(btn, btnType);
+        }
+
+        function moveHighlight(btn, btnType) {
+            const highlight = document.getElementById("highlight");
+            const rect = btn.getBoundingClientRect();
+            
+            const parentRect = btn.parentElement.getBoundingClientRect();
+        
+            // Move and resize the highlight
+            highlight.style.width = `${rect.width}px`;
+            highlight.style.left = `${rect.left - parentRect.left - 3}px`;
+
+            btnTypeGlobal = btnType; 
+        }
+    
+        // Initialize highlight on load
+        window.onload = () => {
+            @if($invoiceType == 'order')
+                const activeBtn = document.querySelector("#orderBtn");
+                moveHighlight(activeBtn, "order");
+            @else
+                const activeBtn = document.querySelector("#shipmentBtn");
+                moveHighlight(activeBtn, "shipment");
+            @endif
+        };
+    </script> --}}
+
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"

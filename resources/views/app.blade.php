@@ -681,9 +681,7 @@
     if (typeof $ !== 'undefined') {
         $(document).ajaxStart(function () {
             showLoader();
-        }).ajaxStop(function () {
-            hideLoader();
-        });
+        })
     }
 
     // its for cache clear
