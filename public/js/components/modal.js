@@ -435,7 +435,7 @@ function createModal(data) {
             invoiceTableHeader = `
                 <div class="th text-sm font-medium w-[7%]">S.No</div>
                 <div class="th text-sm font-medium w-[11%]">Method</div>
-                <div class="th text-sm font-medium w-1/5">Customer</div>
+                ${previewData.supplier ? '<div class="th text-sm font-medium w-1/5">Customer</div>' : ''}
                 <div class="th text-sm font-medium w-1/4">Account</div>
                 <div class="th text-sm font-medium w-[17%]">Date</div>
                 <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
@@ -443,7 +443,7 @@ function createModal(data) {
             `;
 
             invoiceTableBody = `
-                ${previewData.supplier_payments.map((payment, index) => {
+                ${previewData.payments.map((payment, index) => {
                 console.log('hello', payment);
 
                 const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
@@ -453,9 +453,10 @@ function createModal(data) {
                     <div class="tr flex justify-between w-full px-4">
                         <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                         <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' +
-                            (payment.bank_account?.bank.short_title ?? '-')}</div>
+                        ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>` : ''}
+                        ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>` :
+                            `<div class="td text-sm font-semibold w-1/4">${(payment.self_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.self_account?.bank.short_title ?? '-')}</div>
+                        `}
                         <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
                         <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
                             payment.transaction_id ?? '-'}</div>
@@ -467,20 +468,33 @@ function createModal(data) {
                 }).join('')}
             `;
 
-            invoiceBottom = `
-                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="text-nowrap">Previous Balance - Rs</div>
-                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance, 1, 1)}</div>
-                </div>
+            invoiceBottom = '';
+
+            if (previewData.supplier) {
+                invoiceBottom += `
+                    <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                        <div class="text-nowrap">Previous Balance - Rs</div>
+                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance, 1, 1)}</div>
+                    </div>
+                `;
+            }
+
+            invoiceBottom += `
                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="text-nowrap">Total Payment - Rs</div>
                     <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.total_payment, 1, 1)}</div>
                 </div>
-                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="text-nowrap">Current Balance - Rs</div>
-                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance - previewData.total_payment, 1, 1)}</div>
-                </div>
             `;
+
+            if (previewData.supplier) {
+                invoiceBottom += `
+                    <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                        <div class="text-nowrap">Current Balance - Rs</div>
+                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previewData.previous_balance - previewData.total_payment, 1, 1)}</div>
+                    </div>
+                `;
+            }
+
         } else if (data.preview.type == "cargo_list") {
             invoiceTableHeader = `
                 <div class="th text-sm font-medium w-[7%]">S.No</div>
@@ -623,7 +637,7 @@ function createModal(data) {
                                     <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
                                 `}
                             </div>
-                            ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? `
+                            ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
                                 <div class="center my-auto ">
                                     <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
                                 </div>
@@ -633,7 +647,7 @@ function createModal(data) {
                                     <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
                                     <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
                                 ` : '' }
-                                <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' ? 'Staff' : data.preview.type == 'voucher' ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
+                                <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
                                 <div class="copy leading-none">Document: ${data.preview.document}</div>
                             </div>
                         </div>
@@ -653,7 +667,7 @@ function createModal(data) {
                             </div>
                         </div>
                         ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
-                        <div class="grid ${data.preview.type == 'order' || data.preview.type == 'voucher' ? 'grid-cols-3' : 'grid-cols-2'} gap-2 px-5">
+                        <div class="grid ${data.preview.type == 'order' || (data.preview.type == 'voucher' && previewData.supplier) ? 'grid-cols-3' : data.preview.type == 'voucher' && !previewData.supplier ? 'flex' : 'grid-cols-2'} gap-2 px-5">
                             ${invoiceBottom}
                         </div>
                         <hr class="w-full my-3 border-black">

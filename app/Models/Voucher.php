@@ -24,7 +24,7 @@ class Voucher extends Model
         return $this->belongsTo(Supplier::class, "supplier_id");
     }
 
-    public function supplierPayments() {
+    public function payments() {
         return $this->hasMany(SupplierPayment::class);
     }
 }

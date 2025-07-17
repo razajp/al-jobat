@@ -4,19 +4,33 @@
 
 @php
     $voucherType = Auth::user()->voucher_type;
-@endphp
+    
+    $steps = [
+        $voucherType == 'supplier' ? 'Select Supplier' : 'Select Date',
+        'Enter Payment',
+        'Preview',
+    ];
+    
+    $method_options = [
+        'cash' => ['text' => 'Cash'],
+        'cheque' => ['text' => 'Cheque'],
+        'slip' => ['text' => 'Slip'],
+    ];
 
-    @php
-        $method_options = [
-            'cash' => ['text' => 'Cash'],
-            'cheque' => ['text' => 'Cheque'],
-            'slip' => ['text' => 'Slip'],
-            'program' => ['text' => 'Payment Program'],
-            'self_cheque' => ['text' => 'Self Cheque'],
-            'atm' => ['text' => 'ATM'],
-            'adjustment' => ['text' => 'Adjustment'],
-        ];
-    @endphp
+    if ($voucherType == 'supplier') {
+        // Insert 'program' at 3rd position (index 3)
+        $method_options = array_slice($method_options, 0, 3, true)
+            + ['program' => ['text' => 'Payment Program']]
+            + array_slice($method_options, 3, null, true);
+    }
+
+    // Add remaining methods
+    $method_options += [
+        'self_cheque' => ['text' => 'Self Cheque'],
+        'atm' => ['text' => 'ATM'],
+        'adjustment' => ['text' => 'Adjustment'],
+    ];
+@endphp
 
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-4">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
@@ -24,21 +38,11 @@
             <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
             
             <!-- Buttons -->
-            <button
-                id="supplierBtn"
-                type="button"
-                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
-                onclick="setVoucherType(this, 'supplier')"
-            >
+            <button id="supplierBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'supplier')">
                 <div class="hidden md:block">Supplier</div>
                 <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
             </button>
-            <button
-                id="selfAccountBtn"
-                type="button"
-                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
-                onclick="setVoucherType(this, 'self_account')"
-            >
+            <button id="selfAccountBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'self_account')">
                 <div class="hidden md:block">Self Account</div>
                 <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
             </button>
@@ -103,7 +107,7 @@
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"
             linkHref="{{ route('vouchers.index') }}" />
-        <x-progress-bar :steps="['Select Supplier', 'Enter Payment', 'Preview']" :currentStep="1" />
+        <x-progress-bar :steps="$steps" :currentStep="1" />
     </div>
 
     <!-- Form -->
@@ -114,16 +118,24 @@
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {{-- supplier --}}
-                <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
-                    onchange="trackSupplierState()" />
+                @if ($voucherType == 'supplier')
+                    {{-- supplier --}}
+                    <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
+                        onchange="trackSupplierState()" />
 
-                {{-- balance --}}
-                <x-input label="Balance" placeholder="Select supplier first" name="balance" id="balance" disabled />
+                    {{-- balance --}}
+                    <x-input label="Balance" placeholder="Select supplier first" name="balance" id="balance" disabled />
 
-                {{-- date --}}
-                <x-input label="Date" name="date" id="date" type="date" required disabled
-                    onchange="trackDateState(this)" />
+                    {{-- date --}}
+                    <x-input label="Date" name="date" id="date" type="date" required disabled
+                        onchange="trackDateState(this)" />
+                @else
+                    <div class="col-span-full">
+                        {{-- date --}}
+                        <x-input label="Date" name="date" id="date" type="date" required
+                            onchange="trackDateState(this)" />
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -138,9 +150,12 @@
             <div id="payment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                     <div class="w-[7%]">S.No</div>
+                    @if ($voucherType == 'self_account')
+                        <div class="w-1/3">Account Title</div>
+                    @endif
                     <div class="w-1/5">Method</div>
                     <div class="w-1/5">Remarks</div>
-                    <div class="w-1/5">Amount</div>
+                    <div class="w-[15%]">Amount</div>
                     <div class="w-[10%] text-center">Action</div>
                 </div>
                 <div id="payment-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
@@ -239,12 +254,16 @@
         let selectedDom;
         let availableChequesArray = [];
         
-        function updateSelectedAccount(elem) {
-            let selectedOption = elem.nextElementSibling.querySelector('li.selected');
-            let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-            console.log(selectedAccount);
-            
+        function setSelectedAccount(elem) {
+            let hiddenAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="self_account_id"]`);
+            hiddenAccountInSelfAccount.querySelectorAll('li').forEach(li => {
+                if (li.style.display == 'none') {
+                    li.style.display = 'block';
+                }
+            })
 
+            let selectedOption = elem.nextElementSibling.querySelector('li.selected');
+            let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || ''
             elem.closest('form').querySelector('input[name="selected"]').value = JSON.stringify(selectedAccount);
 
             availableChequesArray = selectedAccount.available_cheques;
@@ -264,6 +283,30 @@
             }, 0);
 
             amountInput.dataset.validate += `|max:${selectedAccount.balance - totalAmount}`;
+
+            let selectedAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="self_account_id"] li[data-value="${selectedAccount.id}"]`);
+
+            if (selectedAccountInSelfAccount) {
+                selectedAccountInSelfAccount.style.display = 'none';
+            }
+        }
+
+        function updateSelectedAccount(elem) {
+            let hiddenAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="bank_account_id"]`);
+            hiddenAccountInSelfAccount.querySelectorAll('li').forEach(li => {
+                if (li.style.display == 'none') {
+                    li.style.display = 'block';
+                }
+            })
+
+            let selectedOption = elem.nextElementSibling.querySelector('li.selected');
+            let selectedAccount = JSON.parse(selectedOption.getAttribute('data-option')) || ''
+
+            let selectedAccountInBankAccount = elem.closest('form').querySelector(`ul[data-for="bank_account_id"] li[data-value="${selectedAccount.id}"]`);
+
+            if (selectedAccountInBankAccount) {
+                selectedAccountInBankAccount.style.display = 'none';
+            }
         }
 
         function fetchChequeNumbers() {
@@ -292,14 +335,24 @@
             let fieldsData = [];
 
             if (elem.value == 'cash') {
-                fieldsData.push({
-                    category: 'input',
-                    name: 'amount',
-                    label: 'Amount',
-                    type: 'number',
-                    required: true,
-                    placeholder: 'Enter amount',
-                });
+                fieldsData.push(
+                    {
+                        category: 'input',
+                        name: 'amount',
+                        label: 'Amount',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter amount',
+                    },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" required showDefault />
+                        `,
+                    },
+                    @endif
+                );
             } else if (elem.value == 'cheque') {
                 fieldsData.push(
                     {
@@ -310,6 +363,14 @@
                         options: [@json($cheques_options)],
                         onchange: 'trackChequeState(this)'
                     },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" required showDefault />
+                        `,
+                    },
+                    @endif
                     {
                         category: 'input',
                         name: 'amount',
@@ -335,6 +396,14 @@
                         options: [@json($slips_options)],
                         onchange: 'trackSlipState(this)',
                     },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" required showDefault />
+                        `,
+                    },
+                    @endif
                     {
                         category: 'input',
                         name: 'amount',
@@ -390,7 +459,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="updateSelectedAccount(this)" showDefault />
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="setSelectedAccount(this)" showDefault />
                         `,
                     },
                     {
@@ -405,6 +474,20 @@
                             <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
                         `,
                     },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" onchange="updateSelectedAccount(this)" required showDefault />
+                        `,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Cheque Date" name="cheque_date" id="cheque_date" type="date" placeholder="Enter cheque date" required/>
+                        `,
+                    },
+                    @endif
                     {
                         category: 'input',
                         name: 'selected',
@@ -416,7 +499,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="updateSelectedAccount(this)" showDefault />
+                            <x-select class="" label="Self Account" name="bank_account_id" id="bank_account_id" :options="$self_accounts_options" required onchange="setSelectedAccount(this)" showDefault />
                         `,
                     },
                     {
@@ -433,6 +516,14 @@
                             <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
                         `,
                     },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" onchange="updateSelectedAccount(this)" required showDefault />
+                        `,
+                    },
+                    @endif
                     {
                         category: 'input',
                         name: 'selected',
@@ -449,6 +540,14 @@
                         required: true,
                         placeholder: 'Enter amount',
                     },
+                    @if($voucherType == 'self_account')
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Self Account" name="self_account_id" id="self_account_id" :options="$self_accounts_options" required showDefault />
+                        `,
+                    },
+                    @endif
                 );
             }
 
@@ -461,7 +560,17 @@
                     required: true,
                     placeholder: 'Enter remarks',
                     enterToSubmitListener: true,
+                    full: false,
                 });
+                
+                const visibleIndexes = fieldsData
+                .map((field, index) => field.type !== 'hidden' ? index : null)
+                .filter(index => index !== null);
+
+                if (visibleIndexes.length > 0) {
+                const lastVisibleIndex = visibleIndexes[visibleIndexes.length - 1];
+                fieldsData[lastVisibleIndex].full = visibleIndexes.length % 2 === 1;
+                }
                 
                 let modalData = {
                     id: 'modalForm',
@@ -566,9 +675,12 @@
                     clutter += `
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[7%]">${index+1}</div>
+                            @if ($voucherType == 'self_account')
+                                <div class="w-1/3 capitalize">${paymentDetail.self_account_id_name}</div>
+                            @endif
                             <div class="w-1/5 capitalize">${paymentDetail.method}</div>
                             <div class="w-1/5 capitalize">${paymentDetail.remarks && paymentDetail.remarks.trim() !== '' ? paymentDetail.remarks : '-'}</div>
-                            <div class="w-1/5">${formatNumbersWithDigits(paymentDetail.amount, 1, 1)}</div>
+                            <div class="w-[15%]">${formatNumbersWithDigits(paymentDetail.amount, 1, 1)}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisPayment(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
                                     <i class="fas fa-trash"></i>
@@ -635,7 +747,7 @@
                             </div>
                             <div class="right">
                                 <div>
-                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Payment Voucher</h1>
+                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Voucher</h1>
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
                             </div>
@@ -647,12 +759,14 @@
                                 <div class="voucher-number leading-none">Voucher No.: ${voucherNo}</div>
                                 <input type="hidden" name="voucher_no" value="${voucherNo}" />
                             </div>
-                            <div class="center my-auto">
-                                <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${selectedSupplier.supplier_name}</div>
-                            </div>
+                            @if ($voucherType == 'supplier')
+                                <div class="center my-auto">
+                                    <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${selectedSupplier.supplier_name}</div>
+                                </div>
+                            @endif
                             <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
                                 <div class="preview-copy leading-none">Voucher Copy: Supplier</div>
-                                <div class="preview-doc leading-none">Document: Payment Voucher</div>
+                                <div class="preview-doc leading-none">Document: Voucher</div>
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
@@ -695,18 +809,22 @@
                         <hr class="w-full my-3 border-gray-600">
                         <div class="flex flex-col space-y-2">
                             <div id="total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
-                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Previous Balance - Rs</div>
-                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance, 1, 1)}</div>
-                                </div>
+                                @if ($voucherType == 'supplier')
+                                    <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="text-nowrap">Previous Balance - Rs</div>
+                                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance, 1, 1)}</div>
+                                    </div>
+                                @endif
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Payment - Rs</div>
                                     <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalPayment, 1, 1)}</div>
                                 </div>
-                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Current Balance - Rs</div>
-                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance - totalPayment, 1, 1)}</div>
-                                </div>
+                                @if ($voucherType == 'supplier')
+                                    <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                                        <div class="text-nowrap">Current Balance - Rs</div>
+                                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(selectedSupplier.balance - totalPayment, 1, 1)}</div>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">

@@ -27,6 +27,7 @@ class SupplierPayment extends Model
         "slip_id",
         "program_id",
         "bank_account_id",
+        "self_account_id",
         "transaction_id",
         "remarks",
         "voucher_id",
@@ -78,5 +79,9 @@ class SupplierPayment extends Model
 
     public function bankAccount() {
         return $this->belongsTo(BankAccount::class, 'bank_account_id');
+    }
+
+    public function selfAccount() {
+        return $this->belongsTo(BankAccount::class, 'self_account_id');
     }
 }

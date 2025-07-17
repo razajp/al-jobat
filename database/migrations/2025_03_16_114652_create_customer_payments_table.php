@@ -13,13 +13,14 @@ return new class extends Migration
     {
         Schema::create('customer_payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
+            $table->foreignId('customer_id')->nullable()->constrained('customers')->onDelete('cascade');
             $table->date('date');
             $table->string('type');
             $table->string('method');
             $table->integer('amount');
             $table->string('cheque_no')->nullable()->unique();
             $table->string('slip_no')->nullable()->unique();
+            $table->string('reff_no')->nullable()->unique();
             $table->string('transaction_id')->nullable()->unique();
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();

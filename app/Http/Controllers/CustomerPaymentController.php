@@ -25,7 +25,7 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = CustomerPayment::with("customer", 'cheque', 'partialRecord')->get();
+        $payments = CustomerPayment::with("customer", 'cheque', 'partialRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
             if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {

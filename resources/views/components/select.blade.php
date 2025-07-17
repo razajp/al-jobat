@@ -69,6 +69,7 @@
         {{-- Visible Input --}}
         <x-input
             id="{{ $id }}"
+            name="{{ $id }}_name"
             parentGrow
             oninput="searchSelect(this)"
             onblur="validateSelectInput(this)"

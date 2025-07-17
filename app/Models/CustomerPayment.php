@@ -24,6 +24,7 @@ class CustomerPayment extends Model
         "amount",
         "cheque_no",
         "slip_no",
+        "reff_no",
         "transaction_id",
         "cheque_date",
         "slip_date",
