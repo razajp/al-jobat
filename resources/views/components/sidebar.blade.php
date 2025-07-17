@@ -321,6 +321,12 @@
                     ]" />
                 </div>
             @endif
+
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
+                </div>
+            @endif
         </nav>
 
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
@@ -472,6 +478,14 @@
 </div>
 </div>
 <script>
+    function generateMenuModal(){
+        let modalData = {
+            id: 'menuModal',
+        }
+
+        createModal(modalData)
+    }
+
     document.querySelectorAll('.dropdown-toggle').forEach(button => {
         button.addEventListener('click', () => {
             // Close other open dropdowns

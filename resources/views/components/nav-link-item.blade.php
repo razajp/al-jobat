@@ -1,4 +1,13 @@
-@props(['label', 'icon' => '', 'svgIcon' => '', 'includesDropdown' => false, 'href' => '#', 'items' => [], 'activatorTags' => []])
+@props([
+    'label',
+    'icon' => '',
+    'svgIcon' => '',
+    'includesDropdown' => false,
+    'href' => '#',
+    'items' => [],
+    'activatorTags' => [],
+    'onclick' => '',
+])
 
 @if ($includesDropdown)
     <!-- Main Icon Button -->
@@ -54,7 +63,7 @@
     </div>
 @else
     <!-- No Dropdown, Just Link -->
-    <a href="{{ $href }}"
+    <a href="{{ $href }}" onclick="{{ $onclick }}"
         class="nav-link {{ strtolower($label) }} text-[var(--text-color)] p-3 rounded-[41.5%] hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center group relative">
         @if ($icon)
             <i class="{{ $icon }} group-hover:text-[var(--primary-color)]"></i>
