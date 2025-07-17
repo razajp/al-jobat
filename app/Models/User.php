@@ -34,6 +34,7 @@ class User extends Authenticatable
         'theme',
         'layout',
         'invoice_type',
+        'voucher_type',
     ];
 
     /**

@@ -110,6 +110,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-program-details', [Controller::class, 'getProgramDetails'])->name('get-program-details');
     Route::post('set-invoice-type', [Controller::class, 'setInvoiceType'])->name('set-invoice-type');
     Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
+    Route::post('set-voucher-type', [Controller::class, 'setVoucherType'])->name('set-voucher-type');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');

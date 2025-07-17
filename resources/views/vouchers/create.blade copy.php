@@ -49,7 +49,6 @@
         let btnTypeGlobal = "supplier";
 
         function setVoucherType(btn, btnType) {
-            doHide = true;
             // check if its already selected
             if (btnTypeGlobal == btnType) {
                 return;
@@ -84,7 +83,7 @@
             highlight.style.width = `${rect.width}px`;
             highlight.style.left = `${rect.left - parentRect.left - 3}px`;
 
-            btnTypeGlobal = btnType;
+            btnTypeGlobal = btnType; 
         }
     
         // Initialize highlight on load

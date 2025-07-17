@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('theme')->default('light');
             $table->string('layout')->nullable();
             $table->string('invoice_type')->default('order');
+            $table->string('voucher_type')->default('supplier');
             
             $table->timestamps();
         });

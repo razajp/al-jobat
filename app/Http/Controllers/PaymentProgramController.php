@@ -70,12 +70,18 @@ class PaymentProgramController extends Controller
         // Combine both arrays manually
         $finalData = array_merge($ordersArray, $paymentProgramsArray);
 
-        // Sort the final combined array by date and created_at
         usort($finalData, function ($a, $b) {
-            if ($a['date'] == $b['date']) {
-                return strtotime($b['created_at']) - strtotime($a['created_at']); // time DESC
+            // Fallback 0 if key not set or empty
+            $aDate = isset($a['date']) ? strtotime($a['date']) : 0;
+            $bDate = isset($b['date']) ? strtotime($b['date']) : 0;
+
+            if ($aDate === $bDate) {
+                $aCreated = isset($a['created_at']) ? strtotime($a['created_at']) : 0;
+                $bCreated = isset($b['created_at']) ? strtotime($b['created_at']) : 0;
+                return $bCreated - $aCreated; // Time DESC
             }
-            return strtotime($b['date']) - strtotime($a['date']); // date DESC
+
+            return $bDate - $aDate; // Date DESC
         });
 
         // return $finalData;

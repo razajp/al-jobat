@@ -199,6 +199,29 @@ class Controller extends BaseController
             'message' => 'Invoice type set as default.',
         ]);
     }
+
+    public function setVoucherType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "voucher_type" => "required|in:supplier,self_account",
+        ]);
+        
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $user = Auth::user();
+        $user->voucher_type = $request->voucher_type;
+        $user->save();
+
+        session()->flash('success', 'Voucher type updated.');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Voucher type set as default.',
+        ]);
+    }
+
     public function getShipmentDetails(Request $request)
     {
         $validator = Validator::make($request->all(), [

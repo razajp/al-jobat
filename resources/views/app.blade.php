@@ -606,6 +606,7 @@
     </script>
 </body>
 <script>
+    let doHide = false;
     window.addEventListener('beforeunload', function () {
         showLoader();
     });
@@ -681,7 +682,12 @@
     if (typeof $ !== 'undefined') {
         $(document).ajaxStart(function () {
             showLoader();
-        })
+        }).ajaxStop(function () {
+            if (!doHide) {
+                hideLoader();
+            }
+            doHide = false;
+        });
     }
 
     // its for cache clear
