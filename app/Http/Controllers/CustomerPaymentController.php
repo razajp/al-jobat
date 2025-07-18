@@ -30,6 +30,8 @@ class CustomerPaymentController extends Controller
         $payments->each(function ($payment) {
             if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
                 $payment['issued'] = 'Issued';
+            } else {
+                $payment['issued'] = 'Not Issued';
             }
         });
 
@@ -163,7 +165,6 @@ class CustomerPaymentController extends Controller
         }
 
         return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord'));
-        // return $customers;
     }
 
     /**

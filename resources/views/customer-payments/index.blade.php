@@ -282,7 +282,7 @@
                     ...(data.data.slip_date && { 'Slip Date': formatDate(data.data.slip_date) }),
                     ...(data.data.clear_date && { 'Clear Date': formatDate(data.data.clear_date) }),
                     ...(data.data.clear_amount && { 'Clear Amount': formatNumbersWithDigits(data.data.clear_amount, 1, 1) }),
-                    ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued || 'Not Issue' }),
+                    ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
                 bottomActions: [],
