@@ -36,9 +36,6 @@
                 {{-- Name --}}
                 <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized dataValidate="required|letters" />
 
-                {{-- Username --}}
-                {{-- <x-input label="Username" name="username" id="username" placeholder="Enter username" required data-validate="required|alphanumeric|lowercase|unique:username" /> --}}
-
                 <x-input
                     label="Username"
                     name="username"
@@ -50,7 +47,7 @@
                 />
 
                 {{-- Password --}}
-                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required dataValidate="required|min:2|alphanumeric|lowercase" />
+                <x-input label="Password" name="password" id="password" type="password" placeholder="Enter password" required dataValidate="required|min:4|alphanumeric|lowercase" />
 
                 {{-- Role --}}
                 <x-select label="Role" name="role" id="role" :options="$roleOptions" />
