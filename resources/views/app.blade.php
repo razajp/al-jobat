@@ -1008,6 +1008,8 @@
         document.removeEventListener('keydown', enterToSubmit);
     }
 
+    console.log('function here');
+
     function selectThisOption(optionLiElem) {
         const forId = optionLiElem.dataset.for;
 

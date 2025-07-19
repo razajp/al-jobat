@@ -1,223 +1,283 @@
 @extends('app')
-@section('title', 'Add Employee | ' . app('company')->name)
+@section('title', 'Add Production | ' . app('company')->name)
 @section('content')
 @php
-    $categories_options = [
-        'staff' => ['text' => 'Staff'],
-        'worker' => ['text' => 'Worker'],
-    ]
+    $category_options = [
+        'a' => ['text'  => 'A'],
+        'b' => ['text'  => 'B'],
+];
 @endphp
-    <!-- Progress Bar -->
-    <div class="mb-5 max-w-3xl mx-auto">
+    <!-- Main Content -->
+    <div class="max-w-5xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
-        <x-progress-bar :steps="['Enter Details', 'Upload Image']" :currentStep="1" />
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('productions.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-3xl mx-auto  relative overflow-hidden">
+    <form id="form" action="{{ route('productions.store') }}" method="post"
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-5xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Add Production" />
 
-        <!-- Step1 : Basic Information -->
-        <div class="step1 space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {{-- employee_category --}}
+        <div class="space-y-4 ">
+            <div class="flex justify-between gap-4">
+                {{-- article --}}
+                <div class="grow">
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <input type="hidden" name="article_id" id="article_id" value="" />
+                </div>
+
+                {{-- work --}}
+                <div class="w-1/4">
+                    <x-select 
+                        label="Work"
+                        name="work"
+                        id="work"
+                        :options="$worke_options"
+                        showDefault
+                        required
+                    />
+                </div>
+
+                {{-- worker --}}
+                <div class="w-1/4">
+                    <x-select 
+                        label="Worker"
+                        name="worker"
+                        id="worker"
+                        :options="$worker_options"
+                        showDefault
+                        required
+                    />
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
+                {{-- pcs_per_packet  --}}
+                <x-input label="Master Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter master unit" required />
+
+                {{-- packets --}}
+                <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
+
+                {{-- category --}}
                 <x-select 
                     label="Category"
                     name="category"
                     id="category"
-                    :options="$categories_options"
-                    onchange="trackCategoryChange()"
+                    :options="$category_options"
                     required
-                    showDefault
-                />
-
-                {{-- employee_type --}}
-                <x-select 
-                    label="Type"
-                    name="type_id"
-                    id="type"
-                    required
-                />
-
-                <!-- employee_name -->
-                <x-input 
-                    label="Employee Name"
-                    name="employee_name" 
-                    id="employee_name" 
-                    placeholder="Enter employee name" 
-                    required 
-                    capitalized
-                    dataValidate="required|letters"
-                />
-                
-                <!-- urdu_title -->
-                <x-input 
-                    label="Urdu Title"
-                    name="urdu_title" 
-                    id="urdu_title" 
-                    placeholder="Enter urdu title" 
-                    required 
-                />
-                
-                {{-- employee_phone_number --}}
-                <x-input 
-                    label="Phone Number" 
-                    name="phone_number" 
-                    id="phone_number" 
-                    placeholder="Enter phone number"
-                    required
-                />
-
-                {{-- employee_joining_date --}}
-                <x-input 
-                    label="Joining Date" 
-                    name="joining_date" 
-                    id="joining_date" 
-                    min="{{ now()->subMonth()->toDateString() }}"
-                    validateMin
-                    max="{{ now()->toDateString() }}"
-                    validateMax
-                    type="date"
-                    required
-                />
-
-                {{-- employee_cnic --}}
-                <x-input 
-                    label="C.N.I.C No." 
-                    name="cnic_no" 
-                    id="cnic_no"
-                    placeholder="Enter C.N.I.C No."
-                    capitalized
-                />
-
-                {{-- employee_salary --}}
-                <x-input 
-                    label="Salary" 
-                    name="salary" 
-                    id="salary"
-                    placeholder="Enter salary"
-                    type="number"
-                    disabled
-                    capitalized
                 />
             </div>
-        </div>
 
-        <!-- Step 2: Production Details -->
-        <div class="step2 hidden space-y-6 ">
-            <x-image-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
-                uploadText="Upload Profile Picture" />
+            <hr class="border-gray-600 my-3">
+
+            <div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-sm mt-5 items-start">
+                <div class="first w-full">
+                    <div class="current-phys-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
+                        <div class="grow">Total Physical Stock - Pcs.</div>
+                        <div id="currentPhysicalQuantity">0</div>
+                    </div>
+                </div>
+                <div class="second w-full">
+                    <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
+                        <div class="grow">Total Quantity - Pcs.</div>
+                        <div id="finalOrderedQuantity">0</div>
+                    </div>
+                    <div id="total-qty-error" class="text-[var(--border-error)] text-xs mt-1 hidden transition-all 0.3s ease-in-out"></div>
+                </div>
+                <div class="thered w-full">
+                    <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
+                        <div class="grow">Remaining Quantity - Pcs.</div>
+                        <div id="remainingquantity">0</div>
+                    </div>
+                </div>
+                <div class="fourth w-full">
+                    <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4">
+                        <div class="grow">Total Amount - Rs.</div>
+                        <div id="finalOrderAmount">0.0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="w-full flex justify-end mt-4">
+            <button type="submit"
+                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
+                <i class='fas fa-save mr-1'></i> Save
+            </button>
         </div>
     </form>
 
-    {{-- <script>
-        function formatPhoneNo(input) {
-            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+    <script>
+        const articleSelectInputDOM = document.getElementById("article");
+        const articleIdInputDOM = document.getElementById("article_id");
+        const articleImageShowDOM = document.getElementById("img-article");
 
-            if (value.length > 4) {
-                value = value.slice(0, 4) + '-' + value.slice(4, 11); // Insert hyphen after 4 digits
+        const pcsPerPacketDom = document.getElementById('pcs_per_packet');
+        const processedByDom = document.getElementById('processed_by');
+        const packetsDom = document.getElementById('packets');
+        const categoryDom = document.getElementById('category');
+
+        const totalPhysicalQuantityDom = document.getElementById('currentPhysicalQuantity');
+        const finalOrderedQuantityDom = document.getElementById('finalOrderedQuantity');
+        const remainingqQuantityDom = document.getElementById('remainingquantity');
+        const finalOrderAmountDom = document.getElementById('finalOrderAmount');
+
+        let isModalOpened = false;
+
+        let totalQuantity = 0;
+        let totalAmount = 0;
+
+        articleSelectInputDOM.addEventListener('click', () => {
+            generateArticlesModal();
+        })
+
+        function generateArticlesModal() {
+            let data = @json($articles);
+            let cardData = [];
+
+            console.log(data);
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.article_no,
+                        image: item.image == 'no_image_icon.png' ? '/images/no_image_icon.png' : `/storage/uploads/images/${item.image}`,
+                        details: {
+                            "Category": item.category,
+                            "Season": item.season,
+                            "Size": item.size,
+                        },
+                        data: item,
+                        onclick: 'selectThisArticle(this)',
+                    };
+                }));
+            }
+            
+            let modalData = {
+                id: 'modalForm',
+                cards: {name: 'Articles', count: 3, data: cardData},
             }
 
-            input.value = value; // Update the input field
+            createModal(modalData);
         }
 
-        document.getElementById('phone_number').addEventListener('input', function() {
-            formatPhoneNo(this);
-        });
+        let selectedArticle = null;
 
-        function formatCnicNo(input) {
-            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+        function selectThisArticle(articleElem) {
+            selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
 
-            if (value.length > 5 && value.length <= 12) {
-                value = value.slice(0, 5) + '-' + value.slice(5);
-            }
-            if (value.length > 12) {
-                value = value.slice(0, 5) + '-' + value.slice(5, 12) + '-' + value.slice(12, 13);
-            }
+            articleIdInputDOM.value = selectedArticle.id;
+            let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
+            articleSelectInputDOM.value = value;
+            
+            articleImageShowDOM.classList.remove('opacity-0');
+            articleImageShowDOM.src = articleElem.querySelector('img').src
+            
+            closeModal('modalForm');
+            trackFieldsDisability();
+            calculateTotal();
 
-            input.value = value; // Update the input field
-        }
+            totalPhysicalQuantityDom.innerText = selectedArticle.physical_quantity;
+            
+            function formatArticleDate(inputDate) {
+                let [day, month, yearWithDay] = inputDate.replace(',', '').split('-');
+                let [year] = yearWithDay.split(' ');
 
-        document.getElementById('cnic_no').addEventListener('input', function () {
-            formatCnicNo(this);
-        });
-
-
-        const allTypes = @json($all_types);
-        const categorySelectDom = document.getElementById('category');
-        const typeSelectDom = document.getElementById('type');
-        const salaryInpDom = document.getElementById('salary');
-        const salaryLabelDom = document.querySelector(`label[for="${salaryInpDom.id}"]`);
-
-        function trackCategoryChange() {
-            let clutter = '';
-            if (categorySelectDom.value == 'Staff') {
-                const typeArray = allTypes.staff_type
-                
-                console.log(typeArray);
-                
-                if (typeArray.length > 0) {
-                    clutter = `
-                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
-                            -- Select Type --
-                        </li>
-                    `;
-                    typeSelectDom.disabled = false;
+                const monthMap = {
+                    Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                    Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
                 }
 
-                salaryInpDom.disabled = false;
-                salaryInpDom.required = true;
-                salaryLabelDom.textContent = "Salary *"
+                return `${year}-${monthMap[month]}-${day.padStart(2, '0')}`;
+            }
 
-                typeArray.forEach(type => {
-                    clutter += `
-                        <li data-for="type" data-value="${type.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
-                            ${type.title}
-                        </li>
-                    `;
-                });
-            } else if (categorySelectDom.value == 'Worker') {
-                const typeArray = allTypes.worker_type
-                
-                if (typeArray.length > 0) {
-                    clutter = `
-                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
-                            -- Select Type --
-                        </li>
-                    `;
-                    typeSelectDom.disabled = false;
-                }
-                
-                salaryInpDom.disabled = true;
-                salaryInpDom.required = false;
-                salaryLabelDom.textContent = "Salary"
-
-                typeArray.forEach(type => {
-                    clutter += `
-                        <li data-for="type" data-value="${type.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
-                            ${type.title}
-                        </li>
-                    `;
-                });
+            document.getElementById('date').min = formatArticleDate(selectedArticle.date);
+            
+            
+            if (selectedArticle.pcs_per_packet > 0) {
+                pcsPerPacketDom.readOnly = true;
+                pcsPerPacketDom.classList.remove('bg-[var(--h-bg-color)]');
+                pcsPerPacketDom.classList.add('bg-transparent');
+                pcsPerPacketDom.classList.add('cursor-not-allowed');
+                pcsPerPacketDom.value = selectedArticle.pcs_per_packet;
+                processedByDom.readOnly = true;
+                processedByDom.classList.remove('bg-[var(--h-bg-color)]');
+                processedByDom.classList.add('bg-transparent');
+                processedByDom.classList.add('cursor-not-allowed');
+                processedByDom.value = selectedArticle.processed_by;
             } else {
-                salaryInpDom.disabled = true;
-                salaryInpDom.required = false;
-                salaryLabelDom.textContent = "Salary"
-                clutter = `
-                    <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
-                        -- No options available --
-                    </li>
-                `;
-                typeSelectDom.disabled = true;
+                pcsPerPacketDom.readOnly = false;
+                pcsPerPacketDom.classList.add('bg-[var(--h-bg-color)]');
+                pcsPerPacketDom.classList.remove('bg-transparent');
+                pcsPerPacketDom.classList.remove('cursor-not-allowed');
+                pcsPerPacketDom.value = '';
+                processedByDom.readOnly = false;
+                processedByDom.classList.add('bg-[var(--h-bg-color)]');
+                processedByDom.classList.remove('bg-transparent');
+                processedByDom.classList.remove('cursor-not-allowed');
+                processedByDom.value = '';
             }
 
-            typeSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = clutter;
+            remainingqQuantityDom.innerText = new Intl.NumberFormat('en-US').format(pcsPerPacketDom.value > 0 && parseInt(totalPhysicalQuantityDom.textContent) > 0 ? selectedArticle.quantity - parseInt(totalPhysicalQuantityDom.textContent) : selectedArticle.quantity);
+        }
+
+        document.getElementById('pcs_per_packet').addEventListener('input', () => {
+            calculateTotal();
+            trackArticleQuantity();
+        });
+
+        document.getElementById('packets').addEventListener('input', () => {
+            calculateTotal();
+            trackArticleQuantity();
+        });
+
+        function trackFieldsDisability() {
+            if (!selectedArticle) {
+                pcsPerPacketDom.disabled = true;
+                packetsDom.disabled = true;
+                categoryDom.disabled = true;
+            } else {
+                pcsPerPacketDom.disabled = false;
+                packetsDom.disabled = false;
+                categoryDom.disabled = false;
+            }
+        }
+        trackFieldsDisability();
+
+        function calculateTotal() {
+            if (selectedArticle) {
+                let pcsPerPacket = pcsPerPacketDom.value;
+                let packets = packetsDom.value;
+
+                totalQuantity = pcsPerPacket * packets;
+                totalAmount = totalQuantity * parseInt(selectedArticle.sales_rate);
+
+                finalOrderedQuantityDom.textContent = new Intl.NumberFormat('en-US').format(totalQuantity);
+
+                finalOrderAmountDom.innerText = new Intl.NumberFormat('en-US', {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
+                }).format(totalAmount);
+            }
+        }
+
+        const totalQtyDom = document.querySelector('.total-qty');
+        const totalQtyErrorDom = document.getElementById('total-qty-error');
+
+        function trackArticleQuantity() {
+            if (selectedArticle && (totalQuantity + parseInt(totalPhysicalQuantityDom.textContent)) > selectedArticle.quantity) {
+                totalQtyDom.classList.add('border-[var(--border-error)]');
+                totalQtyErrorDom.innerText = `Quantity exceeds the available stock (${selectedArticle.quantity} pcs)`;
+                totalQtyErrorDom.classList.remove('hidden');
+            } else {
+                totalQtyDom.classList.remove('border-[var(--border-error)]');
+                totalQtyDom.classList.add('border-gray-600');
+                totalQtyErrorDom.classList.add('hidden');
+                totalQtyErrorDom.innerText = '';
+            }
         }
 
         function validateForNextStep() {
             return true;
         }
-    </script> --}}
+    </script>
 @endsection

@@ -122,6 +122,13 @@
                 >
                     {{ $option['text'] }}
                 </li>
+                @if (isset($option['selected']))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            selectThisOption(document.querySelector('li[data-value="{{ $optionValue }}"]'));
+                        });
+                    </script>
+                @endif
             @endforeach
         </ul>
 

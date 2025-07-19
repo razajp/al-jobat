@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\Employee;
 use App\Models\Production;
+use App\Models\Setup;
 use Illuminate\Http\Request;
 
 class ProductionController extends Controller
@@ -20,7 +23,22 @@ class ProductionController extends Controller
      */
     public function create()
     {
-        return view('productions.add');
+        $articles = Article::all();
+        $worke_options = [];
+        $workerTypes = Setup::where('type', 'worker_type')->get();
+        foreach($workerTypes as $workerType) {
+            $worke_options[(int)$workerType->id] = [
+                'text' => $workerType->title
+            ];
+        }
+        $worker_options = [];
+        $workers = Employee::where('category', 'worker')->where('status', 'active')->get();
+        foreach($workers as $worker) {
+            $worker_options[(int)$worker->id] = [
+                'text' => $worker->employee_name
+            ];
+        }
+        return view('productions.add', compact('articles', 'worke_options', 'worker_options'));
     }
 
     /**

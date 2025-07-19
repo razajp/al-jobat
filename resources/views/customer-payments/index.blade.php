@@ -34,6 +34,26 @@
             "onchange" => "runDynamicFilter()",
             "dataFilterPath" => "details.Method",
         ],
+        "Issued" => [
+            "id" => "issued",
+            "type" => "select",
+            "options" => [
+                        'Issued' => ['text' => 'Issued'],
+                        'Not Issued' => ['text' => 'Not Issued'],
+                    ],
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "issued",
+        ],
+        "Status" => [
+            "id" => "status",
+            "type" => "select",
+            "options" => [
+                        'Cleared' => ['text' => 'Cleared'],
+                        'Pending' => ['text' => 'Pending'],
+                    ],
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "clearStatus",
+        ],
         "Date Range" => [
             "id" => "date_range_start",
             "type" => "date",
@@ -119,6 +139,8 @@
                     'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
                 data: item,
+                ...((item.method == 'cheque' || item.method == 'slip') && { issued: item.issued }),
+                ...((item.method == 'cheque' || item.method == 'slip') && (item.clear_date ? { clearStatus: 'Cleared'} : { clearStatus: 'Pending'} )),
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 visible: true,
@@ -245,17 +267,25 @@
                 y: e.pageY,
                 actions: [],
             };
-            
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
-                contextMenuData.actions.push(
-                    {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                );
-            }
-            
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null && data.data.issued == 'Issued') {
-                contextMenuData.actions.push(
-                    {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
-                );
+
+            if (
+                (data.data.method === 'cheque' || data.data.method === 'slip') &&
+                (
+                    (data.data.method === 'cheque' && new Date(data.data.cheque_date) <= new Date()) ||
+                    (data.data.method === 'slip' && new Date(data.data.slip_date) <= new Date())
+                )
+            ) {
+                if (data.data.clear_date == null) {
+                    contextMenuData.actions.push(
+                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                    );
+                }
+
+                if (data.data.clear_date == null && data.data.issued == 'Issued') {
+                    contextMenuData.actions.push(
+                        {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
+                    );
+                }
             }
 
             createContextMenu(contextMenuData);
@@ -280,24 +310,33 @@
                     ...(data.data.bank && { 'Bank': data.data.bank }),
                     ...(data.data.cheque_date && { 'Cheque Date': formatDate(data.data.cheque_date) }),
                     ...(data.data.slip_date && { 'Slip Date': formatDate(data.data.slip_date) }),
-                    ...(data.data.clear_date && { 'Clear Date': formatDate(data.data.clear_date) }),
+                    // ...(data.data.clear_date && { 'Clear Date': formatDate(data.data.clear_date) }),
                     ...(data.data.clear_amount && { 'Clear Amount': formatNumbersWithDigits(data.data.clear_amount, 1, 1) }),
+                    ...((data.data.method == 'cheque' || data.data.method == 'slip') && (data.data.clear_date ? { 'Clear Date': formatDate(data.data.clear_date)} : { 'Clear Date': 'Pending'} )),
                     ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
                 bottomActions: [],
             }
 
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null) {
-                modalData.bottomActions.push(
-                    {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                );
-            }
+            if (
+                (data.data.method === 'cheque' || data.data.method === 'slip') &&
+                (
+                    (data.data.method === 'cheque' && new Date(data.data.cheque_date) <= new Date()) ||
+                    (data.data.method === 'slip' && new Date(data.data.slip_date) <= new Date())
+                )
+            ) {
+                if (data.data.clear_date == null) {
+                    modalData.bottomActions.push(
+                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
+                    );
+                }
 
-            if ((data.data.method == 'cheque' || data.data.method == 'slip') && data.data.clear_date == null && data.data.issued == 'Issued') {
-                modalData.bottomActions.push(
-                    {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
-                );
+                if (data.data.clear_date == null && data.data.issued == 'Issued') {
+                    modalData.bottomActions.push(
+                        {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
+                    );
+                }
             }
 
             createModal(modalData);
