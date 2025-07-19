@@ -1,5 +1,3 @@
-// js/validate-inputs.js
-
 function validateInput(input) {
     const rules = (input.dataset.validate || '').split('|');
     let value = input.value;
@@ -27,6 +25,31 @@ function validateInput(input) {
             value = value.replace(/[^0-9.]/g, '');
         }
 
+        // friendly = allows letters, numbers, space, dot, dash
+        if (rule === 'friendly') {
+            value = value.replace(/[^a-zA-Z0-9 .-]/g, '');
+        }
+
+        // phone = auto-format to 0000-0000000
+        if (rule === 'phone') {
+            value = value.replace(/\D/g, '');
+            if (value.length > 11) value = value.substring(0, 11);
+            if (value.length >= 5) {
+                value = value.substring(0, 4) + '-' + value.substring(4);
+            }
+            if (!/^\d{4}-\d{7}$/.test(value)) {
+                error = 'Phone number must be in format 0000-0000000';
+            }
+        }
+
+        // urdu = only Urdu letters, Urdu punctuation, and spaces
+        if (rule === 'urdu') {
+            value = value.replace(/[^\u0600-\u06FF\s،۔!?؟]/g, '');
+            if (!/[\u0600-\u06FF]/.test(value)) {
+                error = 'Please enter in Urdu only.';
+            }
+        }
+
         if (rule.startsWith('min:')) {
             const min = parseInt(rule.split(':')[1]);
             if (value.length < min) {
@@ -38,17 +61,25 @@ function validateInput(input) {
             const max = parseInt(rule.split(':')[1]);
             if (parseFloat(value) > max) {
                 error = `Maximum allowed value is ${max}.`;
-                value = max; // optionally reset to max value
+                value = max;
             }
         }
 
+        // if (rule.startsWith('unique:')) {
+        //     const field = rule.split(':')[1];
+        //     if (typeof window[field + 's'] !== 'undefined') {
+        //         const dataset = window[field + 's'];
+        //         if (Array.isArray(dataset) && dataset.some(item => item[field] === value)) {
+        //             error = `${field.replace('_', ' ')} is already taken.`;
+        //         }
+        //     }
+        // }
+
         if (rule.startsWith('unique:')) {
             const field = rule.split(':')[1];
-            if (typeof window[field + 's'] !== 'undefined') {
-                const dataset = window[field + 's'];
-                if (Array.isArray(dataset) && dataset.some(item => item[field] === value)) {
-                    error = `${field.replace('_', ' ')} is already taken.`;
-                }
+            const dataset = window[field + 's'];
+            if (Array.isArray(dataset) && dataset.includes(value)) {
+                error = `${field} is already taken.`;
             }
         }
     });

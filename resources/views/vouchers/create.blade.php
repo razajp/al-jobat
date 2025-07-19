@@ -553,14 +553,10 @@
 
             if (elem.value != '') {
                 fieldsData.push({
-                    category: 'input',
-                    name: 'remarks',
-                    label: 'Remarks',
-                    type: 'text',
-                    required: true,
-                    placeholder: 'Enter remarks',
-                    enterToSubmitListener: true,
-                    full: false,
+                    category: 'explicitHtml',
+                    html: `
+                        <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                    `,
                 });
                 
                 const visibleIndexes = fieldsData

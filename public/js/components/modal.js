@@ -230,8 +230,10 @@ function createModal(data) {
                 `;
             } else if (field.category == 'explicitHtml') {
                 clutter += `
-                    <div class="">
-                        ${field.html}
+                    <div class="${field.grow ? 'grow' : ''} ${field.full ? 'col-span-full' : ''}">
+                        <div class="">
+                            ${field.html}
+                        </div>
                     </div>
                 `;
             }

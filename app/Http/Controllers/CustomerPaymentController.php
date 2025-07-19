@@ -102,7 +102,7 @@ class CustomerPaymentController extends Controller
         $customers_options = [];
         $programId = $request->query('program_id');
 
-        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->first();
+        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->whereNotNull('customer_id')->first();
 
         if (!empty($programId)) {
             $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->where('balance', '>', 0)->find($programId);
@@ -164,7 +164,10 @@ class CustomerPaymentController extends Controller
             ];
         }
 
-        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord'));
+        $cheque_nos = CustomerPayment::pluck('cheque_no')->toArray();
+        $slip_nos = CustomerPayment::pluck('slip_no')->toArray();
+
+        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord', 'cheque_nos', 'slip_nos'));
     }
 
     /**
@@ -185,8 +188,8 @@ class CustomerPaymentController extends Controller
             "bank_id" => "nullable|integer|exists:setups,id",
             "cheque_date" => "nullable|date",
             "slip_date" => "nullable|date",
-            "cheque_no" => "nullable|string",
-            "slip_no" => "nullable|string",
+            "cheque_no" => "nullable|integer",
+            "slip_no" => "nullable|integer",
             "clear_date" => "nullable|date",
             "bank_account_id" => "nullable|integer|exists:bank_accounts,id",
             "transaction_id" => "nullable|string",

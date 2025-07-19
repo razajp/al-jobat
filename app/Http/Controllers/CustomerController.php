@@ -52,7 +52,8 @@ class CustomerController extends Controller
             $cities_options[$city->id] = ['text' => $city->title];
         }
 
-        return view('customers.create', compact('cities_options'));
+        $usernames = User::pluck('username')->toArray();
+        return view('customers.create', compact('cities_options', 'usernames'));
     }
 
     /**

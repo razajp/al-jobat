@@ -37,8 +37,8 @@ class UserController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
         
-        $users = User::all();
-        return view('user.create', compact('users'));
+        $usernames = User::pluck('username')->toArray();
+        return view('user.create', compact('usernames'));
     }
 
     /**

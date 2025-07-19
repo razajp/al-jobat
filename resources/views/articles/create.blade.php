@@ -323,7 +323,7 @@
         let calcBottom = document.querySelector('#calc-bottom');
         let ratesArrayDom = document.getElementById('rates_array');
         let rateCount = 0;
-
+ 
         let totalRate = 0.00;
 
         let ratesArray = [];

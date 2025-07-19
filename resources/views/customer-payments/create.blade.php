@@ -139,6 +139,9 @@
     </div>
     
     <script>
+        window.chequeNos = @json($cheque_nos);
+        window.slipNos = @json($slip_nos);
+
         let customerSelectDom = document.getElementById('customer_id');
         let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
@@ -304,7 +307,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'cheque') {
                 detailsDom.innerHTML = `
@@ -318,10 +321,10 @@
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
 
                     {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required/>
+                    <x-input label="Cheque No" placeholder="Enter cheque no" type="number" name="cheque_no" id="cheque_no" required dataValidate="required|unique:chequeNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
                     <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
@@ -338,10 +341,10 @@
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
 
                     {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter cheque no" name="slip_no" id="slip_no" required/>
+                    <x-input label="Slip No" placeholder="Enter slip no" type="number" name="slip_no" id="slip_no" required dataValidate="required|unique:slipNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
                     <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
@@ -352,7 +355,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'program') {
                 let programSelectDom = document.getElementById('payment_programs');
@@ -394,10 +397,10 @@
                         <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
                         
                         {{-- transaction id --}}
-                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required />
+                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required dataValidate="required|alphanumeric" oninput="validateInput(this)"/>
 
                         {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks"/>
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
                     `;
 
                     let bankAccountData = selectedProgramData.sub_category.bank_accounts;

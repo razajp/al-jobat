@@ -35,6 +35,7 @@
                     placeholder="Enter supplire name" 
                     required 
                     capitalized
+                    dataValidate="required|friendly"
                 />
                 
                 <!-- urdu_title -->
@@ -44,6 +45,7 @@
                     id="urdu_title" 
                     placeholder="Enter urdu title" 
                     required 
+                    dataValidate="required|urdu"
                 />
 
                 {{-- person name --}}
@@ -54,6 +56,7 @@
                     placeholder="Enter person name" 
                     required 
                     capitalized
+                    dataValidate="required|friendly"
                 />
 
                 {{-- customer_registration_date --}}
@@ -77,6 +80,8 @@
                     type="username"
                     placeholder="Enter username" 
                     required
+                    data-validate="required|alphanumeric|lowercase|unique:username"
+                    data-clean="lowercase|alphanumeric|no-space"
                 />
 
                 {{-- customer_password --}}
@@ -87,6 +92,7 @@
                     type="password" 
                     placeholder="Enter password" 
                     required 
+                    dataValidate="required|min:4|alphanumeric|lowercase" 
                 />
 
                 {{-- customer_phone_number --}}
@@ -96,6 +102,7 @@
                     id="phone_number" 
                     placeholder="Enter phone number"
                     required
+                    dataValidate="required|phone"
                 />
 
                 {{-- city --}}
@@ -126,6 +133,7 @@
                     placeholder="Enter address"
                     required
                     capitalized
+                    dataValidate="required|friendly"
                 />
             </div>
         </div>
@@ -142,20 +150,7 @@
     </form>
 
     <script>
-        function formatPhoneNo(input) {
-            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
-
-            if (value.length > 4) {
-                value = value.slice(0, 4) + '-' + value.slice(4, 11); // Insert hyphen after 4 digits
-            }
-
-            input.value = value; // Update the input field
-        }
-
-        document.getElementById('phone_number').addEventListener('input', function() {
-            formatPhoneNo(this);
-        });
-
+        window.usernames = @json($usernames);
         function validateForNextStep() {
             return true;
         }

@@ -34,7 +34,7 @@
         <div class="step1 space-y-6 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Name --}}
-                <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized dataValidate="required|letters" />
+                <x-input label="Name" name="name" id="name" placeholder="Enter name" required capitalized dataValidate="required|friendly" />
 
                 <x-input
                     label="Username"
@@ -61,6 +61,7 @@
         </div>
     </form>
     <script>
+        window.usernames = @json($usernames);
         function validateForNextStep() {
             return true;
         }
