@@ -34,4 +34,8 @@ class Employee extends Model
     public function type() {
         return $this->belongsTo(Setup::class, 'type_id');
     }
+
+    public function tags() {
+        return $this->hasMany(IssuedFabric::class, 'worker_id');
+    }
 }

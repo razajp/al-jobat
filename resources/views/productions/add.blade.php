@@ -47,13 +47,14 @@
                         :options="$worker_options"
                         showDefault
                         required
+                        onchange="trackWorkerState(this)"
                     />
                 </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
-                {{-- pcs_per_packet  --}}
-                <x-input label="Master Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter master unit" required />
+                {{-- tags  --}}
+                <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" required onclick="generateSelectTagModal()"/>
 
                 {{-- packets --}}
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
@@ -121,7 +122,7 @@
         const remainingqQuantityDom = document.getElementById('remainingquantity');
         const finalOrderAmountDom = document.getElementById('finalOrderAmount');
 
-        let isModalOpened = false;
+        let tags = [];
 
         let totalQuantity = 0;
         let totalAmount = 0;
@@ -274,6 +275,38 @@
                 totalQtyErrorDom.classList.add('hidden');
                 totalQtyErrorDom.innerText = '';
             }
+        }
+
+        function trackWorkerState(elem) {
+            const selectParent = elem.closest('.selectParent');
+            const selectedWorkerData = JSON.parse(selectParent.querySelector('li.selected').dataset.option || '{}');
+            tags = selectedWorkerData.taags || [];
+        }
+
+        function generateSelectTagModal() {
+            let data = tags;
+            let cardData = [];
+
+            console.log(data);
+            if (data.length > 0) {
+                cardData.push(...data.map(item => {
+                    return {
+                        id: item.id,
+                        name: item.tag,
+                        details: {
+                            'Supplier': item.supplier_name
+                        },
+                        data: item,
+                    };
+                }));
+            }
+            
+            let modalData = {
+                id: 'modalForm',
+                cards: {name: 'Articles', count: 3, data: cardData},
+            }
+
+            createModal(modalData);
         }
 
         function validateForNextStep() {
