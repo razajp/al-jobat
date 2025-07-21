@@ -93,8 +93,8 @@ class CustomerPayment extends Model
         return $this->hasOne(SupplierPayment::class, "slip_id");
     }
     
-    public function partialRecord()
+    public function paymentClearRecord()
     {
-        return $this->hasMany(PartialClear::class, "payment_id");
+        return $this->hasMany(PaymentClear::class, "payment_id");
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
-use App\Models\PartialClear;
+use App\Models\PaymentClear;
 use App\Models\PaymentProgram;
 use App\Models\Setup;
 use App\Models\Supplier;
@@ -25,7 +25,7 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = CustomerPayment::with("customer", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'partialRecord')->whereNotNull('customer_id')->get();
+        $payments = CustomerPayment::with("customer.city", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
             if (($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
@@ -46,18 +46,20 @@ class CustomerPaymentController extends Controller
                 $payment['cheque']['supplier'] = Supplier::with('bankAccounts')->find($payment['cheque']['supplier_id']);
             }
 
-            if (!empty($payment['partialRecord'])) {
-                $clearAmount = collect($payment['partialRecord'])->sum('amount');
+            if (!empty($payment['paymentClearRecord'])) {
+                $clearAmount = collect($payment['paymentClearRecord'])->sum('amount');
                 $payment['clear_amount'] = $clearAmount;
 
                 if (floatval($clearAmount) >= floatval($payment['amount'])) {
                     // Get last partial record's clear date
-                    $lastPartial = collect($payment['partialRecord'])->last();
+                    $lastPartial = collect($payment['paymentClearRecord'])->last();
                     if (isset($lastPartial['clear_date'])) {
                         $payment['clear_date'] = $lastPartial['clear_date'];
                     }
                 }
             }
+
+            $payment['customer']['city']['title'] = $payment['customer']['city']['title'] . ' | ' . $payment['customer']['city']['short_title'];
 
             if ($payment['remarks'] == null) {
                 $payment['remarks'] = 'No Remarks';
@@ -265,44 +267,18 @@ class CustomerPaymentController extends Controller
     {
         //
     }
-    /**
-     * Clear the specified customer payment.
-     */
-    public function clear($id, Request $request) {
+
+    public function clear(Request $request, $id) {
         if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
         $validator = Validator::make($request->all(), [
             'clear_date' => 'required|date',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
-        }
-
-        $data = $request->all();
-
-        $data['clear_date'] = $request->clear_date;
-        $data['remarks'] = $request->remarks;
-
-        $customerPayment = CustomerPayment::findOrFail($id);
-        $customerPayment->update($data);
-        $customerPayment->save();
-
-        return redirect()->back()->with('success', 'Payment cleared successfully.');
-    }
-
-    public function partialClear(Request $request, $id) {
-        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        }
-
-        $validator = Validator::make($request->all(), [
-            'clear_date' => 'required|date',
+            'method' => 'required|string',
             'bank_account_id' => 'required|integer|exists:bank_accounts,id',
             'amount' => 'required|integer',
-            'reff_no' => 'required|string',
+            'reff_no' => 'nullable|string',
             'remarks' => 'nullable|string',
         ]);
 
@@ -313,33 +289,8 @@ class CustomerPaymentController extends Controller
         $data = $request->all();
         $data['payment_id'] = $id;
 
-        PartialClear::create($data);
+        PaymentClear::create($data);
 
         return redirect()->back()->with('success', 'Payment partial cleared successfully.');
-    }
-    
-    public function transfer($id, Request $request) {
-        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        }
-
-        $validator = Validator::make($request->all(), [
-            'bank_account_id' => 'required|integer|exists:bank_accounts,id',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
-        }
-
-        $data = $request->all();
-
-        $data['bank_account_id'] = $request->bank_account_id;
-        $data['remarks'] = $request->remarks;
-
-        $customerPayment = CustomerPayment::findOrFail($id);
-        $customerPayment->update($data);
-        $customerPayment->save();
-
-        return redirect()->back()->with('success', 'Cheque transferd successfully.');
     }
 }

@@ -10,6 +10,13 @@
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "name",
         ],
+        "City" => [
+            "id" => "city",
+            "type" => "text",
+            "placeholder" => "Enter city",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "data.customer.city.title",
+        ],
         "Type" => [
             "id" => "type",
             "type" => "select",
@@ -148,8 +155,6 @@
         });
 
         function generateClearModal(data) {
-            console.log(data);
-
             let modalData = {
                 id: 'clearModal',
                 class: 'h-auto',
@@ -167,44 +172,25 @@
                         required: true,
                     },
                     {
-                        category: 'input',
-                        name: 'remarks',
-                        label: 'Remarks',
-                        type: 'text',
-                        placeholder: 'Enter remarks',
-                    },
-                ],
-                fieldsGridCount: '2',
-                bottomActions: [
-                    {id: 'clear', text: 'Clear', type: 'submit'},
-                ],
-            };
-            createModal(modalData);
-        }
-
-        function generatePartialClearModal(data) {
-            console.log(data);
-
-            let modalData = {
-                id: 'partialClearModal',
-                class: 'h-auto',
-                name: 'Clear Payment',
-                method: 'POST',
-                action: `/customer-payments/${data.id}/partial-clear`,
-                fields: [
-                    {
-                        category: 'input',
-                        name: 'clear_date',
-                        label: 'Clear Date',
-                        type: 'date',
-                        min: (data.cheque_date || data.slip_date)?.split('T')[0],
-                        max: new Date().toISOString().split('T')[0],
-                        required: true,
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
+                        `,
                     },
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select class="" label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
+                            <x-select
+                                label="Method"
+                                name="method_select"
+                                id="method_select" 
+                                :options="[
+                                    'online' => ['text' => 'Online'],
+                                    'cash' => ['text' => 'Cash'],
+                                ]"
+                                required
+                                showDefault
+                            />
                         `,
                     },
                     {
@@ -216,7 +202,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff. no." required/>
+                            <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff. no."/>
                         `,
                     },
                     {
@@ -225,7 +211,6 @@
                         label: 'Remarks',
                         type: 'text',
                         placeholder: 'Enter remarks',
-                        full: true
                     },
                 ],
                 fieldsGridCount: '2',
@@ -236,7 +221,7 @@
             createModal(modalData);
 
             let bankAccounts = data.bank_account ? [data.bank_account] : data.cheque?.supplier?.bank_accounts ? data.cheque?.supplier?.bank_accounts : data.slip?.supplier?.bank_accounts ? data.slip?.supplier?.bank_accounts : [];
-            let form = document.querySelector('#partialClearModal');
+            let form = document.querySelector('#clearModal');
             let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
             let bankAccountDom = form.querySelector('ul[data-for="bank_account_id"]');
             
@@ -278,7 +263,6 @@
                 if (data.data.clear_date == null && data.data.issued == 'Issued') {
                     contextMenuData.actions.push(
                         {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                        {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                     );
                 }
             }
@@ -324,7 +308,6 @@
                 if (data.data.clear_date == null && data.data.issued == 'Issued') {
                     modalData.bottomActions.push(
                         {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                        {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                     );
                 }
             }

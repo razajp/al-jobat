@@ -52,7 +52,7 @@ class VoucherController extends Controller
         foreach ($cheques as $cheque) {
             $cheques_options[(int)$cheque->id] = [
                 'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
-                'data_option' => $cheque,
+                'data_option' => $cheque->makeHidden('creator'),
             ];
         }
 
@@ -62,7 +62,7 @@ class VoucherController extends Controller
         foreach ($slips as $slip) {
             $slips_options[(int)$slip->id] = [
                 'text' => $slip->slip_no . ' - ' . $slip->amount,
-                'data_option' => $slip,
+                'data_option' => $slip->makeHidden('creator'),
             ];
         }
 

@@ -45,9 +45,9 @@ class Customer extends Model
         });
 
         // Always eager load the associated creator
-        static::addGlobalScope('withCreator', function (Builder $builder) {
-            $builder->with('creator');
-        });
+        // static::addGlobalScope('withCreator', function (Builder $builder) {
+        //     $builder->with('creator');
+        // });
     }
 
     public function creator()

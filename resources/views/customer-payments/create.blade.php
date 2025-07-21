@@ -139,8 +139,8 @@
     </div>
     
     <script>
-        window.chequeNos = @json($cheque_nos);
-        window.slipNos = @json($slip_nos);
+        window.chequeNos = @json($cheque_nos ?? '');
+        window.slipNos = @json($slip_nos ?? '');
 
         let customerSelectDom = document.getElementById('customer_id');
         let methodSelectDom = document.getElementById('method');

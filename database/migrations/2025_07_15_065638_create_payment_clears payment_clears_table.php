@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('partial_clears', function (Blueprint $table) {
+        Schema::create('payment_clears', function (Blueprint $table) {
             $table->id();
             $table->foreignId('payment_id')->constrained('customer_payments')->onDelete('cascade');
             $table->date('clear_date');
+            $table->string('method');
             $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->integer('amount');
             $table->string('reff_no')->unique();
@@ -29,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('partial_clears');
+        Schema::dropIfExists('payment_clears');
     }
 };

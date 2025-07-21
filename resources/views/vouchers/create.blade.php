@@ -238,14 +238,14 @@
         enterDetailsBtn.disabled = true;
 
         function trackChequeState(elem) {
-            let selectedCheque = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
+            let selectedCheque = JSON.parse(elem.closest('.selectParent').querySelector('ul[data-for="cheque_id"] li.selected').dataset.option || '{}');
             let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
             
             amountInpDom.value = selectedCheque.amount;
         }
 
         function trackSlipState(elem) {
-            let selectedSlip = JSON.parse(elem.options[elem.selectedIndex].dataset.option);
+            let selectedSlip = JSON.parse(elem.closest('.selectParent').querySelector('ul[data-for="slip_id"] li.selected').dataset.option || '{}');
             let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
 
             amountInpDom.value = selectedSlip.amount;
@@ -356,12 +356,10 @@
             } else if (elem.value == 'cheque') {
                 fieldsData.push(
                     {
-                        category: 'select',
-                        name: 'cheque_id',
-                        label: 'Cheque',
-                        required: true,
-                        options: [@json($cheques_options)],
-                        onchange: 'trackChequeState(this)'
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select label="Cheque" name="cheque_id" id="cheque_id" required :options="$cheques_options" showDefault onchange="trackChequeState(this)" />
+                        `,
                     },
                     @if($voucherType == 'self_account')
                     {
@@ -389,12 +387,10 @@
             } else if (elem.value == 'slip') {
                 fieldsData.push(
                     {
-                        category: 'select',
-                        name: 'slip_id',
-                        label: 'Slip',
-                        required: true,
-                        options: [@json($slips_options)],
-                        onchange: 'trackSlipState(this)',
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select label="Slip" name="slip_id" id="slip_id" required :options="$slips_options" showDefault onchange="trackSlipState(this)" />
+                        `,
                     },
                     @if($voucherType == 'self_account')
                     {
@@ -422,12 +418,10 @@
             } else if (elem.value == 'program') {
                 fieldsData.push(
                     {
-                        category: 'select',
-                        name: 'program_id',
-                        id: 'program',
-                        label: 'Program',
-                        required: true,
-                        options: [],
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select label="Program" name="program_id" id="program_id" required :options="[]" showDefault />
+                        `,
                     },
                     {
                         category: 'input',
@@ -592,7 +586,7 @@
                 });
 
                 if (elem.value == 'program') {
-                    let paymentSelectDom = document.getElementById('program');
+                    let paymentSelectDom = document.querySelector(`ul[data-for="program_id"]`);
 
                     let allPayments = selectedSupplier.payments;
 
@@ -600,22 +594,64 @@
                         return new Date(payment.date) <= new Date(dateDom.value);
                     });
 
-                    filteredPayments.forEach(payment => {
-                        paymentSelectDom.innerHTML += `<option value="${payment.id}" data-option='${JSON.stringify(payment)}'>${payment.amount} | ${payment.program.customer.customer_name}</option>`;
-                    })
+                    paymentSelectDom.innerHTML = `
+                        <li data-for="program_id" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select program --</li>
+                    `;
 
+                    filteredPayments.forEach(payment => {
+                        paymentSelectDom.innerHTML += `
+                            <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${payment.amount} | ${payment.program.customer.customer_name}</li>
+                        `;
+                    })
+                    
                     if (filteredPayments.length > 0) {
-                        paymentSelectDom.disabled = false;
+                        document.querySelector('input[name="program_id_name"]').disabled = false;
+                        document.querySelector('input[name="program_id_name"]').placeholder = '-- Select program --';
                     }
 
-                    paymentSelectDom.addEventListener('change', () => {
-                        let selectedOption = paymentSelectDom.options[paymentSelectDom.selectedIndex];
+                    document.querySelector('input[name="program_id"]').addEventListener('change', () => {
+                        let selectedOption = paymentSelectDom.querySelector('li.selected');
                         let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-
+                        
                         selectedDom.value = JSON.stringify(selectedPayment);
                         document.getElementById('amount').value = selectedPayment.amount;
                         document.getElementById('payment_id').value = selectedPayment.id;
                     })
+                }
+
+                if (elem.value === 'slip' || elem.value === 'cheque' || elem.value === 'program') {
+                    const type = elem.value; // 'slip' or 'cheque'
+                    const key = type + '_id'; // slip_id or cheque_id
+                    const inputName = key + '_name'; // slip_id_name or cheque_id_name
+
+                    // Step 1: Get all slip_id / cheque_id from paymentDetailsArray
+                    const usedIds = paymentDetailsArray
+                        .map(item => item[key])
+                        .filter(id => id !== undefined && id !== null);
+
+                    // Step 2: Hide the corresponding <li> elements
+                    usedIds.forEach(id => {
+                        const listItem = document.querySelector(`ul[data-for="${key}"] li[data-value="${id}"]`);
+                        if (listItem) {
+                            listItem.style.display = 'none';
+                        }
+                    });
+
+                    // Step 3: Check remaining visible <li> items
+                    const allListItems = document.querySelectorAll(`ul[data-for="${key}"] li`);
+                    const visibleListItems = Array.from(allListItems).filter(li => li.style.display !== 'none');
+
+                    // Step 4: If only one visible <li> and its data-value is '', disable input and update placeholder
+                    if (
+                        visibleListItems.length === 1 &&
+                        visibleListItems[0].getAttribute('data-value') === ''
+                    ) {
+                        const input = document.querySelector(`input[name="${inputName}"]`);
+                        if (input) {
+                            input.placeholder = '-- No options available --';
+                            input.disabled = true;
+                        }
+                    }
                 }
             }
         }
@@ -654,9 +690,10 @@
             }
 
             if (Object.keys(detail).length > 0) {
+                const selectedMethod = methodSelectDom.value;
                 totalPayment += detail.amount;
-                detail['method'] = methodSelectDom.value;
-                allDetail['method'] = methodSelectDom.value;
+                detail['method'] = selectedMethod;
+                allDetail['method'] = selectedMethod;
                 paymentDetailsArray.push(detail);
                 allPayments.push(allDetail);
                 renderList();
@@ -678,7 +715,7 @@
                             <div class="w-1/5 capitalize">${paymentDetail.remarks && paymentDetail.remarks.trim() !== '' ? paymentDetail.remarks : '-'}</div>
                             <div class="w-[15%]">${formatNumbersWithDigits(paymentDetail.amount, 1, 1)}</div>
                             <div class="w-[10%] text-center">
-                                <button onclick="deselectThisPayment(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out">
+                                <button onclick="deselectThisPayment(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                                     <i class="fas fa-trash"></i>
                                 </button>
                             </div>

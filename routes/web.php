@@ -72,15 +72,11 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     
     Route::resource('customer-payments', CustomerPaymentController::class);
     Route::post('customer-payments/{id}/clear', [CustomerPaymentController::class, 'clear'])->name('customer-payments.clear');
-    Route::post('customer-payments/{id}/partial-clear', [CustomerPaymentController::class, 'partialClear'])->name('customer-payments.partial-clear');
     Route::post('customer-payments/{id}/transfer', [CustomerPaymentController::class, 'transfer'])->name('customer-payments.transfer');
-
-    Route::resource('payment-transfer', PaymetnTransferController::class);
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
     
     Route::resource('payment-programs', PaymentProgramController::class);
-    // Route::post('payment-programs.mark_paid', [PaymentProgramController::class, 'markPaid'])->name('payment-programs.mark_paid');
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
     Route::get('payment-programs/{id}/mark-paid', [PaymentProgramController::class, 'markPaid'])->name('payment-programs.mark-paid');
 

@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class PartialClear extends Model
+class PaymentClear extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'payment_id',
         'clear_date',
+        'method',
         'bank_account_id',
         'amount',
         'reff_no',
