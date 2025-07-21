@@ -235,24 +235,24 @@
             };
             createModal(modalData);
 
-            let bankAccounts = data.cheque?.supplier?.bank_accounts;
+            let bankAccounts = data.bank_account ? [data.bank_account] : data.cheque?.supplier?.bank_accounts ? data.cheque?.supplier?.bank_accounts : data.slip?.supplier?.bank_accounts ? data.slip?.supplier?.bank_accounts : [];
             let form = document.querySelector('#partialClearModal');
             let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
             let bankAccountDom = form.querySelector('ul[data-for="bank_account_id"]');
             
             bankAccountInpDom.disabled = false;
             bankAccountInpDom.value = '-- Select bank account --';
-            options = `
+            bankAccountDom.innerHTML = `
                 <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected "">-- Select bank account --</li>
             `;
+            
             bankAccounts.forEach(bankAccount => {
-                console.log(bankAccount);
                 
-                options += `
+                bankAccountDom.innerHTML += `
                     <li data-for="bank_account_id" data-value="${bankAccount.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">${bankAccount.account_title}</li>
                 `;
             });
-            bankAccountDom.innerHTML = options;
+            // bankAccountDom.innerHTML = options;
         }
         
         function generateContextMenu(e) {
@@ -275,14 +275,9 @@
                     (data.data.method === 'slip' && new Date(data.data.slip_date) <= new Date())
                 )
             ) {
-                if (data.data.clear_date == null) {
-                    contextMenuData.actions.push(
-                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                    );
-                }
-
                 if (data.data.clear_date == null && data.data.issued == 'Issued') {
                     contextMenuData.actions.push(
+                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
                         {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                     );
                 }
@@ -326,14 +321,9 @@
                     (data.data.method === 'slip' && new Date(data.data.slip_date) <= new Date())
                 )
             ) {
-                if (data.data.clear_date == null) {
-                    modalData.bottomActions.push(
-                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
-                    );
-                }
-
                 if (data.data.clear_date == null && data.data.issued == 'Issued') {
                     modalData.bottomActions.push(
+                        {id: 'clear', text: 'Clear', onclick: `generateClearModal(${JSON.stringify(data.data)})`},
                         {id: 'partial-clear', text: 'Partial Clear', onclick: `generatePartialClearModal(${JSON.stringify(data.data)})`},
                     );
                 }

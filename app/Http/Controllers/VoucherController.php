@@ -46,7 +46,7 @@ class VoucherController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereNull('bank_account_id')->get();
+        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
         $cheques_options = [];
         
         foreach ($cheques as $cheque) {
@@ -56,7 +56,7 @@ class VoucherController extends Controller
             ];
         }
 
-        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereNull('bank_account_id')->get();
+        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
         $slips_options = [];
 
         foreach ($slips as $slip) {

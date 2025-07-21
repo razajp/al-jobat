@@ -25,10 +25,10 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
         };
         
-        $payments = CustomerPayment::with("customer", 'cheque', 'partialRecord')->whereNotNull('customer_id')->get();
+        $payments = CustomerPayment::with("customer", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'partialRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
-            if ($payment->cheque()->exists() || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
+            if (($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
                 $payment['issued'] = 'Issued';
             } else {
                 $payment['issued'] = 'Not Issued';
@@ -64,18 +64,18 @@ class CustomerPaymentController extends Controller
             }
         }
 
-        $self_accounts = BankAccount::with('bank')->where('category', 'self')->where('status', 'active')->get();
-        $self_accounts_options = [];
+        // $self_accounts = BankAccount::with('bank')->where('category', 'self')->where('status', 'active')->get();
+        // $self_accounts_options = [];
 
-        foreach ($self_accounts as $self_account) {
-            $self_accounts_options[(int)$self_account->id] = [
-                'text' => $self_account->account_title . ' | ' . $self_account->bank->short_title,
-            ];
-        }
+        // foreach ($self_accounts as $self_account) {
+        //     $self_accounts_options[(int)$self_account->id] = [
+        //         'text' => $self_account->account_title . ' | ' . $self_account->bank->short_title,
+        //     ];
+        // }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        return view("customer-payments.index", compact("payments", "self_accounts_options", "authLayout"));
+        return view("customer-payments.index", compact("payments", "authLayout"));
     }
 
     /**
