@@ -10,6 +10,7 @@
     <!-- Main Content -->
     <div class="max-w-5xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
+        <x-progress-bar :steps="['Generate Invoice', 'Preview']" :currentStep="1" />
     </div>
 
     <!-- Form -->
