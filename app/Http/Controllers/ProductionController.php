@@ -48,7 +48,8 @@ class ProductionController extends Controller
 
                     return [
                         'tag' => $tag,
-                        'total_quantity' => $items->sum('quantity'),
+                        'unit' => ucfirst($fabric->unit),
+                        'quantity' => $items->sum('quantity'),
                         'supplier_name' => $supplier->supplier_name ?? null,
                     ];
                 })->values();

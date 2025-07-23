@@ -10,7 +10,7 @@
     <!-- Main Content -->
     <div class="max-w-5xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
-        <x-progress-bar :steps="['Generate Invoice', 'Preview']" :currentStep="1" />
+        <x-progress-bar :steps="['Master Information', 'Details']" :currentStep="1" />
     </div>
 
     <!-- Form -->
@@ -19,40 +19,39 @@
         @csrf
         <x-form-title-bar title="Add Production" />
 
-        <div class="space-y-4 ">
-            <div class="flex justify-between gap-4">
+        <div class="step1 space-y-4 ">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- article --}}
-                <div class="grow">
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
-                    <input type="hidden" name="article_id" id="article_id" value="" />
-                </div>
+                <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                <input type="hidden" name="article_id" id="article_id" value="" />
 
                 {{-- work --}}
-                <div class="w-1/4">
                     <x-select 
-                        label="Work"
-                        name="work"
-                        id="work"
-                        :options="$worke_options"
-                        showDefault
-                        required
-                    />
-                </div>
+                    label="Work"
+                    name="work"
+                    id="work"
+                    :options="$worke_options"
+                    showDefault
+                    required
+                />
 
                 {{-- worker --}}
-                <div class="w-1/4">
-                    <x-select 
-                        label="Worker"
-                        name="worker"
-                        id="worker"
-                        :options="$worker_options"
-                        showDefault
-                        required
-                        onchange="trackWorkerState(this)"
-                    />
-                </div>
-            </div>
+                <x-select 
+                    label="Worker"
+                    name="worker"
+                    id="worker"
+                    :options="$worker_options"
+                    showDefault
+                    required
+                    onchange="trackWorkerState(this)"
+                />
 
+                {{-- balance --}}
+                <x-input label="Balance" id="balance" placeholder='Balance' disabled />
+            </div>
+        </div>
+
+        <div class="step2 space-y-4 hidden">
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- tags  --}}
                 <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" required onclick="generateSelectTagModal()"/>
@@ -100,12 +99,6 @@
                 </div>
             </div>
         </div>
-        <div class="w-full flex justify-end mt-4">
-            <button type="submit"
-                class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
-                <i class='fas fa-save mr-1'></i> Save
-            </button>
-        </div>
     </form>
 
     <script>
@@ -124,6 +117,7 @@
         const finalOrderAmountDom = document.getElementById('finalOrderAmount');
 
         let tags = [];
+        let selectedTagsArray = [];
 
         let totalQuantity = 0;
         let totalAmount = 0;
@@ -222,16 +216,6 @@
             remainingqQuantityDom.innerText = new Intl.NumberFormat('en-US').format(pcsPerPacketDom.value > 0 && parseInt(totalPhysicalQuantityDom.textContent) > 0 ? selectedArticle.quantity - parseInt(totalPhysicalQuantityDom.textContent) : selectedArticle.quantity);
         }
 
-        document.getElementById('pcs_per_packet').addEventListener('input', () => {
-            calculateTotal();
-            trackArticleQuantity();
-        });
-
-        document.getElementById('packets').addEventListener('input', () => {
-            calculateTotal();
-            trackArticleQuantity();
-        });
-
         function trackFieldsDisability() {
             if (!selectedArticle) {
                 pcsPerPacketDom.disabled = true;
@@ -281,7 +265,9 @@
         function trackWorkerState(elem) {
             const selectParent = elem.closest('.selectParent');
             const selectedWorkerData = JSON.parse(selectParent.querySelector('li.selected').dataset.option || '{}');
+            document.getElementById('balance').value = selectedWorkerData?.balance || 0;
             tags = selectedWorkerData.taags || [];
+            elem.value !== '' && gotoStep(2);
         }
 
         function generateSelectTagModal() {
@@ -295,21 +281,66 @@
                         id: item.id,
                         name: item.tag,
                         details: {
-                            'Supplier': item.supplier_name
+                            'Supplier': item.supplier_name,
+                            'Quantity': item.quantity
                         },
                         data: item,
+                        onclick: `generateQuantityModal(${JSON.stringify(item)})`,
                     };
                 }));
             }
             
             let modalData = {
                 id: 'modalForm',
-                cards: {name: 'Articles', count: 3, data: cardData},
+                cards: {name: 'Tags', count: 3, data: cardData},
             }
 
             createModal(modalData);
         }
 
+        function generateQuantityModal(item) {
+            console.log(item);
+            
+            let modalData = {
+                id: 'quantityModal',
+                name: 'Enter Quantity',
+                class: 'h-auto',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Unit',
+                        value: item.unit,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Avalaible Quantity',
+                        value: item.quantity,
+                        disabled: true,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required oninput="validateInput(this)"/>
+                        `,
+                    },
+                ],
+                fieldsGridCount: '1',
+                bottomActions: [
+                    {id: 'done', text: 'Done', onclick: 'selectWithQuantity(this)'},
+                ],
+            }
+
+            createModal(modalData)
+
+            document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.quantity}`;
+        }
+
+        function selectWithQuantity(elem) {
+            console.log(elem);
+            closeModal('quantityModal');
+        }
+        
         function validateForNextStep() {
             return true;
         }

@@ -710,7 +710,7 @@ function createModal(data) {
             } else {
                 clutter += `
                     <button id="${action.id}-in-modal" type="${action.type ?? 'button'}" onclick='${action.onclick}'
-                        class="px-4 py-2 bg-${action.id.includes('add') ? '[var(--bg-success)]' : '[var(--secondary-bg-color)]'} border hover:border-${action.id.includes('add') ? '[var(--border-success)] border-[var(--bg-success)]' : 'gray-600 border-gray-600'} text-${action.id.includes('add') ? '[var(--border-success)]' : '[var(--secondary-text)]'} rounded-lg hover:bg-${action.id.includes('add') ? '[var(--h-bg-success)]' : '[var(--h-bg-color)]'} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
+                        class="px-4 py-2 bg-${(action.id.includes('add') || action.id.includes('done'))? '[var(--bg-success)]' : '[var(--secondary-bg-color)]'} border hover:border-${(action.id.includes('add') || action.id.includes('done'))? '[var(--border-success)] border-[var(--bg-success)]' : 'gray-600 border-gray-600'} text-${(action.id.includes('add') || action.id.includes('done'))? '[var(--border-success)]' : '[var(--secondary-text)]'} rounded-lg hover:bg-${(action.id.includes('add') || action.id.includes('done'))? '[var(--h-bg-success)]' : '[var(--h-bg-color)]'} transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
                         ${action.text}
                     </button>
                 `;
