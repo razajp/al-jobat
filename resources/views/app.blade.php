@@ -750,112 +750,34 @@
     //     return path.split('.').reduce((acc, part) => acc?.[part], obj);
     // }
 
-    @if(request()->route()->getActionMethod() === 'index')
-        // change layout
-        function changeLayout() {
-            $.ajax({
-                url: "{{ route('change-data-layout') }}",
-                type: 'POST',
-                data: {
-                    layout: authLayout,
-                }, // Optional if you want to send any data, can be left empty
-                headers: {
-                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                },
-                success: function(response) {
-                    if (response.status === 'updated') {
-                        console.log("Layout Updated Successfully.");
-                        authLayout = response.updatedLayout;
-                        console.log(authLayout);
-                        
-                        clearAllSearchFields();
-                        renderData();
-
-                        const changeLayoutBtn = document.getElementById('changeLayoutBtn');
-                        if (response.updatedLayout == "grid") {
-                            changeLayoutBtn.innerHTML = `
-                                <i class='fas fa-list-ul text-white'></i>
-                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
-                            `;
-                        } else {
-                            changeLayoutBtn.innerHTML = `
-                                <i class='fas fa-grip text-white'></i>
-                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
-                            `;
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("Failed to update Layout", error);
-                }
-            });
-        }
-
-        const tableHead = document.getElementById('table-head');
-        const search_container = document.querySelector('.search_container');
-        const scroller = search_container;
-        const batchSize = 50;
-        let startIndex = 0;
-        let isFetching = false;
-
-        function renderNextBatch() {
-            if (startIndex >= allDataArray.length) return;
-
-            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
-            const html = nextChunk
-                .filter(item => item.visible === true)
-                .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
-                .join('');
-            search_container.insertAdjacentHTML('beforeend', html);
-            startIndex += batchSize;
-        }
-
-        scroller?.addEventListener('scroll', () => {
-            const scrollTop = scroller.scrollTop;
-            const scrollHeight = scroller.scrollHeight;
-            const clientHeight = scroller.clientHeight;
-
-            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
-                isFetching = true;
-                setTimeout(() => {
-                    console.log("Render Next Batch");
-                    
-                    renderNextBatch();
-                    isFetching = false;
-                }, 100);
-            }
-        });
-
-        function renderData() {
-            if (authLayout == "grid") {
-                tableHead.classList.add("hidden");
-                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2 pb-4";
-            } else {
-                tableHead.classList.remove("hidden");
-                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3 pb-4";
-            }
-            search_container.innerHTML = "";
-            startIndex = 0;
-            renderNextBatch();
-        }
-
-        renderData(); // initial load
-
+    @if(request()->route()->getActionMethod() === 'index' || request()->is('invoices/create'))
+        let search_container = document.querySelector('.search_container');
+        let tableHead = document.getElementById('table-head');
+        
         function renderFilteredData() {
-            if (authLayout == "grid") {
+            // Check if authLayout is defined
+            const isGrid = typeof authLayout !== 'undefined' && authLayout === "grid";
+
+            if (isGrid) {
                 tableHead.classList.add("hidden");
                 search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2 pb-4";
             } else {
                 tableHead.classList.remove("hidden");
                 search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3 pb-4";
             }
+
             search_container.innerHTML = "";
 
-            const html = newlyFilteredData
-                .filter(item => item.visible === true)
-                .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
-                .join('');
-            search_container.insertAdjacentHTML('beforeend', html);
+            @if(request()->route()->getActionMethod() === 'index')
+                const html = newlyFilteredData
+                    .filter(item => item.visible === true)
+                    .map(item => isGrid ? createCard(item) : createRow(item))
+                    .join('');
+
+                search_container.insertAdjacentHTML('beforeend', html);
+            @elseif(request()->is('invoices/create'))
+                
+            @endif
         }
 
         function getNestedValue(obj, path) {
@@ -977,10 +899,13 @@
 
         const debouncedFilter = debounce(runDynamicFilter, 300);
 
-        document.querySelectorAll('[data-filter-path]').forEach(input => {
-            const eventType = (input.classList.contains("dbInput") || input.type === 'date') ? 'change' : 'input';
-            input.addEventListener(eventType, debouncedFilter);
-        });
+        function setSearchDebounce() {
+            document.querySelectorAll('[data-filter-path]').forEach(input => {
+                const eventType = (input.classList.contains("dbInput") || input.type === 'date') ? 'change' : 'input';
+                input.addEventListener(eventType, debouncedFilter);
+            });
+        }
+        setSearchDebounce();
 
         function clearAllSearchFields() {
             document.querySelectorAll('[data-clearable]').forEach(searchField => {
@@ -988,6 +913,96 @@
                 debouncedFilter();
             })
         }
+    @endif
+
+    @if(request()->route()->getActionMethod() === 'index')
+        // change layout
+        function changeLayout() {
+            $.ajax({
+                url: "{{ route('change-data-layout') }}",
+                type: 'POST',
+                data: {
+                    layout: authLayout,
+                }, // Optional if you want to send any data, can be left empty
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    if (response.status === 'updated') {
+                        console.log("Layout Updated Successfully.");
+                        authLayout = response.updatedLayout;
+                        console.log(authLayout);
+                        
+                        clearAllSearchFields();
+                        renderData();
+
+                        const changeLayoutBtn = document.getElementById('changeLayoutBtn');
+                        if (response.updatedLayout == "grid") {
+                            changeLayoutBtn.innerHTML = `
+                                <i class='fas fa-list-ul text-white'></i>
+                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">List</span>
+                            `;
+                        } else {
+                            changeLayoutBtn.innerHTML = `
+                                <i class='fas fa-grip text-white'></i>
+                                <span class="absolute shadow-xl -right-2 top-7.5 z-10 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2.5 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap">Grid</span>
+                            `;
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Failed to update Layout", error);
+                }
+            });
+        }
+
+        const scroller = search_container;
+        const batchSize = 50;
+        let startIndex = 0;
+        let isFetching = false;
+
+        function renderNextBatch() {
+            if (startIndex >= allDataArray.length) return;
+
+            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
+            const html = nextChunk
+                .filter(item => item.visible === true)
+                .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
+                .join('');
+            search_container.insertAdjacentHTML('beforeend', html);
+            startIndex += batchSize;
+        }
+
+        scroller?.addEventListener('scroll', () => {
+            const scrollTop = scroller.scrollTop;
+            const scrollHeight = scroller.scrollHeight;
+            const clientHeight = scroller.clientHeight;
+
+            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
+                isFetching = true;
+                setTimeout(() => {
+                    console.log("Render Next Batch");
+                    
+                    renderNextBatch();
+                    isFetching = false;
+                }, 100);
+            }
+        });
+
+        function renderData() {
+            if (authLayout == "grid") {
+                tableHead.classList.add("hidden");
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2 pb-4";
+            } else {
+                tableHead.classList.remove("hidden");
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3 pb-4";
+            }
+            search_container.innerHTML = "";
+            startIndex = 0;
+            renderNextBatch();
+        }
+
+        renderData(); // initial load
     @endif
     
     function closeModal(modalId) {

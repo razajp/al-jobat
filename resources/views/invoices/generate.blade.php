@@ -307,6 +307,20 @@
                 getShipmentDetails();
             });
 
+            function createRow(data) {
+                return `
+                <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
+                    class="item row relative group grid text- grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                    data-json='${JSON.stringify(data)}'>
+
+                    <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
+                    <span class="text-center capitalize">${data.details["Category"]}</span>
+                    <span class="text-center capitalize">${data.city}</span>
+                    <span class="text-center">${data.phone_number}</span>
+                    <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                </div>`;
+            }
+
             function getShipmentDetails() {
                 // if (allCustomers.length > 0) {
                 //     generateModal(allCustomers);
@@ -330,8 +344,11 @@
                                 shipmentArticles = response.shipment.articles;
                                 discount = response.shipment.discount ?? 0;
                                 allCustomers = response.customers;
+                                allDataArray = allCustomers;
 
                                 generateModal(allCustomers);
+                                search_container = document.querySelector('.search_container');
+                                tableHead = document.getElementById('table-head');
                                 renderList();
                                 renderCalcBottom();
                                 calculateNoOfSelectableCustomers(shipmentArticles);
@@ -426,6 +443,7 @@
                 }
 
                 createModal(modalData);
+                setSearchDebounce();
             }
 
             function setArrayToCustomersArrayInput() {

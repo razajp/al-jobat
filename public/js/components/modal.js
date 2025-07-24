@@ -291,62 +291,20 @@ function createModal(data) {
 
     if (data.table) {
         let headerHTML = '';
-        let bodyHTML = '';
 
         data.table.headers.forEach(header => {
             headerHTML += `<div class="${header.class}">${header.label}</div>`;
         });
 
-        if (data.table.body?.length > 0) {
-            data.table.body.forEach(data => {
-                const rowHTML = data.map(item => {
-                    let checkboxHTML = '';
-                    let inputHTML = '';
-
-                    if (item.input) {
-                        inputHTML = `
-                            <input class="${item.input.class || ''} w-[70%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="${item.input.type || 'text'}" name="${item.input.name || ''}" value="${item.input.value || ''}" min="${item.input.min || ''}" oninput="${item.input.oninput || ''}" onclick="${item.input.onclick || ''}" />
-                        `;
-                    }
-
-                    if (item.checkbox) {
-                        checkboxHTML = `
-                            <input ${item.checked ? 'checked' : ''} type="checkbox" name="selected_customers[]"
-                                class="row-checkbox mr-2 shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
-                        `;
-                    }
-
-                    if (item.checkbox || item.input) {
-                        return `
-                            <div class="${item.class}">
-                                ${checkboxHTML}
-                                ${inputHTML}
-                            </div>
-                        `;
-                    } else {
-                        return `<div class="${item.class}">${item.data}</div>`;
-                    }
-               }).join('');
-                bodyHTML += `
-                    <div id='${data[0].jsonData?.id}' ${data[0].jsonData ? `data-json='${JSON.stringify(data[0].jsonData)}'` : ''} data class="flex justify-between items-center border-t border-gray-600 py-2 px-4 ${data[0].checkbox ? 'cursor-pointer row-toggle select-none customer-row hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out' : ''}" ${data[0].checkbox ? 'onclick="console.log(this)"' : ''}>
-                        ${rowHTML}
-                    </div>
-                `;
-            });
-        } else {
-            bodyHTML += `
-                <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                    <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
-                </div>
-            `;
-        }
+        let bodyHTML = returnTableBody(data.table.body);
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
             <div class="w-full ${data.table.scrollable ? 'h-[80.5%] overflow-hidden' : 'h-auto'} text-left text-sm">
-                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
+                <div id='table-head' class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
+                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                 <div id="table-body" class="search_container overflow-y-auto my-scrollbar-2 h-full">
                     ${bodyHTML}
                 </div>
@@ -798,4 +756,57 @@ function createModal(data) {
         document.addEventListener('keydown', enterToSubmit);
     }
     document.body.appendChild(modalWrapper);
+}
+
+function returnTableBody(data) {
+    let bodyHTML = '';
+    if (data.table.body.length > 0) {
+        data.table.body.forEach(data => {
+            const rowHTML = data.map(item => {
+                let checkboxHTML = '';
+                let inputHTML = '';
+
+                if (item.input) {
+                    inputHTML = `
+                        <input class="${item.input.class || ''} w-[70%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="${item.input.type || 'text'}" name="${item.input.name || ''}" value="${item.input.value || ''}" min="${item.input.min || ''}" oninput="${item.input.oninput || ''}" onclick="${item.input.onclick || ''}" />
+                    `;
+                }
+
+                if (item.checkbox) {
+                    checkboxHTML = `
+                        <input ${item.checked ? 'checked' : ''} type="checkbox" name="selected_customers[]"
+                            class="row-checkbox mr-2 shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
+                    `;
+                }
+
+                if (item.checkbox || item.input) {
+                    return `
+                        <div class="${item.class}">
+                            ${checkboxHTML}
+                            ${inputHTML}
+                        </div>
+                    `;
+                } else {
+                    return `<div class="${item.class}">${item.data}</div>`;
+                }
+            }).join('');
+            bodyHTML += `
+                <div id='${data[0].jsonData?.id}' ${data[0].jsonData ? `data-json='${JSON.stringify(data[0].jsonData)}'` : ''} data class="flex justify-between items-center border-t border-gray-600 py-2 px-4 ${data[0].checkbox ? 'cursor-pointer row-toggle select-none customer-row hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out' : ''}" ${data[0].checkbox ? 'onclick="console.log(this)"' : ''}>
+                    ${rowHTML}
+                </div>
+            `;
+        });
+    } else {
+        bodyHTML += `
+            <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
+            </div>
+        `;
+    }
+
+    return bodyHTML;
+}
+
+function reRenderTableBody(data) {
+    console.log(returnTableBody(data));
 }
