@@ -54,7 +54,7 @@
         <div class="step2 space-y-4 hidden">
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- tags  --}}
-                <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" required onclick="generateSelectTagModal()"/>
+                <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" class="cursor-pointer" required onclick="generateSelectTagModal()"/>
 
                 {{-- packets --}}
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
@@ -278,11 +278,12 @@
             if (data.length > 0) {
                 cardData.push(...data.map(item => {
                     return {
-                        id: item.id,
+                        id: item.tag,
                         name: item.tag,
                         details: {
                             'Supplier': item.supplier_name,
-                            'Quantity': item.quantity
+                            'Available Quantity': item.available_quantity,
+                            'Selected Quantity': item.selected_quantity || 0,
                         },
                         data: item,
                         onclick: `generateQuantityModal(${JSON.stringify(item)})`,
@@ -314,8 +315,15 @@
                     },
                     {
                         category: 'input',
+                        id: 'tag',
+                        name: 'tag',
+                        type: 'hidden',
+                        value: item.tag,
+                    },
+                    {
+                        category: 'input',
                         label: 'Avalaible Quantity',
-                        value: item.quantity,
+                        value: item.available_quantity,
                         disabled: true,
                     },
                     {
@@ -327,17 +335,40 @@
                 ],
                 fieldsGridCount: '1',
                 bottomActions: [
-                    {id: 'done', text: 'Done', onclick: 'selectWithQuantity(this)'},
+                    {id: 'add', text: 'Add', onclick: 'selectWithQuantity(this)'},
                 ],
             }
 
             createModal(modalData)
 
-            document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.quantity}`;
+            document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.available_quantity}`;
         }
 
         function selectWithQuantity(elem) {
-            console.log(elem);
+            console.log(elem.closest('form'));
+            const inputs = elem.closest('form').querySelectorAll('input:not([disabled])');
+            let detail = {};
+
+            inputs.forEach(input => {
+                const name = input.getAttribute('name');
+                if (name != null) {
+                    const value = input.value;
+
+                    if (name == "quantity") {
+                        detail[name] = parseInt(value);
+                    } else {
+                        detail[name] = value;
+                    }
+                }
+            });
+
+            if (isNaN(detail.quantity) || detail.quantity <= 0) {
+                detail = {};
+            }
+
+            if (Object.keys(detail).length > 0) {
+                selectedTagsArray.push(detail);
+            }
             closeModal('quantityModal');
         }
         
