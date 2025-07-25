@@ -1,4 +1,4 @@
-function createModal(data) {
+function createModal(data, animate = 'animate') {
     const statusColor = {
         active: ['[var(--bg-success)]', '[var(--h-bg-success)]', '[var(--border-success)]'],
         transparent: ['transparent', 'transparent', 'transparent'],
@@ -16,10 +16,10 @@ function createModal(data) {
 
     const modalWrapper = document.createElement('div');
     modalWrapper.id = `${data.id}-wrapper`;
-    modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] fade-in`;
+    modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] ${animate == 'animate' ? 'fade-in' : ''} `;
 
     let clutter = `
-        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center scale-in ${data.class}">
+        <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center ${animate == 'animate' ? 'scale-in' : ''} ${data.class}">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
             <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem] py-0' : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
                 <div id="modal-close" onclick="closeModal('${data.id}')"
@@ -267,26 +267,28 @@ function createModal(data) {
     }
 
     if (data.cards) {
-        let cardsHTML = '';
-        if (data.cards.data.length > 0) {
-            data.cards.data.forEach(item => {
-                cardsHTML += createCard(item)
-            });
-        } else {
-            cardsHTML= `
-                <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
-            `;
-        }
+        // let cardsHTML = '';
+        // if (data.cards.data.length > 0) {
+        //     data.cards.data.forEach(item => {
+        //         cardsHTML += createCard(item)
+        //     });
+        // } else {
+        //     cardsHTML= `
+        //         <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
+        //     `;
+        // }
 
-        clutter += `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
-                <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
-                <hr class="w-full my-3 border-gray-600">
-                <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
-                    ${cardsHTML}
-                </div>
-            </div>
-        `;
+        // clutter += `
+        //     <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
+        //         <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
+        //         <hr class="w-full my-3 border-gray-600">
+        //         <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
+        //             ${cardsHTML}
+        //         </div>
+        //     </div>
+        // `;
+
+        clutter += renderCardsInModal(data)
     }
 
     if (data.table) {
@@ -809,4 +811,31 @@ function returnTableBody(data) {
 
 function reRenderTableBody(data) {
     console.log(returnTableBody(data));
+}
+
+function renderCardsInModal(data) {
+    let cardsData = '';
+    if (data.cards) {
+        let cardsHTML = '';
+        if (data.cards.data.length > 0) {
+            data.cards.data.forEach(item => {
+                cardsHTML += createCard(item)
+            });
+        } else {
+            cardsHTML= `
+                <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
+            `;
+        }
+
+        cardsData = `
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
+                <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
+                <hr class="w-full my-3 border-gray-600">
+                <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
+                    ${cardsHTML}
+                </div>
+            </div>
+        `;
+    }
+    return cardsData;
 }

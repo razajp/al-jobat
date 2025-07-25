@@ -102,6 +102,7 @@
     </form>
 
     <script>
+        let tagModalData = {};
         const articleSelectInputDOM = document.getElementById("article");
         const articleIdInputDOM = document.getElementById("article_id");
         const articleImageShowDOM = document.getElementById("img-article");
@@ -291,12 +292,12 @@
                 }));
             }
             
-            let modalData = {
-                id: 'modalForm',
+            tagModalData = {
+                id: 'tagModalForm',
                 cards: {name: 'Tags', count: 3, data: cardData},
             }
 
-            createModal(modalData);
+            createModal(tagModalData);
         }
 
         function generateQuantityModal(item) {
@@ -368,6 +369,13 @@
 
             if (Object.keys(detail).length > 0) {
                 selectedTagsArray.push(detail);
+                tags.find(tag => tag.tag === detail.tag).available_quantity -= detail.quantity;
+                tags.find(tag => tag.tag === detail.tag).selected_quantity = detail.quantity;
+                tagModalData.cards.data.find(data => data.name === detail.tag)['details']['Available Quantity'] -= detail.quantity
+                tagModalData.cards.data.find(data => data.name === detail.tag)['details']['Selected Quantity'] = detail.quantity
+                
+                closeModal('tagModalForm', 'notAnimate');
+                createModal(tagModalData, 'notAnimate');
             }
             closeModal('quantityModal');
         }
