@@ -14,7 +14,8 @@ function createModal(data, animate = 'animate') {
         }, { once: true })
     };
 
-    const modalWrapper = document.createElement('div');
+    let modalWrapper = ''
+    modalWrapper = document.createElement('div');
     modalWrapper.id = `${data.id}-wrapper`;
     modalWrapper.className = `fixed inset-0 z-50 text-sm flex items-center justify-center bg-[var(--overlay-color)] ${animate == 'animate' ? 'fade-in' : ''} `;
 
@@ -726,6 +727,9 @@ function createModal(data, animate = 'animate') {
     // ✅ Escape Key to Close
     escToClose = (e) => {
         if (e.key === 'Escape') {
+            console.log(modalWrapper);
+            console.log(modalWrapper.querySelector('form'));
+            
             const form = modalWrapper.querySelector('form');
             form.classList.add('scale-out');
             form.addEventListener('animationend', () => {
@@ -757,7 +761,15 @@ function createModal(data, animate = 'animate') {
     if (data.defaultListener !== false) {
         document.addEventListener('keydown', enterToSubmit);
     }
+    console.log(modalWrapper);
+    
     document.body.appendChild(modalWrapper);
+
+    data.fields?.forEach(field => {
+        if (field.category == 'explicitHtml' && field.focus) {
+            document.querySelector(`#${field.focus}`).focus();
+        }
+    })
 }
 
 function returnTableBody(data) {

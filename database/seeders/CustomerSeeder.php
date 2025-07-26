@@ -14235,19 +14235,6 @@ class CustomerSeeder extends Seeder
             ]
         ];
 
-        // City 'Ahmedpur ' not found. Skipping. Urdu Title: '501907'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501856'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501624'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501016'
-        // City 'Timergara' not found. Skipping. Urdu Title: '500256'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501209'
-        // City 'Ahmedpur ' not found. Skipping. Urdu Title: '500569'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501023'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501132'
-        // City 'Timergara' not found. Skipping. Urdu Title: '501716'
-        // City 'Jatoi' not found. Skipping. Urdu Title: '501258'
-        // City 'Victoria ' not found. Skipping. Urdu Title: '501421'
-
         foreach ($allMyData as $data) {
             // Find city
             $city = Setup::where('title', $data['city'])->first();
@@ -14275,7 +14262,7 @@ class CustomerSeeder extends Seeder
                 ],
                 [
                     'user_id' => $user->id,
-                    'creator_id' => 1, // replace with actual creator/admin ID
+                    'creator_id' => 1,
                     'person_name' => $data['person_name'],
                     'phone_number' => $data['phone_number'],
                     'urdu_title' => $data['urdu_title'],

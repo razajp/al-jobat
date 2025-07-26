@@ -1021,13 +1021,12 @@
             }, { once: true });
         } else {
             modal.remove();
+            console.log('hello yahan close hua');
         }
         document.removeEventListener('mousedown', closeOnClickOutside);
         document.removeEventListener('keydown', escToClose);
         document.removeEventListener('keydown', enterToSubmit);
     }
-
-    console.log('function here');
 
     function selectThisOption(optionLiElem) {
         const forId = optionLiElem.dataset.for;

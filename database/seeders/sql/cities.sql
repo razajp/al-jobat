@@ -40,7 +40,7 @@ INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at"
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Hub', 'HUB', '2025-06-13 11:23:43', '2025-06-13 11:23:43');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Hyderabad', 'HYD', '2025-06-13 11:24:00', '2025-06-13 11:24:00');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Iran', 'IRN', '2025-06-13 11:24:17', '2025-06-13 11:24:17');
-INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Islamabad', NULL, '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
+INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Islamabad', 'ISL', '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Jacobabad', 'JCD', '2025-06-13 11:25:10', '2025-06-13 11:25:10');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Jahanian', 'JHN', '2025-06-13 11:25:24', '2025-06-13 11:25:24');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Jampur', 'JMP', '2025-06-13 11:24:54', '2025-06-13 11:24:54');
@@ -50,7 +50,7 @@ INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at"
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kalabagh', 'KBG', '2025-06-13 11:26:56', '2025-06-13 11:26:56');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kamalia', 'KML', '2025-06-13 11:27:46', '2025-06-13 11:27:46');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kandahar', 'KND', '2025-06-13 11:28:01', '2025-06-13 11:28:01');
-INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Karachi', NULL, '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
+INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Karachi', 'KHI', '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Karor Pakka', 'krp', '2025-06-13 11:28:30', '2025-06-13 11:28:30');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kasur', 'kas', '2025-06-13 11:28:46', '2025-06-13 11:28:46');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Khairpur', 'khp', '2025-06-13 11:28:59', '2025-06-13 11:28:59');
@@ -58,7 +58,7 @@ INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at"
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Khanpur', 'knp', '2025-06-13 11:29:17', '2025-06-13 11:29:17');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kohat', 'kht', '2025-06-13 11:30:00', '2025-06-13 11:30:00');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Kot Addu', 'ktd', '2025-06-13 11:30:14', '2025-06-13 11:30:14');
-INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Lahore', NULL, '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
+INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Lahore', 'LHR', '2025-03-05T17:37:26.000000Z', '2025-03-05T17:37:26.000000Z');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Larkana', 'lrk', '2025-06-13 11:30:46', '2025-06-13 11:30:46');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Latifabad', 'ltf', '2025-06-13 11:30:58', '2025-06-13 11:30:58');
 INSERT INTO "setups" ("type", "title", "short_title", "created_at", "updated_at") VALUES ('city', 'Layyah', 'lay', '2025-06-13 11:31:15', '2025-06-13 11:31:15');

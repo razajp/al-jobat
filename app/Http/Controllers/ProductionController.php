@@ -26,15 +26,15 @@ class ProductionController extends Controller
     public function create()
     {
         $articles = Article::all();
-        $worke_options = [];
+        $work_options = [];
         $workerTypes = Setup::where('type', 'worker_type')->get();
         foreach($workerTypes as $workerType) {
-            $worke_options[(int)$workerType->id] = [
+            $work_options[(int)$workerType->id] = [
                 'text' => $workerType->title
             ];
         }
         $worker_options = [];
-        $workers = Employee::where('category', 'worker',)->where('status', 'active')->get();
+        $workers = Employee::with('type')->where('category', 'worker',)->where('status', 'active')->get();
         foreach($workers as $worker) {
             $worker['taags'] = $worker['tags']
                 ->groupBy('tag')
@@ -59,7 +59,7 @@ class ProductionController extends Controller
                 'data_option' => $worker->makeHidden('tags'),
             ];
         }
-        return view('productions.add', compact('articles', 'worke_options', 'worker_options'));
+        return view('productions.add', compact('articles', 'work_options', 'worker_options'));
     }
 
     /**

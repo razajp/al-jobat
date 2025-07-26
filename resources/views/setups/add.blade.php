@@ -27,7 +27,6 @@
                         'city' => ['text' => 'City'],
                         'fabric' => ['text' => 'Fabric'],
                         'staff_type' => ['text' => 'Staff Type'],
-                        'worker_type' => ['text' => 'Worker Type'],
                     ]"
                     showDefault
                 />

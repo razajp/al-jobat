@@ -13,13 +13,13 @@
     'btnOnclick' => '',
     'dataFilterPath' => '',
     'dataClearable' => false,
-    'searchable' => false,
+    'disabled' => false,
 ])
 
 @php
     $haveOptions = count($options) > 0;
     $resolvedValue = old($name, $value);
-    $isDisabled = !$haveOptions;
+    $isDisabled = !$haveOptions || $disabled;
 
     // Determine selected option
     $selectedText = '';
