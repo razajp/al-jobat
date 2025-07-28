@@ -2,9 +2,8 @@
 @section('title', 'Add Production | ' . app('company')->name)
 @section('content')
 @php
-    $category_options = [
-        'a' => ['text'  => 'A'],
-        'b' => ['text'  => 'B'],
+    $rates_options = [
+        'Layers Range' => ['text'  => 'Layers Range | 4'],
 ];
 @endphp
     <!-- Main Content -->
@@ -253,7 +252,7 @@
             createModal(quantityModalData)
             
             document.querySelector('input[name="quantity"]').value = item.selected_quantity || '';
-            document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.available_quantity}`;
+            document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.available_quantity + (item.selected_quantity || 0)}`;
         }
 
         function selectWithQuantity(elem) {
@@ -279,10 +278,10 @@
 
             if (Object.keys(detail).length > 0) {
                 selectedTagsArray.push(detail);
-                tags.find(tag => tag.tag === detail.tag).available_quantity -= detail.quantity;
                 tags.find(tag => tag.tag === detail.tag).selected_quantity = detail.quantity;
+                tags.find(tag => tag.tag === detail.tag).available_quantity -= tags.find(tag => tag.tag === detail.tag).selected_quantity;
                 
-                closeModal('quantityModal');
+                closeModal('quantityModalForm');
                 closeModal('tagModalForm', 'notAnimate');
                 generateSelectTagModal('notAnimate')
             }
@@ -297,9 +296,6 @@
                     {{-- tags  --}}
                     <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" class="cursor-pointer" required onclick="generateSelectTagModal()"/>
 
-                    {{-- packets --}}
-                    <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
-
                     ${!selectedArticle.quantity > 0 ? `        
                         {{-- quantity --}}
                         <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" placeholder="Enter Quantity" required />
@@ -308,12 +304,13 @@
                         <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
                     `}
 
-                    {{-- category --}}
+                    {{-- rates --}}
                     <x-select 
-                        label="Category"
-                        name="category"
-                        id="category"
-                        :options="$category_options"
+                        label="Rates"
+                        name="rates"
+                        id="rates"
+                        :options="$rates_options"
+                        showDefault
                         required
                     /> 
                 `;
