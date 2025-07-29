@@ -15,8 +15,8 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\PaymentProgramController;
-use App\Http\Controllers\PaymetnTransferController;
 use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\RateController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
@@ -94,6 +94,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::get('fabrics/issue', [FabricController::class, 'issue'])->name('fabrics.issue');
     Route::post('fabrics/issuePost', [FabricController::class, 'issuePost'])->name('fabrics.issuePost');
     Route::resource('fabrics', FabricController::class);
+
+    Route::resource('rates', RateController::class);
 
     Route::resource('productions', ProductionController::class);
     

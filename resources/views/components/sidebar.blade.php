@@ -366,6 +366,16 @@
                         </a>
                     </li>
                     @endif
+                    @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+                    <!-- rates -->
+                    <li>
+                        <a href="{{ route('rates.index') }}"
+                            class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
+                            <i class="fas fa-cog text-[var(--secondary-color)] mr-3"></i>
+                            Rates
+                        </a>
+                    </li>
+                    @endif
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"
