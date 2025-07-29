@@ -161,7 +161,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Abdul Samad [Jobat]",
@@ -321,7 +321,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Al-Hamd Print",
@@ -571,7 +571,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Arif Dying",
@@ -591,7 +591,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Ark Traders",
@@ -641,7 +641,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Attari Zipper",
@@ -661,7 +661,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Azeem Mechanic",
@@ -1011,7 +1011,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Farooq Shakoor Cmt",
@@ -1021,7 +1021,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Fawad Fabric",
@@ -1041,7 +1041,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Fbr Tax Challan",
@@ -1161,7 +1161,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Gul-E-Lala (Invoice A/C)",
@@ -1371,7 +1371,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Imran Fabrics",
@@ -1421,7 +1421,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Inaam Bhai [Ledger]",
@@ -1531,7 +1531,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Kaleem Karyana",
@@ -1631,7 +1631,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Khalil Traders (Material)",
@@ -1881,7 +1881,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Neha Machinery",
@@ -1931,7 +1931,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Noman Mechanic",
@@ -2031,7 +2031,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Private Account",
@@ -2131,7 +2131,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "S.K Fabrics",
@@ -2211,7 +2211,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Saleem Color Dp-19",
@@ -2281,7 +2281,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "School",
@@ -2511,7 +2511,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Talha Bhai [Ledger]",
@@ -2711,7 +2711,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Yaseen Computer",
@@ -2771,7 +2771,7 @@ class SupplierSeeder extends Seeder
                 "password" => "1234",
                 "phone_number" => "0000-0000000",
                 "date" => "2024-01-01 00:00:00",
-                "category" => "CMT",
+                "category" => "CMT|S",
             ],
             [
                 "supplier_name" => "Zohaib DyeCut",
