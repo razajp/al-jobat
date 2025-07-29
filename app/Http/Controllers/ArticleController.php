@@ -85,7 +85,7 @@ class ArticleController extends Controller
             'category' => 'nullable|string',
             'size' => 'required|string',
             'season' => 'required|string',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'nullable|integer|min:1',
             'extra_pcs' => 'required|integer|min:0',
             'fabric_type' => 'nullable|string',
             'rates_array' => 'nullable|json',

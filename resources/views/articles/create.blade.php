@@ -104,7 +104,6 @@
                         id="quantity" 
                         type="number"
                         placeholder="Enter quantity" 
-                        required 
                     />
                     
                     {{-- extra_pcs --}}

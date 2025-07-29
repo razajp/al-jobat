@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('category')->nullable();
             $table->string('size');
             $table->string('season');
-            $table->integer('quantity')->unsigned();
+            $table->integer('quantity')->nullable()->unsigned();
             $table->integer('extra_pcs')->unsigned()->nullable();
             $table->string('fabric_type')->nullable();
             $table->decimal('sales_rate', 11, 2);
