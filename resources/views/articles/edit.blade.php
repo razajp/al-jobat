@@ -2,25 +2,11 @@
 @section('title', 'Edit Article | ' . app('company')->name)
 @section('content')
 @php
-    $categories_options = [
-        '1_pc' => ['text' => '1 Pc'],
-        '2_pc' => ['text' => '2 Pc'],
-        '3_pc' => ['text' => '3 Pc'],
-    ];
+    $categories_options = app('article')->categories;
 
-    $sizes_options = [
-        '1_2' => ['text' => '1-2'],
-        'sml' => ['text' => 'SML'],
-        '18_20_22' => ['text' => '18-20-22'],
-        '20_22_24' => ['text' => '20-22-24'],
-        '24_26_28' => ['text' => '24-26-28'],
-    ];
+    $seasons_options = app('article')->seasons;
 
-    $seasons_options = [
-        'half' => ['text' => 'Half'],
-        'full' => ['text' => 'Full'],
-        'winter' => ['text' => 'Winter'],
-    ];
+    $sizes_options = app('article')->sizes;
 @endphp
     <!-- Main Content -->
     <!-- Progress Bar -->

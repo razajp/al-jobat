@@ -24,6 +24,31 @@ class AppServiceProvider extends ServiceProvider
                 'address' => 'Plot DP-19, Sec. 12-C, Ind. Area, North Karachi',
             ];
         });
+
+        app()->singleton('article', function () {
+            return (object) [
+                'categories' => [
+                    '1_pc' => ['text' => '1 Pc'],
+                    '1_pc_inner' => ['text' => '1 Pc + Inner'],
+                    '1_pc_koti' => ['text' => '1 Pc + Koti'],
+                    '2_pc' => ['text' => '2 Pc'],
+                    '3_pc' => ['text' => '3 Pc'],
+                ],
+                'seasons' => [
+                    'half' => ['text' => 'Half'],
+                    'full' => ['text' => 'Full'],
+                    'winter' => ['text' => 'Winter'],
+                ],
+                'sizes' => [
+                    '1_2' => ['text' => '1-2'],
+                    'sml' => ['text' => 'SML'],
+                    '18_20_22' => ['text' => '18-20-22'],
+                    '18_20_22_24' => ['text' => '18-20-22-24'],
+                    '20_22_24' => ['text' => '20-22-24'],
+                    '24_26_28' => ['text' => '24-26-28'],
+                ],
+            ];
+        });
     }
 
     /**
