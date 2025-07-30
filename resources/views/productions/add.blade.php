@@ -1,11 +1,6 @@
 @extends('app')
 @section('title', 'Add Production | ' . app('company')->name)
 @section('content')
-@php
-    $rates_options = [
-        'Layers Range' => ['text'  => 'Layers Range | 4'],
-];
-@endphp
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
@@ -63,6 +58,7 @@
     <script>
         let allWorkers = Object.values(@json($worker_options));
         let allWorks = Object.values(@json($work_options));
+        let allRates = @json($rates);
         let tagModalData = {};
         const articleSelectInputDOM = document.getElementById("article");
         const articleIdInputDOM = document.getElementById("article_id");
@@ -127,8 +123,6 @@
             `;
 
             allWorks.forEach((work) => {
-                console.log(work);
-                
                 ul.innerHTML += `
                     <li data-for="work" data-value="${work.text}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${work.text}</li>
                 `;
@@ -167,6 +161,30 @@
                     document.querySelector('input[name="worker_name"]').value = '';
                 }
                 generateSecondStep(elem.value);
+
+                let filteredRates = allRates.filter(rate => rate.type.title == elem.value && rate.categories.includes(selectedArticle.category) && rate.seasons.includes(selectedArticle.season) && rate.sizes.includes(selectedArticle.size));
+                if (filteredRates.length > 0) {
+                    document.querySelector('input[name="select_rate_name"]').value = '-- Select Rates --';
+                    document.querySelector('input[name="select_rate_name"]').disabled = false;
+                    let ratesUL = document.querySelector('ul[data-for="select_rate"]');
+                    ratesUL.innerHTML = `
+                        <li data-for="select_rate" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Rates --</li>
+                    `;
+
+                    filteredRates.forEach((rate) => {
+                        ratesUL.innerHTML += `
+                            <li data-for="select_rate" data-value="${rate.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${rate.title} | ${rate.rate}</li>
+                        `;
+                    })
+
+                    ratesUL.innerHTML += `
+                        <li data-for="select_rate" data-value="other" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
+                    `;
+
+                } else {
+                    document.querySelector('input[name="select_rate_name"]').value = '';
+                    document.querySelector('input[name="select_rate_name"]').disabled = true;
+                }
             }
         }
 
@@ -304,18 +322,44 @@
                         <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
                     `}
 
-                    {{-- rates --}}
+                    <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {{-- select_rate --}}
                     <x-select 
-                        label="Rates"
-                        name="rates"
-                        id="rates"
-                        :options="$rates_options"
+                        label="Select Rate"
+                        name="select_rate"
+                        id="select_rate"
+                        :options="[]"
                         showDefault
                         required
+                        onchange="trackSelectRateState(this)"
                     /> 
+
+                    {{-- rate --}}
+                    <x-input label="Rate" name="rate" id="rate" disabled placeholder="Rate" />
+
+                    {{-- amount --}}
+                    <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
                 `;
             }
             document.getElementById('secondStep').innerHTML = secondStepHTML;
+        }
+
+        function trackSelectRateState(elem) {
+            if (elem.value != '' && elem.value != 'other') {
+                document.getElementById('rate').disabled = true;
+                document.getElementById('rate').value = elem.closest('.selectParent').querySelector('li.selected').textContent.split('|')[1].trim();
+                calculateAmount();
+            } else if (elem.value == 'other') {
+                document.getElementById('rate').disabled = false;
+            } else {
+                document.getElementById('rate').disabled = true;
+            }
+        }
+
+        function calculateAmount() {
+            let quantity = parseInt(document.getElementById('article_quantity').value);
+            let rate = parseInt(document.getElementById('rate').value);
+            document.getElementById('amount').value = rate * quantity;
         }
         
         function validateForNextStep() {

@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Employee;
 use App\Models\Fabric;
 use App\Models\Production;
+use App\Models\Rate;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -59,7 +60,10 @@ class ProductionController extends Controller
                 'data_option' => $worker->makeHidden('tags'),
             ];
         }
-        return view('productions.add', compact('articles', 'work_options', 'worker_options'));
+
+        $rates = Rate::with('type')->get();
+
+        return view('productions.add', compact('articles', 'work_options', 'worker_options', 'rates'));
     }
 
     /**

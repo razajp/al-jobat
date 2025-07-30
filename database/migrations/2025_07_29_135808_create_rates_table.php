@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('rates', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('type_id')->constrained('setups')->onDelete('cascade');
+            $table->date('effective_date');
+            $table->json('categories');
+            $table->json('seasons');
+            $table->json('sizes');
+            $table->string('title')->unique();
+            $table->decimal('rate', 10, 2);
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
