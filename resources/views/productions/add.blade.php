@@ -1,6 +1,90 @@
 @extends('app')
 @section('title', 'Add Production | ' . app('company')->name)
 @section('content')
+@php
+    $productionType = Auth::user()->production_type;
+@endphp
+
+    <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-40">
+        <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
+            <!-- Highlight rectangle -->
+            <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
+
+            <!-- Buttons -->
+            <button
+                id="issueBtn"
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setProductionType(this, 'issue')"
+            >
+                <div class="hidden md:block">Issue</div>
+                <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
+            </button>
+            <button
+                id="reciveBtn"
+                type="button"
+                class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300"
+                onclick="setProductionType(this, 'receive')"
+            >
+                <div class="hidden md:block">Receive</div>
+                <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let btnTypeGlobal = "issue";
+
+        function setProductionType(btn, btnType) {
+            // check if its already selected
+            if (btnTypeGlobal == btnType) {
+                return;
+            }
+
+            $.ajax({
+                url: "/set-production-type",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    production_type: btnType
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to update production type.");
+                    $(btn).prop("disabled", false);
+                }
+            });
+
+            moveHighlight(btn, btnType);
+        }
+
+        function moveHighlight(btn, btnType) {
+            const highlight = document.getElementById("highlight");
+            const rect = btn.getBoundingClientRect();
+
+            const parentRect = btn.parentElement.getBoundingClientRect();
+
+            // Move and resize the highlight
+            highlight.style.width = `${rect.width}px`;
+            highlight.style.left = `${rect.left - parentRect.left - 3}px`;
+
+            btnTypeGlobal = btnType;
+        }
+
+        // Initialize highlight on load
+        window.onload = () => {
+            @if($productionType == 'issue')
+                const activeBtn = document.querySelector("#issueBtn");
+                moveHighlight(activeBtn, "issue");
+            @else
+                const activeBtn = document.querySelector("#reciveBtn");
+                moveHighlight(activeBtn, "receive");
+            @endif
+        };
+    </script>
+
     <!-- Main Content -->
     <div class="max-w-4xl mx-auto">
         <x-search-header heading="Add Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
@@ -20,9 +104,9 @@
                 <input type="hidden" name="article_id" id="article_id" value="" />
 
                 {{-- work --}}
-                <x-select 
+                <x-select
                     label="Work"
-                    name="work"
+                    name="work_id"
                     id="work"
                     :options="[]"
                     showDefault
@@ -32,9 +116,9 @@
                 />
 
                 {{-- worker --}}
-                <x-select 
+                <x-select
                     label="Worker"
-                    name="worker"
+                    name="worker_id"
                     id="worker"
                     :options="[]"
                     showDefault
@@ -50,14 +134,14 @@
 
         <div class="step2 space-y-4 hidden">
             <div id="secondStep" class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="cols-span-full text-center text-[var(--border-error)]">No Rates yet.</div>
+                <div class="col-span-full text-center text-[var(--border-error)]">No Detailes yet.</div>
             </div>
         </div>
     </form>
 
     <script>
+        let allWorks = Object.entries(@json($work_options));
         let allWorkers = Object.values(@json($worker_options));
-        let allWorks = Object.values(@json($work_options));
         let allRates = @json($rates);
         let tagModalData = {};
         const articleSelectInputDOM = document.getElementById("article");
@@ -91,7 +175,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 cards: {name: 'Articles', count: 3, data: cardData},
@@ -108,23 +192,23 @@
             articleIdInputDOM.value = selectedArticle.id;
             let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
             articleSelectInputDOM.value = value;
-            
+
             articleImageShowDOM.classList.remove('opacity-0');
             articleImageShowDOM.src = articleElem.querySelector('img').src
-            
+
             closeModal('modalForm');
 
             document.querySelector('input[name="work_name"]').disabled = false;
-            
+
             const ul = document.querySelector('ul[data-for="work"]');
 
             ul.innerHTML = `
                 <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
             `;
 
-            allWorks.forEach((work) => {
+            allWorks.forEach(([key, value]) => {
                 ul.innerHTML += `
-                    <li data-for="work" data-value="${work.text}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${work.text}</li>
+                    <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                 `;
             })
 
@@ -136,8 +220,8 @@
 
         function trackWorkState(elem) {
             if (elem.value != '') {
-                let correctWorkers = allWorkers.filter(worker => worker.data_option.type.title == elem.value);
-                
+                let correctWorkers = allWorkers.filter(worker => worker.data_option.type.id == elem.value);
+
                 if (correctWorkers.length > 0) {
                     document.querySelector('input[name="worker_name"]').disabled = false;
                     const ul = document.querySelector('ul[data-for="worker"]');
@@ -160,30 +244,34 @@
                     document.querySelector('input[name="worker_name"]').disabled = true;
                     document.querySelector('input[name="worker_name"]').value = '';
                 }
-                generateSecondStep(elem.value);
+                generateSecondStep(elem.closest('.selectParent').querySelector('li.selected').textContent.trim());
 
-                let filteredRates = allRates.filter(rate => rate.type.title == elem.value && rate.categories.includes(selectedArticle.category) && rate.seasons.includes(selectedArticle.season) && rate.sizes.includes(selectedArticle.size));
-                if (filteredRates.length > 0) {
-                    document.querySelector('input[name="select_rate_name"]').value = '-- Select Rates --';
-                    document.querySelector('input[name="select_rate_name"]').disabled = false;
-                    let ratesUL = document.querySelector('ul[data-for="select_rate"]');
-                    ratesUL.innerHTML = `
-                        <li data-for="select_rate" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Rates --</li>
-                    `;
+                let filteredRates = allRates.filter(rate => rate.type.id == elem.value && rate.categories.includes(selectedArticle.category) && rate.seasons.includes(selectedArticle.season) && rate.sizes.includes(selectedArticle.size));
+                let selectRateNameDom = document.querySelector('input[name="select_rate_name"]');
 
-                    filteredRates.forEach((rate) => {
-                        ratesUL.innerHTML += `
-                            <li data-for="select_rate" data-value="${rate.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${rate.title} | ${rate.rate}</li>
+                if (selectRateNameDom) {
+                    if (filteredRates.length > 0) {
+                        selectRateNameDom.value = '-- Select Rates --';
+                        selectRateNameDom.disabled = false;
+                        let ratesUL = document.querySelector('ul[data-for="select_rate"]');
+                        ratesUL.innerHTML = `
+                            <li data-for="select_rate" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Rates --</li>
                         `;
-                    })
 
-                    ratesUL.innerHTML += `
-                        <li data-for="select_rate" data-value="other" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
-                    `;
+                        filteredRates.forEach((rate) => {
+                            ratesUL.innerHTML += `
+                                <li data-for="select_rate" data-value="${rate.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${rate.title} | ${rate.rate}</li>
+                            `;
+                        })
 
-                } else {
-                    document.querySelector('input[name="select_rate_name"]').value = '';
-                    document.querySelector('input[name="select_rate_name"]').disabled = true;
+                        ratesUL.innerHTML += `
+                            <li data-for="select_rate" data-value="0" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
+                        `;
+
+                    } else {
+                        selectRateNameDom.value = '';
+                        selectRateNameDom.disabled = true;
+                    }
                 }
             }
         }
@@ -191,19 +279,16 @@
         function trackWorkerState(elem) {
             const selectParent = elem.closest('.selectParent');
             const selectedWorkerData = JSON.parse(selectParent.querySelector('li.selected').dataset.option || '{}');
-            console.log(selectedWorkerData);
             document.getElementById('balance').value = selectedWorkerData?.balance || 0;
             tags = selectedWorkerData.taags || [];
             elem.value !== '' && gotoStep(2);
+            selectedTagsArray = [];
         }
 
         function generateSelectTagModal(animate = 'animate') {
-            console.log('hello yahan open hua');
-            
             let data = tags;
             let cardData = [];
 
-            console.log(data);
             if (data.length > 0) {
                 cardData.push(...data.map(item => {
                     return {
@@ -219,7 +304,7 @@
                     };
                 }));
             }
-            
+
             tagModalData = {
                 id: 'tagModalForm',
                 cards: {name: 'Tags', count: 3, data: cardData},
@@ -268,7 +353,7 @@
             }
 
             createModal(quantityModalData)
-            
+
             document.querySelector('input[name="quantity"]').value = item.selected_quantity || '';
             document.querySelector('input[name="quantity"]').dataset.validate = `max:${item.available_quantity + (item.selected_quantity || 0)}`;
         }
@@ -279,7 +364,7 @@
 
             inputs.forEach(input => {
                 const name = input.getAttribute('name');
-                if (name != null) {
+                if (name != null && name != '_token') {
                     const value = input.value;
 
                     if (name == "quantity") {
@@ -290,69 +375,89 @@
                 }
             });
 
-            if (isNaN(detail.quantity) || detail.quantity <= 0) {
-                detail = {};
-            }
+            let existingTag = selectedTagsArray.find(tag => tag.tag == detail.tag);
 
-            if (Object.keys(detail).length > 0) {
-                selectedTagsArray.push(detail);
-                tags.find(tag => tag.tag === detail.tag).selected_quantity = detail.quantity;
-                tags.find(tag => tag.tag === detail.tag).available_quantity -= tags.find(tag => tag.tag === detail.tag).selected_quantity;
-                
-                closeModal('quantityModalForm');
-                closeModal('tagModalForm', 'notAnimate');
-                generateSelectTagModal('notAnimate')
+            if (detail.quantity > 0) {
+                existingTag ? existingTag.quantity = detail.quantity : selectedTagsArray.push(detail);
+            } else if (existingTag) {
+                selectedTagsArray = selectedTagsArray.filter(tag => tag.tag !== detail.tag);
             }
+            tags.find(tag => tag.tag === detail.tag).selected_quantity = detail.quantity;
+            tags.find(tag => tag.tag === detail.tag).available_quantity -= tags.find(tag => tag.tag === detail.tag).selected_quantity;
+            document.querySelector('input[name="tags"]').value = JSON.stringify(selectedTagsArray);
+            closeModal('quantityModalForm');
+            closeModal('tagModalForm', 'notAnimate');
+            generateSelectTagModal('notAnimate');
+            document.getElementById('tags').value = selectedTagsArray.length > 0 ? `${selectedTagsArray.length} Selected` : '';
         }
 
         function generateSecondStep(work) {
-            console.log(work);
-            
             let secondStepHTML = '';
             if (work == 'Cutting') {
                 secondStepHTML += `
-                    {{-- tags  --}}
-                    <x-input label="Tags" name="tags" id="tags" placeholder="Select Tags" class="cursor-pointer" required onclick="generateSelectTagModal()"/>
+                    {{-- article --}}
+                    <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
 
-                    ${!selectedArticle.quantity > 0 ? `        
+                    {{-- tags  --}}
+                    <x-input label="Tags" id="tags" placeholder="Select Tags" class="cursor-pointer" required onclick="generateSelectTagModal()"/>
+                    <input type="hidden" name="tags" value="" />
+
+                    ${!selectedArticle.quantity > 0 ? `
                         {{-- quantity --}}
-                        <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" placeholder="Enter Quantity" required />
+                        <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" placeholder="Enter Quantity" required oninput="calculateAmount()" />
                     ` : `
                         {{-- quantity --}}
                         <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
                     `}
 
-                    <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-4">
                     {{-- select_rate --}}
-                    <x-select 
+                    <x-select
                         label="Select Rate"
-                        name="select_rate"
                         id="select_rate"
                         :options="[]"
                         showDefault
                         required
                         onchange="trackSelectRateState(this)"
-                    /> 
+                    />
+
+                    <div id="titleContainer" class="col-span-full hidden">
+                        {{-- title --}}
+                        <x-input label="Title" name="title" id="title" placeholder="Enter Title" required/>
+                    </div>
 
                     {{-- rate --}}
-                    <x-input label="Rate" name="rate" id="rate" disabled placeholder="Rate" />
+                    <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" />
 
                     {{-- amount --}}
                     <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
+
+                    {{-- receving_date --}}
+                    <x-input label="Receving Date" name="receving_date" id="receving_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+
+                    {{-- token --}}
+                    <x-input label="Token" name="token" id="token" disabled placeholder="Token" />
                 `;
             }
             document.getElementById('secondStep').innerHTML = secondStepHTML;
         }
 
         function trackSelectRateState(elem) {
-            if (elem.value != '' && elem.value != 'other') {
-                document.getElementById('rate').disabled = true;
+            if (elem.value != '' && elem.value != '0') {
+                document.getElementById('titleContainer').classList.add('hidden');
+                document.getElementById('rate').readonly = true;
                 document.getElementById('rate').value = elem.closest('.selectParent').querySelector('li.selected').textContent.split('|')[1].trim();
+                document.getElementById('title').value = elem.closest('.selectParent').querySelector('li.selected').textContent.split('|')[0].trim();
                 calculateAmount();
-            } else if (elem.value == 'other') {
-                document.getElementById('rate').disabled = false;
+            } else if (elem.value == '0') {
+                document.getElementById('titleContainer').classList.remove('hidden');
+                document.getElementById('title').value = '';
+                document.getElementById('rate').value = '';
+                document.getElementById('rate').readonly = false;
             } else {
-                document.getElementById('rate').disabled = true;
+                document.getElementById('title').value = '';
+                document.getElementById('rate').value = '';
+                document.getElementById('titleContainer').classList.add('hidden');
+                document.getElementById('rate').readonly = true;
             }
         }
 
@@ -361,7 +466,7 @@
             let rate = parseInt(document.getElementById('rate').value);
             document.getElementById('amount').value = rate * quantity;
         }
-        
+
         function validateForNextStep() {
             return true;
         }

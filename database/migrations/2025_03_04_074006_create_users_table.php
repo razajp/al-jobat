@@ -23,7 +23,8 @@ return new class extends Migration
             $table->string('layout')->nullable();
             $table->string('invoice_type')->default('order');
             $table->string('voucher_type')->default('supplier');
-            
+            $table->string('production_type')->default('issue');
+
             $table->timestamps();
         });
     }

@@ -33,7 +33,7 @@ function createModal(data, animate = 'animate') {
                         </svg>
                     </button>
                 </div>
-                
+
                 <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full">
                     <div class="w-full h-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
@@ -54,11 +54,11 @@ function createModal(data, animate = 'animate') {
             `;
         }
     }
-    
+
     clutter += `
         <div class="flex ${data.flex_col ? 'flex-col' : ''} items-start relative ${(data.class || '').includes('h-') ? 'h-full' : 'h-[15rem]'}">
     `;
-    
+
     if (data.image) {
         clutter += `
                 <div class="${!data.profile ? 'rounded-lg' : 'rounded-[41.5%]'} ${data.image && data.image == '/images/no_image_icon.png' ? 'scale-75' : ''} h-full aspect-square overflow-hidden">
@@ -67,7 +67,7 @@ function createModal(data, animate = 'animate') {
                 </div>
         `;
     }
-    
+
     let detailsHTML = '';
     if (data.details && typeof data.details === 'object') {
         detailsHTML = Object.entries(data.details).map(([label, value]) => {
@@ -147,13 +147,13 @@ function createModal(data, animate = 'animate') {
             if (field.category == 'input') {
                 if (field.type != 'hidden') {
                     let buttonHTML = '';
-                    
+
                     if (field.btnId) {
                         buttonHTML = `
                             <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>+</button>
                         `;
                     }
-                    
+
                     clutter += `
                         <div class="${field.grow ? 'grow' : ''} ${field.full ? 'col-span-full' : ''}">
                             <div class="form-group relative ${field.hidden ? 'hidden' : ''}">
@@ -168,7 +168,7 @@ function createModal(data, animate = 'animate') {
                             <div id="${field.name}-error" class="absolute -bottom-5 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
                         </div>
                     `;
-                    
+
                     if (field.focus) {
                         setTimeout(() => {
                             const input = document.getElementById(`${field.id}`);
@@ -183,7 +183,7 @@ function createModal(data, animate = 'animate') {
             } else if (field.category == 'select') {
                 let buttonHTML = '';
                 let optionsHTML = '<option value="">-- No options available --</option>';
-                
+
                 if (field.btnId) {
                     buttonHTML = `
                         <button onclick="${field.onclick ?? ''}" id="${field.btnId ?? ''}" type="button" class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-lg font-bold disabled:opacity-50 disabled:cursor-not-allowed" disabled>+</button>
@@ -192,7 +192,7 @@ function createModal(data, animate = 'animate') {
 
                 if (field.options && field.options.length > 0) {
                     optionsHTML = `<option value="">-- Select ${field.label} --</option>`;
-                    
+
                     const rawOptions = field.options[0];
                     const optionsArray = Object.entries(rawOptions).map(([key, obj]) => {
                         return {
@@ -203,8 +203,6 @@ function createModal(data, animate = 'animate') {
                     });
 
                     optionsArray.forEach(option => {
-                        console.log(option);
-                        
                         optionsHTML += `
                             <option value="${option.id}" data-option='${JSON.stringify(option.data_option)}'>${option.text}</option>
                         `;
@@ -214,7 +212,7 @@ function createModal(data, animate = 'animate') {
                 clutter += `
                     <div class="grow form-group">
                         <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2">${field.label} *</label>
-                        
+
                         <div class="selectParent relative flex gap-3">
                             <select id="${field.id ?? ''}" name="${field.name ?? ''}" onchange="${field.onchange}" value="${field.value || ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}>
                                 ${optionsHTML}
@@ -368,7 +366,7 @@ function createModal(data, animate = 'animate') {
                     <div class="text tracking-wide">${chip.title}</div>
                     ${data.editableChips ? removeBtn : ''}
                 </div>
-           `; 
+           `;
         });
 
         clutter += `
@@ -407,27 +405,25 @@ function createModal(data, animate = 'animate') {
 
             invoiceTableBody = `
                 ${previewData.payments.map((payment, index) => {
-                console.log('hello', payment);
-
-                const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-                return `
-                <div>
-                    <hr class="w-full ${hrClass} border-gray-600">
-                    <div class="tr flex justify-between w-full px-4">
-                        <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
-                        <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                        ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>` : ''}
-                        ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>` :
-                            `<div class="td text-sm font-semibold w-1/4">${(payment.self_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.self_account?.bank.short_title ?? '-')}</div>
-                        `}
-                        <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
-                            payment.transaction_id ?? '-'}</div>
-                        <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
+                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+                    return `
+                    <div>
+                        <hr class="w-full ${hrClass} border-gray-600">
+                        <div class="tr flex justify-between w-full px-4">
+                            <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
+                            <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
+                            ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>` : ''}
+                            ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>` :
+                                `<div class="td text-sm font-semibold w-1/4">${(payment.self_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.self_account?.bank.short_title ?? '-')}</div>
+                            `}
+                            <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
+                            <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
+                                payment.transaction_id ?? '-'}</div>
+                            <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
+                            </div>
                         </div>
                     </div>
-                </div>
-                `;
+                    `;
                 }).join('')}
             `;
 
@@ -565,7 +561,7 @@ function createModal(data, animate = 'animate') {
                 ` : ''}
             `;
         }
-        
+
         clutter += `
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
                 <div id="preview" class="preview flex flex-col h-full py-6">
@@ -643,7 +639,7 @@ function createModal(data, animate = 'animate') {
             </div>
         `;
     }
-        
+
     clutter += `
                     </div>
                 </div>
@@ -658,7 +654,7 @@ function createModal(data, animate = 'animate') {
                     Cancel
                 </button>
     `;
-    
+
     if (data.bottomActions) {
         data.bottomActions.forEach(action => {
             if (action.id.includes('edit')) {
@@ -678,9 +674,8 @@ function createModal(data, animate = 'animate') {
             }
         });
     }
-    
+
     if ((data.details && data.details['Balance'] == 0.0) || data.forceStatusBtn) {
-        console.log(data.status);
         if (data.user?.status || data.status) {
             let status = data.user?.status ?? data.status;
             const [bgColor, hoverBgColor, textColor] = statusColor[status == 'active' ? status = 'in_active' : status = 'active'] || statusColor.inactive;
@@ -727,9 +722,6 @@ function createModal(data, animate = 'animate') {
     // ✅ Escape Key to Close
     escToClose = (e) => {
         if (e.key === 'Escape') {
-            console.log(modalWrapper);
-            console.log(modalWrapper.querySelector('form'));
-            
             const form = modalWrapper.querySelector('form');
             form.classList.add('scale-out');
             form.addEventListener('animationend', () => {
@@ -761,8 +753,6 @@ function createModal(data, animate = 'animate') {
     if (data.defaultListener !== false) {
         document.addEventListener('keydown', enterToSubmit);
     }
-    console.log(modalWrapper);
-    
     document.body.appendChild(modalWrapper);
 
     data.fields?.forEach(field => {

@@ -23,7 +23,7 @@ class User extends Authenticatable
         'updated_at',
         'password',
     ];
-    
+
     protected $fillable = [
         'name',
         'username',
@@ -35,6 +35,7 @@ class User extends Authenticatable
         'layout',
         'invoice_type',
         'voucher_type',
+        'production_type',
     ];
 
     /**

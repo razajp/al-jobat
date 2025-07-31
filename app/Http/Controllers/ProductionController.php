@@ -10,6 +10,7 @@ use App\Models\Rate;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class ProductionController extends Controller
 {
@@ -26,6 +27,10 @@ class ProductionController extends Controller
      */
     public function create()
     {
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
         $articles = Article::all();
         $work_options = [];
         $workerTypes = Setup::where('type', 'worker_type')->get();
@@ -54,7 +59,7 @@ class ProductionController extends Controller
                         'supplier_name' => $supplier->supplier_name ?? null,
                     ];
                 })->values();
-                
+
             $worker_options[(int)$worker->id] = [
                 'text' => $worker->employee_name,
                 'data_option' => $worker->makeHidden('tags'),
@@ -71,7 +76,31 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'article_id' => 'required|integer|exists:articles,id',
+            'work_id' => 'required|integer|exists:setups,id',
+            'worker_id' => 'required|integer|exists:employees,id',
+            'tags' => 'required|string',
+            'quantity' => 'nullable|integer|min:1',
+            'title' => 'nullable|string',
+            'rate' => 'nullable|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        return $request;
+
+        if ($request->quantity) {
+            Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
+        }
     }
 
     /**

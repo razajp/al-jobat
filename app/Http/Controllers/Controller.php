@@ -38,7 +38,7 @@ class Controller extends BaseController
 
                 return $suppliers;
                 break;
-            
+
             case 'customer':
                 $customers = Customer::with('city:id,title')->whereHas('user', function ($query) {
                     $query->where('status', 'active');
@@ -46,12 +46,12 @@ class Controller extends BaseController
 
                 return $customers;
                 break;
-            
+
             case 'self_account':
                 $selfAccount = BankAccount::with('subCategory', 'bank')->where('category', 'self')->get();
                 return $selfAccount;
                 break;
-            
+
             default:
                 return "Not Found";
                 break;
@@ -65,22 +65,22 @@ class Controller extends BaseController
         $authUser = Auth::user();
 
         $layout = [];
-    
+
         if (!empty($authUser->layout)) {
             // Parse the existing layout from JSON
             $layout = json_decode($authUser->layout, true);
         }
 
         $newLayout = $request->layout == 'grid' ? 'table' : 'grid';
-    
+
         // Update the layout for the specified page
         $layout[$previousRoute] = $newLayout;
-    
+
         // Save the updated layout back to the user
         $authUser->layout = json_encode($layout);
 
         $authUser->save();
-    
+
         return response()->json([
             "status" => "updated",
             "updatedLayout" => $newLayout
@@ -98,13 +98,13 @@ class Controller extends BaseController
 
         return $default;
     }
-    
+
     protected function checkRole($roles)
     {
         if (!in_array(Auth::user()->role, $roles)) {
             return false;
         }
-        
+
         return true;
     }
 
@@ -113,7 +113,7 @@ class Controller extends BaseController
         $validator = Validator::make($request->all(), [
             "order_no" => "required|exists:orders,order_no",
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(["error" => $validator->errors()->first()]);
         }
@@ -127,10 +127,10 @@ class Controller extends BaseController
             $orderedArticles = array_filter($orderedArticles, function ($orderedArticle) {
                 $article = Article::find($orderedArticle->id);
                 $orderedArticle->article = $article;
-            
+
                 $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
                 $orderedArticle->total_quantity_in_packets = 0;
-                
+
                 if ($totalPhysicalStockPackets > 0 && $article->pcs_per_packet > 0) {
                     $avalaibelPhysicalQuantity = $article->sold_quantity > 0 ? $totalPhysicalStockPackets - ($article->sold_quantity / $article->pcs_per_packet) : $totalPhysicalStockPackets;
                     $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
@@ -138,7 +138,7 @@ class Controller extends BaseController
 
                     $orderedArticle->total_quantity_in_packets = floor(min($pendingPackets, $avalaibelPhysicalQuantity));
                 }
-            
+
                 return $orderedArticle->total_quantity_in_packets;
             });
 
@@ -155,7 +155,7 @@ class Controller extends BaseController
         $validator = Validator::make($request->all(), [
             "program_no" => "required|exists:payment_programs,program_no",
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(["error" => $validator->errors()->first()]);
         }
@@ -183,7 +183,7 @@ class Controller extends BaseController
         $validator = Validator::make($request->all(), [
             "invoice_type" => "required|in:order,shipment",
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(["error" => $validator->errors()->first()]);
         }
@@ -205,7 +205,7 @@ class Controller extends BaseController
         $validator = Validator::make($request->all(), [
             "voucher_type" => "required|in:supplier,self_account",
         ]);
-        
+
         if ($validator->fails()) {
             return response()->json(["error" => $validator->errors()->first()]);
         }
@@ -219,6 +219,28 @@ class Controller extends BaseController
         return response()->json([
             'status' => 'success',
             'message' => 'Voucher type set as default.',
+        ]);
+    }
+
+    public function setProductionType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "production_type" => "required|in:issue,receive",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $user = Auth::user();
+        $user->production_type = $request->production_type;
+        $user->save();
+
+        session()->flash('success', 'Production type updated.');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Production type set as default.',
         ]);
     }
 
@@ -238,10 +260,10 @@ class Controller extends BaseController
         if (!$shipment) {
             return response()->json(['error' => 'Shipment not found']);
         }
-        
+
         // Get articles associated with shipment
         $shipment->articles = $shipment->getArticles();
-        
+
         // Only continue if not filtering by only_order
         $validArticles = [];
 
@@ -284,7 +306,7 @@ class Controller extends BaseController
         if (count($shipment->articles) === 0) {
             return response()->json(['error' => 'No articles found for this shipment']);
         }
-        
+
         $Allcustomers = Customer::with(['invoices.shipment', 'user', 'city'])
             ->whereIn('category', ['regular', 'site'])
             ->whereHas('user', function ($query) {
@@ -306,7 +328,7 @@ class Controller extends BaseController
         $Customers = $Allcustomers->filter(function ($customer) use ($shipment) {
             // Check if any of the customer's invoices match the shipment number
             return !$customer->invoices->contains(function ($invoice) use ($shipment) {
-                return 
+                return
                 $invoice->shipment_no == $shipment->shipment_no ||
                 ($invoice->shipment && $invoice->shipment->date == $shipment->date);
             });

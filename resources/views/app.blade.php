@@ -84,15 +84,15 @@
         .bg-\[var\(--primary-color\)\]{
             color: #e2e8f0 !important;
         }
-        
+
         .my-scrollbar-2::-webkit-scrollbar {
             display: none;
         }
-        
+
         .fade-in {
             animation: fadeIn 0.35s ease-in-out;
         }
-        
+
         .scale-in {
             animation: scaleIn 0.4s ease-in-out;
         }
@@ -121,7 +121,7 @@
                 opacity: 0;
             }
         }
-        
+
         @keyframes scaleIn {
             0% {
                 transform: scale(0.9);
@@ -262,9 +262,9 @@
             pointer-events: all !important;
         }
     </style>
-    
+
     @vite('resources/css/app.css')
-    
+
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script src="https://unpkg.com/alpinejs" defer></script>
     <script>
@@ -308,7 +308,7 @@
             return formatted;
         }
     </script>
-    
+
     <script src="{{ asset('js/components/card.js') }}"></script>
     <script src="{{ asset('js/components/modal.js') }}"></script>
     <script src="{{ asset('js/components/context-menu.js') }}"></script>
@@ -337,15 +337,15 @@
                 @if (session('info'))
                     <x-alert type="info" :messages="session('info')" />
                 @endif
-            
+
                 @if (session('success'))
                     <x-alert type="success" :messages="session('success')" />
                 @endif
-            
+
                 @if (session('warning'))
                     <x-alert type="warning" :messages="session('warning')" />
                 @endif
-            
+
                 @if (session('error'))
                     <x-alert type="error" :messages="session('error')" />
                 @endif
@@ -366,11 +366,11 @@
             <div class="left_actions absolute top-5 left-5 flex gap-2">
                 <div id="go_back_button" class="border border-gray-600 group bg-[var(--bg-color)] h-full rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden hover:pr-3 transition-all duration-300 ease-in-out">
                     <div class="flex items-center justify-center bg-[var(--h-bg-color)] rounded-lg p-2">
-                        <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]" 
+                        <svg class="size-3 transition-all duration-300 ease-in-out group-hover:size-2.5 fill-[var(--secondary-text)]"
                         xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
                         <path d="M19 12H5m6-6l-6 6 6 6" stroke="currentColor" stroke-width="2.5" fill="none"/>
                         </svg>
-                    </div>                    
+                    </div>
                     <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:ml-2">
                         Go Back
                     </span>
@@ -382,7 +382,7 @@
                               <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
                               <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z" transform="translate(0.3, 0.3)" />
                             </g>
-                        </svg>                          
+                        </svg>
                     </div>
                     <span class="inline-block max-w-0 opacity-0 overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out group-hover:opacity-100 group-hover:max-w-[200px] group-hover:ml-2">
                         Refersh
@@ -416,7 +416,7 @@
             input.value = input.value.replace(/\D/g, '');
 
             let errorElem = document.getElementById(input.id+"-error");
-            
+
             const max = parseInt(input.max, 10);
             if (parseInt(input.value, 10) > max) {
                 errorElem.textContent = `Value cannot exceed ${max}.`;
@@ -753,7 +753,7 @@
     @if(request()->route()->getActionMethod() === 'index' || request()->is('invoices/create'))
         let search_container = document.querySelector('.search_container');
         let tableHead = document.getElementById('table-head');
-        
+
         function renderFilteredData() {
             // Check if authLayout is defined
             const isGrid = typeof authLayout !== 'undefined' && authLayout === "grid";
@@ -776,7 +776,7 @@
 
                 search_container.insertAdjacentHTML('beforeend', html);
             @elseif(request()->is('invoices/create'))
-                
+
             @endif
         }
 
@@ -813,10 +813,10 @@
 
             // Group filters by path
             const filterGroups = {};
-            
+
             filters.forEach(filter => {
                 const path = filter.dataset.filterPath;
-                
+
                 if (!filterGroups[path]) filterGroups[path] = [];
                 filterGroups[path].push(filter);
             });
@@ -932,7 +932,7 @@
                         console.log("Layout Updated Successfully.");
                         authLayout = response.updatedLayout;
                         console.log(authLayout);
-                        
+
                         clearAllSearchFields();
                         renderData();
 
@@ -982,7 +982,7 @@
                 isFetching = true;
                 setTimeout(() => {
                     console.log("Render Next Batch");
-                    
+
                     renderNextBatch();
                     isFetching = false;
                 }, 100);
@@ -1004,7 +1004,7 @@
 
         renderData(); // initial load
     @endif
-    
+
     function closeModal(modalId, animate = 'animate') {
         const modal = document.getElementById(`${modalId}-wrapper`);
         const modalForm = modal.querySelector('form');
@@ -1021,7 +1021,6 @@
             }, { once: true });
         } else {
             modal.remove();
-            console.log('hello yahan close hua');
         }
         document.removeEventListener('mousedown', closeOnClickOutside);
         document.removeEventListener('keydown', escToClose);
@@ -1132,7 +1131,7 @@
 
         const inputRect = input.getBoundingClientRect();
         const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
-        
+
         dropdown.style.width = inputRect.width + "px";
         dropdown.style.top = (inputRect.top + inputRect.height) + "px";
         dropdown.style.left = inputRect.left + "px";

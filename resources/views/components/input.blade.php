@@ -67,7 +67,7 @@
         $oninput = 'formatUsername(this)';
         $minlength = '6';
     @endphp
-    
+
 <script>
     function formatUsername(input) {
         input.value = input.value.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -88,14 +88,14 @@
 
 <div class="form-group relative {{$parentGrow ? "grow" : ""}}">
     @if($label)
-        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}{{ $required ? ' *' : '' }}</label>
+        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}{{ !$required && !$required && !$readonly && !$disabled ? ' (optional)' : '' }}</label>
     @endif
 
     <div class="relative flex gap-4">
-        <input 
+        <input
             id="{{ $id }}"
-            type="{{ $type }}" 
-            name="{{ $name }}" 
+            type="{{ $type }}"
+            name="{{ $name }}"
             @if ($value != '')
                 value="{{ old($name, $value) }}"
             @endif
@@ -108,7 +108,7 @@
             {{ $attributes->merge([
                 'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
                     ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
-                    ' text-[var(--text-color)] px-3 ' . 
+                    ' text-[var(--text-color)] px-3 ' .
                     ($type == 'date' ? 'py-[7px]' : 'py-2') .
                     ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
             ]) }}
@@ -122,13 +122,13 @@
             @if ($dataClearable) data-clearable @endif
         />
         @if ($dualInput)
-            <input 
+            <input
                 id="{{ $id2 }}"
                 type="{{ $type2 }}"
                 {{ $attributes->merge([
                     'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
                         ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
-                        ' text-[var(--text-color)] px-3 ' . 
+                        ' text-[var(--text-color)] px-3 ' .
                         ($type == 'date' ? 'py-[7px]' : 'py-2') .
                         ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
                 ]) }}
@@ -144,7 +144,7 @@
             <button id="{{$btnId}}" type="button" class="{{ $btnClass }} bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{!! $btnText !!}</button>
         @endif
     </div>
-    
+
     @if($list != '')
         <datalist id="{{ $list }}">
             @foreach ($listOptions as $option)
