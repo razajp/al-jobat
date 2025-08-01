@@ -431,35 +431,6 @@
                     ['href' => route('orders.create'), 'title' => 'Generate Order'],
                     ['href' => route('payment-programs.create'), 'title' => 'Add Payment Prg.'],
                 ]" />
-
-                <x-mobile-menu-item title="Shipments" includesDropdown :dropdown="[
-                    ['href' => route('shipments.index'), 'title' => 'Show Shipments'],
-                    ['href' => route('shipments.create'), 'title' => 'Generate Shipment'],
-                ]" />
-
-                <x-mobile-menu-item title="Physical Quantities" includesDropdown :dropdown="[
-                    ['href' => route('physical-quantities.index'), 'title' => 'Show Phys. Quantity'],
-                    ['href' => route('physical-quantities.create'), 'title' => 'Add Phys. Quantity'],
-                ]" />
-
-                <x-mobile-menu-item title="Invoices" includesDropdown :dropdown="[
-                    ['href' => route('invoices.index'), 'title' => 'Show Invoices'],
-                    ['href' => route('invoices.create'), 'title' => 'Generate Invoice'],
-                    ['href' => route('cargos.index'), 'title' => 'Show Cargo Lists'],
-                    ['href' => route('cargos.create'), 'title' => 'Generate Cargo List'],
-                    ['href' => route('bilties.index'), 'title' => 'Show Bilties'],
-                    ['href' => route('bilties.create'), 'title' => 'Add Bilty'],
-                ]" />
-
-                <x-mobile-menu-item title="Payments" includesDropdown :dropdown="[
-                    ['href' => route('customer-payments.index'), 'title' => 'Show Payments'],
-                    ['href' => route('customer-payments.create'), 'title' => 'Add Payment'],
-                ]" />
-
-                <x-mobile-menu-item title="Banks" includesDropdown :dropdown="[
-                    ['href' => route('bank-accounts.index'), 'title' => 'Show Banks'],
-                    ['href' => route('bank-accounts.create'), 'title' => 'Add Bank'],
-                ]" />
             </div>
 
             <!-- Divider -->
