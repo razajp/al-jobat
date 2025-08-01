@@ -71,7 +71,7 @@
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
             <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
-            
+
             <!-- Buttons -->
             <button
                 id="orderBtn"
@@ -103,6 +103,8 @@
                 return;
             }
 
+            doHide = true;
+
             $.ajax({
                 url: "/set-invoice-type",
                 type: "POST",
@@ -125,16 +127,16 @@
         function moveHighlight(btn, btnType) {
             const highlight = document.getElementById("highlight");
             const rect = btn.getBoundingClientRect();
-            
+
             const parentRect = btn.parentElement.getBoundingClientRect();
-        
+
             // Move and resize the highlight
             highlight.style.width = `${rect.width}px`;
             highlight.style.left = `${rect.left - parentRect.left - 3}px`;
 
-            btnTypeGlobal = btnType; 
+            btnTypeGlobal = btnType;
         }
-    
+
         // Initialize highlight on load
         window.onload = () => {
             @if($invoiceType == 'order')
@@ -354,6 +356,11 @@
                                 calculateNoOfSelectableCustomers(shipmentArticles);
                                 document.getElementById('total-count').value = allCustomers.length ?? 0;
                                 addListners();
+                            } else {
+                                messageBox.innerHTML = `
+                                    <x-alert type="error" :messages="'${response.error}'" />
+                                `;
+                                messageBoxAnimation()
                             }
                         }
                     });
@@ -402,7 +409,7 @@
                         { data: item.balance, class: 'w-[15%] text-center' },
                     ];
                 });
-                
+
                 let modalData = {
                     id: 'modalForm',
                     class: 'h-[45rem] max-w-6xl',
@@ -456,7 +463,7 @@
                 })
                 customersArrayInput.value = JSON.stringify(finalCustomersArray);
             }
-            
+
             shipmentNoDom.addEventListener('input', (e) => {
                 let value = e.target.value;
 
@@ -466,7 +473,7 @@
 
                 trackStateOfShipmentNo(e.target.value);
             });
-            
+
             function trackStateOfShipmentNo(value) {
                 if (value != "") {
                     selectCustomersBtn.disabled = false;
@@ -520,7 +527,7 @@
             let totalAmountInFormDom = document.getElementById('totalAmountInForm');
             let dicountInFormDom = document.getElementById('dicountInForm');
             let netAmountInFormDom = document.getElementById('netAmountInForm');
-            
+
             function renderCalcBottom() {
                 netAmount = totalAmount - (totalAmount * (discount / 100));
                 totalQuantityInFormDom.textContent = formatNumbersDigitLess(totalQuantityPcs);
@@ -529,7 +536,7 @@
                 netAmountInFormDom.value = formatNumbersWithDigits(netAmount, 1, 1);
             }
 
-            // 
+            //
 
             function updateSelectedCount() {
                 const checkboxes = document.querySelectorAll('.row-checkbox');
@@ -575,7 +582,7 @@
                 const availableCottonCount = getAvailableCottonCount(cottonCountInput);
 
                 if (checkbox.checked) {
-                    if (availableCottonCount > 0) {   
+                    if (availableCottonCount > 0) {
                         customerData['cotton_count'] = cottonCount;
                         selectedCustomersArray.push(customerData);
                     }
@@ -641,18 +648,18 @@
                         if (!isNaN(val)) sum += val;
                     }
                 });
-                
+
                 let availableCottonCount = ogMaxCottonCount - sum;
                 return availableCottonCount;
             }
 
             function updateCustomerRowsState() {
                 const customerRows = document.querySelectorAll('.customer-row');
-                
+
                 const availableCottonCount = getAvailableCottonCount();
                 console.log(availableCottonCount);
-                
-                
+
+
                 customerRows.forEach((customerRow, index) => {
                     if (availableCottonCount > 0) {
                         customerRow.style.pointerEvents = 'all';
@@ -679,7 +686,7 @@
                             <span class="text-left pl-5 flex items-center gap-4 checkbox-container w-[12%]">
                                 <input type="checkbox" name="selected_customers[]"
                                     class="row-checkbox shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 cursor-pointer" />
-                                
+
                                 <input class="cottonCount w-[70%] border border-gray-600 bg-[var(--h-bg-color)] py-0.5 px-2 rounded-md text-xs focus:outline-none opacity-0 pointer-events-none" type="number" name="cotton_count" value="1" min="1" oninput="validateCottonCount(this)" onclick="this.select()" />
                             </span>
                             <span class="capitalize grow">${customer.customer_name} | ${customer.city.title}</span>
@@ -736,7 +743,7 @@
                 cottonCount = customerData.cotton_count || 1;
                 let totalQuantity = 0;
                 let totalAmountOfThisInvoice = 0;
-                if (shipmentArticles.length > 0) {  
+                if (shipmentArticles.length > 0) {
                     previewDom.innerHTML = `
                         <div id="invoice" class="invoice flex flex-col h-full">
                             <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
@@ -877,7 +884,7 @@
             const orderNoDom = document.getElementById("order_no");
             const generateInvoiceBtn = document.getElementById("generateInvoiceBtn");
             generateInvoiceBtn.disabled = true;
-            
+
             // Calc Bottom
             let totalQuantityInFormDom = document.getElementById('totalQuantityInForm');
             let totalAmountInFormDom = document.getElementById('totalAmountInForm');
@@ -930,14 +937,19 @@
                         order_no: orderNoDom.value
                     },
                     success: function (response) {
-                        console.log(response);
-                        
-                        orderedArticles = response.articles;
-                        discount = response.discount ?? 0;
-                        customerData = response.customer;
-                        
-                        renderList();
-                        renderCalcBottom();
+                        if (!response.error) {
+                            orderedArticles = response.articles;
+                            discount = response.discount ?? 0;
+                            customerData = response.customer;
+
+                            renderList();
+                            renderCalcBottom();
+                        } else {
+                            messageBox.innerHTML = `
+                                <x-alert type="error" :messages="'${response.error}'" />
+                            `;
+                            messageBoxAnimation()
+                        }
                     }
                 });
             }
@@ -953,7 +965,7 @@
             const articleListDOM = document.getElementById('article-list');
 
             function renderList() {
-                
+
                 if (orderedArticles && orderedArticles.length > 0) {
                     console.log('hello');
                     totalAmount = 0;
@@ -965,7 +977,7 @@
                             // let orderedQuantity = selectedArticle.ordered_quantity;
                             let totalQuantityInPackets = selectedArticle.total_quantity_in_packets;
                             // let totalPhysicalStockPcs = selectedArticle.total_quantity_in_packets * selectedArticle.article.pcs_per_packet;
-                            
+
                             totalQuantityPcs += totalQuantityInPackets * selectedArticle.article.pcs_per_packet;
 
                             let articleAmount = (selectedArticle.article.sales_rate * selectedArticle.article.pcs_per_packet) * totalQuantityInPackets;
@@ -1035,7 +1047,7 @@
 
             function packetEdited(elem) {
                 let max = parseInt(elem.max);
-                
+
                 if (elem.value > max) {
                     elem.value = max;
                 } else if (elem.value < 1) {
@@ -1068,16 +1080,16 @@
 
                 let amountCalculated = parseInt(pcsInRowDom.textContent.replace(/[,]/g, '')) * parseInt(ratePerPcInRowDom.textContent.replace(/[,]/g, ''));
                 totalAmount += amountCalculated;
-                
+
                 amountInRowDom.textContent = formatNumbersWithDigits(amountCalculated, 1, 1) || 0.0;
 
                 let currentArticle = orderedArticles.find(article => article.article.article_no == parseInt(articleNoInRowDom.textContent.replace(/#/g, '')))
-                
+
                 if (currentArticle) {
                     currentArticle.packets = packetsValue
                     currentArticle.ordered_quantity = pcsCalculated
                 }
-                
+
                 renderCalcBottom();
             }
 
@@ -1116,7 +1128,7 @@
             function generateInvoice() {
                 invoiceNo = generateInvoiceNo();
                 invoiceDate = getInvoiceDate();
-                
+
                 if (orderedArticles.length > 0) {
                     previewDom.innerHTML = `
                         <div id="invoice" class="invoice flex flex-col h-full">
@@ -1236,7 +1248,7 @@
                 updateInputArticlesInInvoice();
                 return true;
             }
-            
+
             function addListenerToPrintAndSaveBtn() {
                 document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1280,14 +1292,14 @@
                                             padding: 0;
                                             width: 210mm; /* A4 width */
                                             height: 297mm; /* A4 height */
-                                            
+
                                         }
 
                                         .preview-container, .preview-container * {
                                             page-break-inside: avoid;
                                         }
                                     }
-                                </style> 
+                                </style>
                             </head>
                             <body>
                                 <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
@@ -1317,7 +1329,7 @@
                     };
                 });
             }
-            
+
             document.addEventListener("DOMContentLoaded", ()=>{
                 addListenerToPrintAndSaveBtn();
             });
