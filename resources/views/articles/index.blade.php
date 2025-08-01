@@ -55,7 +55,7 @@
             ]
         ];
     @endphp
-    
+
     {{-- header --}}
     <div class="w-[80%] mx-auto">
         <x-search-header heading="Articles" :search_fields=$searchFields/>
@@ -76,14 +76,12 @@
                 <div class="details h-full z-40">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
-                            <div id="table-head" class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-left pl-5 col-span-2">Customer</div>
-                                <div class="text-left pl-5">Urdu Title</div>
+                            <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                                <div class="text-center">Article No</div>
                                 <div class="text-center">Category</div>
-                                <div class="text-center">City</div>
-                                <div class="text-center">Phone</div>
-                                <div class="text-right">Balance</div>
-                                <div class="text-right pr-5">Status</div>
+                                <div class="text-center">Season</div>
+                                <div class="text-center">Size</div>
+                                <div class="text-center">Sales Rate</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>
@@ -112,18 +110,14 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid text- grid-cols-8 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="text-left pl-5 col-span-2">${data.name}</span>
-                <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
-                <span class="text-center capitalize">${data.details["Category"]}</span>
-                <span class="text-center capitalize">${data.city}</span>
-                <span class="text-center">${data.phone_number}</span>
-                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
-                <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
-                    ${data.user.status}
-                </span>
+                <span class="text-center">${data.name}</span>
+                <span class="text-center">${data.details["Category"]}</span>
+                <span class="text-center">${data.details["Season"]}</span>
+                <span class="text-center">${data.details["Size"]}</span>
+                <span class="text-center">${data.sales_rate}</span>
             </div>`;
         }
 
@@ -171,7 +165,7 @@
                 ],
             };
 
-            
+
             if (data.sales_rate == 0) {
                 contextMenuData.actions.push({id: 'add-rates', text: 'Add Rates', onclick: `generateAddRatesModal(${JSON.stringify(data)})`});
             }
@@ -243,7 +237,7 @@
 
         function enableDisableBtn(elem) {
             const formDom = elem.closest('form');
-            
+
             const btnDom = formDom.querySelector('#addRate');
             const titleInpDom = formDom.querySelector('#title');
             const rateInpDom = formDom.querySelector('#rate');
@@ -284,9 +278,9 @@
             let rate = parseFloat(elem.parentElement.previousElementSibling.innerText);
 
             let title = elem.parentElement.previousElementSibling.previousElementSibling.innerText;
-            
+
             ratesArray = ratesArray.filter(rate => rate.title !== title);
-            
+
             renderRateList(elem.closest('#table-body'));
         }
 
@@ -340,7 +334,7 @@
             ratesArray.push(rateObject);
             titleInpDom.value = '';
             rateInpDom.value = '';
-            titleInpDom.focus(); 
+            titleInpDom.focus();
             renderRateList(tableBodyDom)
         }
 
@@ -413,7 +407,7 @@
                     {id: 'add', text: 'Add', type: 'submit'}
                 ],
             }
-            
+
             createModal(modalData);
         }
 
@@ -444,7 +438,7 @@
                     {id: 'add', text: 'Add', type: 'submit'}
                 ],
             }
-            
+
             createModal(modalData);
         }
     </script>

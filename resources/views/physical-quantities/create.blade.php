@@ -45,7 +45,7 @@
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
 
                 {{-- category --}}
-                <x-select 
+                <x-select
                     label="Category"
                     name="category"
                     id="category"
@@ -117,7 +117,7 @@
         })
 
         function generateArticlesModal() {
-            let data = @json($articles);
+            let data = Object.values(@json($articles));
             let cardData = [];
 
             console.log(data);
@@ -137,7 +137,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 cards: {name: 'Articles', count: 3, data: cardData},
@@ -154,16 +154,16 @@
             articleIdInputDOM.value = selectedArticle.id;
             let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
             articleSelectInputDOM.value = value;
-            
+
             articleImageShowDOM.classList.remove('opacity-0');
             articleImageShowDOM.src = articleElem.querySelector('img').src
-            
+
             closeModal('modalForm');
             trackFieldsDisability();
             calculateTotal();
 
             totalPhysicalQuantityDom.innerText = selectedArticle.physical_quantity;
-            
+
             function formatArticleDate(inputDate) {
                 let [day, month, yearWithDay] = inputDate.replace(',', '').split('-');
                 let [year] = yearWithDay.split(' ');
@@ -177,8 +177,8 @@
             }
 
             document.getElementById('date').min = formatArticleDate(selectedArticle.date);
-            
-            
+
+
             if (selectedArticle.pcs_per_packet > 0) {
                 pcsPerPacketDom.readOnly = true;
                 pcsPerPacketDom.classList.remove('bg-[var(--h-bg-color)]');

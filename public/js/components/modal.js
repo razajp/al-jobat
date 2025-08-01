@@ -297,7 +297,7 @@ function createModal(data, animate = 'animate') {
             headerHTML += `<div class="${header.class}">${header.label}</div>`;
         });
 
-        let bodyHTML = returnTableBody(data.table.body);
+        let bodyHTML = returnTableBody(data);
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
@@ -811,9 +811,9 @@ function returnTableBody(data) {
     return bodyHTML;
 }
 
-function reRenderTableBody(data) {
-    console.log(returnTableBody(data));
-}
+// function reRenderTableBody(data) {
+//     console.log(returnTableBody(data));
+// }
 
 function renderCardsInModal(data) {
     let cardsData = '';
