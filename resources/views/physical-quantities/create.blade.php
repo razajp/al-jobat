@@ -39,7 +39,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-3 gap-4">
                 {{-- pcs_per_packet  --}}
-                <x-input label="Master Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter master unit" required />
+                <x-input label="Master Unit" name="pcs_per_packet" id="pcs_per_packet" type="number" placeholder="Enter master unit" required dataValidate="max:8|min:1" />
 
                 {{-- packets --}}
                 <x-input label="Packets" name="packets" id="packets" type="number" placeholder="Enter packet count" required />
@@ -140,6 +140,7 @@
 
             let modalData = {
                 id: 'modalForm',
+                class: 'h-[80%] w-full',
                 cards: {name: 'Articles', count: 3, data: cardData},
             }
 

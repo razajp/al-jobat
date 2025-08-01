@@ -351,17 +351,23 @@
                                 generateModal(allCustomers);
                                 search_container = document.querySelector('.search_container');
                                 tableHead = document.getElementById('table-head');
-                                renderList();
-                                renderCalcBottom();
+                                // renderList();
+                                // renderCalcBottom();
                                 calculateNoOfSelectableCustomers(shipmentArticles);
                                 document.getElementById('total-count').value = allCustomers.length ?? 0;
                                 addListners();
                             } else {
+                                shipmentArticles = [];
+                                discount = 0;
+                                allCustomers = '';
+                                allDataArray = '';
                                 messageBox.innerHTML = `
                                     <x-alert type="error" :messages="'${response.error}'" />
                                 `;
                                 messageBoxAnimation()
                             }
+                            renderList();
+                            renderCalcBottom();
                         }
                     });
                 }
@@ -941,15 +947,18 @@
                             orderedArticles = response.articles;
                             discount = response.discount ?? 0;
                             customerData = response.customer;
-
-                            renderList();
-                            renderCalcBottom();
                         } else {
+                            orderedArticles = [];
+                            discount = 0;
+                            customerData = '';
+
                             messageBox.innerHTML = `
                                 <x-alert type="error" :messages="'${response.error}'" />
                             `;
                             messageBoxAnimation()
                         }
+                        renderList();
+                        renderCalcBottom();
                     }
                 });
             }
