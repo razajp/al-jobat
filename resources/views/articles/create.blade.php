@@ -96,7 +96,6 @@
                         id="extra_pcs" 
                         type="number"
                         placeholder="Enter extra pcs" 
-                        required 
                     />
 
                     {{-- fabric_type --}}
