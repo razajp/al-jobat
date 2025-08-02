@@ -119,38 +119,67 @@ class Controller extends BaseController
         }
 
         $order = Order::with('customer.city')->where("order_no", $request->order_no)->first();
+
+        if (!$order) {
+            return response()->json(["error" => "Order not found."]);
+        }
+
         $order->articles = json_decode($order->articles);
 
         if (!$request->boolean('only_order')) {
             $orderedArticles = $order->articles;
 
-            $orderedArticles = array_filter($orderedArticles, function ($orderedArticle) {
-                $article = Article::find($orderedArticle->id);
-                $orderedArticle->article = $article;
+            $articleIds = array_map(fn($oa) => $oa->id, $orderedArticles);
+            $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
 
-                $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
-                $orderedArticle->total_quantity_in_packets = 0;
+            $stockErrors = [];
 
-                if ($totalPhysicalStockPackets > 0 && $article->pcs_per_packet > 0) {
-                    $avalaibelPhysicalQuantity = $article->sold_quantity > 0 ? $totalPhysicalStockPackets - ($article->sold_quantity / $article->pcs_per_packet) : $totalPhysicalStockPackets;
-                    $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
-                    $pendingPackets = isset($orderedArticle->invoice_quantity) ? $orderedPackets - ($orderedArticle->invoice_quantity / $article->pcs_per_packet) : $orderedPackets;
+            foreach ($orderedArticles as $orderedArticle) {
+                $article = $articles[$orderedArticle->id] ?? null;
 
-                    $orderedArticle->total_quantity_in_packets = floor(min($pendingPackets, $avalaibelPhysicalQuantity));
+                if (!$article) {
+                    $stockErrors[] = "Article with ID {$orderedArticle->id} not found.";
+                    continue;
                 }
 
-                return $orderedArticle->total_quantity_in_packets;
-            });
+                $orderedArticle->article = $article;
+                $orderedArticle->total_quantity_in_packets = 0;
+
+                $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
+
+                if ($totalPhysicalStockPackets > 0 && $article->pcs_per_packet > 0) {
+                    $availablePhysicalQuantity = $article->sold_quantity > 0
+                        ? $totalPhysicalStockPackets - ($article->sold_quantity / $article->pcs_per_packet)
+                        : $totalPhysicalStockPackets;
+
+                    $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
+                    $invoiceQty = $orderedArticle->invoice_quantity ?? 0;
+                    $pendingPackets = $orderedPackets - ($invoiceQty / $article->pcs_per_packet);
+
+                    $orderedArticle->total_quantity_in_packets = floor(min($pendingPackets, $availablePhysicalQuantity));
+                }
+
+                $actualQuantity = $orderedArticle->total_quantity_in_packets * $article->pcs_per_packet;
+                if ($actualQuantity < $orderedArticle->ordered_quantity) {
+                    $stockErrors[] = 'Stock is less than order quantity for article: ' . $article->article_no;
+                }
+            }
+
+            if (!empty($stockErrors)) {
+                return response()->json(['error' => implode("; ", $stockErrors)]);
+            }
 
             $order->articles = array_values($orderedArticles);
         }
 
-        if (count($order->articles) == 0) {
-            $order = ['error' => 'data not found'];
+        if (empty($order->articles)) {
+            return response()->json(['error' => 'No articles found for this order.']);
         }
 
         return response()->json($order);
     }
+
+
     public function getProgramDetails(Request $request) {
         $validator = Validator::make($request->all(), [
             "program_no" => "required|exists:payment_programs,program_no",
@@ -274,11 +303,6 @@ class Controller extends BaseController
 
             // Total stock from PhysicalQuantity
             $totalPackets = PhysicalQuantity::where("article_id", $article['id'])->sum("packets");
-
-        // return response()->json([
-        //     'status' => 'success',
-        //     'shipment' => $shipment,
-        // ]);
 
             // Available quantity calculation
             $availablePackets = $article['sold_quantity'] > 0

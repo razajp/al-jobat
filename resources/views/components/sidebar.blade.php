@@ -313,7 +313,7 @@
                 </div>
             @endif
 
-            {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
                 <div class="relative group">
                     <x-nav-link-item
                         label="Productions"
@@ -326,7 +326,7 @@
                         ]"
                     />
                 </div>
-            @endif --}}
+            @endif
 
             {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
@@ -366,7 +366,7 @@
                             </a>
                         </li>
                     @endif
-                    {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+                    @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
                         <!-- rates -->
                         <li>
                             <a href="{{ route('rates.index') }}"
@@ -375,7 +375,7 @@
                                 Rates
                             </a>
                     </li>
-                    @endif --}}
+                    @endif
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"

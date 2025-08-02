@@ -21,7 +21,7 @@ class ShipmentController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
         $shipments = Shipment::get();
@@ -47,7 +47,7 @@ class ShipmentController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $customers_options = [];
         $articles = [];
 
@@ -57,7 +57,7 @@ class ShipmentController extends Controller
             foreach ($customers as $customer) {
                 $user = User::where('id', $customer->user_id)->first();
                 $customer['status'] = $user->status;
-    
+
                 if ($customer->status == 'active') {
                     $customers_options[(int)$customer->id] = [
                         'text' => $customer->customer_name . ' | ' . $customer->city->title,
@@ -65,9 +65,9 @@ class ShipmentController extends Controller
                     ];
                 }
             }
-            
-            $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereRaw('ordered_quantity < quantity')->get();
-    
+
+            $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereNotNull(['category', 'fabric_type'])->whereRaw('ordered_quantity < quantity')->get();
+
             foreach ($articles as $article) {
                 $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
                 $article['physical_quantity'] = ( $physical_quantity * $article->pcs_per_packet ) - $article['sold_quantity'];
@@ -80,7 +80,7 @@ class ShipmentController extends Controller
             $last_shipment = new Shipment();
             $last_shipment->shipment_no = '0000';
         }
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'status' => 'success',
@@ -103,7 +103,7 @@ class ShipmentController extends Controller
         };
 
         // return $request->all();
-        
+
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'discount' => 'required|integer',
@@ -118,12 +118,12 @@ class ShipmentController extends Controller
         }
 
         $data = $request->all();
-        
+
         $data['netAmount'] = str_replace(',', '', $data['netAmount']);
         $data['articles'] = json_decode($data['articles'], true);
 
         $shipment = Shipment::create($data);
-        
+
         return redirect()->route('shipments.create')->with('success', 'Shipment generated successfully.');
     }
 
