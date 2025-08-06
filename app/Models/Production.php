@@ -11,17 +11,20 @@ class Production extends Model
     use HasFactory;
 
     protected $fillable = [
-        'date',
+        'issue_date',
+        'receive_date',
         'article_id',
         'work_id',
         'worker_id',
         'tags',
         'title',
         'rate',
+        'creator_id',
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'issue_date' => 'date',
+        'receive_date' => 'date',
         'tags' => 'array',
         'rate' => 'float',
     ];

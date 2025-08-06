@@ -15,7 +15,7 @@ class Article extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         'article_no',
         'date',
@@ -60,5 +60,10 @@ class Article extends Model
     public function physicalQuantity()
     {
         return $this->hasMany(physicalQuantity::class, 'article_id');
+    }
+
+    public function production()
+    {
+        return $this->hasMany(Production::class, 'article_id');
     }
 }

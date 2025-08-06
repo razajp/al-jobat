@@ -31,7 +31,9 @@ class ProductionController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $articles = Article::all();
+        $articles = Article::whereHas('production.work', function($query) {
+            $query->where('title', 'Cutting');
+        })->with('production.work')->get();
         $work_options = [];
         $workerTypes = Setup::where('type', 'worker_type')->get();
         foreach($workerTypes as $workerType) {
@@ -80,6 +82,8 @@ class ProductionController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
+        // return $request;
+
         $validator = Validator::make($request->all(), [
             'article_id' => 'required|integer|exists:articles,id',
             'work_id' => 'required|integer|exists:setups,id',
@@ -96,11 +100,20 @@ class ProductionController extends Controller
 
         $data = $request->all();
 
-        return $request;
-
         if ($request->quantity) {
             Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
         }
+
+        Production::create($data);
+
+        $issueOrReceive = '';
+        if ($request->issue_date) {
+            $issueOrReceive = 'issue';
+        } else {
+            $issueOrReceive = 'receive';
+        }
+
+        return redirect()->route('productions.create')->with('success', 'Production ' . $issueOrReceive . ' successfully.');
     }
 
     /**
