@@ -651,7 +651,7 @@ function createModal(data, animate = 'animate') {
             <div class="flex gap-3">
                 <button onclick="closeModal('${data.id}')" type="button"
                     class="px-4 py-2 bg-[var(--secondary-bg-color)] border border-gray-600 text-[var(--secondary-text)] rounded-lg hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out cursor-pointer hover:scale-[0.95]">
-                    Cancel
+                    Close
                 </button>
     `;
 
@@ -785,15 +785,19 @@ function returnTableBody(data) {
                     `;
                 }
 
-                if (item.checkbox || item.input) {
-                    return `
-                        <div class="${item.class}">
-                            ${checkboxHTML}
-                            ${inputHTML}
-                        </div>
-                    `;
+                if (item.rawHTML) {
+                    return item.rawHTML;
                 } else {
-                    return `<div class="${item.class}">${item.data}</div>`;
+                    if (item.checkbox || item.input) {
+                        return `
+                            <div class="${item.class}">
+                                ${checkboxHTML}
+                                ${inputHTML}
+                            </div>
+                        `;
+                    } else {
+                        return `<div class="${item.class}">${item.data}</div>`;
+                    }
                 }
             }).join('');
             bodyHTML += `

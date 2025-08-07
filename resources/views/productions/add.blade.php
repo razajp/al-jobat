@@ -148,6 +148,7 @@
             let allRates = @json($rates);
             let materialModalData = {};
             let materialsArray = [];
+            let selectedPartsArray = [];
             const articleSelectInputDOM = document.getElementById("article");
             const articleIdInputDOM = document.getElementById("article_id");
             const articleImageShowDOM = document.getElementById("img-article");
@@ -303,17 +304,29 @@
             }
 
             function generateMaterialsModal(animate = 'animate') {
+                let tableBody = [];
+
+                tableBody = materialsArray.map((item, index) => {
+                    return [
+                        {data: index+1, class: 'w-[10%]'},
+                        {data: item.title, class: 'w-[25%]'},
+                        {data: item.remarks, class: 'w-[25%]'},
+                        {data: item.quantity, class: 'w-[15%]'},
+                        {rawHTML: `
+                            <div class="w-[10%] text-center">
+                                <button onclick="deleteMaterial(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `},
+                    ]
+                })
+
                 materialModalData = {
                     id: 'addMaterialsModalForm',
-                    class: 'max-w-3xl h-[37rem]',
+                    class: 'max-w-4xl h-[37rem]',
                     name: 'Add Materials',
                     fields: [
-                        {
-                            category: 'input',
-                            type: 'hidden',
-                            name: 'materials_array',
-                            value: '[]',
-                        },
                         {
                             category: 'input',
                             label: 'Title',
@@ -337,10 +350,10 @@
                             placeholder: 'Enter Quantity',
                             oninput: 'trackQuantityState(this)',
                             btnId: 'addMaterial',
-                            onclick: 'addMaterial(this)',
+                            onclick: 'addthis(this)',
                         },
                     ],
-                    fieldsGridCount: '2',
+                    fieldsGridCount: '3',
                     table: {
                         name: 'Rates',
                         headers: [
@@ -350,17 +363,9 @@
                             { label: "Quantity", class: "w-[15%]" },
                             { label: "Action", class: "w-[10%]" },
                         ],
-                        body: [],
+                        body: tableBody,
                         scrollable: true,
                     },
-                    // calcBottom: [
-                    //     {label: 'Total - Rs.', name: 'total', value: '0.00', disabled: true},
-                    //     {label: 'Sales Rate - Rs.', name: 'sales_rate', value: '0.00'},
-                    //     {label: 'Pcs / Packet', name: 'pcs_per_packet', value: '0'},
-                    // ],
-                    bottomActions: [
-                        {id: 'add', text: 'Add',}
-                    ],
                 }
 
                 createModal(materialModalData, animate);
@@ -409,12 +414,9 @@
 
                 let quantity = parseFloat(elem.parentElement.previousElementSibling.innerText);
 
-                let title = elem.parentElement.previousElementSibling.previousElementSibling.innerText;
+                let title = elem.parentElement.previousElementSibling.previousElementSibling.previousElementSibling.innerText;
 
-                console.log(quantity);
-                console.log(title);
-
-                // materialsArray = materialsArray.filter(quantity => quantity.title !== title);
+                materialsArray = materialsArray.filter(quantity => quantity.title !== title);
 
                 renderMaterialList(elem.closest('#table-body'));
             }
@@ -444,12 +446,9 @@
                         </div>
                     `;
                 }
-                let formDom = tableBody.closest('form');
-                let materialsArrayInpDom = formDom.querySelector('input[name=materials_array]');
-                materialsArrayInpDom.value = JSON.stringify(materialsArray);
             }
 
-            function addMaterial(elem) {
+            function addthis(elem) {
                 let materialObject = {};
                 const formDom = elem.closest('form');
                 const titleInpDom = formDom.querySelector('#title');
@@ -464,6 +463,8 @@
                 remarksInpDom.value = '';
                 quantityInpDom.value = '';
                 titleInpDom.focus();
+                document.getElementById('materials').value = `${materialsArray.length} Material${materialsArray > 1 ? 's' : ''} Selected`;
+                document.querySelector('input[name="materials"]').value = JSON.stringify(materialsArray);
                 renderMaterialList(tableBodyDom)
             }
 
@@ -564,66 +565,62 @@
                             <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
                         `}
 
-                        {{-- select_rate --}}
-                        <x-select
-                            label="Select Rate"
-                            id="select_rate"
-                            :options="[]"
-                            showDefault
-                            required
-                            onchange="trackSelectRateState(this)"
-                        />
+                        {{-- select_parts --}}
+                        <x-input label="Select Parts" name="select_parts" id="select_parts" placeholder="Select Parts" required onclick="generatePartsModal()" capitalized autoComplete="off" />
+                        <input type="hidden" name="parts" value="" />
 
-                        <div id="titleContainer" class="col-span-full hidden">
-                            {{-- title --}}
-                            <x-input label="Title" name="title" id="title" placeholder="Enter Title" required/>
-                        </div>
-
-                        {{-- rate --}}
-                        <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" />
-
-                        {{-- amount --}}
-                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
-
-                        {{-- receive_date --}}
-                        <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
-
-                        {{-- token --}}
-                        <x-input label="Token" name="token" id="token" disabled placeholder="Token" />
+                        {{-- issue_date --}}
+                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
             }
 
-            function trackSelectRateState(elem) {
-                const rateInput = document.getElementById('rate');
-                const titleInput = document.getElementById('title');
-                const titleContainer = document.getElementById('titleContainer');
+            function generatePartsModal() {
+                let cardData = [];
+                let category = selectedArticle.category;
 
-                if (elem.value !== '' && elem.value !== '0') {
-                    titleContainer.classList.add('hidden');
-                    rateInput.readOnly = true;
-                    const selectedText = elem.closest('.selectParent').querySelector('li.selected').textContent;
-                    rateInput.value = selectedText.split('|')[1].trim();
-                    titleInput.value = selectedText.split('|')[0].trim();
-                    calculateAmount();
-                } else if (elem.value === '0') {
-                    titleContainer.classList.remove('hidden');
-                    titleInput.value = '';
-                    rateInput.value = '';
-                    rateInput.readOnly = false;
-                } else {
-                    titleInput.value = '';
-                    rateInput.value = '';
-                    titleContainer.classList.add('hidden');
-                    rateInput.readOnly = true;
+                if (category != '1_pc') {
+                    if (category == '1_pc_inner') {
+                        cardData.push(
+                            {
+                                id: 'shirt',
+                                name: 'Shirt',
+                                checkbox: true,
+                                checked: selectedPartsArray.some(selected => selected.id === 'shirt') || false,
+                                onclick: 'selectThisPart(this)',
+                            },
+                            {
+                                id: 'inner',
+                                name: 'Inner',
+                                checkbox: true,
+                                checked: selectedPartsArray.some(selected => selected.id === 'inner') || false,
+                                onclick: 'selectThisPart(this)',
+                            },
+                        );
+                    }
                 }
+
+                let modalData = {
+                    id: 'modalForm',
+                    class: 'h-auto max-w-2xl',
+                    cards: {name: 'Select Parts', count: 3, data: cardData},
+                }
+                createModal(modalData)
             }
 
-            function calculateAmount() {
-                let quantity = parseInt(document.getElementById('article_quantity').value);
-                let rate = parseInt(document.getElementById('rate').value);
-                document.getElementById('amount').value = rate * quantity;
+            function selectThisPart(elem) {
+                let checkbox = elem.querySelector("input[type='checkbox']")
+                checkbox.checked = !checkbox.checked;
+
+                if (checkbox.checked) {
+                    selectedPartsArray.push({id: elem.getAttribute('id'), selected: true});
+                } else {
+                    selectedPartsArray = selectedPartsArray.filter(p => p.id != elem.getAttribute('id'));
+                }
+
+                document.getElementById('select_parts').value = selectedPartsArray.map(p => p.id).join(' | ');
+                document.querySelector('input[name="parts"]').value = JSON.stringify(selectedPartsArray);
             }
 
             function validateForNextStep() {
@@ -796,28 +793,22 @@
                     let selectRateNameDom = document.querySelector('input[name="select_rate_name"]');
 
                     if (selectRateNameDom) {
+                        let ratesUL = document.querySelector('ul[data-for="select_rate"]');
+                        selectRateNameDom.value = '-- Select Rates --';
+                        selectRateNameDom.disabled = false;
+                        ratesUL.innerHTML = `
+                            <li data-for="select_rate" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Rates --</li>
+                        `;
                         if (filteredRates.length > 0) {
-                            selectRateNameDom.value = '-- Select Rates --';
-                            selectRateNameDom.disabled = false;
-                            let ratesUL = document.querySelector('ul[data-for="select_rate"]');
-                            ratesUL.innerHTML = `
-                                <li data-for="select_rate" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Rates --</li>
-                            `;
-
                             filteredRates.forEach((rate) => {
                                 ratesUL.innerHTML += `
                                     <li data-for="select_rate" data-value="${rate.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${rate.title} | ${rate.rate}</li>
                                 `;
                             })
-
-                            ratesUL.innerHTML += `
-                                <li data-for="select_rate" data-value="0" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
-                            `;
-
-                        } else {
-                            selectRateNameDom.value = '';
-                            selectRateNameDom.disabled = true;
                         }
+                        ratesUL.innerHTML += `
+                            <li data-for="select_rate" data-value="0" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
+                        `;
                     }
                 }
             }
@@ -979,9 +970,6 @@
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
-
-                        {{-- token --}}
-                        <x-input label="Token" name="token" id="token" disabled placeholder="Token" />
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;

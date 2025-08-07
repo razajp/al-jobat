@@ -10,6 +10,7 @@ use App\Models\Rate;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ProductionController extends Controller
@@ -31,9 +32,13 @@ class ProductionController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $articles = Article::whereHas('production.work', function($query) {
-            $query->where('title', 'Cutting');
-        })->with('production.work')->get();
+        if (Auth::user()->production_type === 'issue') {
+            $articles = Article::whereHas('production.work', function($query) {
+                $query->where('title', 'Cutting');
+            })->with('production.work')->get();
+        } else {
+            $articles = Article::whereNotNull('fabric_type')->whereNotNull('category')->with('production')->get();
+        }
         $work_options = [];
         $workerTypes = Setup::where('type', 'worker_type')->get();
         foreach($workerTypes as $workerType) {
@@ -46,7 +51,7 @@ class ProductionController extends Controller
         foreach($workers as $worker) {
             $worker['taags'] = $worker['tags']
                 ->groupBy('tag')
-                ->map(function ($items, $tag) {
+                ->map(function ($items, $tag) use ($articles) {
                     $fabric = Fabric::where('tag', $tag)->first();
 
                     $supplier = null;
@@ -54,10 +59,15 @@ class ProductionController extends Controller
                         $supplier = Supplier::find($fabric->supplier_id);
                     }
 
+                    $sum = $articles->flatMap->production
+                        ->flatMap->tags
+                        ->filter(fn($tagObj) => $tagObj['tag'] === $tag)
+                        ->sum('quantity');
+
                     return [
                         'tag' => $tag,
                         'unit' => ucfirst($fabric->unit),
-                        'available_quantity' => $items->sum('quantity'),
+                        'available_quantity' => $items->sum('quantity') - $sum,
                         'supplier_name' => $supplier->supplier_name ?? null,
                     ];
                 })->values();
@@ -99,6 +109,8 @@ class ProductionController extends Controller
         }
 
         $data = $request->all();
+
+        $data['tags'] = json_decode($data['tags']);
 
         if ($request->quantity) {
             Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
