@@ -146,7 +146,8 @@
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
             let allRates = @json($rates);
-            let tagModalData = {};
+            let materialModalData = {};
+            let materialsArray = [];
             const articleSelectInputDOM = document.getElementById("article");
             const articleIdInputDOM = document.getElementById("article_id");
             const articleImageShowDOM = document.getElementById("img-article");
@@ -209,12 +210,23 @@
                     <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
                 `;
 
+                console.log(selectedArticle);
+
                 allWorks.forEach(([key, value]) => {
-                    if (value.text != 'Cutting') {
+                    if (value.text != 'Cutting' && value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping') {
                         ul.innerHTML += `
                             <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                         `;
                     }
+                    selectedArticle.production.forEach((production) => {
+                        if (production.work.title == 'Singer' && production.receive_date != null) {
+                            if (value.text == 'Press' && value.text == 'Packing' && value.text == 'Cropping') {
+                                ul.innerHTML += `
+                                    <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                                `;
+                            }
+                        }
+                    })
                 })
 
                 const selectedLi = ul.querySelector('li.selected');
@@ -224,8 +236,6 @@
             }
 
             function trackWorkState(elem) {
-                console.log(allWorkers);
-
                 if (elem.value != '') {
                     let correctWorkers = allWorkers.filter(worker => worker.data_option.type.id == elem.value);
 
@@ -292,32 +302,169 @@
                 selectedTagsArray = [];
             }
 
-            function generateSelectTagModal(animate = 'animate') {
-                let data = tags;
-                let cardData = [];
-
-                if (data.length > 0) {
-                    cardData.push(...data.map(item => {
-                        return {
-                            id: item.tag,
-                            name: item.tag,
-                            details: {
-                                'Supplier': item.supplier_name,
-                                'Available Quantity': item.available_quantity,
-                                'Selected Quantity': item.selected_quantity || 0,
-                            },
-                            data: item,
-                            onclick: `generateQuantityModal(${JSON.stringify(item)})`,
-                        };
-                    }));
+            function generateMaterialsModal(animate = 'animate') {
+                materialModalData = {
+                    id: 'addMaterialsModalForm',
+                    class: 'max-w-3xl h-[37rem]',
+                    name: 'Add Materials',
+                    fields: [
+                        {
+                            category: 'input',
+                            type: 'hidden',
+                            name: 'materials_array',
+                            value: '[]',
+                        },
+                        {
+                            category: 'input',
+                            label: 'Title',
+                            id: 'title',
+                            placeholder: 'Enter Title',
+                            oninput: 'enableDisableBtn(this)',
+                            grow: true,
+                            focus: true,
+                        },
+                        {
+                            category: 'input',
+                            label: 'Remarks',
+                            id: 'remarks',
+                            placeholder: 'Enter Remarks',
+                        },
+                        {
+                            category: 'input',
+                            label: 'Quantity',
+                            id: 'quantity',
+                            type: 'number',
+                            placeholder: 'Enter Quantity',
+                            oninput: 'trackQuantityState(this)',
+                            btnId: 'addMaterial',
+                            onclick: 'addMaterial(this)',
+                        },
+                    ],
+                    fieldsGridCount: '2',
+                    table: {
+                        name: 'Rates',
+                        headers: [
+                            { label: "#", class: "w-[10%]" },
+                            { label: "Title", class: "w-[25%]" },
+                            { label: "Remarks", class: "w-[25%]" },
+                            { label: "Quantity", class: "w-[15%]" },
+                            { label: "Action", class: "w-[10%]" },
+                        ],
+                        body: [],
+                        scrollable: true,
+                    },
+                    // calcBottom: [
+                    //     {label: 'Total - Rs.', name: 'total', value: '0.00', disabled: true},
+                    //     {label: 'Sales Rate - Rs.', name: 'sales_rate', value: '0.00'},
+                    //     {label: 'Pcs / Packet', name: 'pcs_per_packet', value: '0'},
+                    // ],
+                    bottomActions: [
+                        {id: 'add', text: 'Add',}
+                    ],
                 }
 
-                tagModalData = {
-                    id: 'tagModalForm',
-                    cards: {name: 'Tags', count: 3, data: cardData},
-                }
+                createModal(materialModalData, animate);
+            }
 
-                createModal(tagModalData, animate);
+            function enableDisableBtn(elem) {
+                const formDom = elem.closest('form');
+
+                const btnDom = formDom.querySelector('#addMaterial');
+                const titleInpDom = formDom.querySelector('#title');
+                const remarksInpDom = formDom.querySelector('#remarks');
+                const quantityInpDom = formDom.querySelector('#quantity');
+
+                if (titleInpDom.value != '' && remarksInpDom.value != '' && quantityInpDom.value != '') {
+                    btnDom.disabled = false;
+                } else {
+                    btnDom.disabled = true;
+                }
+            }
+
+            function trackQuantityState(elem) {
+                enableDisableBtn(elem);
+
+                if (elem.dataset.listenerAdded === 'true') return;
+
+                elem.dataset.listenerAdded = 'true'; // Mark as handled
+
+                const formDom = elem.closest('form');
+                const addBtn = formDom.querySelector('#addMaterial');
+
+                elem.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addMaterial(addBtn);
+                    }
+                });
+            }
+
+            function deleteMaterial(elem) {
+                elem.closest('.flex')
+                const formDom = elem.closest('form');
+                const titleInpDom = formDom.querySelector('#title');
+
+                titleInpDom.focus();
+
+                let quantity = parseFloat(elem.parentElement.previousElementSibling.innerText);
+
+                let title = elem.parentElement.previousElementSibling.previousElementSibling.innerText;
+
+                console.log(quantity);
+                console.log(title);
+
+                // materialsArray = materialsArray.filter(quantity => quantity.title !== title);
+
+                renderMaterialList(elem.closest('#table-body'));
+            }
+
+            function renderMaterialList(tableBody) {
+                if (materialsArray.length > 0) {
+                    tableBody.innerHTML = '';
+                    materialsArray.forEach((material, index) => {
+                        tableBody.innerHTML += `
+                            <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                                <div class="w-[10%]">${index + 1}</div>
+                                <div class="w-[25%]">${material.title}</div>
+                                <div class="w-[25%]">${material.remarks}</div>
+                                <div class="w-[15%]">${formatNumbersWithDigits(material.quantity)}</div>
+                                <div class="w-[10%] text-center">
+                                    <button onclick="deleteMaterial(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    tableBody.innerHTML = `
+                        <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
+                            <div class="grow text-center text-[var(--border-error)]">No Materials yet.</div>
+                        </div>
+                    `;
+                }
+                let formDom = tableBody.closest('form');
+                let materialsArrayInpDom = formDom.querySelector('input[name=materials_array]');
+                materialsArrayInpDom.value = JSON.stringify(materialsArray);
+            }
+
+            function addMaterial(elem) {
+                let materialObject = {};
+                const formDom = elem.closest('form');
+                const titleInpDom = formDom.querySelector('#title');
+                const remarksInpDom = formDom.querySelector('#remarks');
+                const quantityInpDom = formDom.querySelector('#quantity');
+                const tableBodyDom = formDom.querySelector('#table-body');
+                materialObject.title = titleInpDom.value;
+                materialObject.remarks = remarksInpDom.value;
+                materialObject.quantity = quantityInpDom.value;
+                materialsArray.push(materialObject);
+                titleInpDom.value = '';
+                remarksInpDom.value = '';
+                quantityInpDom.value = '';
+                titleInpDom.focus();
+                renderMaterialList(tableBodyDom)
             }
 
             function generateQuantityModal(item) {
@@ -400,14 +547,14 @@
 
             function generateSecondStep(work) {
                 let secondStepHTML = '';
-                if (work == 'Cutting') {
+                if (work == 'Singer') {
                     secondStepHTML += `
                         {{-- article --}}
                         <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
 
-                        {{-- tags  --}}
-                        <x-input label="Tags" id="tags" placeholder="Select Tags" class="cursor-pointer" required onclick="generateSelectTagModal()" autoComplete="off" />
-                        <input type="hidden" name="tags" value="" />
+                        {{-- materials  --}}
+                        <x-input label="Materials" id="materials" placeholder="Select Materials" class="cursor-pointer" required onclick="generateMaterialsModal()" autoComplete="off" />
+                        <input type="hidden" name="materials" value="" />
 
                         ${!selectedArticle.quantity > 0 ? `
                             {{-- quantity --}}
@@ -542,7 +689,7 @@
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
             let allRates = @json($rates);
-            let tagModalData = {};
+            let materialModalData = {};
             const articleSelectInputDOM = document.getElementById("article");
             const articleIdInputDOM = document.getElementById("article_id");
             const articleImageShowDOM = document.getElementById("img-article");
@@ -704,12 +851,12 @@
                     }));
                 }
 
-                tagModalData = {
+                materialModalData = {
                     id: 'tagModalForm',
                     cards: {name: 'Tags', count: 3, data: cardData},
                 }
 
-                createModal(tagModalData, animate);
+                createModal(materialModalData, animate);
             }
 
             function generateQuantityModal(item) {

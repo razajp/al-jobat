@@ -65,7 +65,7 @@
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
                         <x-section-navigation-button link="{{ route('employees.create') }}" title="Add New Employee" icon="fa-plus" />
                     </div>
-                
+
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container px-3 h-full flex flex-col">
@@ -111,7 +111,7 @@
                 <span class="text-left pl-5">${data.name}</span>
                 <span class="text-left pl-5">${data.details["Category"]}</span>
                 <span class="text-center capitalize">${data.details["Type"]}</span>
-                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                <span class="text-right">${Number(data.details["Balance"] || 0).toFixed(1)}</span>
                 <span class="text-right pr-5 capitalize ${data.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
                     ${data.status}
                 </span>
@@ -129,7 +129,7 @@
                 details: {
                     'Category': item.category,
                     'Type': item.type.title,
-                    'Balance': formatNumbersWithDigits(item.balance, 1, 1) ?? 0,
+                    'Balance': formatNumbersWithDigits(item.balance || 0, 1, 1),
                 },
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
@@ -179,7 +179,7 @@
                     'Phone Number': data.phone_number,
                     'Joining Date': data.joining_date,
                     'C.N.I.C No.': data.cnic_no,
-                    'Balance': data.Balance ?? 0,
+                    'Balance': data.Balance || 0,
                 },
                 profile: true,
                 bottomActions: [

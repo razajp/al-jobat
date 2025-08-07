@@ -382,6 +382,7 @@
                         { label: "Rate", class: "w-1/4" },
                         { label: "Action", class: "w-[10%]" },
                     ],
+                    body: [],
                     scrollable: true,
                 },
                 calcBottom: [

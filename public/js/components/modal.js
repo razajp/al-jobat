@@ -764,6 +764,8 @@ function createModal(data, animate = 'animate') {
 
 function returnTableBody(data) {
     let bodyHTML = '';
+    console.log(data);
+
     if (data.table.body.length > 0) {
         data.table.body.forEach(data => {
             const rowHTML = data.map(item => {
