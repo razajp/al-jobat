@@ -211,23 +211,43 @@
                     <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
                 `;
 
-                console.log(selectedArticle);
-
                 allWorks.forEach(([key, value]) => {
-                    if (value.text != 'Cutting' && value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping') {
+                    if (value.text != 'Cutting' && value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Singer') {
                         ul.innerHTML += `
                             <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                         `;
                     }
+                    let appearCount = 0;
                     selectedArticle.production.forEach((production) => {
+                        if (production.work.title == 'Singer') {
+                            appearCount += 1;
+                        }
+
                         if (production.work.title == 'Singer' && production.receive_date != null) {
+                            console.log(production);
+
                             if (value.text == 'Press' && value.text == 'Packing' && value.text == 'Cropping') {
                                 ul.innerHTML += `
                                     <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                                 `;
                             }
                         }
+                        // if (production.work.title == 'Singer' && production.receive_date != null) {
+                        //     if (value.text == 'Press' && value.text == 'Packing' && value.text == 'Cropping') {
+                        //         ul.innerHTML += `
+                        //             <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                        //         `;
+                        //     }
+                        // }
                     })
+
+                    if (appearCount == 0) {
+                        if (value.text == 'Singer') {
+                            ul.innerHTML += `
+                                <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                            `;
+                        }
+                    }
                 })
 
                 const selectedLi = ul.querySelector('li.selected');

@@ -18,9 +18,12 @@ return new class extends Migration
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
             $table->foreignId('work_id')->constrained('setups')->onDelete('cascade');
             $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
-            $table->json('tags');
-            $table->string('title');
-            $table->decimal('rate', 10, 2);
+            $table->json('tags')->nullable();
+            $table->json('materials')->nullable();
+            $table->json('parts')->nullable();
+            $table->string('title')->nullable();
+            $table->decimal('rate', 10, 2)->nullable();
+            $table->string('ticket');
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

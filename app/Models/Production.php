@@ -17,8 +17,11 @@ class Production extends Model
         'work_id',
         'worker_id',
         'tags',
+        'materials',
+        'parts',
         'title',
         'rate',
+        'ticket',
         'creator_id',
     ];
 
@@ -26,6 +29,8 @@ class Production extends Model
         'issue_date' => 'date',
         'receive_date' => 'date',
         'tags' => 'array',
+        'materials' => 'array',
+        'parts' => 'array',
         'rate' => 'float',
     ];
 

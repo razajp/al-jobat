@@ -98,10 +98,14 @@ class ProductionController extends Controller
             'article_id' => 'required|integer|exists:articles,id',
             'work_id' => 'required|integer|exists:setups,id',
             'worker_id' => 'required|integer|exists:employees,id',
-            'tags' => 'required|string',
+            'tags' => 'nullable|string',
+            'materials' => 'nullable|string',
+            'parts' => 'nullable|string',
             'quantity' => 'nullable|integer|min:1',
             'title' => 'nullable|string',
             'rate' => 'nullable|integer|min:1',
+            'issue_date' => 'nullable|date',
+            'receive_date' => 'nullable|date',
         ]);
 
         if ($validator->fails()) {
@@ -110,13 +114,22 @@ class ProductionController extends Controller
 
         $data = $request->all();
 
-        $data['tags'] = json_decode($data['tags']);
+        $data['tags'] = isset($data['tags']) ? json_decode($data['tags']) : null;
+        $data['materials'] = isset($data['materials']) ? json_decode($data['materials']) : null;
+        $data['parts'] = isset($data['parts']) ? json_decode($data['parts']) : null;
 
         if ($request->quantity) {
             Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
         }
 
-        Production::create($data);
+        $work = Setup::find($request->work_id);
+
+        $production = Production::create($data);
+
+        $ticket = $work->short_title . str_pad($production->id, 3, '0', STR_PAD_LEFT);
+
+        $production->ticket = $ticket;
+        $production->save();
 
         $issueOrReceive = '';
         if ($request->issue_date) {
@@ -125,7 +138,7 @@ class ProductionController extends Controller
             $issueOrReceive = 'receive';
         }
 
-        return redirect()->route('productions.create')->with('success', 'Production ' . $issueOrReceive . ' successfully.');
+        return redirect()->route('productions.create')->with('success', 'Production ' . $issueOrReceive . ' successfully. Ticket: ' . $ticket);
     }
 
     /**
