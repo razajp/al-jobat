@@ -145,6 +145,7 @@
         <script>
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
+            let allParts = Object.entries(@json(app('article')->parts));
             let allRates = @json($rates);
             let materialModalData = {};
             let materialsArray = [];
@@ -212,37 +213,16 @@
                 `;
 
                 allWorks.forEach(([key, value]) => {
-                    if (value.text != 'Cutting' && value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Singer') {
-                        ul.innerHTML += `
-                            <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                        `;
-                    }
-                    let appearCount = 0;
-                    selectedArticle.production.forEach((production) => {
-                        if (production.work.title == 'Singer') {
-                            appearCount += 1;
-                        }
-
-                        if (production.work.title == 'Singer' && production.receive_date != null) {
-                            console.log(production);
-
-                            if (value.text == 'Press' && value.text == 'Packing' && value.text == 'Cropping') {
+                    if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping') {
+                        if (selectedArticle.production.filter(p => p.work.title == value.text).length == 0) {
+                            if (value.text == value.text) {
                                 ul.innerHTML += `
                                     <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                                 `;
                             }
                         }
-                        // if (production.work.title == 'Singer' && production.receive_date != null) {
-                        //     if (value.text == 'Press' && value.text == 'Packing' && value.text == 'Cropping') {
-                        //         ul.innerHTML += `
-                        //             <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                        //         `;
-                        //     }
-                        // }
-                    })
-
-                    if (appearCount == 0) {
-                        if (value.text == 'Singer') {
+                    } else if (selectedArticle.production.filter(p => p.work.title == 'Singer' && p.receive_date != null).length > 0) {
+                        if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping') {
                             ul.innerHTML += `
                                 <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                             `;
@@ -585,9 +565,11 @@
                             <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
                         `}
 
-                        {{-- select_parts --}}
-                        <x-input label="Select Parts" name="select_parts" id="select_parts" placeholder="Select Parts" required onclick="generatePartsModal()" capitalized autoComplete="off" />
-                        <input type="hidden" name="parts" value="" />
+                        ${selectedArticle.category != '1_pc' ? `
+                            {{-- select_parts --}}
+                            <x-input label="Select Parts" name="select_parts" id="select_parts" placeholder="Select Parts" required onclick="generatePartsModal()" capitalized autoComplete="off" />
+                            <input type="hidden" name="parts" value="" />
+                        ` : `` }
 
                         {{-- issue_date --}}
                         <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
@@ -600,25 +582,22 @@
                 let cardData = [];
                 let category = selectedArticle.category;
 
+                let partsArray = allParts.filter(([key]) => key == category).map(([, value]) => value);
+
                 if (category != '1_pc') {
-                    if (category == '1_pc_inner') {
-                        cardData.push(
-                            {
-                                id: 'shirt',
-                                name: 'Shirt',
-                                checkbox: true,
-                                checked: selectedPartsArray.some(selected => selected.id === 'shirt') || false,
-                                onclick: 'selectThisPart(this)',
-                            },
-                            {
-                                id: 'inner',
-                                name: 'Inner',
-                                checkbox: true,
-                                checked: selectedPartsArray.some(selected => selected.id === 'inner') || false,
-                                onclick: 'selectThisPart(this)',
-                            },
-                        );
-                    }
+                    partsArray.forEach((parts) => {
+                        parts.forEach((part) => {
+                            cardData.push(
+                                {
+                                    id: part,
+                                    name: part,
+                                    checkbox: true,
+                                    checked: selectedPartsArray.some(selected => selected.id === part) || false,
+                                    onclick: 'selectThisPart(this)',
+                                },
+                            )
+                        })
+                    })
                 }
 
                 let modalData = {

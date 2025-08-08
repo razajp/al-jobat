@@ -47,6 +47,10 @@ class AppServiceProvider extends ServiceProvider
                     '20_22_24' => ['text' => '20-22-24'],
                     '24_26_28' => ['text' => '24-26-28'],
                 ],
+                'parts' => [
+                    '1_pc_inner' => ['shirt', 'inner'],
+                    '1_pc_koti' => ['shirt', 'koti'],
+                ],
             ];
         });
     }

@@ -776,7 +776,12 @@
 
                 search_container.insertAdjacentHTML('beforeend', html);
             @elseif(request()->is('invoices/create'))
+                const body = document.getElementById('searchFilterBody');
+                const clone = body.cloneNode(true);
+                const searchFilterBodyInnerHtml = clone.outerHTML;
 
+                closeModal('modalForm', 'noanimation');
+                generateModal(allDataArray, 'noanimation', searchFilterBodyInnerHtml);
             @endif
         }
 

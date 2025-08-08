@@ -117,7 +117,7 @@ function createModal(data, animate = 'animate') {
                         </div>
                         <hr class="border-gray-600 my-4 w-full">
                         <div class="grow overflow-y-auto my-scrollbar-2 p-1">
-                            <div class="grid grid-cols-1 gap-4">
+                            <div id="searchFilterBody" class="grid grid-cols-1 gap-4">
                                 ${data.searchFilter.fieldsHtml}
                             </div>
                         </div>
@@ -755,6 +755,10 @@ function createModal(data, animate = 'animate') {
     }
     document.body.appendChild(modalWrapper);
 
+    if (data.searchFilter.autoOpen) {
+        document.getElementById('filter-btn').click();
+    }
+
     data.fields?.forEach(field => {
         if (field.category == 'explicitHtml' && field.focus) {
             document.querySelector(`#${field.focus}`).focus();
@@ -764,7 +768,6 @@ function createModal(data, animate = 'animate') {
 
 function returnTableBody(data) {
     let bodyHTML = '';
-    console.log(data);
 
     if (data.table.body.length > 0) {
         data.table.body.forEach(data => {

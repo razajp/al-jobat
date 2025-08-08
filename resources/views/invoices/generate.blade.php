@@ -67,6 +67,8 @@
         ];
     @endphp
 
+    <x-search-header heading="hello" :search_fields=$searchFields hide />
+
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-[100]">
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
@@ -283,6 +285,7 @@
         let isModalOpened = false;
         const lastInvoice = @json($last_Invoice);
         let companyData = @json(app('company'));
+        let allDataArray = [];
     </script>
 
     @if ($invoiceType == 'shipment')
@@ -331,7 +334,7 @@
                 //     renderCalcBottom();
                 //     calculateNoOfSelectableCustomers(shipmentArticles);
                 //     document.getElementById('total-count').value = allCustomers.length ?? 0;
-                //     addListners();
+                //     addListeners();
                 //     updateCustomerRowsState();
                 // } else {
                     $.ajax({
@@ -346,6 +349,11 @@
                                 shipmentArticles = response.shipment.articles;
                                 discount = response.shipment.discount ?? 0;
                                 allCustomers = response.customers;
+
+                                allCustomers.forEach((item) => {
+                                    item.visible = true;
+                                })
+
                                 allDataArray = allCustomers;
 
                                 generateModal(allCustomers);
@@ -355,7 +363,7 @@
                                 // renderCalcBottom();
                                 calculateNoOfSelectableCustomers(shipmentArticles);
                                 document.getElementById('total-count').value = allCustomers.length ?? 0;
-                                addListners();
+                                addListeners();
                             } else {
                                 shipmentArticles = [];
                                 discount = 0;
@@ -386,10 +394,10 @@
                 document.getElementById('max-cottons-count').value = maxCottonCount;
             }
 
-            function generateModal(data) {
+            function generateModal(data, animate='animate', fieldsHtml=null) {
                 let tableBody = [];
 
-                tableBody = data.map(item => {
+                tableBody = data.filter(item => item.visible === true).map(item => {
                     const selected = selectedCustomersArray.find(c => c.id === item.id);
                     const isSelected = !!selected;
 
@@ -416,47 +424,48 @@
                     ];
                 });
 
-                let modalData = {
-                    id: 'modalForm',
-                    class: 'h-[45rem] max-w-6xl',
-                    name: 'Customers',
-                    searchFilter: {
-                        fieldsHtml: `
-                            @foreach ($searchFields as $search_field => $value)
-                                @if ($value['type'] == "select")
-                                    <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
-                                @elseif ($value['type'] == "text")
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
-                                @elseif (isset($value['type2']) && isset($value['id2']))
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
-                                @else
-                                    <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
-                                @endif
-                            @endforeach
-                        `,
-                    },
-                    table: {
-                        name: 'Customers',
-                        headers: [
-                            {label: 'Select', class: 'text-left pl-5 flex items-center w-[12%]'},
-                            {label: 'Customer', class: 'grow text-center'},
-                            {label: 'Urdu Title', class: 'w-[15%] text-center'},
-                            {label: 'Category', class: 'w-[15%] text-center'},
-                            {label: 'Balance', class: 'w-[15%] text-center'},
-                        ],
-                        body: tableBody,
-                        selectableRow: true,
-                        scrollable: true,
-                    },
-                    calcBottom: [
-                        {label: 'Total Customers', name: 'total-count', value: '0', disabled: true},
-                        {label: 'Selected Customers', name: 'selected-count', value: '0', disabled: true},
-                        {label: 'Max Cottons Count', name: 'max-cottons-count', value: '0', disabled: true},
-                    ],
-                }
+                // let modalData = {
+                //     id: 'modalForm',
+                //     class: 'h-[45rem] max-w-6xl',
+                //     name: 'Customers',
+                //     searchFilter: {
+                //         fieldsHtml: fieldsHtml || `
+                //             @foreach ($searchFields as $search_field => $value)
+                //                 @if ($value['type'] == "select")
+                //                     <x-select label="{{ $search_field }}" id="{{ $value['id'] }}" :options="$value['options']" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required showDefault />
+                //                 @elseif ($value['type'] == "text")
+                //                     <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required placeholder="{{ $value['placeholder'] }}" />
+                //                 @elseif (isset($value['type2']) && isset($value['id2']))
+                //                     <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" dualInput id2="{{ $value['id2'] }}" type2="{{ $value['type2'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                //                 @else
+                //                     <x-input label="{{ $search_field }}" id="{{ $value['id'] }}" type="{{ $value['type'] }}" :dataClearable="true" dataFilterPath="{{ $value['dataFilterPath'] }}" required/>
+                //                 @endif
+                //             @endforeach
+                //         `,
+                //         autoOpen: !!fieldsHtml
+                //     },
+                //     table: {
+                //         name: 'Customers',
+                //         headers: [
+                //             {label: 'Select', class: 'text-left pl-5 flex items-center w-[12%]'},
+                //             {label: 'Customer', class: 'grow text-center'},
+                //             {label: 'Urdu Title', class: 'w-[15%] text-center'},
+                //             {label: 'Category', class: 'w-[15%] text-center'},
+                //             {label: 'Balance', class: 'w-[15%] text-center'},
+                //         ],
+                //         body: tableBody,
+                //         selectableRow: true,
+                //         scrollable: true,
+                //     },
+                //     calcBottom: [
+                //         {label: 'Total Customers', name: 'total-count', value: '0', disabled: true},
+                //         {label: 'Selected Customers', name: 'selected-count', value: '0', disabled: true},
+                //         {label: 'Max Cottons Count', name: 'max-cottons-count', value: '0', disabled: true},
+                //     ],
+                // }
 
-                createModal(modalData);
-                setSearchDebounce();
+                createModal(modalData, animate);
+                // setSearchDebounce();
             }
 
             function setArrayToCustomersArrayInput() {
@@ -551,7 +560,7 @@
                 document.getElementById('selected-count').value = selected;
             }
 
-            function addListners() {
+            function addListeners() {
                 // Individual checkbox
                 document.querySelectorAll('.row-checkbox').forEach(cb => {
                     cb.addEventListener('change', updateSelectedCount);
