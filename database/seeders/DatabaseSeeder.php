@@ -14,16 +14,16 @@ class DatabaseSeeder extends Seeder
     {
         $this->call(DefaultDataSeeder::class);
 
-        $this->call(UserSeeder::class);
+        // $this->call(UserSeeder::class);
 
-        $this->call(CustomerSeeder::class);
+        // $this->call(CustomerSeeder::class);
 
-        $this->call(SetupSeeder::class);
+        // $this->call(SetupSeeder::class);
         
-        $this->call(SupplierSeeder::class);
+        // $this->call(SupplierSeeder::class);
         
-        $this->call(SelfBankAccountSeeder::class);
+        // $this->call(SelfBankAccountSeeder::class);
         
-        $this->call(SupplierBankAccountSeeder::class);
+        // $this->call(SupplierBankAccountSeeder::class);
     }
 }
