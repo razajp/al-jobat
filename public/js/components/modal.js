@@ -297,7 +297,7 @@ function createModal(data, animate = 'animate') {
             headerHTML += `<div class="${header.class}">${header.label}</div>`;
         });
 
-        let bodyHTML = returnTableBody(data);
+        let bodyHTML = '';
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
@@ -755,6 +755,8 @@ function createModal(data, animate = 'animate') {
     }
     document.body.appendChild(modalWrapper);
 
+    renderTableBody(data.table.body);
+
     if (data.searchFilter.autoOpen) {
         document.getElementById('filter-btn').click();
     }
@@ -766,11 +768,11 @@ function createModal(data, animate = 'animate') {
     })
 }
 
-function returnTableBody(data) {
+function renderTableBody(tableBody) {
     let bodyHTML = '';
 
-    if (data.table.body.length > 0) {
-        data.table.body.forEach(data => {
+    if (tableBody.length > 0) {
+        tableBody.forEach(data => {
             const rowHTML = data.map(item => {
                 let checkboxHTML = '';
                 let inputHTML = '';
@@ -817,12 +819,8 @@ function returnTableBody(data) {
         `;
     }
 
-    return bodyHTML;
+    document.getElementById('table-body').innerHTML = bodyHTML;
 }
-
-// function reRenderTableBody(data) {
-//     console.log(returnTableBody(data));
-// }
 
 function renderCardsInModal(data) {
     let cardsData = '';

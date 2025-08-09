@@ -780,8 +780,7 @@
                 const clone = body.cloneNode(true);
                 const searchFilterBodyInnerHtml = clone.outerHTML;
 
-                closeModal('modalForm', 'noanimation');
-                generateModal(allDataArray, 'noanimation', searchFilterBodyInnerHtml);
+                renderTableBody(generateTableBody(allDataArray));
             @endif
         }
 
