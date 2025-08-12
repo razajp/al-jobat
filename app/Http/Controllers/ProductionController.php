@@ -124,7 +124,7 @@ class ProductionController extends Controller
         $data = $request->all();
         $ticket = null;
 
-        if (isset($data['ticket_name']) && $data['ticket_name']) {
+        if (isset($data['ticket_name']) && $data['ticket_name'] != '-- Select Ticket --') {
             $ticket = $data['ticket_name'];
             $production = Production::where('ticket', $data['ticket_name'])->first();
             if ($production) {
