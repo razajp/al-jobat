@@ -23,15 +23,15 @@
                         validateMax max='{{ now()->toDateString() }}' validateMin
                         min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
-                    
+
                 <div class="grow">
                     <!-- customer_name -->
-                    <x-input 
+                    <x-input
                         label="Cargo Name"
-                        name="cargo_name" 
-                        id="cargo_name" 
-                        placeholder="Enter cargo name" 
-                        required 
+                        name="cargo_name"
+                        id="cargo_name"
+                        placeholder="Enter cargo name"
+                        required
                     />
                 </div>
 
@@ -115,7 +115,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
@@ -133,7 +133,7 @@
 
         function deselectThisInvoice(index) {
             totalCottonCount -=  selectedInvoicesArray[index].cotton_count;
-            
+
             deselectInvoiceAtIndex(index);
 
             renderList();
@@ -259,7 +259,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>
@@ -314,7 +314,7 @@
         //     document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
         //         checkbox.checked = false;
         //     });
-            
+
         //     selectedInvoicesArray = [];
         //     totalCottonCount = 0;
         //     selectAllCheckbox.checked = false;
@@ -363,19 +363,19 @@
 
         //     selectAllScript();
         // });
-        
+
         // function selectAllScript() {
         //     let invoiceCards = document.querySelectorAll(".invoice-card");
         //     invoiceCards.forEach(card => {
         //         if (card.style.display != "none") {
         //             const checkbox = card.querySelector("input[type='checkbox']");
         //             checkbox.checked = selectAllCheckbox.checked;
-                    
+
         //             toggleInvoice(card, checkbox);
         //         }
         //     });
         // }
-        
+
         function addListenerToPrintAndSaveBtn() {
             document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {
                 e.preventDefault();
@@ -419,7 +419,7 @@
                                         padding: 0;
                                         width: 210mm; /* A4 width */
                                         height: 297mm; /* A4 height */
-                                        
+
                                     }
 
                                     .preview-container, .preview-container * {
@@ -456,7 +456,7 @@
                 };
             });
         }
-        
+
         document.addEventListener("DOMContentLoaded", ()=>{
             addListenerToPrintAndSaveBtn();
         });

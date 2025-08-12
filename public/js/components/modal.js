@@ -405,6 +405,8 @@ function createModal(data, animate = 'animate') {
 
             invoiceTableBody = `
                 ${previewData.payments.map((payment, index) => {
+                    console.log(payment);
+
                     const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                     return `
                     <div>
@@ -412,7 +414,7 @@ function createModal(data, animate = 'animate') {
                         <div class="tr flex justify-between w-full px-4">
                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                             <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                            ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ?? '-'}</div>` : ''}
+                            ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ? payment.program?.customer.customer_name : payment.cheque?.customer.customer_name ? payment.cheque?.customer.customer_name : payment.slip?.customer.customer_name ? payment.slip?.customer.customer_name : '-'}</div>` : ''}
                             ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>` :
                                 `<div class="td text-sm font-semibold w-1/4">${(payment.self_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.self_account?.bank.short_title ?? '-')}</div>
                             `}
@@ -631,7 +633,7 @@ function createModal(data, animate = 'animate') {
                         </div>
                         <hr class="w-full my-3 border-black">
                         <div class="tfooter flex w-full text-sm px-5 justify-between mb-4 text-black">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>
@@ -755,11 +757,7 @@ function createModal(data, animate = 'animate') {
     }
     document.body.appendChild(modalWrapper);
 
-    renderTableBody(data.table.body);
-
-    if (data.searchFilter.autoOpen) {
-        document.getElementById('filter-btn').click();
-    }
+    data.table ? renderTableBody(data.table.body) : '';
 
     data.fields?.forEach(field => {
         if (field.category == 'explicitHtml' && field.focus) {
@@ -814,7 +812,7 @@ function renderTableBody(tableBody) {
     } else {
         bodyHTML += `
             <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
-                <div class="grow text-center text-[var(--border-error)]">No ${data.table.name} yet.</div>
+                <div class="grow text-center text-[var(--border-error)]">No available yet.</div>
             </div>
         `;
     }
@@ -837,7 +835,7 @@ function renderCardsInModal(data) {
         }
 
         cardsData = `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-auto w-full overflow-y-auto my-scrollbar-2">
                 <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
                 <hr class="w-full my-3 border-gray-600">
                 <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">

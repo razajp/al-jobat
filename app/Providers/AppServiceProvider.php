@@ -48,8 +48,18 @@ class AppServiceProvider extends ServiceProvider
                     '24_26_28' => ['text' => '24-26-28'],
                 ],
                 'parts' => [
-                    '1_pc_inner' => ['shirt', 'inner'],
-                    '1_pc_koti' => ['shirt', 'koti'],
+                    '1_pc_inner_half' => ['shirt', 'inner'],
+                    '1_pc_koti_half' => ['shirt', 'koti'],
+                    '2_pc_half' => ['shirt', 'neker'],
+                    '3_pc_half' => ['koti', 'inner', 'neker'],
+                    '1_pc_inner_full' => ['shirt', 'inner'],
+                    '1_pc_koti_full' => ['shirt', 'koti'],
+                    '2_pc_full' => ['shirt', 'trouser'],
+                    '3_pc_full' => ['koti', 'inner', 'neker'],
+                    '1_pc_inner_winter' => ['shirt', 'inner'],
+                    '1_pc_koti_winter' => ['shirt', 'koti'],
+                    '2_pc_winter' => ['shirt', 'trouser'],
+                    '3_pc_winter' => ['koti', 'inner', 'trouser'],
                 ],
             ];
         });

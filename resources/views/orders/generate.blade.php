@@ -21,7 +21,7 @@
                 <div class="w-1/3">
                     <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
-                
+
                 <input type="hidden" name="generateInvoiceAfterSave" id="generateInvoiceAfterSave" value="0">
 
                 {{-- title --}}
@@ -110,7 +110,7 @@
         function trackCustomerState(elem) {
             if (elem.value != "") {
                 let customerDataDom = elem.parentElement.querySelector('.optionsDropdown li.selected').getAttribute('data-option');
-                
+
                 customerData = JSON.parse(customerDataDom);
                 selectedArticles = [];
                 totalOrderedQuantity = 0;
@@ -151,7 +151,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
@@ -164,7 +164,7 @@
             }
 
             createModal(modalData);
-            
+
             totalQuantityDOM = document.querySelector('#modalForm #totalShipmentedQty');
             totalAmountDOM = document.querySelector('#modalForm #totalShipmentAmount');
 
@@ -201,7 +201,7 @@
 
         function generateQuantityModal(elem) {
             let data = JSON.parse(elem.dataset.json).data;
-            
+
             let modalData = {
                 id: 'QuantityModalForm',
                 name: 'Enter Quantity',
@@ -242,7 +242,7 @@
             }
 
             createModal(modalData);
-            
+
             let physicalQuantity = 0;
 
             const physicalQuantityInpDom = document.getElementById('physical_quantity');
@@ -317,7 +317,7 @@
 
         function deselectThisArticle(index) {
             deselectArticleAtIndex(index);
-            
+
             renderList();
             generateOrder();
 
@@ -412,7 +412,7 @@
         function renderFinals() {
             finalOrderedQuantity.textContent = formatNumbersWithDigits(totalOrderedQuantity, 1, 1);
             finalOrderAmount.textContent = formatNumbersWithDigits(totalOrderAmount, 1, 1);
-            finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1); 
+            finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1);
             finalNetAmount.value = formatNumbersWithDigits(netAmount, 1, 1);
             finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + netAmount, 1, 1);
         }
@@ -466,7 +466,7 @@
         function generateOrder() {
             orderNo = generateOrderNo();
             orderDate = getOrderDate();
-            
+
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
                     <div id="order" class="order flex flex-col h-full">
@@ -574,7 +574,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>
@@ -585,7 +585,7 @@
                 `;
             }
         }
-        
+
         let cardsDom;
         let cardsDataArray = [];
 
@@ -646,31 +646,31 @@
         //                     item.size.toLowerCase().includes(search)
         //                 );
         //                 break;
-                        
+
         //             case '#':
         //                 return (
         //                     item.article_no.toString().includes(search)
         //                 );
         //                 break;
-                        
+
         //             case 'category':
         //                 return (
         //                     item.category.toLowerCase().includes(search)
         //                 );
         //                 break;
-                        
+
         //             case 'season':
         //                 return (
         //                     item.season.toLowerCase().includes(search)
         //                 );
         //                 break;
-                        
+
         //             case 'size':
         //                 return (
         //                     item.size.toLowerCase().includes(search)
         //                 );
         //                 break;
-                
+
         //             default:
         //                 return (
         //                     item.article_no.toString().includes(search) ||

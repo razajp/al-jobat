@@ -31,6 +31,10 @@ class SetupSeeder extends Seeder
             ['short_title' => 'CRP', 'title' => 'Cropping',  'type' => 'worker_type'],
             ['short_title' => 'PRS', 'title' => 'Press',     'type' => 'worker_type'],
             ['short_title' => 'PKG', 'title' => 'Packing',   'type' => 'worker_type'],
+            ['short_title' => 'EMB', 'title' => 'Embroidery',   'type' => 'worker_type'],
+            ['short_title' => 'PRT', 'title' => 'Print',   'type' => 'worker_type'],
+            ['short_title' => 'DTF', 'title' => 'DTF',   'type' => 'worker_type'],
+            ['short_title' => 'WSH', 'title' => 'Wash',   'type' => 'worker_type'],
         ];
 
         foreach ($setups as $setup) {

@@ -24,7 +24,7 @@
                         min="{{ now()->subDays(4)->toDateString() }}" required />
                 </div>
                 <div class="w-1/3">
-                    <x-select 
+                    <x-select
                         label="City"
                         name="city"
                         id="city"
@@ -141,7 +141,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
@@ -191,7 +191,7 @@
 
         function generateQuantityModal(elem) {
             let data = JSON.parse(elem.dataset.json).data;
-            
+
             let modalData = {
                 id: 'QuantityModalForm',
                 name: 'Enter Quantity',
@@ -232,7 +232,7 @@
             }
 
             createModal(modalData);
-            
+
             let physicalQuantity = 0;
 
             const physicalQuantityInpDom = document.getElementById('physical_quantity');
@@ -343,7 +343,7 @@
 
         function generateDescription() {
             console.log(selectedArticles);
-            
+
             selectedArticles.forEach(selectedArticle => {
                 selectedArticle.description =
                     `${selectedArticle.size} | ${selectedArticle.category.replace(/_/g, ' ')} | ${selectedArticle.season}`;
@@ -550,7 +550,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>

@@ -20,10 +20,10 @@ class VoucherController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
-        $vouchers = Voucher::with("supplier", 'payments.cheque', 'payments.slip', 'payments.program.customer', "payments.bankAccount.bank", 'payments.selfAccount.bank')->get();
+
+        $vouchers = Voucher::with("supplier", 'payments.cheque.customer', 'payments.slip.customer', 'payments.program.customer', "payments.bankAccount.bank", 'payments.selfAccount.bank')->get();
 
         foreach ($vouchers as $voucher) {
             if (isset($voucher['supplier'])) {
@@ -48,7 +48,7 @@ class VoucherController extends Controller
 
         $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
         $cheques_options = [];
-        
+
         foreach ($cheques as $cheque) {
             $cheques_options[(int)$cheque->id] = [
                 'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
@@ -67,7 +67,7 @@ class VoucherController extends Controller
         }
 
         $self_accounts = BankAccount::where('category', 'self')->with('bank')->get()->makeHidden('creator');
-        
+
         $self_accounts_options = [];
 
         foreach ($self_accounts as $account) {
@@ -139,7 +139,7 @@ class VoucherController extends Controller
         $validator = Validator::make($request->all(), [
             "supplier_id" => "nullable|integer|exists:suppliers,id",
             "date" => "required|date",
-            "program_id" => "nullable|exists:payment_programs,id", 
+            "program_id" => "nullable|exists:payment_programs,id",
             "payment_details_array" => "required|json",
         ]);
 
@@ -148,7 +148,7 @@ class VoucherController extends Controller
         }
 
         // return $request;
-        
+
         $voucher = Voucher::create([
             'voucher_no' => $request->voucher_no,
             'supplier_id' => $request->supplier_id,

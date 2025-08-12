@@ -32,12 +32,21 @@ class ProductionController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
+        $ticket_options = [];
+
         if (Auth::user()->production_type === 'issue') {
             $articles = Article::whereHas('production.work', function($query) {
                 $query->where('title', 'Cutting');
             })->with('production.work')->get();
         } else {
-            $articles = Article::whereNotNull('fabric_type')->whereNotNull('category')->with('production')->get();
+            $allTickets = Production::whereNull('receive_date')->with('article.production.work')->get();
+            foreach ($allTickets as $ticket) {
+                $ticket_options[$ticket->id] = [
+                    'text' => $ticket->ticket,
+                    'data_option' => $ticket,
+                ];
+            }
+            $articles = Article::whereNotNull('fabric_type')->whereNotNull('category')->with('production.work')->get();
         }
         $work_options = [];
         $workerTypes = Setup::where('type', 'worker_type')->get();
@@ -80,7 +89,7 @@ class ProductionController extends Controller
 
         $rates = Rate::with('type')->get();
 
-        return view('productions.add', compact('articles', 'work_options', 'worker_options', 'rates'));
+        return view('productions.add', compact('articles', 'work_options', 'worker_options', 'rates', 'ticket_options'));
     }
 
     /**
@@ -103,7 +112,7 @@ class ProductionController extends Controller
             'parts' => 'nullable|string',
             'quantity' => 'nullable|integer|min:1',
             'title' => 'nullable|string',
-            'rate' => 'nullable|integer|min:1',
+            'rate' => 'nullable|decimal:0,2|min:1',
             'issue_date' => 'nullable|date',
             'receive_date' => 'nullable|date',
         ]);
@@ -113,23 +122,32 @@ class ProductionController extends Controller
         }
 
         $data = $request->all();
+        $ticket = null;
 
-        $data['tags'] = isset($data['tags']) ? json_decode($data['tags']) : null;
-        $data['materials'] = isset($data['materials']) ? json_decode($data['materials']) : null;
-        $data['parts'] = isset($data['parts']) ? json_decode($data['parts']) : null;
+        if (isset($data['ticket_name']) && $data['ticket_name']) {
+            $ticket = $data['ticket_name'];
+            $production = Production::where('ticket', $data['ticket_name'])->first();
+            if ($production) {
+                $production->update($data);
+            }
+        } else {
+            $data['tags'] = isset($data['tags']) ? json_decode($data['tags']) : null;
+            $data['materials'] = isset($data['materials']) ? json_decode($data['materials']) : null;
+            $data['parts'] = isset($data['parts']) ? json_decode($data['parts']) : null;
 
-        if ($request->quantity) {
-            Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
+            if ($request->quantity) {
+                Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
+            }
+
+            $work = Setup::find($request->work_id);
+
+            $production = Production::create($data);
+
+            $ticket = $work->short_title . str_pad($production->id, 3, '0', STR_PAD_LEFT);
+
+            $production->ticket = $ticket;
+            $production->save();
         }
-
-        $work = Setup::find($request->work_id);
-
-        $production = Production::create($data);
-
-        $ticket = $work->short_title . str_pad($production->id, 3, '0', STR_PAD_LEFT);
-
-        $production->ticket = $ticket;
-        $production->save();
 
         $issueOrReceive = '';
         if ($request->issue_date) {

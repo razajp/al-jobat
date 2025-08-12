@@ -36,8 +36,6 @@ class Production extends Model
 
     protected $hidden = [
         'article_id',
-        'work_id',
-        'worker_id',
         'creator_id',
         'created_at',
         'updated_at',

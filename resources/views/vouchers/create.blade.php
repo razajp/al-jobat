@@ -4,13 +4,13 @@
 
 @php
     $voucherType = Auth::user()->voucher_type;
-    
+
     $steps = [
         $voucherType == 'supplier' ? 'Select Supplier' : 'Select Date',
         'Enter Payment',
         'Preview',
     ];
-    
+
     $method_options = [
         'cash' => ['text' => 'Cash'],
         'cheque' => ['text' => 'Cheque'],
@@ -36,7 +36,7 @@
         <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
             <!-- Highlight rectangle -->
             <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
-            
+
             <!-- Buttons -->
             <button id="supplierBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'supplier')">
                 <div class="hidden md:block">Supplier</div>
@@ -81,16 +81,16 @@
         function moveHighlight(btn, btnType) {
             const highlight = document.getElementById("highlight");
             const rect = btn.getBoundingClientRect();
-            
+
             const parentRect = btn.parentElement.getBoundingClientRect();
-        
+
             // Move and resize the highlight
             highlight.style.width = `${rect.width}px`;
             highlight.style.left = `${rect.left - parentRect.left - 3}px`;
 
             btnTypeGlobal = btnType;
         }
-    
+
         // Initialize highlight on load
         window.onload = () => {
             @if($voucherType == 'supplier')
@@ -240,7 +240,8 @@
         function trackChequeState(elem) {
             let selectedCheque = JSON.parse(elem.closest('.selectParent').querySelector('ul[data-for="cheque_id"] li.selected').dataset.option || '{}');
             let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
-            
+
+            selectedDom.value = JSON.stringify(selectedCheque);
             amountInpDom.value = selectedCheque.amount;
         }
 
@@ -248,12 +249,13 @@
             let selectedSlip = JSON.parse(elem.closest('.selectParent').querySelector('ul[data-for="slip_id"] li.selected').dataset.option || '{}');
             let amountInpDom = elem.closest('form').querySelector('input[name="amount"]');
 
+            selectedDom.value = JSON.stringify(selectedSlip);
             amountInpDom.value = selectedSlip.amount;
         }
 
         let selectedDom;
         let availableChequesArray = [];
-        
+
         function setSelectedAccount(elem) {
             let hiddenAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="self_account_id"]`);
             hiddenAccountInSelfAccount.querySelectorAll('li').forEach(li => {
@@ -271,10 +273,10 @@
             if (elem.closest('form').querySelector('input[name="cheque_no"]')) {
                 fetchChequeNumbers();
             }
-            
+
             const amountInput = elem.closest('form').querySelector('input[name="amount"]');
 
-            const matchingPayments = paymentDetailsArray.filter(item => 
+            const matchingPayments = paymentDetailsArray.filter(item =>
                 item.bank_account_id == selectedAccount.id
             );
 
@@ -380,6 +382,7 @@
                     },
                     {
                         category: 'input',
+                        id: 'selected',
                         name: 'selected',
                         type: 'hidden',
                     }
@@ -411,6 +414,7 @@
                     },
                     {
                         category: 'input',
+                        id: 'selected',
                         name: 'selected',
                         type: 'hidden',
                     }
@@ -447,8 +451,6 @@
                     },
                 );
             } else if (elem.value == 'self_cheque') {
-                console.log(availableChequesArray);
-                
                 fieldsData.push(
                     {
                         category: 'explicitHtml',
@@ -552,7 +554,7 @@
                         <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter remarks" dataValidate="friendly" oninput="validateInput(this)"/>
                     `,
                 });
-                
+
                 const visibleIndexes = fieldsData
                 .map((field, index) => field.type !== 'hidden' ? index : null)
                 .filter(index => index !== null);
@@ -561,7 +563,7 @@
                 const lastVisibleIndex = visibleIndexes[visibleIndexes.length - 1];
                 fieldsData[lastVisibleIndex].full = visibleIndexes.length % 2 === 1;
                 }
-                
+
                 let modalData = {
                     id: 'modalForm',
                     class: 'h-auto',
@@ -603,7 +605,7 @@
                             <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${payment.amount} | ${payment.program.customer.customer_name}</li>
                         `;
                     })
-                    
+
                     if (filteredPayments.length > 0) {
                         document.querySelector('input[name="program_id_name"]').disabled = false;
                         document.querySelector('input[name="program_id_name"]').placeholder = '-- Select program --';
@@ -612,7 +614,7 @@
                     document.querySelector('input[name="program_id"]').addEventListener('change', () => {
                         let selectedOption = paymentSelectDom.querySelector('li.selected');
                         let selectedPayment = JSON.parse(selectedOption.getAttribute('data-option')) || '';
-                        
+
                         selectedDom.value = JSON.stringify(selectedPayment);
                         document.getElementById('amount').value = selectedPayment.amount;
                         document.getElementById('payment_id').value = selectedPayment.id;
@@ -819,6 +821,9 @@
                                     </div>
                                     <div id="tbody" class="tbody w-full">
                                         ${paymentDetailsArray.map((payment, index) => {
+                                            let selected = JSON.parse(payment.selected || '{}');
+                                            console.log(selected);
+
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             return `
                                                     <div>
@@ -826,10 +831,10 @@
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/5">${payment.selected?.program?.customer.customer_name ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/4">${(payment.selected?.bank_account?.account_title ?? '-') + ' | ' + (payment.selected?.bank_account?.bank.short_title ?? '-')}</div>
+                                                            <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ? payment.program?.customer.customer_name : selected.customer.customer_name ? selected.customer.customer_name : '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/4">${(selected?.bank_account?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank.short_title ?? '-')}</div>
                                                             <div class="td text-sm font-semibold w-[17%]">${formatDate(dateInpDom.value) ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-[11%]">${payment.selected?.cheque_no ?? payment.selected?.slip_no ?? payment.selected?.transaction_id ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                         </div>
                                                     </div>
@@ -862,7 +867,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>

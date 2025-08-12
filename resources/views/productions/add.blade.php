@@ -103,7 +103,7 @@
             <div class="step1 space-y-4 ">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- article --}}
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" readonly required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
 
                     {{-- work --}}
@@ -152,7 +152,7 @@
             let selectedPartsArray = [];
             const articleSelectInputDOM = document.getElementById("article");
             const articleIdInputDOM = document.getElementById("article_id");
-            const articleImageShowDOM = document.getElementById("img-article");
+
 
             let tags = [];
             let selectedTagsArray = [];
@@ -199,8 +199,8 @@
                 let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
                 articleSelectInputDOM.value = value;
 
-                articleImageShowDOM.classList.remove('opacity-0');
-                articleImageShowDOM.src = articleElem.querySelector('img').src
+
+
 
                 closeModal('modalForm');
 
@@ -213,16 +213,16 @@
                 `;
 
                 allWorks.forEach(([key, value]) => {
-                    if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping') {
+                    if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Embroidery' && value.text != 'Print' && value.text != 'DTF' && value.text != 'Wash') {
                         if (selectedArticle.production.filter(p => p.work.title == value.text).length == 0) {
-                            if (value.text == value.text) {
+                            // if (value.text == value.text) {
                                 ul.innerHTML += `
                                     <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                                 `;
-                            }
+                            // }
                         }
                     } else if (selectedArticle.production.filter(p => p.work.title == 'Singer' && p.receive_date != null).length > 0) {
-                        if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping') {
+                        if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping' || value.text == 'Embroidery' || value.text == 'Print' || value.text == 'DTF' || value.text == 'Wash') {
                             ul.innerHTML += `
                                 <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
                             `;
@@ -580,11 +580,11 @@
 
             function generatePartsModal() {
                 let cardData = [];
-                let category = selectedArticle.category;
+                let partKey = selectedArticle.category + '_' + selectedArticle.season;
 
-                let partsArray = allParts.filter(([key]) => key == category).map(([, value]) => value);
+                let partsArray = allParts.filter(([key]) => key == partKey).map(([, value]) => value);
 
-                if (category != '1_pc') {
+                if (partKey != '1_pc') {
                     partsArray.forEach((parts) => {
                         parts.forEach((part) => {
                             cardData.push(
@@ -641,8 +641,18 @@
 
             <div class="step1 space-y-4 ">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {{-- ticket --}}
+                    <x-select
+                        label="Ticket"
+                        id="ticket"
+                        :options="$ticket_options"
+                        showDefault
+                        required
+                        onchange="trackTicketState(this)"
+                    />
+
                     {{-- article --}}
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" readonly required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
 
                     {{-- work --}}
@@ -688,7 +698,7 @@
             let materialModalData = {};
             const articleSelectInputDOM = document.getElementById("article");
             const articleIdInputDOM = document.getElementById("article_id");
-            const articleImageShowDOM = document.getElementById("img-article");
+
 
             let tags = [];
             let selectedTagsArray = [];
@@ -729,16 +739,21 @@
             let selectedArticle = null;
 
             function selectThisArticle(articleElem) {
-                selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
+                if (articleElem.dataset?.json) {
+                    selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
+                } else {
+                    selectedArticle = articleElem;
+                }
+
+                // selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
 
                 articleIdInputDOM.value = selectedArticle.id;
                 let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
                 articleSelectInputDOM.value = value;
 
-                articleImageShowDOM.classList.remove('opacity-0');
-                articleImageShowDOM.src = articleElem.querySelector('img').src
-
-                closeModal('modalForm');
+                if (articleElem.dataset?.json) {
+                    closeModal('modalForm');
+                }
 
                 document.querySelector('input[name="work_name"]').disabled = false;
 
@@ -749,10 +764,28 @@
                 `;
 
                 allWorks.forEach(([key, value]) => {
-                    ul.innerHTML += `
-                        <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                    `;
+                    if (selectedArticle.production.filter(p => p.work.title != 'Cutting').length == 0) {
+                        if (value.text == 'Cutting') {
+                            ul.innerHTML += `
+                                <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                            `;
+                        }
+                    } else {
+                        if (selectedArticle.production.filter(p => p.work.title == value.text && p.receive_date == null).length != 0) {
+                            // if (value.text == value.text) {
+                                ul.innerHTML += `
+                                    <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                                `;
+                            // }
+                        }
+                    }
                 })
+
+                if (ul.children.length == 1) {
+                    ul.innerHTML = ``;
+                    document.querySelector('input[name="work_name"]').value = '';
+                    document.querySelector('input[name="work_name"]').disabled = true;
+                }
 
                 const selectedLi = ul.querySelector('li.selected');
                 if (selectedLi) {
@@ -773,9 +806,17 @@
                         `;
 
                         correctWorkers.forEach((worker) => {
-                            ul.innerHTML += `
-                                <li data-for="worker" data-value="${worker.data_option.id}" data-option='${JSON.stringify(worker.data_option)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${worker.text}</li>
-                            `;
+                            if (selectedArticle.production.find(p => p.work.id == elem.value && p.receive_date == null && p.worker_id == worker.data_option.id)) {
+                                ul.innerHTML += `
+                                    <li data-for="worker" data-value="${worker.data_option.id}" data-option='${JSON.stringify(worker.data_option)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">${worker.text}</li>
+                                `;
+                            } else {
+                                if (worker.data_option.type.title == 'Cutting') {
+                                    ul.innerHTML += `
+                                        <li data-for="worker" data-value="${worker.data_option.id}" data-option='${JSON.stringify(worker.data_option)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${worker.text}</li>
+                                    `;
+                                }
+                            }
                         })
 
                         const selectedLi = ul.querySelector('li.selected');
@@ -929,6 +970,16 @@
 
             function generateSecondStep(work) {
                 let secondStepHTML = '';
+                let minDate = new Date(); // aaj ki date
+
+                if (!new Date(selectedArticle.production.find(p => p.work.title == work && p.receive_date == null)?.issue_date) < minDate) {
+                    minDate = selectedArticle.production.find(p => p.work.title == work && p.receive_date == null)?.issue_date;
+                } else {
+                    minDate = minDate.setDate(minDate.getDate() - 15);
+                }
+
+                // minDate = minDate.toString().split('T')[0]; // format to YYYY-MM-DD
+
                 if (work == 'Cutting') {
                     secondStepHTML += `
                         {{-- article --}}
@@ -962,13 +1013,33 @@
                         </div>
 
                         {{-- rate --}}
-                        <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" />
+                        <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" dataValidate="required|numeric" />
 
                         {{-- amount --}}
                         <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+                    `;
+                } else if (work == 'Singer') {
+                    secondStepHTML += `
+                        {{-- article --}}
+                        <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
+
+                        {{-- quantity --}}
+                        <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
+
+                        {{-- title --}}
+                        <x-input label="Title" name="title" id="title" placeholder="Enter Title" required/>
+
+                        {{-- rate --}}
+                        <x-input label="Rate" name="rate" id="rate" placeholder="Rate" oninput="calculateAmount()" dataValidate="required|numeric" required />
+
+                        {{-- amount --}}
+                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
+
+                        {{-- receive_date --}}
+                        <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="${minDate}" validateMax max="{{ now()->toDateString() }}" />
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
@@ -1000,9 +1071,20 @@
             }
 
             function calculateAmount() {
+                validateInput(document.getElementById('article_quantity'));
                 let quantity = parseInt(document.getElementById('article_quantity').value);
                 let rate = parseInt(document.getElementById('rate').value);
                 document.getElementById('amount').value = rate * quantity;
+            }
+
+            function trackTicketState(elem) {
+                if (elem.value != '') {
+                    let selectedTicket = JSON.parse(elem.parentElement.querySelector('li.selected').dataset.option);
+                    selectThisArticle(selectedTicket.article);
+                    document.querySelector('li[data-value="' + selectedTicket.work_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    document.querySelector('li[data-value="' + selectedTicket.worker_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    // trackWorkState(document.querySelector('input[name="work_name"]'));
+                }
             }
 
             function validateForNextStep() {

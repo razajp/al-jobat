@@ -19,7 +19,7 @@
                 let totalQuantity = 0;
                 let totalAmount = 0;
                 let cottonCount = invoice.cotton_count;
-                if (invoice.shipment.fetchedArticles.length > 0) {  
+                if (invoice.shipment.fetchedArticles.length > 0) {
                     previewDom.innerHTML = `
                         <div class="preview-container w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                             <div id="preview" class="preview flex flex-col h-full">
@@ -122,7 +122,7 @@
                                     </div>
                                     <hr class="w-full my-3 border-black">
                                     <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
-                                        <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                                        <P class="leading-none">Powered by SparkPair</P>
                                         <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                                     </div>
                                 </div>
@@ -189,7 +189,7 @@
                                     padding: 0;
                                     width: 210mm; /* A4 width */
                                     height: 297mm; /* A4 height */
-                                    
+
                                 }
 
                                 .preview-container, .preview-container * {

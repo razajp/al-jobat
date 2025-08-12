@@ -104,7 +104,7 @@
                     };
                 }));
             }
-            
+
             let modalData = {
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
@@ -122,11 +122,11 @@
 
         function deselectThisInvoice(index) {
             totalCottonCount -= selectedInvoicesArray[index].cotton_count;
-            
+
             deselectInvoiceAtIndex(index);
 
             renderList();
-            
+
             finalTotalCottonsDOM.textContent = totalCottonCount;
         }
 
@@ -255,7 +255,7 @@
                         </div>
                         <hr class="w-full my-3 border-gray-600">
                         <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">${ companyData.name } | ${ companyData.address }</P>
+                            <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>
                     </div>
@@ -285,7 +285,7 @@
         function selectInvoice(invoiceElem) {
             const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
             console.log(invoiceData);
-            
+
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
             if (index == -1) {
                 selectedInvoicesArray.push(invoiceData);
@@ -296,7 +296,7 @@
 
         function deselectInvoice(invoiceElem) {
             console.log('hello');
-            
+
             const invoiceData = JSON.parse(invoiceElem.dataset.json).data;
 
             const index = selectedInvoicesArray.findIndex(invoice => invoice.id === invoiceData.id);
@@ -313,7 +313,7 @@
             document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
                 checkbox.checked = false;
             });
-            
+
             selectedInvoicesArray = [];
             totalCottonCount = 0;
             selectAllCheckbox.checked = false;
@@ -323,7 +323,7 @@
             generateCargoListPreview()
             return true;
         }
-        
+
         function setCottonCount(invoiceId, cottonCount) {
             const invoice = selectedInvoicesArray.find(invoice => invoice.id === invoiceId);
             if (invoice) {
