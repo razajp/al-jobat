@@ -73,12 +73,16 @@ class ProductionController extends Controller
                         ->filter(fn($tagObj) => $tagObj['tag'] === $tag)
                         ->sum('quantity');
 
-                    return [
-                        'tag' => $tag,
-                        'unit' => ucfirst($fabric->unit),
-                        'available_quantity' => $items->sum('quantity') - $sum,
-                        'supplier_name' => $supplier->supplier_name ?? null,
-                    ];
+                    $availableQuantity = $items->sum('quantity') - $sum;
+
+                    if ($availableQuantity > 0) {
+                        return [
+                            'tag' => $tag,
+                            'unit' => ucfirst($fabric->unit),
+                            'available_quantity' => $availableQuantity,
+                            'supplier_name' => $supplier->supplier_name ?? null,
+                        ];
+                    }
                 })->values();
 
             $worker_options[(int)$worker->id] = [

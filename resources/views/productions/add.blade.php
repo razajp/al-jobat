@@ -864,6 +864,8 @@
 
             function generateSelectTagModal(animate = 'animate') {
                 let data = tags;
+                console.log(data);
+
                 let cardData = [];
 
                 if (data.length > 0) {
