@@ -1022,6 +1022,11 @@
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+
+                        {{-- parts --}}
+                        <x-input label="Parts" name="parts" id="parts" withCheckbox checkBox="[
+                            "1_pc_inner_half" => ["shirt", "inner"],
+                        ]" required />
                     `;
                 } else if (work == 'Singer') {
                     secondStepHTML += `
