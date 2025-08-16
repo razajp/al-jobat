@@ -199,9 +199,6 @@
                 let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
                 articleSelectInputDOM.value = value;
 
-
-
-
                 closeModal('modalForm');
 
                 document.querySelector('input[name="work_name"]').disabled = false;
@@ -547,6 +544,7 @@
             }
 
             function generateSecondStep(work) {
+                console.log(selectedArticle);
                 let secondStepHTML = '';
                 if (work == 'Singer') {
                     secondStepHTML += `
@@ -566,9 +564,9 @@
                         `}
 
                         ${selectedArticle.category != '1_pc' ? `
-                            {{-- select_parts --}}
-                            <x-input label="Select Parts" name="select_parts" id="select_parts" placeholder="Select Parts" required onclick="generatePartsModal()" capitalized autoComplete="off" />
-                            <input type="hidden" name="parts" value="" />
+                            {{-- parts --}}
+                            <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
+                            <input type="hidden" name="parts" id="dbParts" value="[]" />
                         ` : `` }
 
                         {{-- issue_date --}}
@@ -576,50 +574,50 @@
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
-            }
 
-            function generatePartsModal() {
-                let cardData = [];
                 let partKey = selectedArticle.category + '_' + selectedArticle.season;
+                let partsClutter = '';
+                const checkboxes_container = document.querySelector('.checkboxes_container');
 
-                let partsArray = allParts.filter(([key]) => key == partKey).map(([, value]) => value);
+                allParts.forEach(([key, value]) => {
+                    if (key == partKey) {
+                        value.forEach((part) => {
+                            if (selectedArticle.production.some(p => p.parts.includes(part))) {
+                                console.log(selectedArticle.production.some(p => p.parts.includes(part)));
+                                partsClutter += `
+                                    <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
+                                        <input
+                                            type="checkbox"
+                                            onchange="toggleThisCheckbox(this)"
+                                            data-checkbox="${part}"
+                                            class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
+                                        />
+                                        <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                            ${part}
+                                        </span>
+                                    </label>
+                                `;
+                            }
+                        });
+                    }
+                });
 
-                if (partKey != '1_pc') {
-                    partsArray.forEach((parts) => {
-                        parts.forEach((part) => {
-                            cardData.push(
-                                {
-                                    id: part,
-                                    name: part,
-                                    checkbox: true,
-                                    checked: selectedPartsArray.some(selected => selected.id === part) || false,
-                                    onclick: 'selectThisPart(this)',
-                                },
-                            )
-                        })
-                    })
-                }
-
-                let modalData = {
-                    id: 'modalForm',
-                    class: 'h-auto max-w-2xl',
-                    cards: {name: 'Select Parts', count: 3, data: cardData},
-                }
-                createModal(modalData)
+                checkboxes_container.innerHTML = partsClutter;
             }
 
-            function selectThisPart(elem) {
-                let checkbox = elem.querySelector("input[type='checkbox']")
-                checkbox.checked = !checkbox.checked;
+            function toggleThisCheckbox(checkbox) {
+                const dbPartsInput = document.getElementById('dbParts');
 
+                const checkboxValue = checkbox.dataset.checkbox;
                 if (checkbox.checked) {
-                    selectedPartsArray.push({id: elem.getAttribute('id'), selected: true});
+                    if (!selectedPartsArray.includes(checkboxValue)) {
+                        selectedPartsArray.push(checkboxValue);
+                    }
                 } else {
-                    selectedPartsArray = selectedPartsArray.filter(p => p.id != elem.getAttribute('id'));
+                    selectedPartsArray = selectedPartsArray.filter(part => part !== checkboxValue);
                 }
 
-                document.getElementById('select_parts').value = selectedPartsArray.map(p => p.id).join(' | ');
-                document.querySelector('input[name="parts"]').value = JSON.stringify(selectedPartsArray);
+                dbPartsInput.value = JSON.stringify(selectedPartsArray);
             }
 
             function validateForNextStep() {
@@ -746,8 +744,6 @@
                     selectedArticle = articleElem;
                 }
 
-                // selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
-
                 articleIdInputDOM.value = selectedArticle.id;
                 let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
                 articleSelectInputDOM.value = value;
@@ -764,23 +760,48 @@
                     <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
                 `;
 
-                allWorks.forEach(([key, value]) => {
-                    if (selectedArticle.production.filter(p => p.work.title == 'Cutting').length == 0) {
-                        if (value.text == 'Cutting') {
-                            ul.innerHTML += `
-                                <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                            `;
-                        }
-                    } else {
-                        if (selectedArticle.production.filter(p => p.work.title == value.text && p.receive_date == null).length != 0) {
-                            // if (value.text == value.text) {
-                                ul.innerHTML += `
-                                    <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                                `;
-                            // }
-                        }
+                allWorks.forEach(([workKey, workValue]) => {
+                    // Step 1a: Check if this work exists in production
+                    const productionItems = selectedArticle.production.filter(
+                        p => p.work.title === workValue.text
+                    );
+
+                    const cuttingNotStarted = selectedArticle.production.every(
+                        p => p.work.title !== "Cutting"
+                    );
+
+                    // Step 1b: Decide whether to show this work
+                    const missingParts = (() => {
+                        if (productionItems.length === 0) return [];
+                        const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
+                        const parts = allParts
+                            .filter(([key]) => key === categorySeasonKey)
+                            .flatMap(([_, value]) => value);
+
+                        const existingParts = productionItems
+                            .flatMap(p => p.parts)
+                            .filter(p => parts.includes(p));
+
+                        return parts.filter(p => !existingParts.includes(p));
+                    })();
+
+                    const shouldShowWork =
+                        (cuttingNotStarted && workValue.text === "Cutting") ||
+                        (productionItems.length > 0 && (
+                            productionItems.some(p => p.receive_date == null) ||
+                            missingParts.length > 0
+                        ));
+
+                    if (shouldShowWork) {
+                        ul.innerHTML += `
+                            <li data-for="work" data-value="${workKey}"
+                                onmousedown="selectThisOption(this)"
+                                class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">
+                                ${workValue.text}
+                            </li>
+                        `;
                     }
-                })
+                });
 
                 if (ul.children.length == 1) {
                     ul.innerHTML = ``;
@@ -981,8 +1002,6 @@
                     minDate = minDate.setDate(minDate.getDate() - 15);
                 }
 
-                // minDate = minDate.toString().split('T')[0]; // format to YYYY-MM-DD
-
                 if (work == 'Cutting') {
                     secondStepHTML += `
                         {{-- article --}}
@@ -1047,19 +1066,52 @@
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="${minDate}" validateMax max="{{ now()->toDateString() }}" />
+
+                        {{-- parts --}}
+                        <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
+                        <input type="hidden" name="parts" id="dbParts" value="[]" />
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
 
-                let partKey = selectedArticle.category + '_' + selectedArticle.season;
+                const partKey = selectedArticle.category + '_' + selectedArticle.season;
                 let partsClutter = '';
                 const checkboxes_container = document.querySelector('.checkboxes_container');
-                console.log(checkboxes_container);
 
+                const parts = allParts
+                    .filter(([key]) => key === partKey)
+                    .flatMap(([_, value]) => value);
 
-                allParts.forEach(([key, value]) => {
-                    if (key == partKey) {
-                        value.forEach((part) => {
+                const existingParts = selectedArticle.production
+                    .flatMap(p => p.parts)
+                    .filter(p => parts.includes(p));
+
+                if (work == 'Cutting') {
+                    const pendingParts = parts.filter(p => !existingParts.includes(p));
+
+                    pendingParts.forEach((part) => {
+                        partsClutter += `
+                            <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
+                                <input
+                                    type="checkbox"
+                                    onchange="toggleThisCheckbox(this)"
+                                    data-checkbox="${part}"
+                                    class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
+                                />
+                                <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                    ${part}
+                                </span>
+                            </label>
+                        `;
+                    });
+                } else {
+                    const showingParts = selectedArticle.production
+                    .filter(p => p.work.title == work)
+                    .flatMap(p => p.parts)
+                    .filter(p => parts.includes(p));
+
+                    showingParts.forEach((part) => {
+                        if (part) {
                             partsClutter += `
                                 <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
                                     <input
@@ -1073,11 +1125,13 @@
                                     </span>
                                 </label>
                             `;
-                        });
-                    }
-                });
+                        }
+                    });
+                }
 
-                checkboxes_container.innerHTML = partsClutter;
+                if (checkboxes_container) {
+                    checkboxes_container.innerHTML = partsClutter;
+                }
             }
 
             function trackSelectRateState(elem) {

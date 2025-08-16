@@ -112,7 +112,7 @@
                                 data-checkbox="{{ $checkbox }}"
                                 class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
                             />
-                            <span class="text-sm font-medium text-[var(--secondary-text)]">
+                            <span class="text-sm font-medium text-[var(--secondary-text)] capitalize">
                                 {{ ucfirst($checkbox) }}
                             </span>
                         </label>
