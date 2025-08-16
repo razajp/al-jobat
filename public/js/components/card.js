@@ -1,8 +1,10 @@
 function createCard(data) {
     const statusColor = {
         active: ['bg-[var(--border-success)]', 'text-[var(--border-success)]'],
+        invoiced: ['bg-[var(--border-success)]', 'text-[var(--border-success)]'],
         transparent: ['bg-transparent', 'text-transparent'],
         no_Image: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
+        pending: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
         inactive: ['bg-[var(--border-error)]', 'text-[var(--border-error)]'],
     };
 

@@ -606,8 +606,6 @@
             });
         }
 
-        // getDataByDate(document.getElementById('date'));
-
         function populateOptions(customers_options) {
             const customerSelectDom = document.getElementById('customer_id');
             customerSelectDom.disabled = false;
@@ -624,80 +622,6 @@
             });
             dropdownUl.innerHTML = optionsHTML;
         }
-
-        // let filterType;
-
-        // function setFilter(filterTypeArg) {
-        //     filterType = filterTypeArg;
-
-        //     searchData(document.getElementById('search_box').value);
-        // }
-
-        // function searchData(search) {
-        //     search = search.toLowerCase();
-
-        //     const filteredData = cardsDataArray.filter(item => {
-        //         switch (filterType) {
-        //             case 'all':
-        //                 return (
-        //                     item.article_no.toString().includes(search) ||
-        //                     item.category.toLowerCase().includes(search) ||
-        //                     item.season.toLowerCase().includes(search) ||
-        //                     item.size.toLowerCase().includes(search)
-        //                 );
-        //                 break;
-
-        //             case '#':
-        //                 return (
-        //                     item.article_no.toString().includes(search)
-        //                 );
-        //                 break;
-
-        //             case 'category':
-        //                 return (
-        //                     item.category.toLowerCase().includes(search)
-        //                 );
-        //                 break;
-
-        //             case 'season':
-        //                 return (
-        //                     item.season.toLowerCase().includes(search)
-        //                 );
-        //                 break;
-
-        //             case 'size':
-        //                 return (
-        //                     item.size.toLowerCase().includes(search)
-        //                 );
-        //                 break;
-
-        //             default:
-        //                 return (
-        //                     item.article_no.toString().includes(search) ||
-        //                     item.category.toLowerCase().includes(search) ||
-        //                     item.season.toLowerCase().includes(search) ||
-        //                     item.size.toLowerCase().includes(search)
-        //                 );
-        //                 break;
-        //         }
-        //     });
-
-        //     const cardContainerDom = document.querySelector('.card_container');
-        //     cardContainerDom.innerHTML = "";
-
-        //     if (filteredData.length === 0) {
-        //         // Show "No articles found" message if no results
-        //         const noResultMessage = "<p class='text-center col-span-full text-[var(--border-error)]'>No articles found</p>"
-        //         cardContainerDom.innerHTML = noResultMessage;
-        //     } else {
-        //         filteredData.forEach(item => {
-        //             const cardElement = cardsDom.find(card => card.id == item.id);
-        //             if (cardElement) {
-        //                 cardContainerDom.appendChild(cardElement);
-        //             }
-        //         });
-        //     }
-        // }
 
         function validateForNextStep() {
             generateOrder()

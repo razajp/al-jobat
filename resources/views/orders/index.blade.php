@@ -27,11 +27,11 @@
             ]
         ];
     @endphp
-    
+
     <div class="w-[80%] mx-auto">
         <x-search-header heading="Orders" :search_fields=$searchFields/>
     </div>
-    
+
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
@@ -94,8 +94,9 @@
                 name: item.order_no,
                 details: {
                     'Customer': item.customer.customer_name,
-                    'Date': item.date,
+                    'Date': formatDate(item.date),
                 },
+                status: item.status,
                 data: item,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
@@ -150,7 +151,7 @@
                                     padding: 0;
                                     width: 210mm; /* A4 width */
                                     height: 297mm; /* A4 height */
-                                    
+
                                 }
 
                                 .preview-container, .preview-container * {
@@ -188,7 +189,7 @@
                 document.getElementById('modalForm').parentElement.remove();
             };
         }
-        
+
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');

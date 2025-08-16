@@ -517,7 +517,7 @@ function createModal(data, animate = 'animate') {
                             <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
                                 <div class="td text-sm font-semibold ">${index + 1}.</div>
                                 <div class="td text-sm font-semibold ">${article.article_no}</div>
-                                <div class="td text-sm font-semibold col-span-2">${orderedArticle.description}</div>
+                                <div class="td text-sm font-semibold col-span-2 text-nowrap overflow-hidden mr-3">${orderedArticle.description}</div>
                                 <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity || shipmentQuantity}</div>
                                 <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity || shipmentQuantity) / article.pcs_per_packet) : 0}</div>
                                 ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}

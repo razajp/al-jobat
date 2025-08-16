@@ -20,7 +20,7 @@ class OrderController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
         $orders = Order::with('customer.city')->get();
@@ -37,38 +37,34 @@ class OrderController extends Controller
             // Step 1: Decode and normalize articles to indexed array
             $orderedArticlesRaw = json_decode($order->articles, true) ?? [];
             $orderedArticlesArray = array_values($orderedArticlesRaw); // Normalize to indexed array
-        
+
             // Step 2: Map through each ordered article
             $orderedArticles = collect($orderedArticlesArray)->map(function ($orderedArticle) use ($articles) {
                 if (isset($articles[$orderedArticle['id']])) {
                     $orderedArticle['article'] = $articles[$orderedArticle['id']];
                 }
-        
+
                 $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
-        
+
                 return $orderedArticle;
             })->filter(function ($orderedArticle) {
                 return $orderedArticle['ordered_quantity'] > 0;
             })->values(); // 👈 ensures final collection is indexed (not associative)
-        
+
             // Step 3: Put it back into the order
             $order['articles'] = $orderedArticles;
-        
+
             return $order;
         })
         ->filter(function ($order) {
             return $order['articles']->isNotEmpty();
-        });
+        })
+        ->values();
 
         foreach ($orders as $key => $order) {
             $order['previous_balance'] = $order->customer->calculateBalance(null, $order->date, false, false);
             $order['current_balance'] = $order['previous_balance'] + $order['netAmount'];
         }
-
-        // Format the date and reset balances
-        $orders->each(function ($order) {
-            $order['date'] = date('d-M-Y, D', strtotime($order->date));
-        });
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
@@ -85,7 +81,7 @@ class OrderController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $customers_options = [];
         $articles = [];
 
@@ -100,9 +96,9 @@ class OrderController extends Controller
                     'data_option' => $customer
                 ];
             }
-            
+
             $articles = Article::where('date', '<=', $request->date)->where('sales_rate', '>', 0)->whereNotNull(['category', 'fabric_type'])->whereRaw('ordered_quantity < quantity')->get();
-    
+
             foreach ($articles as $article) {
                 $physical_quantity = PhysicalQuantity::where('article_id', $article->id)->sum('packets');
                 $article['physical_quantity'] = ( $physical_quantity * $article->pcs_per_packet ) - $article['sold_quantity'];
@@ -119,7 +115,7 @@ class OrderController extends Controller
             $last_order = new Order();
             $last_order->order_no = '00-0000';
         }
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'status' => 'success',
@@ -141,7 +137,7 @@ class OrderController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'customer_id' => 'required|integer|exists:customers,id',
@@ -157,7 +153,7 @@ class OrderController extends Controller
         }
 
         $data = $request->all();
-        
+
         $data['netAmount'] = str_replace(',', '', $data['netAmount']);
 
         $order = Order::create($data);
@@ -184,7 +180,7 @@ class OrderController extends Controller
         ]);
 
         $program->save();
-        
+
         if ($request->generateInvoiceAfterSave) {
             return redirect()->route('invoices.create')->with('orderNumber', $order->order_no);
         } else {

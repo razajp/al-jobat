@@ -29,24 +29,24 @@
             <div class="step space-y-4 overflow-y-auto max-h-[55vh] p-1 my-scrollbar-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- customer --}}
-                    <x-select 
+                    <x-select
                         label="Customer"
                         name="customer_id"
                         id="customer_id"
                         :options="$customers_options"
                         required
                         showDefault
-                        onchange="trackCustomerState()" 
+                        onchange="trackCustomerState()"
                     />
-                    
+
                     {{-- balance --}}
                     <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
-                    
+
                     {{-- date --}}
                     <x-input label="Date" name="date" id="date" type="date" required disabled onchange="trackDateState(this)"/>
 
                     {{-- type --}}
-                    <x-select 
+                    <x-select
                         label="Type"
                         name="type"
                         id="type"
@@ -55,13 +55,13 @@
                         showDefault
                         onchange="trackTypeState(this)"
                     />
-                    
+
                     <div class="col-span-full">
                         <div id="details-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full">
                         </div>
 
                         {{-- method --}}
-                        <x-select 
+                        <x-select
                             label="Method"
                             name="method"
                             id="method"
@@ -70,9 +70,9 @@
                             showDefault
                             onchange="trackMethodState(this)"
                         />
-                        
+
                         <hr class="border-gray-600 my-3">
-                        
+
                         <div id="details" class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
                         </div>
@@ -121,7 +121,7 @@
                         {{-- remarks --}}
                         <x-input label="Remarks" name="last_remarks" id="last_remarks" type="text" disabled
                             value="{{ $lastRecord->remarks ?? 'No Remarks' }}" />
-                        
+
                         <div class="flex items-end">
                             <button type="button" data-record='@json($lastRecord)' onclick="repeatThisRecord(this)"
                                 class="w-full px-6 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] hover:border-[var(--border-warning)] hover:scale-90 transition-all duration-300 ease-in-out cursor-pointer">
@@ -137,7 +137,7 @@
             </div>
         </div>
     </div>
-    
+
     <script>
         window.chequeNos = @json($cheque_nos ?? '');
         window.slipNos = @json($slip_nos ?? '');
@@ -151,7 +151,7 @@
 
         selectedCustomerData = null;
         let selectedProgramData = {};
-        
+
         let selectedCustomer;
 
         const today = new Date().toISOString().split('T')[0];
@@ -222,11 +222,11 @@
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                         typeInp.value = 'payment_program'
-                        break; 
+                        break;
                     }
                 }
                 trackTypeState(typeInp, true);
-                
+
                 let programSelectDom = document.getElementById('payment_programs');
                 programSelectDom.closest(".selectParent").querySelectorAll('ul li')[1].classList.add('selected');
                 let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
@@ -258,11 +258,11 @@
                 detailsInputsContainer.innerHTML = "";
 
                 let allProgramsArray = JSON.parse(typeSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
-                
+
                 detailsInputsContainer.innerHTML = `
                     <div class="col-span-full">
                         {{-- payment_programs --}}
-                        <x-select 
+                        <x-select
                             label="Payment Programs"
                             name="program_id"
                             id="payment_programs"
@@ -380,7 +380,7 @@
                     detailsDom.innerHTML = `
                         {{-- category --}}
                         <x-input label="Category" value="${selectedProgramData.category}" disabled/>
-                        
+
                         {{-- beneficiary --}}
                         <x-input label="Beneficiary" value="${selectedProgramData.beneficiary}" disabled/>
 
@@ -392,10 +392,10 @@
 
                         {{-- amount --}}
                         <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
-                        
+
                         {{-- bank account --}}
                         <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
-                        
+
                         {{-- transaction id --}}
                         <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required dataValidate="required|alphanumeric" oninput="validateInput(this)"/>
 
@@ -404,7 +404,7 @@
                     `;
 
                     let bankAccountData = selectedProgramData.sub_category.bank_accounts;
-                    
+
                     if (bankAccountData) {
                         let bankAccountsSelect = document.getElementById('bank_accounts');
                         bankAccountsSelect.disabled = false;
@@ -478,7 +478,7 @@
             let formDom = document.getElementById('form');
             formDom.reset();
             const record = JSON.parse(button.getAttribute('data-record'));
-            
+
             const desiredCustomer = customerSelectDom.closest(".selectParent").querySelector(`ul li[data-value="${record.customer.id}"]`);
             desiredCustomer?.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
 
@@ -530,6 +530,8 @@
                     }
                 }, 100);
             }
+
+            dateDom.focus();
         }
     </script>
 @endsection

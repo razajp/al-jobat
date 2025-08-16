@@ -15,7 +15,7 @@ class Order extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         'customer_id',
         'date',
@@ -23,6 +23,7 @@ class Order extends Model
         'netAmount',
         'articles',
         'order_no',
+        'status',
     ];
 
     protected static function booted()

@@ -22,17 +22,17 @@ class InvoiceController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
-        $invoices = Invoice::with(['order', 'shipment', 'customer.city'])->get();
-    
+
+        $invoices = Invoice::with(['order', 'shipment', 'customer.city'])->orderBy('id', 'desc')->get();
+
         foreach ($invoices as $invoice) {
             $articles = [];
-    
+
             foreach ($invoice->articles_in_invoice as $article_in_invoice) {
                 $article = Article::find($article_in_invoice['id']);
-    
+
                 $articles[] = [
                     'article' => $article,
                     'description' => $article_in_invoice['description'],
@@ -43,10 +43,10 @@ class InvoiceController extends Controller
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
-        
+
         // return $invoices;
         return view('invoices.index', compact('invoices', 'authLayout'));
-    }    
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -65,7 +65,7 @@ class InvoiceController extends Controller
             $user->invoice_type = 'order';
             $user->save();
         }
-        
+
         $last_Invoice = invoice::orderby('id', 'desc')->first();
 
         if (!$last_Invoice) {
@@ -76,7 +76,7 @@ class InvoiceController extends Controller
         $customers = Customer::with('user')->whereIn('category', ['regular', 'site'])->whereHas('user', function ($query) {
             $query->where('status', 'active');
         })->get();
-        
+
         return view("invoices.generate", compact("last_Invoice", 'customers', 'orderNumber'));
     }
 
@@ -89,7 +89,7 @@ class InvoiceController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // check request has shipment no
         if ($request->has('shipment_no')) {
             $validator = Validator::make($request->all(), [
@@ -98,29 +98,29 @@ class InvoiceController extends Controller
                 "customers_array" => "required|json",
                 "printAfterSave" => "integer|in:0,1",
             ]);
-            
+
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $customers_array = json_decode($request->customers_array, true);
 
             $shipment = Shipment::where("shipment_no", $request->shipment_no)->first();
             $articlesInShipment = $shipment->getArticles();
-            
+
             $last_Invoice = Invoice::orderBy('id', 'desc')->first();
 
             if (!$last_Invoice) {
                 $last_Invoice = new Invoice();
                 $last_Invoice->invoice_no = '00-0000';
             }
-            
+
             $currentYear = date("y");
-            
+
             $lastNumberPart = substr($last_Invoice->invoice_no, -4); // last 4 characters
             $nextNumber = str_pad((int)$lastNumberPart + 1, 4, '0', STR_PAD_LEFT);
 
-            
+
             $invoiceNumbers = [];
             foreach ($customers_array as $customer) {
                 $article_in_invoice = [];
@@ -137,7 +137,7 @@ class InvoiceController extends Controller
                         $articleModel->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
                     }
                 }
-                
+
                 $invoice = new Invoice();
                 $invoice->customer_id = $customer["id"];
                 $invoice->invoice_no = $currentYear . '-' . $nextNumber;
@@ -168,42 +168,53 @@ class InvoiceController extends Controller
                 "netAmount" => "required|string",
                 "articles_in_invoice" => "required|string",
             ]);
-            
+
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $data = $request->all();
 
             $data['articles_in_invoice'] = json_decode($data['articles_in_invoice'], true);
-    
+
             $articles = $data['articles_in_invoice'];
-    
+
             foreach ($articles as $article) {
                 $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
             }
 
             $orderDb = Order::where("order_no", $data["order_no"])->first();
             foreach ($articles as $article) {
-                
                 $orderedArticleDb = json_decode($orderDb["articles"], true);
-    
+
                 // Update all matching articles
-                foreach ($orderedArticleDb as $orderedArticle) { // Pass by reference to modify in place
+                foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference!
                     if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
-                        // Update invoice_quantity without overwriting existing value
                         $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
                     }
                 }
-    
+                unset($orderedArticle); // Important: break reference after loop
+
                 // Save updated articles back to the database
                 $orderDb->articles = json_encode($orderedArticleDb);
+
+                $totalQty = array_sum(array_column($orderedArticleDb, 'ordered_quantity'));
+                $invoicedQty = array_sum(array_column($orderedArticleDb, 'invoice_quantity'));
+
+                if ($invoicedQty == 0) {
+                    $orderDb->status = 'pending';
+                } elseif ($invoicedQty < $totalQty) {
+                    $orderDb->status = 'partially_invoiced';
+                } else {
+                    $orderDb->status = 'invoiced';
+                }
+
                 $orderDb->save();
             }
-    
+
             $data["netAmount"] = (int) str_replace(',', '', $data["netAmount"]);
             $data["customer_id"] = $orderDb["customer_id"];
-            
+
             Invoice::create($data);
         }
 
@@ -257,7 +268,7 @@ class InvoiceController extends Controller
                 $invoice->shipment->fetchedArticles = $invoice->shipment->getArticles();
             }
         }
-        
+
         return view("invoices.print", compact("invoices"));
     }
 

@@ -124,6 +124,10 @@ class Controller extends BaseController
             return response()->json(["error" => "Order not found."]);
         }
 
+        if ($order->status == 'invoiced') {
+            return response()->json(["error" => "This order has already been invoiced."]);
+        }
+
         $order->articles = json_decode($order->articles);
 
         if (!$request->boolean('only_order')) {
@@ -135,6 +139,7 @@ class Controller extends BaseController
             $stockErrors = [];
 
             foreach ($orderedArticles as $orderedArticle) {
+
                 $article = $articles[$orderedArticle->id] ?? null;
 
                 if (!$article) {
@@ -160,7 +165,7 @@ class Controller extends BaseController
                 }
 
                 $actualQuantity = $orderedArticle->total_quantity_in_packets * $article->pcs_per_packet;
-                if ($actualQuantity < $orderedArticle->ordered_quantity) {
+                if ($actualQuantity == 0) {
                     $stockErrors[] = 'Stock is less than order quantity for article: ' . $article->article_no;
                 }
             }

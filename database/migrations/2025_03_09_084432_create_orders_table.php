@@ -19,8 +19,9 @@ return new class extends Migration
             $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
             $table->json('articles');
+            $table->string('status')->default('pending');
             $table->timestamps();
-            
+
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 

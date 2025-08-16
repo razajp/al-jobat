@@ -325,59 +325,48 @@
             }
 
             function getShipmentDetails() {
-                // if (allCustomers.length > 0) {
-                //     generateModal(allCustomers);
-                //     updateSelectedCount();
-                //     renderList();
-                //     renderCalcBottom();
-                //     calculateNoOfSelectableCustomers(shipmentArticles);
-                //     document.getElementById('total-count').value = allCustomers.length ?? 0;
-                //     addListeners();
-                //     updateCustomerRowsState();
-                // } else {
-                    $.ajax({
-                        url: "/get-shipment-details",
-                        type: "POST",
-                        data: {
-                            _token: "{{ csrf_token() }}",
-                            shipment_no: shipmentNoDom.value
-                        },
-                        success: function (response) {
-                            if (!response.error) {
-                                shipmentArticles = response.shipment.articles;
-                                discount = response.shipment.discount ?? 0;
-                                allCustomers = response.customers;
+                $.ajax({
+                    url: "/get-shipment-details",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        shipment_no: shipmentNoDom.value
+                    },
+                    success: function (response) {
+                        if (!response.error) {
+                            shipmentArticles = response.shipment.articles;
+                            discount = response.shipment.discount ?? 0;
+                            allCustomers = response.customers;
 
-                                allCustomers.forEach((item) => {
-                                    item.visible = true;
-                                })
+                            allCustomers.forEach((item) => {
+                                item.visible = true;
+                            })
 
-                                allDataArray = allCustomers;
+                            allDataArray = allCustomers;
 
-                                generateModal(allCustomers);
-                                search_container = document.querySelector('.search_container');
-                                tableHead = document.getElementById('table-head');
-                                // renderList();
-                                // renderCalcBottom();
-                                calculateNoOfSelectableCustomers(shipmentArticles);
-                                document.getElementById('total-count').value = allCustomers.length ?? 0;
-                                addListeners();
-                            } else {
-                                shipmentArticles = [];
-                                discount = 0;
-                                allCustomers = '';
-                                allDataArray = '';
-                                messageBox.innerHTML = `
-                                    <x-alert type="error" :messages="'${response.error}'" />
-                                `;
-                                messageBoxAnimation()
-                            }
-                            renderList();
-                            renderCalcBottom();
+                            generateModal(allCustomers);
+                            search_container = document.querySelector('.search_container');
+                            tableHead = document.getElementById('table-head');
+                            // renderList();
+                            // renderCalcBottom();
+                            calculateNoOfSelectableCustomers(shipmentArticles);
+                            document.getElementById('total-count').value = allCustomers.length ?? 0;
+                            addListeners();
+                        } else {
+                            shipmentArticles = [];
+                            discount = 0;
+                            allCustomers = '';
+                            allDataArray = '';
+                            messageBox.innerHTML = `
+                                <x-alert type="error" :messages="'${response.error}'" />
+                            `;
+                            messageBoxAnimation()
                         }
-                    });
-                }
-            // }
+                        renderList();
+                        renderCalcBottom();
+                    }
+                });
+            }
 
             function calculateNoOfSelectableCustomers(articlesArray) {
                 let countOfCottonsOfArticles = [];
@@ -955,8 +944,11 @@
                         order_no: orderNoDom.value
                     },
                     success: function (response) {
+                        console.log(response);
+
                         if (!response.error) {
                             orderedArticles = response.articles;
+                            console.log(orderedArticles);
                             discount = response.discount ?? 0;
                             customerData = response.customer;
                         } else {
@@ -1049,6 +1041,8 @@
             function updateInputArticlesInInvoice() {
                 const articlesInInvoiceInpDom = document.getElementById("articles_in_invoice");
                 let finalArticlesArray = orderedArticles.map(article => {
+                    console.log(article);
+
                     return {
                         id: article.article.id,
                         description: article.description,
@@ -1104,7 +1098,7 @@
 
                 amountInRowDom.textContent = formatNumbersWithDigits(amountCalculated, 1, 1) || 0.0;
 
-                let currentArticle = orderedArticles.find(article => article.article.article_no == parseInt(articleNoInRowDom.textContent.replace(/#/g, '')))
+                let currentArticle = orderedArticles.find(article => article.article.article_no == articleNoInRowDom.textContent)
 
                 if (currentArticle) {
                     currentArticle.packets = packetsValue
