@@ -1,7 +1,7 @@
 <!-- Footer Component Start -->
 <footer class="w-full bg-[var(--secondary-bg-color)] px-6 py-4 md:py-2 shadow-lg z-30 text-sm fade-in">
     <div class="container mx-auto flex justify-between items-center">
-        @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create'))
+        @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create') || request()->is('reports/statement'))
             <button id="prevBtn" class="bg-[var(--h-bg-color)] text-[var(--text-color)] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:scale-95 transition-all duration-300 ease-in-out flex items-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
                 <i class='fas fa-angles-left mr-1'></i> <div class="bg-[var(--h-bg-color)] hidden md:block">Previous</div>
             </button>
@@ -42,14 +42,14 @@
                     <i class='fas fa-save'></i> <div class="text-[#e2e8f0] hidden md:block">Save</div>
                 </button>
             @endif
-            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create'))
+            @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create') || request()->is('reports/statement'))
                 <button id="nextBtn" class="bg-[var(--primary-color)] text-[var(--text-color)] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:bg-[var(--h-primary-color)] hover:scale-95 transition-all duration-300 ease-in-out flex items-center gap-1 cursor-pointer">
                     <div class="text-[#e2e8f0] hidden md:block">Next</div> <i class='fas fa-angles-right'></i>
                 </button>
             @endif
         </div>
     </div>
-    @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create'))
+    @if (request()->is('users/create') || request()->is('suppliers/create') || request()->is('employees/create') || request()->is('articles/create') || request()->is('rates/create') || request()->is('productions/create') || request()->is('articles/*/edit') || request()->is('customers/*/edit') || request()->is('suppliers/*/edit') || request()->is('customers/create') || request()->is('orders/create') || request()->is('shipments/create') || request()->is('invoices/create') || request()->is('vouchers/create') || request()->is('cargos/create') || request()->is('reports/statement'))
         <script>
             document.getElementById('year').textContent = new Date().getFullYear();
 
@@ -139,7 +139,7 @@
 
             document.getElementById('nextBtn')?.addEventListener('click', () => nextStep(currentStep));
             document.getElementById('prevBtn').addEventListener('click', () => prevStep(currentStep));
-            document.getElementById('saveBtn').addEventListener('click', () => {
+            document.getElementById('saveBtn')?.addEventListener('click', () => {
                 document.getElementById('form').submit();
             });
 
@@ -179,12 +179,12 @@
                 themeIcon?.classList.toggle('fa-sun');
                 themeIcon?.classList.toggle('fa-moon');
             }
-            
+
             function setTheme(theme) {
                 document.documentElement.setAttribute('data-theme', theme);
                 document.cookie = `theme=${theme} path=/; max-age=31536000`;  // Save for 1 year
             }
-            
+
             const userTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             setTheme(userTheme);
         </script>
