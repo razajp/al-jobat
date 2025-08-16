@@ -83,7 +83,11 @@ class ProductionController extends Controller
                             'supplier_name' => $supplier->supplier_name ?? null,
                         ];
                     }
-                })->values();
+
+                    return null; // keeps mapping consistent
+                })
+                ->filter() // removes all nulls
+                ->values();
 
             $worker_options[(int)$worker->id] = [
                 'text' => $worker->employee_name,
@@ -139,8 +143,8 @@ class ProductionController extends Controller
             $data['materials'] = isset($data['materials']) ? json_decode($data['materials']) : null;
             $data['parts'] = isset($data['parts']) ? json_decode($data['parts']) : null;
 
-            if ($request->quantity) {
-                Article::where('id', $request->article_id)->update(['quantity' => $request->quantity]);
+            if ($request->article_quantity) {
+                Article::where('id', $request->article_id)->update(['quantity' => $request->article_quantity]);
             }
 
             $work = Setup::find($request->work_id);

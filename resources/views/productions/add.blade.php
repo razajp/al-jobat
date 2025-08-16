@@ -694,6 +694,7 @@
         <script>
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
+            let allParts = Object.entries(@json(app('article')->parts));
             let allRates = @json($rates);
             let materialModalData = {};
             const articleSelectInputDOM = document.getElementById("article");
@@ -764,7 +765,7 @@
                 `;
 
                 allWorks.forEach(([key, value]) => {
-                    if (selectedArticle.production.filter(p => p.work.title != 'Cutting').length == 0) {
+                    if (selectedArticle.production.filter(p => p.work.title == 'Cutting').length == 0) {
                         if (value.text == 'Cutting') {
                             ul.innerHTML += `
                                 <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
@@ -1024,9 +1025,8 @@
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
 
                         {{-- parts --}}
-                        <x-input label="Parts" name="parts" id="parts" withCheckbox checkBox="[
-                            "1_pc_inner_half" => ["shirt", "inner"],
-                        ]" required />
+                        <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
+                        <input type="hidden" name="parts" id="dbParts" value="[]" />
                     `;
                 } else if (work == 'Singer') {
                     secondStepHTML += `
@@ -1050,6 +1050,34 @@
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
+
+                let partKey = selectedArticle.category + '_' + selectedArticle.season;
+                let partsClutter = '';
+                const checkboxes_container = document.querySelector('.checkboxes_container');
+                console.log(checkboxes_container);
+
+
+                allParts.forEach(([key, value]) => {
+                    if (key == partKey) {
+                        value.forEach((part) => {
+                            partsClutter += `
+                                <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
+                                    <input
+                                        type="checkbox"
+                                        onchange="toggleThisCheckbox(this)"
+                                        data-checkbox="${part}"
+                                        class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
+                                    />
+                                    <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                        ${part}
+                                    </span>
+                                </label>
+                            `;
+                        });
+                    }
+                });
+
+                checkboxes_container.innerHTML = partsClutter;
             }
 
             function trackSelectRateState(elem) {
@@ -1096,6 +1124,23 @@
 
             function validateForNextStep() {
                 return true;
+            }
+
+            let selectedPartsArray = [];
+
+            function toggleThisCheckbox(checkbox) {
+                const dbPartsInput = document.getElementById('dbParts');
+
+                const checkboxValue = checkbox.dataset.checkbox;
+                if (checkbox.checked) {
+                    if (!selectedPartsArray.includes(checkboxValue)) {
+                        selectedPartsArray.push(checkboxValue);
+                    }
+                } else {
+                    selectedPartsArray = selectedPartsArray.filter(part => part !== checkboxValue);
+                }
+
+                dbPartsInput.value = JSON.stringify(selectedPartsArray);
             }
         </script>
     @endif

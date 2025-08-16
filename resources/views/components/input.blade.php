@@ -36,6 +36,7 @@
     'dataValidate' => '',
     'dataClean' => '',
     'withCheckbox' => false,
+    'checkBoxes' => [],
 ])
 
 @if ($uppercased)
@@ -93,35 +94,63 @@
     @endif
 
     <div class="relative flex gap-4">
-        <input
-            id="{{ $id }}"
-            type="{{ $type }}"
-            name="{{ $name }}"
-            @if ($value != '')
-                value="{{ old($name, $value) }}"
-            @endif
-            placeholder="{{ $placeholder }}"
-            autocomplete="{{ $autocomplete }}"
-            list="{{ $list }}"
-            {{ $required ? 'required' : '' }}
-            {{ $readonly ? 'readonly' : '' }}
-            {{ $disabled ? 'disabled' : '' }}
-            {{ $attributes->merge([
-                'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
-                    ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
-                    ' text-[var(--text-color)] px-3 ' .
-                    ($type == 'date' ? 'py-[7px]' : 'py-2') .
-                    ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
-            ]) }}
-            {{ $dataValidate ? 'data-validate='.$dataValidate : '' }}
-            {{ $dataClean ? 'data-clean='.$dataClean : '' }}
-            {{ $validateMax ? 'max='.$max : '' }}
-            {{ $validateMin ? 'min='.$min : '' }}
-            {{ $onchange ? 'onchange='.$onchange : '' }}
-            {!! $oninput ? 'oninput="'.$oninput.'"' : '' !!}
-            {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
-            @if ($dataClearable) data-clearable @endif
-        />
+        @if ($withCheckbox)
+            <div
+                {{ $attributes->merge([
+                    'class' => $class . ' w-full rounded-lg ' .
+                        ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
+                        ' text-[var(--text-color)] px-1 py-1 ' .
+                        ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
+                ]) }}
+            >
+                <div class="checkboxes_container grid gap-1 grid-cols-4">
+                    @foreach ($checkBoxes as $checkbox)
+                        <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
+                            <input
+                                type="checkbox"
+                                onchange="toggleThisCheckbox(this)"
+                                data-checkbox="{{ $checkbox }}"
+                                class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
+                            />
+                            <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                {{ ucfirst($checkbox) }}
+                            </span>
+                        </label>
+                    @endforeach
+                </div>
+            </div>
+        @else
+            <input
+                id="{{ $id }}"
+                type="{{ $type }}"
+                name="{{ $name }}"
+                @if ($value != '')
+                    value="{{ old($name, $value) }}"
+                @endif
+                placeholder="{{ $placeholder }}"
+                autocomplete="{{ $autocomplete }}"
+                list="{{ $list }}"
+                {{ $required ? 'required' : '' }}
+                {{ $readonly ? 'readonly' : '' }}
+                {{ $disabled ? 'disabled' : '' }}
+                {{ $attributes->merge([
+                    'class' => $class . ' w-full rounded-lg bg-[var(--h-bg-color)] ' .
+                        ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
+                        ' text-[var(--text-color)] px-3 ' .
+                        ($type == 'date' ? 'py-[7px]' : 'py-2') .
+                        ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize'
+                ]) }}
+                {{ $dataValidate ? 'data-validate='.$dataValidate : '' }}
+                {{ $dataClean ? 'data-clean='.$dataClean : '' }}
+                {{ $validateMax ? 'max='.$max : '' }}
+                {{ $validateMin ? 'min='.$min : '' }}
+                {{ $onchange ? 'onchange='.$onchange : '' }}
+                {!! $oninput ? 'oninput="'.$oninput.'"' : '' !!}
+                {!! $dataFilterPath ? 'data-filter-path="' . $dataFilterPath . '"' : '' !!}
+                @if ($dataClearable) data-clearable @endif
+            />
+        @endif
+
         @if ($dualInput)
             <input
                 id="{{ $id2 }}"
@@ -142,9 +171,6 @@
             <img id="img-{{ $id }}" src="{{ $imgUrl }}" alt="image" class="absolute right-2 top-1/2 transform -translate-y-1/2 w-6 h-6 cursor-pointer object-cover rounded {{ $imgUrl == '' ? 'opacity-0' : '' }}" onclick="openArticleModal()">
         @endif
         @if ($withButton)
-            <button id="{{$btnId}}" type="button" class="{{ $btnClass }} bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{!! $btnText !!}</button>
-        @endif
-        @if ($withCheckbox)
             <button id="{{$btnId}}" type="button" class="{{ $btnClass }} bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer {{ $btnText === '+' ? 'text-lg font-bold' : 'text-nowrap' }} disabled:opacity-50 disabled:cursor-not-allowed">{!! $btnText !!}</button>
         @endif
     </div>

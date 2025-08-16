@@ -17,6 +17,7 @@ use App\Http\Controllers\PhysicalQuantityController;
 use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\RateController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
@@ -110,6 +111,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
     Route::post('set-voucher-type', [Controller::class, 'setVoucherType'])->name('set-voucher-type');
     Route::post('set-production-type', [Controller::class, 'setProductionType'])->name('set-production-type');
+
+    Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
+    Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
