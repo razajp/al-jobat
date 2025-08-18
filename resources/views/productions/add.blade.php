@@ -193,44 +193,6 @@
             let selectedArticle = null;
 
             function selectThisArticle(articleElem) {
-                // selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
-
-                // articleIdInputDOM.value = selectedArticle.id;
-                // let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
-                // articleSelectInputDOM.value = value;
-
-                // closeModal('modalForm');
-
-                // document.querySelector('input[name="work_name"]').disabled = false;
-
-                // const ul = document.querySelector('ul[data-for="work"]');
-
-                // ul.innerHTML = `
-                //     <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
-                // `;
-
-                // allWorks.forEach(([key, value]) => {
-                //     if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Embroidery' && value.text != 'Print' && value.text != 'DTF' && value.text != 'Wash') {
-                //         if (selectedArticle.production.filter(p => p.work.title == value.text).length == 0) {
-                //             // if (value.text == value.text) {
-                //                 ul.innerHTML += `
-                //                     <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                //                 `;
-                //             // }
-                //         }
-                //     } else if (selectedArticle.production.filter(p => p.work.title == 'Singer' && p.receive_date != null).length > 0) {
-                //         if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping' || value.text == 'Embroidery' || value.text == 'Print' || value.text == 'DTF' || value.text == 'Wash') {
-                //             ul.innerHTML += `
-                //                 <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                //             `;
-                //         }
-                //     }
-                // })
-
-                // const selectedLi = ul.querySelector('li.selected');
-                // if (selectedLi) {
-                //     selectedLi.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                // }
                 selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
 
                 articleIdInputDOM.value = selectedArticle.id;
@@ -257,17 +219,14 @@
                         p => p.work.title === workTitle
                     );
 
+                    console.log(productionItems);
+
                     let shouldShowWork = false;
 
-                    // --- Cutting: Only at start ---
-                    if (workTitle === "Cutting" && productionItems.length === 0) {
-                        shouldShowWork = true;
-                    }
-
                     // --- Singer: Parts received from Cutting but not issued to Singer yet ---
-                    else if (workTitle === "Singer") {
+                    if (workTitle === "Singer") {
                         const cuttingReceived = selectedArticle.production
-                            .filter(p => p.work.title === "Cutting" && p.receive_date != null)
+                            .filter(p => p.work.title === "Cutting" && p.receive_date !== null)
                             .flatMap(p => p.parts);
 
                         const singerIssued = productionItems.flatMap(p => p.parts);
@@ -275,6 +234,8 @@
                         const eligible = cuttingReceived.filter(
                             part => !singerIssued.includes(part)
                         );
+
+                        console.log(1);
 
                         if (eligible.length > 0) shouldShowWork = true;
                     }
@@ -292,6 +253,8 @@
                         if (allIssuedParts.length > 0 && allIssuedParts.length === allReceivedParts.length) {
                             shouldShowWork = true;
                         }
+
+                        console.log(2);
                     }
 
                     // --- All other works (Print, Embroidery, Washing, etc.) ---
@@ -310,6 +273,8 @@
                         );
 
                         if (eligible.length > 0) shouldShowWork = true;
+
+                        console.log(3);
                     }
 
                     // --- Add to UI ---
@@ -648,7 +613,6 @@
             }
 
             function generateSecondStep(work) {
-                console.log(selectedArticle);
                 let secondStepHTML = '';
                 if (work == 'Singer') {
                     secondStepHTML += `
@@ -682,31 +646,29 @@
                 let partKey = selectedArticle.category + '_' + selectedArticle.season;
                 let partsClutter = '';
                 const checkboxes_container = document.querySelector('.checkboxes_container');
+                const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === "Cutting").flatMap(p => p.parts);
+                const existingParts = selectedArticle.production.filter(p => p.work.title !== 'Cutting' && p.work.title === work).flatMap(p => p.parts);
+                const availableParts = partsRecivedFromCutting.filter(p => !existingParts.includes(p));
 
-                allParts.forEach(([key, value]) => {
-                    if (key == partKey) {
-                        value.forEach((part) => {
-                            // part sirf tab show hoga agar wo kisi work mai hai aur abhi receive nahi hua
-                            if (selectedArticle.production.some(p => p.parts.includes(part) && p.receive_date !== null)) {
-                                partsClutter += `
-                                    <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
-                                        <input
-                                            type="checkbox"
-                                            onchange="toggleThisCheckbox(this)"
-                                            data-checkbox="${part}"
-                                            class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
-                                        />
-                                        <span class="text-sm font-medium text-[var(--secondary-text)]">
-                                            ${part}
-                                        </span>
-                                    </label>
-                                `;
-                            }
-                        });
-                    }
+                availableParts.forEach((part) => {
+                    partsClutter += `
+                        <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
+                            <input
+                                type="checkbox"
+                                onchange="toggleThisCheckbox(this)"
+                                data-checkbox="${part}"
+                                class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
+                            />
+                            <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                ${part}
+                            </span>
+                        </label>
+                    `;
                 });
 
-                checkboxes_container.innerHTML = partsClutter;
+                if (checkboxes_container) {
+                    checkboxes_container.innerHTML = partsClutter;
+                }
             }
 
             function toggleThisCheckbox(checkbox) {
@@ -837,11 +799,13 @@
                 }
 
                 createModal(modalData);
+                trackWorkState(document.getElementById('work'));
             }
 
             let selectedArticle = null;
 
             function selectThisArticle(articleElem) {
+                document.getElementById('secondStep').innerHTML = '';
                 if (articleElem.dataset?.json) {
                     selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
                 } else {
@@ -887,7 +851,7 @@
                             .filter(p => parts.includes(p));
 
                         return parts.filter(p => !existingParts.includes(p));
-                    })();
+                    });
 
                     const shouldShowWork =
                         (cuttingNotStarted && workValue.text === "Cutting") ||
@@ -953,7 +917,7 @@
                         document.querySelector('input[name="worker_name"]').disabled = true;
                         document.querySelector('input[name="worker_name"]').value = '';
                     }
-                    generateSecondStep(elem.closest('.selectParent').querySelector('li.selected').textContent.trim());
+                    generateSecondStep(elem.closest('.selectParent').querySelector('li.selected')?.textContent.trim());
 
                     let filteredRates = allRates.filter(rate => rate.type.id == elem.value && rate.categories.includes(selectedArticle.category) && rate.seasons.includes(selectedArticle.season) && rate.sizes.includes(selectedArticle.size));
                     let selectRateNameDom = document.querySelector('input[name="select_rate_name"]');
@@ -1214,7 +1178,16 @@
                     .flatMap(p => p.parts)
                     .filter(p => parts.includes(p));
 
-                    showingParts.forEach((part) => {
+                    const existingParts = selectedArticle.production
+                    .filter(p => p.work.title == work)
+                    .filter(p => p.receive_date !== null)
+                    .flatMap(p => p.parts)
+                    .filter(p => parts.includes(p));
+
+                    const availableParts = showingParts.filter(p => !existingParts.includes(p))
+
+
+                    availableParts.forEach((part) => {
                         if (part) {
                             partsClutter += `
                                 <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
