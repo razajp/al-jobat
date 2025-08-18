@@ -193,6 +193,44 @@
             let selectedArticle = null;
 
             function selectThisArticle(articleElem) {
+                // selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
+
+                // articleIdInputDOM.value = selectedArticle.id;
+                // let value = `${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}`;
+                // articleSelectInputDOM.value = value;
+
+                // closeModal('modalForm');
+
+                // document.querySelector('input[name="work_name"]').disabled = false;
+
+                // const ul = document.querySelector('ul[data-for="work"]');
+
+                // ul.innerHTML = `
+                //     <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
+                // `;
+
+                // allWorks.forEach(([key, value]) => {
+                //     if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Embroidery' && value.text != 'Print' && value.text != 'DTF' && value.text != 'Wash') {
+                //         if (selectedArticle.production.filter(p => p.work.title == value.text).length == 0) {
+                //             // if (value.text == value.text) {
+                //                 ul.innerHTML += `
+                //                     <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                //                 `;
+                //             // }
+                //         }
+                //     } else if (selectedArticle.production.filter(p => p.work.title == 'Singer' && p.receive_date != null).length > 0) {
+                //         if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping' || value.text == 'Embroidery' || value.text == 'Print' || value.text == 'DTF' || value.text == 'Wash') {
+                //             ul.innerHTML += `
+                //                 <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
+                //             `;
+                //         }
+                //     }
+                // })
+
+                // const selectedLi = ul.querySelector('li.selected');
+                // if (selectedLi) {
+                //     selectedLi.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                // }
                 selectedArticle = JSON.parse(articleElem.getAttribute('data-json')).data;
 
                 articleIdInputDOM.value = selectedArticle.id;
@@ -206,26 +244,92 @@
                 const ul = document.querySelector('ul[data-for="work"]');
 
                 ul.innerHTML = `
-                    <li data-for="work" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select Work --</li>
+                    <li data-for="work" data-value="" onmousedown="selectThisOption(this)"
+                        class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">
+                        -- Select Work --
+                    </li>
                 `;
 
-                allWorks.forEach(([key, value]) => {
-                    if (value.text != 'Press' && value.text != 'Packing' && value.text != 'Cropping' && value.text != 'Embroidery' && value.text != 'Print' && value.text != 'DTF' && value.text != 'Wash') {
-                        if (selectedArticle.production.filter(p => p.work.title == value.text).length == 0) {
-                            // if (value.text == value.text) {
-                                ul.innerHTML += `
-                                    <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                                `;
-                            // }
-                        }
-                    } else if (selectedArticle.production.filter(p => p.work.title == 'Singer' && p.receive_date != null).length > 0) {
-                        if (value.text == 'Press' || value.text == 'Packing' || value.text == 'Cropping' || value.text == 'Embroidery' || value.text == 'Print' || value.text == 'DTF' || value.text == 'Wash') {
-                            ul.innerHTML += `
-                                <li data-for="work" data-value="${key}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${value.text}</li>
-                            `;
+                allWorks.forEach(([workKey, workValue]) => {
+                    const workTitle = workValue.text;
+
+                    const productionItems = selectedArticle.production.filter(
+                        p => p.work.title === workTitle
+                    );
+
+                    let shouldShowWork = false;
+
+                    // --- Cutting: Only at start ---
+                    if (workTitle === "Cutting" && productionItems.length === 0) {
+                        shouldShowWork = true;
+                    }
+
+                    // --- Singer: Parts received from Cutting but not issued to Singer yet ---
+                    else if (workTitle === "Singer") {
+                        const cuttingReceived = selectedArticle.production
+                            .filter(p => p.work.title === "Cutting" && p.receive_date != null)
+                            .flatMap(p => p.parts);
+
+                        const singerIssued = productionItems.flatMap(p => p.parts);
+
+                        const eligible = cuttingReceived.filter(
+                            part => !singerIssued.includes(part)
+                        );
+
+                        if (eligible.length > 0) shouldShowWork = true;
+                    }
+
+                    // --- Special works: Cropping, Press, Packing ---
+                    else if (["Cropping", "Press", "Packing"].includes(workTitle)) {
+                        // Saare works me jitne bhi parts issue hue hain
+                        const allIssuedParts = selectedArticle.production.flatMap(p => p.parts);
+                        // Saare works me jitne bhi parts receive hue hain
+                        const allReceivedParts = selectedArticle.production
+                            .filter(p => p.receive_date != null)
+                            .flatMap(p => p.parts);
+
+                        // Agar issued = received (matlab sab kaam complete) to hi ye work dikhao
+                        if (allIssuedParts.length > 0 && allIssuedParts.length === allReceivedParts.length) {
+                            shouldShowWork = true;
                         }
                     }
-                })
+
+                    // --- All other works (Print, Embroidery, Washing, etc.) ---
+                    else {
+                        // Previous works se jitne parts receive hue
+                        const prevReceived = selectedArticle.production
+                            .filter(p => p.receive_date != null)
+                            .flatMap(p => p.parts);
+
+                        // Current work mai jo parts already issue ho chuke
+                        const currentIssued = productionItems.flatMap(p => p.parts);
+
+                        // Eligible parts = prev se received but current mai abhi issue nahi
+                        const eligible = prevReceived.filter(
+                            part => !currentIssued.includes(part)
+                        );
+
+                        if (eligible.length > 0) shouldShowWork = true;
+                    }
+
+                    // --- Add to UI ---
+                    if (shouldShowWork) {
+                        ul.innerHTML += `
+                            <li data-for="work" data-value="${workKey}"
+                                onmousedown="selectThisOption(this)"
+                                class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">
+                                ${workTitle}
+                            </li>
+                        `;
+                    }
+                });
+
+                // agar koi work available nahi
+                if (ul.children.length == 1) {
+                    ul.innerHTML = ``;
+                    document.querySelector('input[name="work_name"]').value = '';
+                    document.querySelector('input[name="work_name"]').disabled = true;
+                }
 
                 const selectedLi = ul.querySelector('li.selected');
                 if (selectedLi) {
@@ -582,8 +686,8 @@
                 allParts.forEach(([key, value]) => {
                     if (key == partKey) {
                         value.forEach((part) => {
-                            if (selectedArticle.production.some(p => p.parts.includes(part))) {
-                                console.log(selectedArticle.production.some(p => p.parts.includes(part)));
+                            // part sirf tab show hoga agar wo kisi work mai hai aur abhi receive nahi hua
+                            if (selectedArticle.production.some(p => p.parts.includes(part) && p.receive_date !== null)) {
                                 partsClutter += `
                                     <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
                                         <input

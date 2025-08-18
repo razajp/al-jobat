@@ -134,6 +134,9 @@ class ProductionController extends Controller
 
         if (isset($data['ticket_name']) && $data['ticket_name'] != '-- Select Ticket --') {
             $ticket = $data['ticket_name'];
+            $data['tags'] = isset($data['tags']) ? json_decode($data['tags']) : null;
+            $data['materials'] = isset($data['materials']) ? json_decode($data['materials']) : null;
+            $data['parts'] = isset($data['parts']) ? json_decode($data['parts']) : null;
             $production = Production::where('ticket', $data['ticket_name'])->first();
             if ($production) {
                 $production->update($data);
