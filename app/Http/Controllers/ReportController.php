@@ -10,27 +10,27 @@ class ReportController extends Controller
 {
     public function statement(Request $request)
     {
-        // $validator = Validator::make($request->all(), [
-        //     'category' => 'required|in:customer,supplier',
-        //     'id' => 'required',
-        //     'from_date' => 'required|date',
-        //     'to_date' => 'required|date|after_or_equal:from_date',
-        // ]);
+        $category = $request->category;
+        $id = $request->id;
+        $dateFrom = $request->date_from;
+        $dateTo = $request->date_to;
 
-        // if ($validator->fails()) {
-        //     return response()->json(['error' => $validator->errors()->first()]);
-        // }
+        if ($request->withData) {
+            // return $request;
+            if ($category === 'customer') {
+                $customer = Customer::find($id);
+                if (!$customer) {
+                    return response()->json(['error' => 'Customer not found'], 404);
+                }
 
-        // $customer = Customer::find($request->customer_id);
+                $data = $customer->getStatement($dateFrom, $dateTo);
+                return response()->json($data);
+            }
 
-        // if (!$customer) {
-        //     return response()->json(['error' => 'Customer not found']);
-        // }
-
-        // // Logic to create statement goes here
-        // // ...
-
-        // return response()->json(['status' => 'Statement created successfully']);
+            if ($category === 'supplier') {
+                // supplier ka similar logic (purchaseOrders + bills + supplierPayments)
+            }
+        }
 
         return view("reports.statement");
     }
@@ -47,14 +47,14 @@ class ReportController extends Controller
         if ($category === 'customer') {
             $customers = Customer::whereHas('user', function ($query) {
                 $query->where('status', 'active');
-            })->get(['id', 'name']); // select only needed fields
+            })->get(); // select only needed fields
             return response()->json($customers);
         }
 
         if ($category === 'supplier') {
             $suppliers = Supplier::whereHas('user', function ($query) {
                 $query->where('status', 'active');
-            })->get(['id', 'name']);
+            })->get();
             return response()->json($suppliers);
         }
 
