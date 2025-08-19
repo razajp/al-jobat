@@ -1141,23 +1141,45 @@
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
-
-                const partKey = selectedArticle.category + '_' + selectedArticle.season;
-                let partsClutter = '';
+                let selectedTicket = JSON.parse(document.getElementById('ticket')?.closest('.selectParent').querySelector('li.selected').dataset.option || '{}');
                 const checkboxes_container = document.querySelector('.checkboxes_container');
+                let parts = [];
+                let partsClutter = '';
 
-                const parts = allParts
-                    .filter(([key]) => key === partKey)
-                    .flatMap(([_, value]) => value);
+                if (selectedTicket && Object.keys(selectedTicket).length > 0) {
+                    parts = selectedTicket.parts;
+                } else {
+                    const partKey = selectedArticle.category + '_' + selectedArticle.season;
 
-                const existingParts = selectedArticle.production
-                    .flatMap(p => p.parts)
-                    .filter(p => parts.includes(p));
+                    const allparts = allParts
+                        .filter(([key]) => key === partKey)
+                        .flatMap(([_, value]) => value);
 
-                if (work == 'Cutting') {
-                    const pendingParts = parts.filter(p => !existingParts.includes(p));
+                    const existingParts = selectedArticle.production
+                        .flatMap(p => p.parts)
+                        .filter(p => allparts.includes(p));
 
-                    pendingParts.forEach((part) => {
+
+                    if (work == 'Cutting') {
+                        parts = allparts.filter(p => !existingParts.includes(p));
+                    } else {
+                        const showingParts = selectedArticle.production
+                        .filter(p => p.work.title == work)
+                        .flatMap(p => p.parts)
+                        .filter(p => allparts.includes(p));
+
+                        const existingParts = selectedArticle.production
+                        .filter(p => p.work.title == work)
+                        .filter(p => p.receive_date !== null)
+                        .flatMap(p => p.parts)
+                        .filter(p => allparts.includes(p));
+
+                        parts = showingParts.filter(p => !existingParts.includes(p));
+                    }
+                }
+
+                parts.forEach((part) => {
+                    if (part) {
                         partsClutter += `
                             <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
                                 <input
@@ -1171,40 +1193,8 @@
                                 </span>
                             </label>
                         `;
-                    });
-                } else {
-                    const showingParts = selectedArticle.production
-                    .filter(p => p.work.title == work)
-                    .flatMap(p => p.parts)
-                    .filter(p => parts.includes(p));
-
-                    const existingParts = selectedArticle.production
-                    .filter(p => p.work.title == work)
-                    .filter(p => p.receive_date !== null)
-                    .flatMap(p => p.parts)
-                    .filter(p => parts.includes(p));
-
-                    const availableParts = showingParts.filter(p => !existingParts.includes(p))
-
-
-                    availableParts.forEach((part) => {
-                        if (part) {
-                            partsClutter += `
-                                <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
-                                    <input
-                                        type="checkbox"
-                                        onchange="toggleThisCheckbox(this)"
-                                        data-checkbox="${part}"
-                                        class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
-                                    />
-                                    <span class="text-sm font-medium text-[var(--secondary-text)]">
-                                        ${part}
-                                    </span>
-                                </label>
-                            `;
-                        }
-                    });
-                }
+                    }
+                });
 
                 if (checkboxes_container) {
                     checkboxes_container.innerHTML = partsClutter;
@@ -1249,7 +1239,6 @@
                     selectThisArticle(selectedTicket.article);
                     document.querySelector('li[data-value="' + selectedTicket.work_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
                     document.querySelector('li[data-value="' + selectedTicket.worker_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                    // trackWorkState(document.querySelector('input[name="work_name"]'));
                 }
             }
 
