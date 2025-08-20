@@ -24,6 +24,7 @@ class ReportController extends Controller
                 }
 
                 $data = $customer->getStatement($dateFrom, $dateTo);
+                // return view("reports.statement", compact('data'));
                 return response()->json($data);
             }
 
@@ -32,7 +33,37 @@ class ReportController extends Controller
             }
         }
 
-        return view("reports.statement");
+        $mockData = [
+            'date' => '01-01-2025 - 02-02-2025',
+            'opening_balance' => 50000,
+            'closing_balance' => 40000,
+            'name' => 'Al-Shaka',
+            'totals' => [
+                'amount' => 40000,
+                'payment' => 60000,
+                'balance' => 50000,
+            ],
+            'statements' => [
+                [
+                    'date' => '00-00-00',
+                    'reff_no' => 'dd141',
+                    'type' => 'invoice',
+                    'method' => 'Cash',
+                    'amount' => 25000,
+                    'account' => 'Al-Das',
+                ],
+                [
+                    'date' => '00-00-00',
+                    'reff_no' => 'dd141',
+                    'type' => 'invoice',
+                    'method' => 'Cash',
+                    'amount' => 25000,
+                    'account' => 'Al-Das',
+                ]
+            ]
+        ];
+
+        return view("reports.statement", compact('mockData'));
     }
 
     // fucntion get names based on category
