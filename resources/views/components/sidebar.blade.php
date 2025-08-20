@@ -313,6 +313,14 @@
                 </div>
             @endif
 
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item label="Reports" icon="fas fa-file" includesDropdown :items="[
+                        ['type' => 'link', 'href' => route('reports.statement'), 'label' => 'Statement'],
+                    ]" />
+                </div>
+            @endif
+
             @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
                 <div class="relative group">
                     <x-nav-link-item
