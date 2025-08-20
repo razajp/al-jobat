@@ -120,7 +120,7 @@
                                     <div class="name capitalize font-semibold text-md">Customer Name: {{ $data['name'] }}</div>
                                 </div>
                                 <div class="right my-auto pr-3 text-sm text-gray-800 space-y-1.5">
-                                    <div class="total-amount leading-none">Total Amount: {{ $data['totals']['amount'] }}</div>
+                                    <div class="total-bill leading-none">Total Bill: {{ $data['totals']['bill'] }}</div>
                                     <div class="total-payment leading-none">Total Payment: {{ $data['totals']['payment'] }}</div>
                                     <div class="total-balance leading-none">Total Balance: {{ $data['totals']['balance'] }}</div>
                                 </div>
@@ -134,10 +134,10 @@
                                                 <div class="th font-medium w-[4%]">S.No</div>
                                                 <div class="th font-medium w-[12%]">Date</div>
                                                 <div class="th font-medium w-[12%]">Reff. No.</div>
-                                                <div class="th font-medium w-[10%]">Type</div>
                                                 <div class="th font-medium w-[10%]">Method</div>
                                                 <div class="th font-medium w-[31%]">Account</div>
-                                                <div class="th font-medium w-[9%]">Amount</div>
+                                                <div class="th font-medium w-[9%]">Bill</div>
+                                                <div class="th font-medium w-[9%]">Payment</div>
                                                 <div class="th font-medium w-[9%]">Balance</div>
                                             </div>
                                         </div>
@@ -148,9 +148,9 @@
                                             @foreach ($data['statements'] as $statement)
                                                 @php
                                                     if ($statement['type'] == 'invoice') {
-                                                        $balance += $statement['amount'];
+                                                        $balance += $statement['bill'];
                                                     } elseif ($statement['type'] == 'payment') {
-                                                        $balance -= $statement['amount'];
+                                                        $balance -= $statement['payment'];
                                                     }
 
                                                     if ($loop->iteration == 1) {
@@ -166,10 +166,10 @@
                                                         <div class="td font-semibold w-[4%] text-center">{{ $loop->iteration }}.</div>
                                                         <div class="td font-medium w-[12%] text-center">{{ $statement['date']->format('d-M-Y') }}</div>
                                                         <div class="td font-medium w-[12%] text-center">{{ $statement['reff_no'] }}</div>
-                                                        <div class="td font-medium w-[10%] capitalize">{{ $statement['type'] }}</div>
                                                         <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
                                                         <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
-                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['amount']) }}</div>
+                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['bill']) ?? "-" }}</div>
+                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['payment']) ?? "-" }}</div>
                                                         <div class="td font-medium w-[9%] text-center">{{ number_format($balance) }}</div>
                                                     </div>
                                                 </div>
