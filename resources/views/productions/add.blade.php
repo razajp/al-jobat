@@ -235,8 +235,6 @@
                             part => !singerIssued.includes(part)
                         );
 
-                        console.log(1);
-
                         if (eligible.length > 0) shouldShowWork = true;
                     }
 
@@ -253,8 +251,6 @@
                         if (allIssuedParts.length > 0 && allIssuedParts.length === allReceivedParts.length) {
                             shouldShowWork = true;
                         }
-
-                        console.log(2);
                     }
 
                     // --- All other works (Print, Embroidery, Washing, etc.) ---
@@ -273,9 +269,17 @@
                         );
 
                         if (eligible.length > 0) shouldShowWork = true;
-
-                        console.log(3);
                     }
+
+                    if (shouldShowWork == true) {
+                        const recivedPartsFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
+                        const allIssuedParts = selectedArticle.production.filter(p => p.receive_date === null).flatMap(p => p.parts);
+
+                        if (recivedPartsFromCutting.length == allIssuedParts.length) {
+                            shouldShowWork = false;
+                        }
+                    }
+
 
                     // --- Add to UI ---
                     if (shouldShowWork) {
@@ -640,6 +644,32 @@
                         {{-- issue_date --}}
                         <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
                     `;
+                } else if (work == 'O/F Look') {
+                    secondStepHTML += `
+                        {{-- article --}}
+                        <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
+
+                        {{-- materials  --}}
+                        <x-input label="Materials" id="materials" placeholder="Select Materials" class="cursor-pointer" required onclick="generateMaterialsModal()" autoComplete="off" />
+                        <input type="hidden" name="materials" value="" />
+
+                        ${!selectedArticle.quantity > 0 ? `
+                            {{-- quantity --}}
+                            <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" placeholder="Enter Quantity" required oninput="calculateAmount()" />
+                        ` : `
+                            {{-- quantity --}}
+                            <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
+                        `}
+
+                        ${selectedArticle.category != '1_pc' ? `
+                            {{-- parts --}}
+                            <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
+                            <input type="hidden" name="parts" id="dbParts" value="[]" />
+                        ` : `` }
+
+                        {{-- issue_date --}}
+                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+                    `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
 
@@ -648,7 +678,12 @@
                 const checkboxes_container = document.querySelector('.checkboxes_container');
                 const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === "Cutting").flatMap(p => p.parts);
                 const existingParts = selectedArticle.production.filter(p => p.work.title !== 'Cutting' && p.work.title === work).flatMap(p => p.parts);
-                const availableParts = partsRecivedFromCutting.filter(p => !existingParts.includes(p));
+                const allReceivedParts = selectedArticle.production.filter(p => p.work.title !== 'Cutting' && p.receive_date !== null).flatMap(p => p.parts);
+                const availableParts = partsRecivedFromCutting.filter(p => !existingParts.includes(p)).filter(p => allReceivedParts.includes(p));
+
+                console.log(partsRecivedFromCutting);
+                console.log(existingParts);
+
 
                 availableParts.forEach((part) => {
                     partsClutter += `
