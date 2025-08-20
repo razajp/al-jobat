@@ -93,96 +93,98 @@
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
-                    <div id="preview-document" class="preview-document flex flex-col h-full">
-                        <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
-                            <div class="left">
-                                <div class="company-logo">
-                                    <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
-                                        class="w-[12rem]" />
+                    @if (isset($data))
+                        <div id="preview-document" class="preview-document flex flex-col h-full">
+                            <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                                <div class="left">
+                                    <div class="company-logo">
+                                        <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                            class="w-[12rem]" />
+                                    </div>
+                                </div>
+                                <div class="right">
+                                    <div>
+                                        <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Statement</h1>
+                                        <div class='mt-1'>{{ $companyData->phone_number }}</div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="right">
-                                <div>
-                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Statement</h1>
-                                    <div class='mt-1'>{{ $companyData->phone_number }}</div>
+                            <hr class="w-full my-3 border-gray-600">
+                            <div id="preview-header" class="preview-header w-full flex justify-between px-5">
+                                <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                    <div class="date-range leading-none">Date: {{ $data['date'] }}</div>
+                                    <div class="opening-balance leading-none">Opening Balance: Rs.{{ $data['opening_balance'] }}</div>
+                                    <div class="closing-balance leading-none">Closing Balance: Rs.{{ $data['closing_balance'] }}</div>
+                                </div>
+                                <div class="center my-auto">
+                                    <div class="name capitalize font-semibold text-md">Customer Name: {{ $data['name'] }}</div>
+                                </div>
+                                <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                    <div class="total-amount leading-none">Total Amount: {{ $data['totals']['amount'] }}</div>
+                                    <div class="total-payment leading-none">Total Payment: {{ $data['totals']['payment'] }}</div>
+                                    <div class="total-balance leading-none">Total Balance: {{ $data['totals']['balance'] }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <hr class="w-full my-3 border-gray-600">
-                        <div id="preview-header" class="preview-header w-full flex justify-between px-5">
-                            <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                <div class="date-range leading-none">Date: {{ $mockData['date'] }}</div>
-                                <div class="opening-balance leading-none">Opening Balance: Rs.{{ $mockData['opening_balance'] }}</div>
-                                <div class="closing-balance leading-none">Closing Balance: Rs.{{ $mockData['closing_balance'] }}</div>
-                            </div>
-                            <div class="center my-auto">
-                                <div class="name capitalize font-semibold text-md">Customer Name: {{ $mockData['name'] }}</div>
-                            </div>
-                            <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
-                                <div class="total-amount leading-none">Total Amount: {{ $mockData['totals']['amount'] }}</div>
-                                <div class="total-payment leading-none">Total Payment: {{ $mockData['totals']['payment'] }}</div>
-                                <div class="total-balance leading-none">Total Balance: {{ $mockData['totals']['balance'] }}</div>
-                            </div>
-                        </div>
-                        <hr class="w-full my-3 border-gray-600">
-                        <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
-                            <div class="preview-table w-full">
-                                <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
-                                    <div class="thead w-full">
-                                        <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                            <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                            <div class="th text-sm font-medium w-1/6">Date</div>
-                                            <div class="th text-sm font-medium w-1/6">Reff. No.</div>
-                                            <div class="th text-sm font-medium w-1/6">Type</div>
-                                            <div class="th text-sm font-medium grow">Method</div>
-                                            <div class="th text-sm font-medium w-1/6">Account</div>
-                                            <div class="th text-sm font-medium w-1/6">Amount</div>
-                                            <div class="th text-sm font-medium w-1/6">Balance</div>
+                            <hr class="w-full my-3 border-gray-600">
+                            <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                                <div class="preview-table w-full">
+                                    <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
+                                        <div class="thead w-full">
+                                            <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                                <div class="th text-sm font-medium w-[15%]">Date</div>
+                                                <div class="th text-sm font-medium w-[13%]">Reff. No.</div>
+                                                <div class="th text-sm font-medium w-[13%]">Type</div>
+                                                <div class="th text-sm font-medium w-[13%]">Method</div>
+                                                <div class="th text-sm font-medium w-[15%]">Account</div>
+                                                <div class="th text-sm font-medium w-[11%]">Amount</div>
+                                                <div class="th text-sm font-medium w-[11%]">Balance</div>
+                                            </div>
+                                        </div>
+                                        <div id="tbody" class="tbody w-full">
+                                            @php
+                                                $balance = 0;
+                                            @endphp
+                                            @foreach ($data['statements'] as $statement)
+                                                @php
+                                                    if ($statement['type'] == 'invoice') {
+                                                        $balance += $statement['amount'];
+                                                    } elseif ($statement['type'] == 'payment') {
+                                                        $balance -= $statement['amount'];
+                                                    }
+
+                                                    if ($loop->iteration == 1) {
+                                                        $hrClass = 'mb-2.5';
+                                                    } else {
+                                                        $hrClass = 'my-2.5';
+                                                    }
+                                                @endphp
+
+                                                <div>
+                                                    <hr class="w-full {{ $hrClass }} border-gray-600">
+                                                    <div class="tr flex justify-between w-full px-4">
+                                                        <div class="td text-sm font-semibold w-[7%]">{{ $loop->iteration }}.</div>
+                                                        <div class="td text-sm font-medium w-[15%]">{{ $statement['date']->format('d-M-Y, D') }}</div>
+                                                        <div class="td text-sm font-medium w-[13%]">{{ $statement['reff_no'] }}</div>
+                                                        <div class="td text-sm font-medium w-[13%] capitalize">{{ $statement['type'] }}</div>
+                                                        <div class="td text-sm font-medium w-[13%]">{{ $statement['method'] ?? "-" }}</div>
+                                                        <div class="td text-sm font-medium w-[15%]">{{ $statement['account'] ?? "-" }}</div>
+                                                        <div class="td text-sm font-medium w-[11%]">{{ $statement['amount'] }}</div>
+                                                        <div class="td text-sm font-medium w-[11%]">{{ $balance }}</div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                                    <div id="tbody" class="tbody w-full">
-                                        @php
-                                            $balance = 0;
-                                        @endphp
-                                        @foreach ($mockData['statements'] as $statement)
-                                            @php
-                                                if ($statement['type'] == 'invoice') {
-                                                    $balance += $statement['amount'];
-                                                } elseif ($statement['type'] == 'payment') {
-                                                    $balance -= $statement['amount'];
-                                                }
-
-                                                if ($loop->iteration == 1) {
-                                                    $hrClass = 'mb-2.5';
-                                                } else {
-                                                    $hrClass = 'my-2.5';
-                                                }
-                                            @endphp
-
-                                            <div>
-                                                <hr class="w-full {{ $hrClass }} border-gray-600">
-                                                <div class="tr flex justify-between w-full px-4">
-                                                    <div class="td text-sm font-semibold w-[7%]">{{ $loop->iteration }}.</div>
-                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['date'] }}</div>
-                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['reff_no'] }}</div>
-                                                    <div class="td text-sm font-medium w-1/6 capitalize">{{ $statement['type'] }}</div>
-                                                    <div class="td text-sm font-medium grow">{{ $statement['method'] }}</div>
-                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['account'] }}</div>
-                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['amount'] }}</div>
-                                                    <div class="td text-sm font-medium w-1/6">{{ $balance }}</div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
                                 </div>
                             </div>
+                            <hr class="w-full my-3 border-gray-600">
+                            <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
+                                <P class="leading-none">Powered by SparkPair</P>
+                                <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
+                            </div>
                         </div>
-                        <hr class="w-full my-3 border-gray-600">
-                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
-                            <P class="leading-none">Powered by SparkPair</P>
-                            <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
-                        </div>
-                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -298,53 +300,57 @@
         };
 
         function applyRange(rangeValue) {
-        const today = new Date();
-        let from = null, to = null;
+            const today = new Date();
+            let from = null, to = null;
 
-        switch (rangeValue) {
-            case "custom":
-            dateFrom.value = '';
-            dateTo.value = '';
-            dateFrom.disabled = false;
-            dateTo.disabled = false;
-            return;
+            switch (rangeValue) {
+                case "custom":
+                dateFrom.value = '';
+                dateTo.value = '';
+                dateFrom.disabled = false;
+                dateTo.disabled = false;
+                return;
 
-            case "current_month":
-            from = new Date(today.getFullYear(), today.getMonth(), 1);
-            to = today;
-            break;
+                case "current_month":
+                from = new Date(today.getFullYear(), today.getMonth(), 1);
+                to = today;
+                break;
 
-            case "last_month":
-            from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-            to   = new Date(today.getFullYear(), today.getMonth(), 0);
-            break;
+                case "last_month":
+                from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                to   = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
 
-            case "last_three_months":
-            from = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-            to   = new Date(today.getFullYear(), today.getMonth(), 0);
-            break;
+                case "last_three_months":
+                from = new Date(today.getFullYear(), today.getMonth() - 3, 1);
+                to   = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
 
-            case "last_six_months":
-            from = new Date(today.getFullYear(), today.getMonth() - 6, 1);
-            to   = new Date(today.getFullYear(), today.getMonth(), 0);
-            break;
+                case "last_six_months":
+                from = new Date(today.getFullYear(), today.getMonth() - 6, 1);
+                to   = new Date(today.getFullYear(), today.getMonth(), 0);
+                break;
 
-            default:
-            dateFrom.value = "";
-            dateTo.value = "";
+                default:
+                dateFrom.value = "";
+                dateTo.value = "";
+                dateFrom.disabled = true;
+                dateTo.disabled = true;
+                return;
+            }
+
+            dateFrom.value = formatDateLocal(from);
+            dateTo.value = formatDateLocal(to);
+
+            // non-custom ranges disabled
             dateFrom.disabled = true;
             dateTo.disabled = true;
-            return;
         }
 
-        dateFrom.value = formatDateLocal(from);
-        dateTo.value = formatDateLocal(to);
-
-        // non-custom ranges disabled
-        dateFrom.disabled = true;
-        dateTo.disabled = true;
+        function validateForNextStep() {
+            getStatement();
+            return true;
         }
-
 
         function getStatement() {
             const category = document.querySelector('ul[data-for="category"] li.selected').textContent.trim().toLowerCase();
@@ -364,7 +370,7 @@
                     date_to: dateTo,
                 },
                 success: function(response) {
-                    console.log(response);
+                    renderStatement(response);
                 },
                 error: function(xhr, status, error) {
                     console.error('Error fetching names:', error);
@@ -372,9 +378,19 @@
             });
         }
 
-        function validateForNextStep() {
-            getStatement();
-            return true;
+        function renderStatement(response) {
+            // Parse the HTML string into a jQuery object
+            const $responseHtml = $(response);
+
+            // Find the #preview element inside the response
+            const $previewInResponse = $responseHtml.find('#preview');
+
+            if ($previewInResponse.length) {
+                // Replace the current page's #preview innerHTML
+                $('#preview').html($previewInResponse.html());
+            } else {
+                console.warn('#preview not found in response HTML.');
+            }
         }
     </script>
 @endsection

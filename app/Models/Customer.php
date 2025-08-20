@@ -213,16 +213,17 @@ class Customer extends Model
         // Totals
         $totals = [
             // 'orders' => $orders->sum('amount'),
-            'ammount' => $invoices->sum('amount'),
+            'amount' => $invoices->sum('amount'),
             'payment' => $payments->sum('amount'),
             'balance' => $invoices->sum('amount') - $payments->sum('amount'),
         ];
 
         return [
             'date' => $fromDate . ' - ' . $toDate,
+            'name' => $this->customer_name,
             'opening_balance' => $openingBalance,
             'closing_balance' => $closingBalance,
-            'statement' => $statement,
+            'statements' => $statement,
             'totals' => $totals,
         ];
     }

@@ -23,14 +23,11 @@ class ReportController extends Controller
                     return response()->json(['error' => 'Customer not found'], 404);
                 }
 
-<<<<<<< HEAD
-                $data = $customer->getStatement($dateFrom, $dateTo);
-                // return view("reports.statement", compact('data'));
-=======
                 $data = $customer
                 ->getStatement($dateFrom, $dateTo);
->>>>>>> ba286a2f48d28286da51faa7679c0105a3da500f
-                return response()->json($data);
+
+                return view("reports.statement", compact('data'));
+                // return response()->json($data);
             }
 
             if ($category === 'supplier') {
@@ -38,37 +35,37 @@ class ReportController extends Controller
             }
         }
 
-        $mockData = [
-            'date' => '01-01-2025 - 02-02-2025',
-            'opening_balance' => 50000,
-            'closing_balance' => 40000,
-            'name' => 'Al-Shaka',
-            'totals' => [
-                'amount' => 40000,
-                'payment' => 60000,
-                'balance' => 50000,
-            ],
-            'statements' => [
-                [
-                    'date' => '00-00-00',
-                    'reff_no' => 'dd141',
-                    'type' => 'invoice',
-                    'method' => 'Cash',
-                    'amount' => 25000,
-                    'account' => 'Al-Das',
-                ],
-                [
-                    'date' => '00-00-00',
-                    'reff_no' => 'dd141',
-                    'type' => 'invoice',
-                    'method' => 'Cash',
-                    'amount' => 25000,
-                    'account' => 'Al-Das',
-                ]
-            ]
-        ];
+        // $mockData = [
+        //     'date' => '01-01-2025 - 02-02-2025',
+        //     'opening_balance' => 50000,
+        //     'closing_balance' => 40000,
+        //     'name' => 'Al-Shaka',
+        //     'totals' => [
+        //         'amount' => 40000,
+        //         'payment' => 60000,
+        //         'balance' => 50000,
+        //     ],
+        //     'statements' => [
+        //         [
+        //             'date' => '00-00-00',
+        //             'reff_no' => 'dd141',
+        //             'type' => 'invoice',
+        //             'method' => 'Cash',
+        //             'amount' => 25000,
+        //             'account' => 'Al-Das',
+        //         ],
+        //         [
+        //             'date' => '00-00-00',
+        //             'reff_no' => 'dd141',
+        //             'type' => 'invoice',
+        //             'method' => 'Cash',
+        //             'amount' => 25000,
+        //             'account' => 'Al-Das',
+        //         ]
+        //     ]
+        // ];
 
-        return view("reports.statement", compact('mockData'));
+        return view("reports.statement");
     }
 
     // fucntion get names based on category
