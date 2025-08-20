@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Order | ' . app('company')->name)
+@section('title', 'Statement | ' . app('company')->name)
 @php
     $companyData = app('company');
 @endphp
@@ -26,8 +26,8 @@
                     name="category"
                     id="category"
                     :options="[
-                        'supplier' => ['text' => 'Supplier'],
                         'customer' => ['text' => 'Customer'],
+                        // 'supplier' => ['text' => 'Supplier'],
                     ]"
                     showDefault
                     onchange="fetchNames(this.value)"
@@ -94,8 +94,8 @@
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
                     @if (isset($data))
-                        <div id="preview-document" class="preview-document flex flex-col h-full">
-                            <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                        <div id="preview-document" class="preview-document flex flex-col h-full px-2">
+                            <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-4 pl-5 pr-8">
                                 <div class="left">
                                     <div class="company-logo">
                                         <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
@@ -105,13 +105,13 @@
                                 <div class="right">
                                     <div>
                                         <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Statement</h1>
-                                        <div class='mt-1'>{{ $companyData->phone_number }}</div>
+                                        <div class='mt-1 text-sm'>{{ $companyData->phone_number }}</div>
                                     </div>
                                 </div>
                             </div>
-                            <hr class="w-full my-3 border-gray-600">
+                            <hr class="w-full my-3 border-gray-700">
                             <div id="preview-header" class="preview-header w-full flex justify-between px-5">
-                                <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="left my-auto pr-3 text-sm text-gray-800 space-y-1.5">
                                     <div class="date-range leading-none">Date: {{ $data['date'] }}</div>
                                     <div class="opening-balance leading-none">Opening Balance: Rs.{{ $data['opening_balance'] }}</div>
                                     <div class="closing-balance leading-none">Closing Balance: Rs.{{ $data['closing_balance'] }}</div>
@@ -119,26 +119,26 @@
                                 <div class="center my-auto">
                                     <div class="name capitalize font-semibold text-md">Customer Name: {{ $data['name'] }}</div>
                                 </div>
-                                <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="right my-auto pr-3 text-sm text-gray-800 space-y-1.5">
                                     <div class="total-amount leading-none">Total Amount: {{ $data['totals']['amount'] }}</div>
                                     <div class="total-payment leading-none">Total Payment: {{ $data['totals']['payment'] }}</div>
                                     <div class="total-balance leading-none">Total Balance: {{ $data['totals']['balance'] }}</div>
                                 </div>
                             </div>
-                            <hr class="w-full my-3 border-gray-600">
+                            <hr class="w-full my-3 border-gray-700">
                             <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
                                 <div class="preview-table w-full">
-                                    <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
+                                    <div class="table w-full border border-gray-700 rounded-lg pb-2.5 overflow-hidden text-xs">
                                         <div class="thead w-full">
-                                            <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                                <div class="th text-sm font-medium w-[7%]">S.No</div>
-                                                <div class="th text-sm font-medium w-[15%]">Date</div>
-                                                <div class="th text-sm font-medium w-[13%]">Reff. No.</div>
-                                                <div class="th text-sm font-medium w-[13%]">Type</div>
-                                                <div class="th text-sm font-medium w-[13%]">Method</div>
-                                                <div class="th text-sm font-medium w-[15%]">Account</div>
-                                                <div class="th text-sm font-medium w-[11%]">Amount</div>
-                                                <div class="th text-sm font-medium w-[11%]">Balance</div>
+                                            <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
+                                                <div class="th font-medium w-[4%]">S.No</div>
+                                                <div class="th font-medium w-[12%]">Date</div>
+                                                <div class="th font-medium w-[12%]">Reff. No.</div>
+                                                <div class="th font-medium w-[10%]">Type</div>
+                                                <div class="th font-medium w-[10%]">Method</div>
+                                                <div class="th font-medium w-[31%]">Account</div>
+                                                <div class="th font-medium w-[9%]">Amount</div>
+                                                <div class="th font-medium w-[9%]">Balance</div>
                                             </div>
                                         </div>
                                         <div id="tbody" class="tbody w-full">
@@ -161,16 +161,16 @@
                                                 @endphp
 
                                                 <div>
-                                                    <hr class="w-full {{ $hrClass }} border-gray-600">
-                                                    <div class="tr flex justify-between w-full px-4">
-                                                        <div class="td text-sm font-semibold w-[7%]">{{ $loop->iteration }}.</div>
-                                                        <div class="td text-sm font-medium w-[15%]">{{ $statement['date']->format('d-M-Y, D') }}</div>
-                                                        <div class="td text-sm font-medium w-[13%]">{{ $statement['reff_no'] }}</div>
-                                                        <div class="td text-sm font-medium w-[13%] capitalize">{{ $statement['type'] }}</div>
-                                                        <div class="td text-sm font-medium w-[13%]">{{ $statement['method'] ?? "-" }}</div>
-                                                        <div class="td text-sm font-medium w-[15%]">{{ $statement['account'] ?? "-" }}</div>
-                                                        <div class="td text-sm font-medium w-[11%]">{{ $statement['amount'] }}</div>
-                                                        <div class="td text-sm font-medium w-[11%]">{{ $balance }}</div>
+                                                    <hr class="w-full {{ $hrClass }} border-gray-700">
+                                                    <div class="tr flex justify-between w-full px-4 text-center">
+                                                        <div class="td font-semibold w-[4%] text-center">{{ $loop->iteration }}.</div>
+                                                        <div class="td font-medium w-[12%] text-center">{{ $statement['date']->format('d-M-Y') }}</div>
+                                                        <div class="td font-medium w-[12%] text-center">{{ $statement['reff_no'] }}</div>
+                                                        <div class="td font-medium w-[10%] capitalize">{{ $statement['type'] }}</div>
+                                                        <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
+                                                        <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
+                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['amount']) }}</div>
+                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($balance) }}</div>
                                                     </div>
                                                 </div>
                                             @endforeach
@@ -178,8 +178,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <hr class="w-full my-3 border-gray-600">
-                            <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
+                            <hr class="w-full my-3 border-gray-700">
+                            <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-800">
                                 <P class="leading-none">Powered by SparkPair</P>
                                 <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                             </div>
@@ -391,6 +391,77 @@
             } else {
                 console.warn('#preview not found in response HTML.');
             }
+        }
+
+        function onClickOnPrintBtn() {
+            const preview = document.getElementById('preview-container'); // preview content
+
+            // Pehle se agar koi iframe hai to usko remove karein
+            let oldIframe = document.getElementById('printIframe');
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+
+            // Naya iframe banayein
+            let printIframe = document.createElement('iframe');
+            printIframe.id = "printIframe";
+            printIframe.style.position = "absolute";
+            printIframe.style.width = "0px";
+            printIframe.style.height = "0px";
+            printIframe.style.border = "none";
+            printIframe.style.display = "none"; // ✅ Hide iframe
+
+            // Iframe ko body me add karein
+            document.body.appendChild(printIframe);
+
+            let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+            printDocument.open();
+
+            // ✅ Current page ke CSS styles bhi iframe me inject karenge
+            const headContent = document.head.innerHTML;
+
+            printDocument.write(`
+                <html>
+                    <head>
+                        <title>Print Cargo List</title>
+                        ${headContent} <!-- Copy current styles -->
+                        <style>
+                            @media print {
+
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    width: 210mm; /* A4 width */
+                                    height: 297mm; /* A4 height */
+
+                                }
+
+                                .preview-container, .preview-container * {
+                                    page-break-inside: avoid;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    </body>
+                </html>
+            `);
+
+            printDocument.close();
+
+            // Wait for iframe to load and print
+            printIframe.onload = () => {
+                // Listen for after print in the iframe's window
+                printIframe.contentWindow.onafterprint = () => {
+                    console.log("Print dialog closed");
+                };
+
+                setTimeout(() => {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                }, 1000);
+            };
         }
     </script>
 @endsection

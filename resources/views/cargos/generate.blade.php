@@ -310,72 +310,11 @@
             renderList()
         }
 
-        // function deselectAllInvoices() {
-        //     document.querySelectorAll(".invoice-card input[type='checkbox']").forEach(checkbox => {
-        //         checkbox.checked = false;
-        //     });
-
-        //     selectedInvoicesArray = [];
-        //     totalCottonCount = 0;
-        //     selectAllCheckbox.checked = false;
-        // }
-
         function validateForNextStep() {
             generateCargoListPreview()
             return true;
         }
-
-        // const fromInput = document.getElementById("from");
-        // const toInput = document.getElementById("to");
-        // const cards = document.querySelectorAll(".invoice-card");
-
-        // function getInvoiceNumber(str) {
-        //     // Converts '25-0001' => 250001 (as number)
-        //     return parseInt(str.replace("-", ""));
-        // }
-
-        // function filterCards() {
-        //     const fromVal = getInvoiceNumber(fromInput.value);
-        //     const toVal = getInvoiceNumber(toInput.value);
-
-        //     deselectAllInvoices();
-
-        //     cards.forEach(card => {
-        //         const data = JSON.parse(card.getAttribute("data-json"));
-        //         const invoiceNum = getInvoiceNumber(data.invoice_no);
-
-        //         // Determine if the card should be shown
-        //         const show = (
-        //             (!fromVal || invoiceNum >= fromVal) &&
-        //             (!toVal || invoiceNum <= toVal)
-        //         );
-
-        //         card.style.display = show ? "flex" : "none";
-        //     });
-        // }
-
-        // fromInput.addEventListener("input", filterCards);
-        // toInput.addEventListener("input", filterCards);
-
-        // const selectAllCheckboxParent = document.getElementById('select-all-checkbox-parent');
-        // selectAllCheckboxParent.addEventListener('click', ()=>{
-        //     selectAllCheckbox.checked = !selectAllCheckbox.checked;
-
-        //     selectAllScript();
-        // });
-
-        // function selectAllScript() {
-        //     let invoiceCards = document.querySelectorAll(".invoice-card");
-        //     invoiceCards.forEach(card => {
-        //         if (card.style.display != "none") {
-        //             const checkbox = card.querySelector("input[type='checkbox']");
-        //             checkbox.checked = selectAllCheckbox.checked;
-
-        //             toggleInvoice(card, checkbox);
-        //         }
-        //     });
-        // }
-
+        
         function addListenerToPrintAndSaveBtn() {
             document.getElementById('printAndSaveBtn').addEventListener('click', (e) => {
                 e.preventDefault();

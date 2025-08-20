@@ -27,6 +27,11 @@
             @endif
         </div>
         <div class="flex items-center gap-3">
+            @if (request()->is('reports/statement'))
+                <button id="printBtn" class="bg-[var(--success-color)] text-[#e2e8f0] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:bg-[var(--h-success-color)] hover:scale-95 transition-all duration-300 ease-in-out flex items-center gap-1 hidden cursor-pointer" onclick="onClickOnPrintBtn()">
+                    <i class='fas fa-print'></i> <div class="text-[#e2e8f0] hidden md:block">Print</div>
+                </button>
+            @endif
             @if (request()->is('invoices/create') || request()->is('cargos/create'))
                 <button id="printAndSaveBtn" class="bg-[var(--success-color)] text-[#e2e8f0] px-4 md:px-5 py-2 md:py-1 rounded-lg hover:bg-[var(--h-success-color)] hover:scale-95 transition-all duration-300 ease-in-out flex items-center gap-1 hidden cursor-pointer">
                     <i class='fas fa-save'></i> <div class="text-[#e2e8f0] hidden md:block">Print & Save</div>
@@ -134,6 +139,7 @@
                 document.getElementById('saveBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
                 document.getElementById('printAndSaveBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
                 document.getElementById('quickInvoiceBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
+                document.getElementById('printBtn')?.classList.toggle('hidden', currentStep !== noOfSteps);
             }
 
 
