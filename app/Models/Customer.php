@@ -43,11 +43,6 @@ class Customer extends Model
                 $thisModel->creator_id = Auth::id();
             }
         });
-
-        // Always eager load the associated creator
-        // static::addGlobalScope('withCreator', function (Builder $builder) {
-        //     $builder->with('creator');
-        // });
     }
 
     public function creator()
@@ -97,39 +92,40 @@ class Customer extends Model
     }
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
-        $ordersQuery = $this->orders();
+        // $ordersQuery = $this->orders();
         $invoicesQuery = $this->invoices()->whereNotNull('shipment_no');
         $paymentsQuery = $this->payments();
 
         // Handle different date scenarios
         if ($fromDate && $toDate) {
             if ($includeGivenDate) {
-                $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
+                // $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
                 $invoicesQuery->whereBetween('date', [$fromDate, $toDate]);
                 $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
             } else {
-                $ordersQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                // $ordersQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $invoicesQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
             }
         } elseif ($fromDate) {
             $operator = $includeGivenDate ? '>=' : '>';
-            $ordersQuery->where('date', $operator, $fromDate);
+            // $ordersQuery->where('date', $operator, $fromDate);
             $invoicesQuery->where('date', $operator, $fromDate);
             $paymentsQuery->where('date', $operator, $fromDate);
         } elseif ($toDate) {
             $operator = $includeGivenDate ? '<=' : '<';
-            $ordersQuery->where('date', $operator, $toDate);
+            // $ordersQuery->where('date', $operator, $toDate);
             $invoicesQuery->where('date', $operator, $toDate);
             $paymentsQuery->where('date', $operator, $toDate);
         }
 
         // Calculate totals
-        $totalOrders = $ordersQuery->sum('netAmount') ?? 0;
+        // $totalOrders = $ordersQuery->sum('netAmount') ?? 0;
         $totalInvoices = $invoicesQuery->sum('netAmount') ?? 0;
         $totalPayments = $paymentsQuery->sum('amount') ?? 0;
 
-        $balance = ($totalOrders + $totalInvoices) - $totalPayments;
+        // $balance = ($totalOrders + $totalInvoices) - $totalPayments;
+        $balance = $totalInvoices - $totalPayments;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }
@@ -145,45 +141,61 @@ class Customer extends Model
         $closingBalance = $openingBalance + $periodBalance;
 
         // Fetch data safely
-        $orders = collect($this->orders()
-            ->whereBetween('date', [$fromDate, $toDate])
-            ->get())
-            ->map(fn($o) => [
-                'type' => 'order',
-                'id' => $o->id ?? null,
-                'date' => $o->date ?? null,
-                'created_at' => $o->created_at ?? null,
-                'amount' => $o->netAmount ?? 0,
-                'details' => $o,
-            ]);
+        // $orders = collect($this->orders()
+        //     ->whereBetween('date', [$fromDate, $toDate])
+        //     ->get())
+        //     ->map(fn($o) => [
+        //         'type' => 'order',
+        //         'id' => $o->id ?? null,
+        //         'date' => $o->date ?? null,
+        //         'created_at' => $o->created_at ?? null,
+        //         'amount' => $o->netAmount ?? 0,
+        //         'details' => $o,
+        //     ]);
 
         $invoices = collect($this->invoices()
-            ->whereNotNull('shipment_no')
+            // ->whereNotNull('shipment_no')
             ->whereBetween('date', [$fromDate, $toDate])
             ->get())
             ->map(fn($i) => [
-                'type' => 'invoice',
-                'id' => $i->id ?? null,
                 'date' => $i->date ?? null,
-                'created_at' => $i->created_at ?? null,
+                'reff_no' => $i->invoice_no ?? null,
+                'type' => 'invoice',
                 'amount' => $i->netAmount ?? 0,
-                'details' => $i,
+                'created_at' => $i->created_at ?? null,
             ]);
 
         $payments = collect($this->payments()
             ->whereBetween('date', [$fromDate, $toDate])
+            ->with('bankAccount.bank')
             ->get())
             ->map(fn($p) => [
-                'type' => 'payment',
-                'id' => $p->id ?? null,
                 'date' => $p->date ?? null,
-                'created_at' => $p->created_at ?? null,
+                'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
+                'type' => 'payment',
+                'method' => $p->method ?? null,
                 'amount' => $p->amount ?? 0,
-                'details' => $p,
+                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |') : null,
+                'created_at' => $p->created_at ?? null,
             ]);
 
         // Merge and sort safely
-        $statement = $orders->merge($invoices)->merge($payments)
+        // $statement = $orders->merge($invoices)->merge($payments)
+        //     ->sort(function ($a, $b) {
+        //         $aDate = $a['date'] ?? '1970-01-01';
+        //         $bDate = $b['date'] ?? '1970-01-01';
+        //         $dateCompare = strcmp($bDate, $aDate);
+
+        //         if ($dateCompare === 0) {
+        //             $aCreated = $a['created_at'] ?? '1970-01-01 00:00:00';
+        //             $bCreated = $b['created_at'] ?? '1970-01-01 00:00:00';
+        //             return strtotime($bCreated) <=> strtotime($aCreated);
+        //         }
+
+        //         return $dateCompare;
+        //     })->values();
+
+        $statement = $invoices->merge($payments)
             ->sort(function ($a, $b) {
                 $aDate = $a['date'] ?? '1970-01-01';
                 $bDate = $b['date'] ?? '1970-01-01';
@@ -200,12 +212,14 @@ class Customer extends Model
 
         // Totals
         $totals = [
-            'orders' => $orders->sum('amount'),
-            'invoices' => $invoices->sum('amount'),
-            'payments' => $payments->sum('amount'),
+            // 'orders' => $orders->sum('amount'),
+            'ammount' => $invoices->sum('amount'),
+            'payment' => $payments->sum('amount'),
+            'balance' => $invoices->sum('amount') - $payments->sum('amount'),
         ];
 
         return [
+            'date' => $fromDate . ' - ' . $toDate,
             'opening_balance' => $openingBalance,
             'closing_balance' => $closingBalance,
             'statement' => $statement,

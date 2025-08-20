@@ -15,7 +15,7 @@ class CustomerPayment extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         "customer_id",
         "date",
@@ -62,37 +62,36 @@ class CustomerPayment extends Model
         return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
-    // Relationship with the Customer model
     public function customer()
     {
         return $this->belongsTo(Customer::class, "customer_id");
     }
-    
+
     public function program()
     {
         return $this->belongsTo(PaymentProgram::class, "program_id");
     }
-    
+
     public function bank()
     {
         return $this->belongsTo(Setup::class, "bank_id");
     }
-    
+
     public function bankAccount()
     {
         return $this->belongsTo(BankAccount::class, "bank_account_id");
     }
-    
+
     public function cheque()
     {
         return $this->hasOne(SupplierPayment::class, "cheque_id");
     }
-    
+
     public function slip()
     {
         return $this->hasOne(SupplierPayment::class, "slip_id");
     }
-    
+
     public function paymentClearRecord()
     {
         return $this->hasMany(PaymentClear::class, "payment_id");
