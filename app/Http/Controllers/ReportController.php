@@ -23,7 +23,17 @@ class ReportController extends Controller
                     return response()->json(['error' => 'Customer not found'], 404);
                 }
 
+<<<<<<< HEAD
                 $data = $customer->getStatement($dateFrom, $dateTo);
+=======
+<<<<<<< HEAD
+                $data = $customer->getStatement($dateFrom, $dateTo);
+                // return view("reports.statement", compact('data'));
+=======
+                $data = $customer
+                ->getStatement($dateFrom, $dateTo);
+>>>>>>> ba286a2f48d28286da51faa7679c0105a3da500f
+>>>>>>> 9d330ef09f4cd0672be77efce359c8a93fed4029
                 return response()->json($data);
             }
 
@@ -32,7 +42,37 @@ class ReportController extends Controller
             }
         }
 
-        return view("reports.statement");
+        $mockData = [
+            'date' => '01-01-2025 - 02-02-2025',
+            'opening_balance' => 50000,
+            'closing_balance' => 40000,
+            'name' => 'Al-Shaka',
+            'totals' => [
+                'amount' => 40000,
+                'payment' => 60000,
+                'balance' => 50000,
+            ],
+            'statements' => [
+                [
+                    'date' => '00-00-00',
+                    'reff_no' => 'dd141',
+                    'type' => 'invoice',
+                    'method' => 'Cash',
+                    'amount' => 25000,
+                    'account' => 'Al-Das',
+                ],
+                [
+                    'date' => '00-00-00',
+                    'reff_no' => 'dd141',
+                    'type' => 'invoice',
+                    'method' => 'Cash',
+                    'amount' => 25000,
+                    'account' => 'Al-Das',
+                ]
+            ]
+        ];
+
+        return view("reports.statement", compact('mockData'));
     }
 
     // fucntion get names based on category

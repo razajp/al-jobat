@@ -1,5 +1,8 @@
 @extends('app')
 @section('title', 'Generate Order | ' . app('company')->name)
+@php
+    $companyData = app('company');
+@endphp
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -90,7 +93,96 @@
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
             <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                 <div id="preview" class="preview flex flex-col h-full">
-                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
+                    <div id="preview-document" class="preview-document flex flex-col h-full">
+                        <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                            <div class="left">
+                                <div class="company-logo">
+                                    <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                        class="w-[12rem]" />
+                                </div>
+                            </div>
+                            <div class="right">
+                                <div>
+                                    <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Statement</h1>
+                                    <div class='mt-1'>{{ $companyData->phone_number }}</div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div id="preview-header" class="preview-header w-full flex justify-between px-5">
+                            <div class="left my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="date-range leading-none">Date: {{ $mockData['date'] }}</div>
+                                <div class="opening-balance leading-none">Opening Balance: Rs.{{ $mockData['opening_balance'] }}</div>
+                                <div class="closing-balance leading-none">Closing Balance: Rs.{{ $mockData['closing_balance'] }}</div>
+                            </div>
+                            <div class="center my-auto">
+                                <div class="name capitalize font-semibold text-md">Customer Name: {{ $mockData['name'] }}</div>
+                            </div>
+                            <div class="right my-auto pr-3 text-sm text-gray-600 space-y-1.5">
+                                <div class="total-amount leading-none">Total Amount: {{ $mockData['totals']['amount'] }}</div>
+                                <div class="total-payment leading-none">Total Payment: {{ $mockData['totals']['payment'] }}</div>
+                                <div class="total-balance leading-none">Total Balance: {{ $mockData['totals']['balance'] }}</div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                            <div class="preview-table w-full">
+                                <div class="table w-full border border-gray-600 rounded-lg pb-2.5 overflow-hidden">
+                                    <div class="thead w-full">
+                                        <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                            <div class="th text-sm font-medium w-[7%]">S.No</div>
+                                            <div class="th text-sm font-medium w-1/6">Date</div>
+                                            <div class="th text-sm font-medium w-1/6">Reff. No.</div>
+                                            <div class="th text-sm font-medium w-1/6">Type</div>
+                                            <div class="th text-sm font-medium grow">Method</div>
+                                            <div class="th text-sm font-medium w-1/6">Account</div>
+                                            <div class="th text-sm font-medium w-1/6">Amount</div>
+                                            <div class="th text-sm font-medium w-1/6">Balance</div>
+                                        </div>
+                                    </div>
+                                    <div id="tbody" class="tbody w-full">
+                                        @php
+                                            $balance = 0;
+                                        @endphp
+                                        @foreach ($mockData['statements'] as $statement)
+                                            @php
+                                                if ($statement['type'] == 'invoice') {
+                                                    $balance += $statement['amount'];
+                                                } elseif ($statement['type'] == 'payment') {
+                                                    $balance -= $statement['amount'];
+                                                }
+
+                                                if ($loop->iteration == 1) {
+                                                    $hrClass = 'mb-2.5';
+                                                } else {
+                                                    $hrClass = 'my-2.5';
+                                                }
+                                            @endphp
+
+                                            <div>
+                                                <hr class="w-full {{ $hrClass }} border-gray-600">
+                                                <div class="tr flex justify-between w-full px-4">
+                                                    <div class="td text-sm font-semibold w-[7%]">{{ $loop->iteration }}.</div>
+                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['date'] }}</div>
+                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['reff_no'] }}</div>
+                                                    <div class="td text-sm font-medium w-1/6 capitalize">{{ $statement['type'] }}</div>
+                                                    <div class="td text-sm font-medium grow">{{ $statement['method'] }}</div>
+                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['account'] }}</div>
+                                                    <div class="td text-sm font-medium w-1/6">{{ $statement['amount'] }}</div>
+                                                    <div class="td text-sm font-medium w-1/6">{{ $balance }}</div>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr class="w-full my-3 border-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
+                            <P class="leading-none">Powered by SparkPair</P>
+                            <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
