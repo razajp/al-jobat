@@ -23,8 +23,13 @@ class ReportController extends Controller
                     return response()->json(['error' => 'Customer not found'], 404);
                 }
 
+<<<<<<< HEAD
                 $data = $customer->getStatement($dateFrom, $dateTo);
                 // return view("reports.statement", compact('data'));
+=======
+                $data = $customer
+                ->getStatement($dateFrom, $dateTo);
+>>>>>>> ba286a2f48d28286da51faa7679c0105a3da500f
                 return response()->json($data);
             }
 
