@@ -161,7 +161,8 @@ class Customer extends Model
                 'date' => $i->date ?? null,
                 'reff_no' => $i->invoice_no ?? null,
                 'type' => 'invoice',
-                'amount' => $i->netAmount ?? 0,
+                'bill' => $i->netAmount ?? 0,
+                'payment' =>  0,
                 'created_at' => $i->created_at ?? null,
             ]);
 
@@ -174,7 +175,8 @@ class Customer extends Model
                 'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
                 'type' => 'payment',
                 'method' => $p->method ?? null,
-                'amount' => $p->amount ?? 0,
+                'payment' => $p->amount ?? 0,
+                'bill' =>  0,
                 'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |') : null,
                 'created_at' => $p->created_at ?? null,
             ]);
@@ -213,7 +215,7 @@ class Customer extends Model
         // Totals
         $totals = [
             // 'orders' => $orders->sum('amount'),
-            'amount' => $invoices->sum('amount'),
+            'bill' => $invoices->sum('bill'),
             'payment' => $payments->sum('amount'),
             'balance' => $invoices->sum('amount') - $payments->sum('amount'),
         ];

@@ -200,6 +200,7 @@
                     if (option.dataset.value && option.textContent.trim() !== '') {
                         customerSelectDom.value = option.textContent.trim();
                         customerSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                        customerSelectDom.disabled = true;
                         break;
                     }
                 }
@@ -221,7 +222,8 @@
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
                         typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                        typeInp.value = 'payment_program'
+                        typeInp.value = 'payment_program';
+                        typeSelectDom.disabled = true;
                         break;
                     }
                 }
@@ -232,6 +234,7 @@
                 let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
                 // programSelectDom.value = programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').textContent.trim();
                 programSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                programSelectDom.disabled = true;
 
                 if (ProgramData.category != 'waiting') {
                     programSelectDom.dispatchEvent(new Event('change'));
@@ -239,6 +242,7 @@
                     methodSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
                     methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).classList.add('selected');
                     methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    methodSelectDom.disabled = true;
                     // trackMethodState(methodSelectDom);
                 } else {
                     methodSelectDom.querySelector("option[value='program']")?.remove();
