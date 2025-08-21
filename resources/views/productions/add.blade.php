@@ -146,6 +146,7 @@
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
             let allParts = Object.entries(@json(app('article')->parts));
+            let Units = @json(app('defaults')->units);
             let allRates = @json($rates);
             let materialModalData = {};
             let materialsArray = [];
@@ -162,11 +163,14 @@
             })
 
             function generateArticlesModal() {
-                let data = @json($articles);
+                const data = @json($articles);
                 let cardData = [];
 
+                const articlesIssuedOnCMT = data.filter(a => a.production.some(p => p.work.title === 'CMT'));
+                const articles = data.filter(a => !articlesIssuedOnCMT.includes(a));
+
                 if (data.length > 0) {
-                    cardData.push(...data.map(item => {
+                    cardData.push(...articles.map(item => {
                         return {
                             id: item.id,
                             name: item.article_no,
@@ -212,74 +216,27 @@
                     </li>
                 `;
 
+                const afterCutting = ['Singer', 'Print', 'Embroidery', 'Dhaap', 'Wash', 'O/F Look', 'Kaj Button', 'Bartake', '  'Stitching'];
+                const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
+                const partsRecievedFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
+                const partsRecievedFromSinger = [...new Set(selectedArticle.production.filter(p => p.work.title === 'Singer').flatMap(p => p.parts ?? []))];
+                const allIssuedParts = selectedArticle.production.filter(p => p.receive_date === null).flatMap(p => p.parts);
+                const existingWorks = [...new Set(selectedArticle.production.flatMap(p => p.work.title))];
+                const parts = allParts.filter(([key]) => key === categorySeasonKey).flatMap(([_, value]) => value);
+
                 allWorks.forEach(([workKey, workValue]) => {
                     const workTitle = workValue.text;
-
-                    const productionItems = selectedArticle.production.filter(
-                        p => p.work.title === workTitle
-                    );
-
-                    console.log(productionItems);
-
                     let shouldShowWork = false;
 
-                    // --- Singer: Parts received from Cutting but not issued to Singer yet ---
-                    if (workTitle === "Singer") {
-                        const cuttingReceived = selectedArticle.production
-                            .filter(p => p.work.title === "Cutting" && p.receive_date !== null)
-                            .flatMap(p => p.parts);
+                    const productionItems = selectedArticle.production.filter(p => p.work.title === workTitle);
 
-                        const singerIssued = productionItems.flatMap(p => p.parts);
-
-                        const eligible = cuttingReceived.filter(
-                            part => !singerIssued.includes(part)
-                        );
-
-                        if (eligible.length > 0) shouldShowWork = true;
+                    if (existingWorks.length == 1 && afterCutting.includes(workTitle)) {
+                        shouldShowWork = true;
+                    } else if (allIssuedParts.length === 0 && workTitle !== 'Cutting' && parts.length == partsRecievedFromSinger.length) {
+                        shouldShowWork = true;
+                    } else if (allIssuedParts.length < partsRecievedFromCutting.length && afterCutting.includes(workTitle)) {
+                        shouldShowWork = true;
                     }
-
-                    // --- Special works: Cropping, Press, Packing ---
-                    else if (["Cropping", "Press", "Packing"].includes(workTitle)) {
-                        // Saare works me jitne bhi parts issue hue hain
-                        const allIssuedParts = selectedArticle.production.flatMap(p => p.parts);
-                        // Saare works me jitne bhi parts receive hue hain
-                        const allReceivedParts = selectedArticle.production
-                            .filter(p => p.receive_date != null)
-                            .flatMap(p => p.parts);
-
-                        // Agar issued = received (matlab sab kaam complete) to hi ye work dikhao
-                        if (allIssuedParts.length > 0 && allIssuedParts.length === allReceivedParts.length) {
-                            shouldShowWork = true;
-                        }
-                    }
-
-                    // --- All other works (Print, Embroidery, Washing, etc.) ---
-                    else {
-                        // Previous works se jitne parts receive hue
-                        const prevReceived = selectedArticle.production
-                            .filter(p => p.receive_date != null)
-                            .flatMap(p => p.parts);
-
-                        // Current work mai jo parts already issue ho chuke
-                        const currentIssued = productionItems.flatMap(p => p.parts);
-
-                        // Eligible parts = prev se received but current mai abhi issue nahi
-                        const eligible = prevReceived.filter(
-                            part => !currentIssued.includes(part)
-                        );
-
-                        if (eligible.length > 0) shouldShowWork = true;
-                    }
-
-                    if (shouldShowWork == true) {
-                        const recivedPartsFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
-                        const allIssuedParts = selectedArticle.production.filter(p => p.receive_date === null).flatMap(p => p.parts);
-
-                        if (recivedPartsFromCutting.length == allIssuedParts.length) {
-                            shouldShowWork = false;
-                        }
-                    }
-
 
                     // --- Add to UI ---
                     if (shouldShowWork) {
@@ -618,7 +575,7 @@
 
             function generateSecondStep(work) {
                 let secondStepHTML = '';
-                if (work == 'Singer') {
+                if (work == 'Singer' || work == 'Stitching' || work == 'CMT' || work == 'Kaj Button' || work == 'Cropping' || work == 'Packing') {
                     secondStepHTML += `
                         {{-- article --}}
                         <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
@@ -644,14 +601,10 @@
                         {{-- issue_date --}}
                         <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
                     `;
-                } else if (work == 'O/F Look') {
+                } else if (work == 'Print' || work == 'Embroidery' || work == 'Dhaap' || work == 'Wash' || work == 'O/F Look' || work == 'Bartake' || work == 'Press') {
                     secondStepHTML += `
                         {{-- article --}}
                         <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />
-
-                        {{-- materials  --}}
-                        <x-input label="Materials" id="materials" placeholder="Select Materials" class="cursor-pointer" required onclick="generateMaterialsModal()" autoComplete="off" />
-                        <input type="hidden" name="materials" value="" />
 
                         ${!selectedArticle.quantity > 0 ? `
                             {{-- quantity --}}
@@ -677,13 +630,8 @@
                 let partsClutter = '';
                 const checkboxes_container = document.querySelector('.checkboxes_container');
                 const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === "Cutting").flatMap(p => p.parts);
-                const existingParts = selectedArticle.production.filter(p => p.work.title !== 'Cutting' && p.work.title === work).flatMap(p => p.parts);
-                const allReceivedParts = selectedArticle.production.filter(p => p.work.title !== 'Cutting' && p.receive_date !== null).flatMap(p => p.parts);
-                const availableParts = partsRecivedFromCutting.filter(p => !existingParts.includes(p)).filter(p => allReceivedParts.includes(p));
-
-                console.log(partsRecivedFromCutting);
-                console.log(existingParts);
-
+                const allIssuedParts = selectedArticle.production.filter(p => p.receive_date === null).flatMap(p => p.parts);
+                const availableParts = partsRecivedFromCutting.filter(p => !allIssuedParts.includes(p));
 
                 availableParts.forEach((part) => {
                     partsClutter += `
@@ -808,11 +756,13 @@
             })
 
             function generateArticlesModal() {
-                let data = @json($articles);
+                const data = @json($articles);
                 let cardData = [];
 
+                const articles = data.filter(a => a.production.length == 0);
+
                 if (data.length > 0) {
-                    cardData.push(...data.map(item => {
+                    cardData.push(...articles.map(item => {
                         return {
                             id: item.id,
                             name: item.article_no,
@@ -864,6 +814,8 @@
                 `;
 
                 allWorks.forEach(([workKey, workValue]) => {
+                    let shouldShowWork = false;
+
                     // Step 1a: Check if this work exists in production
                     const productionItems = selectedArticle.production.filter(
                         p => p.work.title === workValue.text
@@ -874,8 +826,8 @@
                     );
 
                     // Step 1b: Decide whether to show this work
-                    const missingParts = (() => {
-                        if (productionItems.length === 0) return [];
+                    const missingParts = () => {
+                        if (productionItems.length === 0)  {return [];}
                         const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
                         const parts = allParts
                             .filter(([key]) => key === categorySeasonKey)
@@ -886,14 +838,27 @@
                             .filter(p => parts.includes(p));
 
                         return parts.filter(p => !existingParts.includes(p));
-                    });
+                    };
 
-                    const shouldShowWork =
+                    shouldShowWork =
                         (cuttingNotStarted && workValue.text === "Cutting") ||
                         (productionItems.length > 0 && (
                             productionItems.some(p => p.receive_date == null) ||
                             missingParts.length > 0
                         ));
+
+                    if (workValue.text === 'Cutting') {
+                        const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
+                        const parts = allParts
+                            .filter(([key]) => key === categorySeasonKey)
+                            .flatMap(([_, value]) => value);
+
+                        const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
+
+                        if (partsRecivedFromCutting.length !== parts.length) {
+                            shouldShowWork = true;
+                        }
+                    }
 
                     if (shouldShowWork) {
                         ul.innerHTML += `
@@ -1150,7 +1115,7 @@
                         <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
                         <input type="hidden" name="parts" id="dbParts" value="[]" />
                     `;
-                } else if (work == 'Singer') {
+                } else {
                     secondStepHTML += `
                         {{-- article --}}
                         <x-input label="Article" name="article" id="article" disabled value="${selectedArticle.article_no} | ${selectedArticle.season} | ${selectedArticle.size} | ${selectedArticle.category} | ${formatNumbersDigitLess(selectedArticle.quantity)} (pcs) | Rs. ${formatNumbersWithDigits(selectedArticle.sales_rate, 1, 1)}" />

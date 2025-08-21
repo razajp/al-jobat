@@ -63,6 +63,26 @@ class AppServiceProvider extends ServiceProvider
                 ],
             ];
         });
+
+        app()->singleton('defaults', function () {
+            return (object) [
+                'units' => [
+                    'Kgs',
+                    'Meter',
+                    'Yards',
+                    'Cone',
+                    'Piece',
+                    'Dozen',
+                    'Set',
+                    'Pair',
+                    'Packet',
+                    'Carton',
+                    'Roll',
+                    'Bag',
+                    'Box',
+                ],
+            ];
+        });
     }
 
     /**

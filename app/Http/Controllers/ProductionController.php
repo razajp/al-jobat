@@ -39,7 +39,8 @@ class ProductionController extends Controller
                 $query->where('title', 'Cutting');
             })->with('production.work')->get();
         } else {
-            $allTickets = Production::whereNull('receive_date')->with('article.production.work')->get();
+            $cmt_work_id = Setup::where('title', 'CMT')->value('id') ?? 0;
+            $allTickets = Production::whereNull('receive_date')->where('work_id', '!=', $cmt_work_id)->with('article.production.work')->get();
             foreach ($allTickets as $ticket) {
                 $ticket_options[$ticket->id] = [
                     'text' => $ticket->ticket,

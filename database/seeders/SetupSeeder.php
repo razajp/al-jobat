@@ -21,20 +21,21 @@ class SetupSeeder extends Seeder
             ['short_title' => 'PLT', 'title' => 'Plot',          'type' => 'supplier_category'],
             ['short_title' => 'PVT', 'title' => 'Private',       'type' => 'supplier_category'],
             ['short_title' => 'SRV', 'title' => 'Services',      'type' => 'supplier_category'],
+
             ['short_title' => 'CUT', 'title' => 'Cutting',   'type' => 'worker_type'],
             ['short_title' => 'DHP', 'title' => 'Dhaap',     'type' => 'worker_type'],
-            ['short_title' => 'CMT', 'title' => 'CMT',       'type' => 'worker_type'],
             ['short_title' => 'SNG', 'title' => 'Singer',    'type' => 'worker_type'],
             ['short_title' => 'OFL', 'title' => 'O/F Look',  'type' => 'worker_type'],
             ['short_title' => 'BTK', 'title' => 'Bartake',   'type' => 'worker_type'],
-            ['short_title' => 'TKN', 'title' => 'Token',     'type' => 'worker_type'],
+            ['short_title' => 'STH', 'title' => 'Stitching',     'type' => 'worker_type'],
+            ['short_title' => 'CMT', 'title' => 'CMT',     'type' => 'worker_type'],
             ['short_title' => 'CRP', 'title' => 'Cropping',  'type' => 'worker_type'],
             ['short_title' => 'PRS', 'title' => 'Press',     'type' => 'worker_type'],
             ['short_title' => 'PKG', 'title' => 'Packing',   'type' => 'worker_type'],
             ['short_title' => 'EMB', 'title' => 'Embroidery',   'type' => 'worker_type'],
             ['short_title' => 'PRT', 'title' => 'Print',   'type' => 'worker_type'],
-            ['short_title' => 'DTF', 'title' => 'DTF',   'type' => 'worker_type'],
             ['short_title' => 'WSH', 'title' => 'Wash',   'type' => 'worker_type'],
+            ['short_title' => 'KBT', 'title' => 'Kaj Button',   'type' => 'worker_type'],
         ];
 
         foreach ($setups as $setup) {

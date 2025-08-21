@@ -36,6 +36,8 @@ function createCard(data) {
                 <img src="${data.image}" loading="lazy" alt="" class="w-full h-full object-cover">
             </div>
         `;
+    } else if (data.svgIcon) {
+        clutter += data.svgIcon;
     }
 
     let detailsHTML = '';
@@ -60,7 +62,7 @@ function createCard(data) {
     clutter += `
         <div class="${data.checkbox ? 'flex justify-between items-center w-full' : 'text-start'} ${data.image ? 'pt-1' : ''}">
             <div>
-                <h5 class="text-xl ${!data.checkbox ? 'mb-2' : ''} text-[var(--text-color)] capitalize font-semibold leading-none">
+                <h5 class="text-xl ${!data.checkbox && !data.noMargin ? 'mb-2' : ''} text-[var(--text-color)] capitalize font-semibold leading-none">
                     ${data.name ?? 'N/A'}
                 </h5>
                 ${detailsHTML}
