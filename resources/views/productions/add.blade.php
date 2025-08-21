@@ -216,7 +216,7 @@
                     </li>
                 `;
 
-                const afterCutting = ['Singer', 'Print', 'Embroidery', 'Dhaap', 'Wash', 'O/F Look', 'Kaj Button', 'Bartake', '  'Stitching'];
+                const afterCutting = ['Singer', 'Print', 'Embroidery', 'Dhaap', 'Wash', 'O/F Look', 'Kaj Button', 'Bartake', 'Stitching'];
                 const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
                 const partsRecievedFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
                 const partsRecievedFromSinger = [...new Set(selectedArticle.production.filter(p => p.work.title === 'Singer').flatMap(p => p.parts ?? []))];

@@ -89,11 +89,11 @@
             </div>
         </div>
 
-        <!-- Step 2: view order -->
+        {{-- <!-- Step 2: view order -->
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
-            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                <div id="preview" class="preview flex flex-col h-full">
-                    @if (isset($data))
+            @if (isset($data))
+                <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
+                    <div id="preview" class="preview flex flex-col h-full">
                         <div id="preview-document" class="preview-document flex flex-col h-full px-2">
                             <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-4 pl-5 pr-8">
                                 <div class="left">
@@ -153,10 +153,16 @@
                                                         $balance -= $statement['payment'];
                                                     }
 
+                                                    // if ($loop->iteration == 1) {
+                                                    //     $hrClass = 'mb-2.5';
+                                                    // } else {
+                                                    //     $hrClass = 'my-2.5';
+                                                    // }
+
                                                     if ($loop->iteration == 1) {
-                                                        $hrClass = 'mb-2.5';
+                                                        $hrClass = 'mb-2';
                                                     } else {
-                                                        $hrClass = 'my-2.5';
+                                                        $hrClass = 'my-2';
                                                     }
                                                 @endphp
 
@@ -184,9 +190,223 @@
                                 <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 </div>
-            </div>
+            @endif
+        </div> --}}
+
+        <!-- Step 2: view order -->
+        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2">
+            @if (isset($data))
+                @php
+                    $statements = collect($data['statements']);
+                    $balance = $data['opening_balance'];
+
+                    // Pehle page ke liye 26 rows lo
+                    $firstPage = $statements->take(26);
+
+                    // Bachi hui rows ko 29-29 ke chunks mai tod do
+                    $otherPages = $statements->skip(26)->chunk(29);
+                @endphp
+
+                {{-- First Page (26 rows) --}}
+                <div id="preview-container" class="h-full relative">
+                    <div class="preview-page w-[210mm] h-[297mm] mx-auto overflow-hidden relative bg-white p-[0.19in] rounded-md">
+                        <div id="preview" class="preview flex flex-col h-full">
+                            <div id="preview-document" class="preview-document flex flex-col h-full px-2">
+
+                                {{-- Company Logo + Banner --}}
+                                <div id="preview-banner" class="preview-banner w-full flex justify-between items-center pl-5 pr-8">
+                                    <div class="left">
+                                        <div class="company-logo">
+                                            <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                                class="w-[12rem]" />
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div>
+                                            <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2 capitalize">{{ $data['category' ]}} Statement</h1>
+                                            <div class='mt-1 text-sm'>{{ $companyData->phone_number }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr class="w-full my-3 border-gray-700">
+
+                                {{-- Header Info --}}
+                                <div id="preview-header" class="preview-header w-full flex justify-between px-5">
+                                    <div class="left my-auto pr-3 text-sm text-gray-800 space-y-1.5">
+                                        <div class="date-range leading-none">Date: {{ $data['date'] }}</div>
+                                        <div class="opening-balance leading-none">Opening Balance: Rs.{{ number_format($data['opening_balance']) }}</div>
+                                        <div class="closing-balance leading-none">Closing Balance: Rs.{{ number_format($data['closing_balance']) }}</div>
+                                    </div>
+                                    <div class="center my-auto">
+                                        <div class="name capitalize font-semibold text-md">{{ $data['name'] }}</div>
+                                    </div>
+                                    <div class="right my-auto pr-3 text-sm text-gray-800 space-y-1.5">
+                                        <div class="total-bill leading-none">Total Bill: {{ number_format($data['totals']['bill']) }}</div>
+                                        <div class="total-payment leading-none">Total Payment: {{ number_format($data['totals']['payment']) }}</div>
+                                        <div class="total-balance leading-none">Total Balance: {{ number_format($data['totals']['balance']) }}</div>
+                                    </div>
+                                </div>
+
+                                <hr class="w-full my-3 border-gray-700">
+
+                                {{-- Table --}}
+                                <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                                    <div class="preview-table w-full">
+                                        <div class="table w-full border border-gray-700 rounded-lg pb-2.5 overflow-hidden text-xs">
+                                            {{-- Table Header --}}
+                                            <div class="thead w-full">
+                                                <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
+                                                    <div class="th font-medium w-[4%]">S.No</div>
+                                                    <div class="th font-medium w-[12%]">Date</div>
+                                                    <div class="th font-medium w-[12%]">Reff. No.</div>
+                                                    <div class="th font-medium w-[10%]">Method</div>
+                                                    <div class="th font-medium w-[31%]">Account</div>
+                                                    <div class="th font-medium w-[9%]">Bill</div>
+                                                    <div class="th font-medium w-[9%]">Payment</div>
+                                                    <div class="th font-medium w-[9%]">Balance</div>
+                                                </div>
+                                            </div>
+
+                                            {{-- Table Body --}}
+                                            <div id="tbody" class="tbody w-full">
+                                                @foreach ($firstPage as $statement)
+                                                    @php
+                                                        if ($statement['type'] == 'invoice') {
+                                                            $balance += $statement['bill'];
+                                                        } elseif ($statement['type'] == 'payment') {
+                                                            $balance -= $statement['payment'];
+                                                        }
+
+                                                        if ($loop->iteration == 1) {
+                                                            $hrClass = 'mb-2';
+                                                        } else {
+                                                            $hrClass = 'my-2';
+                                                        }
+                                                    @endphp
+                                                    <div>
+                                                        <hr class="w-full {{ $hrClass }} border-gray-700">
+                                                        <div class="tr flex justify-between w-full px-4 text-center">
+                                                            <div class="td font-semibold w-[4%]">{{ $loop->iteration }}.</div>
+                                                            <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
+                                                            <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
+                                                            <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
+                                                            <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
+                                                            <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
+                                                            <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
+                                                            <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Footer --}}
+                                <hr class="w-full my-3 border-gray-700">
+                                <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
+                                    <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                    <p>Page 1 of {{ 1 + $otherPages->count() }}</p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Other Pages (29 rows each) --}}
+                    @foreach ($otherPages as $pageIndex => $chunk)
+                        <hr class="w-full my-3 border-gray-500">
+                        <div class="preview-page w-[210mm] h-[297mm] mx-auto overflow-hidden relative bg-white p-[0.19in] rounded-md">
+                            <div id="preview" class="preview flex flex-col h-full">
+                                <div id="preview-document" class="preview-document flex flex-col h-full px-2">
+
+                                    {{-- Banner --}}
+                                    <div id="preview-banner" class="preview-banner w-full flex justify-between items-center pl-5 pr-8">
+                                        <div class="left">
+                                            <div class="company-logo">
+                                                <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                                    class="w-[10.5rem]" />
+                                            </div>
+                                        </div>
+                                        <div class="right">
+                                            <div>
+                                                <h1 class="text-xl font-medium text-[var(--primary-color)] pr-2 leading-none capitalize">{{ $data['category' ]}} Statement</h1>
+                                                <div class='text-xs'>{{ $data['name'] }}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="w-full mt-1.5 mb-3 border-gray-700">
+
+                                    {{-- Table --}}
+                                    <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
+                                        <div class="preview-table w-full">
+                                            <div class="table w-full border border-gray-700 rounded-lg pb-2.5 overflow-hidden text-xs">
+                                                {{-- Table Header --}}
+                                                <div class="thead w-full">
+                                                    <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
+                                                        <div class="th font-medium w-[4%]">S.No</div>
+                                                        <div class="th font-medium w-[12%]">Date</div>
+                                                        <div class="th font-medium w-[12%]">Reff. No.</div>
+                                                        <div class="th font-medium w-[10%]">Method</div>
+                                                        <div class="th font-medium w-[31%]">Account</div>
+                                                        <div class="th font-medium w-[9%]">Bill</div>
+                                                        <div class="th font-medium w-[9%]">Payment</div>
+                                                        <div class="th font-medium w-[9%]">Balance</div>
+                                                    </div>
+                                                </div>
+
+                                                {{-- Table Body --}}
+                                                <div id="tbody" class="tbody w-full">
+                                                    @foreach ($chunk as $statement)
+                                                        @php
+                                                            if ($statement['type'] == 'invoice') {
+                                                                $balance += $statement['bill'];
+                                                            } elseif ($statement['type'] == 'payment') {
+                                                                $balance -= $statement['payment'];
+                                                            }
+
+                                                            if ($loop->iteration == 1) {
+                                                                $hrClass = 'mb-2';
+                                                            } else {
+                                                                $hrClass = 'my-2';
+                                                            }
+                                                        @endphp
+                                                        <div>
+                                                            <hr class="w-full {{ $hrClass }} border-gray-700">
+                                                            <div class="tr flex justify-between w-full px-4 text-center">
+                                                                <div class="td font-semibold w-[4%]">{{ $loop->iteration + 26 + ($pageIndex * 29) }}.</div>
+                                                                <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
+                                                                <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
+                                                                <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
+                                                                <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
+                                                                <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
+                                                                <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
+                                                                <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {{-- Footer --}}
+                                    <hr class="w-full my-3 border-gray-700">
+                                    <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
+                                        <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                        <p>Page {{ $pageIndex + 2 }} of {{ 1 + $otherPages->count() }}</p>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </form>
 
@@ -382,85 +602,79 @@
             // Parse the HTML string into a jQuery object
             const $responseHtml = $(response);
 
-            // Find the #preview element inside the response
-            const $previewInResponse = $responseHtml.find('#preview');
+            // Find the .step2 element inside the response
+            const $previewInResponse = $responseHtml.find('.step2');
 
             if ($previewInResponse.length) {
-                // Replace the current page's #preview innerHTML
-                $('#preview').html($previewInResponse.html());
+                // Replace the current page's .step2 innerHTML
+                $('.step2').html($previewInResponse.html());
             } else {
-                console.warn('#preview not found in response HTML.');
+                console.warn('.step2 not found in response HTML.');
             }
         }
-
+        
         function onClickOnPrintBtn() {
             const preview = document.getElementById('preview-container'); // preview content
 
-            // Pehle se agar koi iframe hai to usko remove karein
+            // ✅ Clone so that original DOM safe rahe
+            let clone = preview.cloneNode(true);
+
+            // ✅ Sirf direct child <hr> (pages ke beech) remove karo
+            clone.querySelectorAll(":scope > hr").forEach(hr => hr.remove());
+
+            // Agar pehle se iframe hai to usko hatao
             let oldIframe = document.getElementById('printIframe');
             if (oldIframe) {
                 oldIframe.remove();
             }
 
-            // Naya iframe banayein
+            // Naya iframe banao
             let printIframe = document.createElement('iframe');
             printIframe.id = "printIframe";
             printIframe.style.position = "absolute";
             printIframe.style.width = "0px";
             printIframe.style.height = "0px";
             printIframe.style.border = "none";
-            printIframe.style.display = "none"; // ✅ Hide iframe
+            printIframe.style.display = "none";
 
-            // Iframe ko body me add karein
             document.body.appendChild(printIframe);
 
             let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
             printDocument.open();
 
-            // ✅ Current page ke CSS styles bhi iframe me inject karenge
+            // ✅ Copy styles from current page
             const headContent = document.head.innerHTML;
 
             printDocument.write(`
                 <html>
                     <head>
-                        <title>Print Cargo List</title>
-                        ${headContent} <!-- Copy current styles -->
+                        <title>Print Statement</title>
+                        ${headContent}
                         <style>
-                            @media print {
+                            @page {
+                                size: A4;
+                                margin: 0;
+                            }
 
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                    width: 210mm; /* A4 width */
-                                    height: 297mm; /* A4 height */
-
-                                }
-
-                                .preview-container, .preview-container * {
-                                    page-break-inside: avoid;
-                                }
+                            body {
+                                margin: 0;
+                                padding: 0;
+                                background: #fff;
                             }
                         </style>
                     </head>
                     <body>
-                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        ${clone.innerHTML} <!-- ✅ only outside <hr> removed -->
                     </body>
                 </html>
             `);
 
             printDocument.close();
 
-            // Wait for iframe to load and print
+            // Print jab iframe load ho jaye
             printIframe.onload = () => {
-                // Listen for after print in the iframe's window
-                printIframe.contentWindow.onafterprint = () => {
-                    console.log("Print dialog closed");
-                };
-
-                setTimeout(() => {
-                    printIframe.contentWindow.focus();
-                    printIframe.contentWindow.print();
-                }, 1000);
+                printIframe.contentWindow.focus();
+                printIframe.contentWindow.print();
             };
         }
     </script>
