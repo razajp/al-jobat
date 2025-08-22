@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Customer;
+use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PhysicalQuantity;
 use App\Models\Setup;
@@ -19,23 +20,25 @@ class ShipmentController extends Controller
      */
     public function index(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
-        {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
+        }
 
-        $shipments = Shipment::get();
+        $shipments = Shipment::all();
 
-        if ($shipments) {
+        if ($shipments->isNotEmpty()) {
             foreach ($shipments as $shipment) {
+                // Articles attach kar do
                 $shipment->articles = $shipment->getArticles();
+
+                // Invoice exist check
+                $shipment->isInvoiceHas = Invoice::where('shipment_no', $shipment->shipment_no)->exists();
             }
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
         return view('shipments.index', compact('shipments', 'authLayout'));
-        // return $shipments;
     }
 
     /**
@@ -140,7 +143,24 @@ class ShipmentController extends Controller
      */
     public function edit(Shipment $shipment)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $selectedArticles = [];
+
+        foreach ($shipment->articles as $rawArticle) {
+            $article = Article::find($rawArticle['id']);
+
+            $article['description'] = $rawArticle['description'];
+            $article['shipmentQuantity'] = $rawArticle['shipment_quantity'];
+
+            $selectedArticles[] = $article;
+        }
+
+        $shipment['selectedArticles'] = $selectedArticles;
+
+        return view('shipments.edit', compact('shipment'));
     }
 
     /**
@@ -148,7 +168,30 @@ class ShipmentController extends Controller
      */
     public function update(Request $request, Shipment $shipment)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'netAmount' => 'required|string',
+            'articles' => 'required|json',
+            'city' => 'required|string',
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        $data['netAmount'] = str_replace(',', '', $data['netAmount']);
+        $data['articles'] = json_decode($data['articles'], true);
+
+        // Update the shipment
+        $shipment->update($data);
+
+        return redirect()->route('shipments.index')->with('success', 'Shipment updated successfully.');
     }
 
     /**

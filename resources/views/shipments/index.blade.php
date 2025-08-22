@@ -30,7 +30,7 @@
     <div class="w-[80%] mx-auto">
         <x-search-header heading="Shipments" :search_fields=$searchFields/>
     </div>
-    
+
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
@@ -150,7 +150,7 @@
                                     padding: 0;
                                     width: 210mm; /* A4 width */
                                     height: 297mm; /* A4 height */
-                                    
+
                                 }
 
                                 .preview-container, .preview-container * {
@@ -188,7 +188,7 @@
                 document.getElementById('modalForm').parentElement.remove();
             };
         }
-        
+
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');
@@ -200,9 +200,15 @@
                 x: e.pageX,
                 y: e.pageY,
                 actions: [
-                    {id: 'print', text: 'Print Shipment', onclick: 'printShipment(this)'}
+                    {id: 'print', text: 'Print', onclick: 'printShipment(this)'},
                 ]
             };
+
+            if (!data.data.isInvoiceHas) {
+                contextMenuData.actions.push(
+                    {id: 'edit', text: 'Edit', dataId: data.id}
+                )
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -216,6 +222,12 @@
                 bottomActions: [
                     {id: 'print', text: 'Print Shipment', onclick: 'printShipment(this)'}
                 ],
+            }
+
+            if (!data.data.isInvoiceHas) {
+                modalData.bottomActions.push(
+                    {id: 'edit', text: 'Edit', dataId: data.id}
+                )
             }
 
             createModal(modalData);

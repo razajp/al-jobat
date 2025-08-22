@@ -9,9 +9,10 @@
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('shipments.store') }}" method="post" enctype="multipart/form-data"
+    <form id="form" action="{{ route('shipments.update', ['shipment' => $shipment->id]) }}" method="post" enctype="multipart/form-data"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
+        @method('PUT')
         <x-form-title-bar title="Generate Shipment" />
 
         <!-- Step 1: Generate shipment -->
@@ -19,26 +20,24 @@
             <div class="flex justify-between items-end gap-4">
                 {{-- shipment date --}}
                 <div class="grow">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)"
-                        validateMax max='{{ now()->toDateString() }}' validateMin
-                        min="{{ now()->subDays(4)->toDateString() }}" required />
+                    <x-input label="Date" id="date" type="date" value="{{ $shipment->date->format('Y-m-d') }}" disabled/>
                 </div>
+
                 <div class="w-1/3">
                     <x-select
                         label="City"
                         name="city"
                         id="city"
                         :options="[
-                            'all' => ['text' => 'All'],
-                            'karachi' => ['text' => 'Karachi'],
-                            'lahore' => ['text' => 'Lahore'],
+                            'all' => array_filter(['text' => 'All', 'selected' => $shipment->city === 'all']),
+                            'karachi' => array_filter(['text' => 'Karachi', 'selected' => $shipment->city === 'karachi']),
+                            'lahore' => array_filter(['text' => 'Lahore', 'selected' => $shipment->city === 'lahore']),
                         ]"
                         required
                         showDefault />
                 </div>
 
-                <button id="generateShipmentBtn" type="button"
-                    class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
+                <button id="generateShipmentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">Select Articles</button>
             </div>
             {{-- rate showing --}}
             <div id="shipment-table" class="w-full text-left text-sm">
@@ -67,7 +66,7 @@
                 <div
                     class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <label for="discount" class="grow">Discount - %</label>
-                    <input type="text" name="discount" id="discount" value="10"
+                    <input type="text" id="discount" value="10"
                         class="text-right bg-transparent outline-none w-1/2 border-none" readonly />
                 </div>
                 <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
@@ -90,31 +89,33 @@
     </form>
 
     <script>
-        let selectedArticles = [];
+        let shipment = @json($shipment);
+        let selectedArticles = shipment.selectedArticles ?? [];
         let totalShipmentQuantity = 0;
         let totalShipmentAmount = 0;
         let netAmount = 0;
         let articles;
 
-        const lastShipment = @json($last_shipment);
         const articleModalDom = document.getElementById("articleModal");
         const quantityModalDom = document.getElementById("quantityModal");
         const generateShipmentBtn = document.getElementById("generateShipmentBtn");
-        generateShipmentBtn.disabled = true;
 
-        function trackStateOfgenerateBtn(value) {
-            if (value != "") {
-                generateShipmentBtn.disabled = false;
-            } else {
-                generateShipmentBtn.disabled = true;
-            }
-        }
+        const finalShipmentQuantity = document.getElementById('finalShipmentQuantity');
+        const finalShipmentAmount = document.getElementById('finalShipmentAmount');
+        const discountDOM = document.getElementById('discount');
+        const finalNetAmount = document.getElementById('finalNetAmount');
 
         let totalQuantityDOM;
         let totalAmountDOM;
 
         let isModalOpened = false;
         let isQuantityModalOpened = false;
+
+        getDataByDate(document.getElementById('date'));
+
+        calculateTotalShipmentQuantity();
+        calculateTotalShipmentAmount();
+        calculateNetAmount();
 
         generateShipmentBtn.addEventListener('click', () => {
             generateArticlesModal();
@@ -318,11 +319,6 @@
             renderTotals();
         }
 
-        const finalShipmentQuantity = document.getElementById('finalShipmentQuantity');
-        const finalShipmentAmount = document.getElementById('finalShipmentAmount');
-        const discountDOM = document.getElementById('discount');
-        const finalNetAmount = document.getElementById('finalNetAmount');
-
         function calculateTotalShipmentQuantity() {
             totalShipmentQuantity = 0;
 
@@ -406,7 +402,7 @@
 
         function renderFinals() {
             finalShipmentQuantity.textContent = totalShipmentQuantity;
-            finalShipmentAmount.textContent = totalShipmentAmount;
+            finalShipmentAmount.textContent = formatNumbersWithDigits(totalShipmentAmount, 1, 1);
             finalNetAmount.value = netAmount;
         }
 
@@ -428,7 +424,7 @@
         const previewDom = document.getElementById('preview');
 
         function generateShipmentNo() {
-            let lastShipmentNo = lastShipment.shipment_no
+            let lastShipmentNo = {{ $shipment->shipment_no }}
             const nextShipmentNo = String(parseInt(lastShipmentNo) + 1).padStart(4, '0');
             return nextShipmentNo;
         }
@@ -476,7 +472,6 @@
                             <div class="left w-50 my-auto text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-date leading-none">Date: ${shipmentDate}</div>
                                 <div class="shipment-number leading-none">Shipment No.: ${shipmentNo}</div>
-                                <input type="hidden" name="shipment_no" value="${shipmentNo}" />
                             </div>
                             <div class="right w-50 my-auto text-right text-sm text-gray-600 space-y-1.5">
                                 <div class="shipment-copy leading-none">Shipment Copy: Office</div>
@@ -529,11 +524,11 @@
                             <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Quantity - Pcs</div>
-                                    <div class="w-1/4 text-right grow">${totalQuantityDOM.value}</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalShipmentQuantity)}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Total Amount</div>
-                                    <div class="w-1/4 text-right grow">${totalAmountDOM.value}</div>
+                                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalShipmentAmount)}</div>
                                 </div>
                             </div>
                             <div id="shipment-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
@@ -566,7 +561,6 @@
         let cardsDataArray = [];
 
         function getDataByDate(inputElem) {
-            trackStateOfgenerateBtn(inputElem.value);
             $.ajax({
                 url: '{{ route("shipments.create") }}',
                 method: 'GET',
