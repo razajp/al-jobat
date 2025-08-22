@@ -15,7 +15,7 @@ class SupplierPayment extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         "supplier_id",
         "date",
@@ -31,6 +31,13 @@ class SupplierPayment extends Model
         "transaction_id",
         "remarks",
         "voucher_id",
+    ];
+
+    protected $casts = [
+        'date' => 'date',
+        'cheque_date' => 'date',
+        'slip_date' => 'date',
+        'clear_date' => 'date',
     ];
 
     protected static function booted()
@@ -57,17 +64,17 @@ class SupplierPayment extends Model
     {
         return $this->belongsTo(Supplier::class, "supplier_id");
     }
-    
+
     public function program()
     {
         return $this->belongsTo(PaymentProgram::class, "program_id");
     }
-    
+
     public function cheque()
     {
         return $this->belongsTo(CustomerPayment::class, "cheque_id");
     }
-    
+
     public function slip()
     {
         return $this->belongsTo(CustomerPayment::class, "slip_id");

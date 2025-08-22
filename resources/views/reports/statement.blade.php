@@ -27,7 +27,7 @@
                     id="category"
                     :options="[
                         'customer' => ['text' => 'Customer'],
-                        // 'supplier' => ['text' => 'Supplier'],
+                        'supplier' => ['text' => 'Supplier'],
                     ]"
                     showDefault
                     onchange="fetchNames(this.value)"
@@ -71,7 +71,7 @@
                         max="{{ now()->toDateString() }}"
                         type="date"
                         required
-                        disabled
+                        onchange="updateDateConstraints()"
                     />
 
                     <!-- date_to -->
@@ -83,117 +83,11 @@
                         max="{{ now()->toDateString() }}"
                         type="date"
                         required
-                        disabled
+                        onchange="updateDateConstraints()"
                     />
                 </div>
             </div>
         </div>
-
-        {{-- <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
-            @if (isset($data))
-                <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                    <div id="preview" class="preview flex flex-col h-full">
-                        <div id="preview-document" class="preview-document flex flex-col h-full px-2">
-                            <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-4 pl-5 pr-8">
-                                <div class="left">
-                                    <div class="company-logo">
-                                        <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
-                                            class="w-[12rem]" />
-                                    </div>
-                                </div>
-                                <div class="right">
-                                    <div>
-                                        <h1 class="text-2xl font-medium text-[var(--primary-color)] pr-2">Statement</h1>
-                                        <div class='mt-1 text-sm'>{{ $companyData->phone_number }}</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="w-full my-3 border-gray-700">
-                            <div id="preview-header" class="preview-header w-full flex justify-between px-5">
-                                <div class="left my-auto pr-3 text-sm text-gray-800 space-y-1.5">
-                                    <div class="date-range leading-none">Date: {{ $data['date'] }}</div>
-                                    <div class="opening-balance leading-none">Opening Balance: Rs.{{ $data['opening_balance'] }}</div>
-                                    <div class="closing-balance leading-none">Closing Balance: Rs.{{ $data['closing_balance'] }}</div>
-                                </div>
-                                <div class="center my-auto">
-                                    <div class="name capitalize font-semibold text-md">Customer Name: {{ $data['name'] }}</div>
-                                </div>
-                                <div class="right my-auto pr-3 text-sm text-gray-800 space-y-1.5">
-                                    <div class="total-bill leading-none">Total Bill: {{ $data['totals']['bill'] }}</div>
-                                    <div class="total-payment leading-none">Total Payment: {{ $data['totals']['payment'] }}</div>
-                                    <div class="total-balance leading-none">Total Balance: {{ $data['totals']['balance'] }}</div>
-                                </div>
-                            </div>
-                            <hr class="w-full my-3 border-gray-700">
-                            <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
-                                <div class="preview-table w-full">
-                                    <div class="table w-full border border-gray-700 rounded-lg pb-2.5 overflow-hidden text-xs">
-                                        <div class="thead w-full">
-                                            <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
-                                                <div class="th font-medium w-[4%]">S.No</div>
-                                                <div class="th font-medium w-[12%]">Date</div>
-                                                <div class="th font-medium w-[12%]">Reff. No.</div>
-                                                <div class="th font-medium w-[10%]">Method</div>
-                                                <div class="th font-medium w-[31%]">Account</div>
-                                                <div class="th font-medium w-[9%]">Bill</div>
-                                                <div class="th font-medium w-[9%]">Payment</div>
-                                                <div class="th font-medium w-[9%]">Balance</div>
-                                            </div>
-                                        </div>
-                                        <div id="tbody" class="tbody w-full">
-                                            @php
-                                                $balance = 0;
-                                            @endphp
-                                            @foreach ($data['statements'] as $statement)
-                                                @php
-                                                    if ($statement['type'] == 'invoice') {
-                                                        $balance += $statement['bill'];
-                                                    } elseif ($statement['type'] == 'payment') {
-                                                        $balance -= $statement['payment'];
-                                                    }
-
-                                                    // if ($loop->iteration == 1) {
-                                                    //     $hrClass = 'mb-2.5';
-                                                    // } else {
-                                                    //     $hrClass = 'my-2.5';
-                                                    // }
-
-                                                    if ($loop->iteration == 1) {
-                                                        $hrClass = 'mb-2';
-                                                    } else {
-                                                        $hrClass = 'my-2';
-                                                    }
-                                                @endphp
-
-                                                <div>
-                                                    <hr class="w-full {{ $hrClass }} border-gray-700">
-                                                    <div class="tr flex justify-between w-full px-4 text-center">
-                                                        <div class="td font-semibold w-[4%] text-center">{{ $loop->iteration }}.</div>
-                                                        <div class="td font-medium w-[12%] text-center">{{ $statement['date']->format('d-M-Y') }}</div>
-                                                        <div class="td font-medium w-[12%] text-center">{{ $statement['reff_no'] }}</div>
-                                                        <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
-                                                        <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
-                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['bill']) ?? "-" }}</div>
-                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($statement['payment']) ?? "-" }}</div>
-                                                        <div class="td font-medium w-[9%] text-center">{{ number_format($balance) }}</div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <hr class="w-full my-3 border-gray-700">
-                            <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-800">
-                                <P class="leading-none">Powered by SparkPair</P>
-                                <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-        </div> --}}
 
         <!-- Step 2: view order -->
         <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2">
@@ -208,6 +102,9 @@
                     // Bachi hui rows ko 29-29 ke chunks mai tod do
                     $otherPages = $statements->skip(26)->chunk(29);
                 @endphp
+                <script>
+                    console.log(@json($data));
+                </script>
 
                 {{-- First Page (26 rows) --}}
                 <div id="preview-container" class="h-full relative">
@@ -418,6 +315,7 @@
 
         const dateFrom = document.getElementById('date_from');
         const dateTo = document.getElementById('date_to');
+        let regDate;
 
         function fetchNames(category) {
             if (!category) {
@@ -468,47 +366,70 @@
         }
 
         function nameChanged(nameSelectDbInput) {
-            let selectedName = nameSelectDbInput.nextElementSibling.querySelector(`li[data-value="${nameSelectDbInput.value}"]`);
+            console.log(nameSelectDbInput.value != '');
+            if (nameSelectDbInput.value) {
+                let selectedName = nameSelectDbInput.nextElementSibling.querySelector(`li[data-value="${nameSelectDbInput.value}"]`);
 
-            if (!selectedName) return;
+                if (!selectedName) return;
 
-            // Get registration date
-            let regDate = new Date(selectedName.dataset.regDate);
-            let today = new Date();
+                let rawRegDate = new Date(selectedName.dataset.regDate);
+                const d = new Date(rawRegDate);
+                regDate = d.toISOString().split("T")[0];
+                dateFrom.min = regDate;
+                let today = new Date();
 
-            // Helper function to calculate months difference
-            function monthDiff(d1, d2) {
-                let months = (d2.getFullYear() - d1.getFullYear()) * 12;
-                months -= d1.getMonth();
-                months += d2.getMonth();
-                return months <= 0 ? 0 : months;
+                // Helper function to calculate months difference
+                function monthDiff(d1, d2) {
+                    let months = (d2.getFullYear() - d1.getFullYear()) * 12;
+                    months -= d1.getMonth();
+                    months += d2.getMonth();
+                    return months <= 0 ? 0 : months;
+                }
+
+                let monthsSinceReg = monthDiff(rawRegDate, today);
+
+                // Build available ranges
+                let ranges = [];
+
+                if (monthsSinceReg >= 0) ranges.push({ value: "current_month", label: "Current Month" });
+                if (monthsSinceReg >= 1) ranges.push({ value: "last_month", label: "Last Month" });
+                if (monthsSinceReg >= 3) ranges.push({ value: "last_three_months", label: "Last Three Months" });
+                if (monthsSinceReg >= 6) ranges.push({ value: "last_six_months", label: "Last Six Months" });
+
+                // Custom always appears
+                ranges.push({ value: "custom", label: "Custom" });
+
+                // Render dropdown
+                let clutter = ranges.map(r => `
+                    <li data-for="range" data-value="${r.value}"
+                        onmousedown="selectThisOption(this)"
+                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                        ${r.label}
+                    </li>`).join("");
+
+                rangeSelectDropDown.innerHTML = clutter;
+
+                // Enable range select
+                rangeSelect.disabled = false;
+            } else {
+                rangeSelect.value = '';
+                rangeSelect.disabled = true;
+            }
+        }
+
+        function updateDateConstraints() {
+            const dateFrom = document.getElementById('date_from');
+            const dateTo = document.getElementById('date_to');
+
+            if (dateFrom.value) {
+                // "to" ka min = "from"
+                dateTo.min = dateFrom.value;
             }
 
-            let monthsSinceReg = monthDiff(regDate, today);
-
-            // Build available ranges
-            let ranges = [];
-
-            if (monthsSinceReg >= 0) ranges.push({ value: "current_month", label: "Current Month" });
-            if (monthsSinceReg >= 1) ranges.push({ value: "last_month", label: "Last Month" });
-            if (monthsSinceReg >= 3) ranges.push({ value: "last_three_months", label: "Last Three Months" });
-            if (monthsSinceReg >= 6) ranges.push({ value: "last_six_months", label: "Last Six Months" });
-
-            // Custom always appears
-            ranges.push({ value: "custom", label: "Custom" });
-
-            // Render dropdown
-            let clutter = ranges.map(r => `
-                <li data-for="range" data-value="${r.value}"
-                    onmousedown="selectThisOption(this)"
-                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
-                    ${r.label}
-                </li>`).join("");
-
-            rangeSelectDropDown.innerHTML = clutter;
-
-            // Enable range select
-            rangeSelect.disabled = false;
+            if (dateTo.value) {
+                // "from" ka max = "to"
+                dateFrom.max = dateTo.value;
+            }
         }
 
         // Helper: local YYYY-MM-DD (without UTC shift)
@@ -525,8 +446,8 @@
 
             switch (rangeValue) {
                 case "custom":
-                dateFrom.value = '';
-                dateTo.value = '';
+                dateFrom.value = regDate;
+                dateTo.value = new Date().toISOString().split("T")[0];
                 dateFrom.disabled = false;
                 dateTo.disabled = false;
                 return;
@@ -567,11 +488,6 @@
             dateTo.disabled = true;
         }
 
-        function validateForNextStep() {
-            getStatement();
-            return true;
-        }
-
         function getStatement() {
             const category = document.querySelector('ul[data-for="category"] li.selected').textContent.trim().toLowerCase();
             const id = document.querySelector('input[data-for="nameSelect"]').value;
@@ -593,7 +509,7 @@
                     renderStatement(response);
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error fetching names:', error);
+                    console.error('Error fetching statement:', error);
                 }
             });
         }
@@ -612,7 +528,7 @@
                 console.warn('.step2 not found in response HTML.');
             }
         }
-        
+
         function onClickOnPrintBtn() {
             const preview = document.getElementById('preview-container'); // preview content
 
@@ -676,6 +592,11 @@
                 printIframe.contentWindow.focus();
                 printIframe.contentWindow.print();
             };
+        }
+
+        function validateForNextStep() {
+            getStatement();
+            return true;
         }
     </script>
 @endsection

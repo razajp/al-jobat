@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -17,7 +18,7 @@ class Supplier extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         'user_id',
         'supplier_name',
@@ -85,34 +86,109 @@ class Supplier extends Model
     }
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
-        $ordersQuery = $this->expenses();
+        $expenseQuery = $this->expenses();
         $paymentsQuery = $this->payments()->whereNotNull('voucher_id');
-    
+
         // Handle different date scenarios
         if ($fromDate && $toDate) {
             if ($includeGivenDate) {
-                $ordersQuery->whereBetween('date', [$fromDate, $toDate]);
+                $expenseQuery->whereBetween('date', [$fromDate, $toDate]);
                 $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
             } else {
-                $ordersQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $expenseQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
             }
         } elseif ($fromDate) {
             $operator = $includeGivenDate ? '>=' : '>';
-            $ordersQuery->where('date', $operator, $fromDate);
+            $expenseQuery->where('date', $operator, $fromDate);
             $paymentsQuery->where('date', $operator, $fromDate);
         } elseif ($toDate) {
             $operator = $includeGivenDate ? '<=' : '<';
-            $ordersQuery->where('date', $operator, $toDate);
+            $expenseQuery->where('date', $operator, $toDate);
             $paymentsQuery->where('date', $operator, $toDate);
         }
-    
+
         // Calculate totals
-        $totalOrders = $ordersQuery->sum('amount') ?? 0;
+        $totalExpense = $expenseQuery->sum('amount') ?? 0;
         $totalPayments = $paymentsQuery->sum('amount') ?? 0;
-    
-        $balance = $totalOrders - $totalPayments;
-    
+
+        $balance = $totalExpense - $totalPayments;
+
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
+    }
+
+    public function getStatement($fromDate, $toDate)
+    {
+        // Opening balance (before fromDate)
+        $openingBalance = $this->calculateBalance(null, $fromDate, false, false);
+
+        // Period balance (fromDate → toDate)
+        $periodBalance = $this->calculateBalance($fromDate, $toDate);
+
+        $closingBalance = $openingBalance + $periodBalance;
+
+        $expense = collect($this->expenses()
+            ->whereBetween('date', [
+                Carbon::parse($fromDate)->startOfDay(),
+                Carbon::parse($toDate)->endOfDay()
+            ])
+            ->get())
+            ->map(fn($i) => [
+                'date' => $i->date ?? null,
+                'reff_no' => $i->reff_no ?? null,
+                'type' => 'invoice',
+                'bill' => $i->amount ?? 0,
+                'payment' =>  0,
+                'created_at' => $i->created_at ?? null,
+            ]);
+
+        $payments = collect($this->payments()
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->with('bankAccount.bank')
+            ->get())
+            ->map(fn($p) => [
+                'date' => $p->date ?? null,
+                'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
+                'type' => 'payment',
+                'method' => $p->method ?? null,
+                'payment' => $p->amount ?? 0,
+                'bill' =>  0,
+                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |') : null,
+                'created_at' => $p->created_at ?? null,
+            ]);
+
+        $statement = $expense->merge($payments)
+            ->sort(function ($a, $b) {
+                $aDate = $a['date'] ?? '1970-01-01';
+                $bDate = $b['date'] ?? '1970-01-01';
+
+                // Compare by actual timestamps
+                $dateCompare = strtotime($aDate) <=> strtotime($bDate);
+
+                if ($dateCompare === 0) {
+                    $aCreated = $a['created_at'] ?? $aDate . ' 00:00:00';
+                    $bCreated = $b['created_at'] ?? $bDate . ' 00:00:00';
+                    return strtotime($aCreated) <=> strtotime($bCreated);
+                }
+
+                return $dateCompare;
+            })->values();
+
+        // Totals
+        $totals = [
+            'bill' => $expense->sum('bill'),
+            'payment' => $payments->sum('payment'),
+            'balance' => $expense->sum('bill') - $payments->sum('payment'),
+        ];
+
+        return [
+            'date' => $fromDate . ' - ' . $toDate,
+            'name' => $this->supplier_name,
+            'opening_balance' => $openingBalance,
+            'closing_balance' => $closingBalance,
+            'statements' => $statement,
+            'totals' => $totals,
+            'category' => 'supplier',
+        ];
     }
 }

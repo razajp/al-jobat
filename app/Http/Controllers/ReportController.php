@@ -29,7 +29,15 @@ class ReportController extends Controller
             }
 
             if ($category === 'supplier') {
-                // supplier ka similar logic (purchaseOrders + bills + supplierPayments)
+                $supplier = Supplier::find($id);
+                if (!$supplier) {
+                    return response()->json(['error' => 'Supplier not found'], 404);
+                }
+
+                $data = $supplier->getStatement($dateFrom, $dateTo);
+
+                return view("reports.statement", compact('data'));
+                // return response()->json($data);
             }
         }
 
