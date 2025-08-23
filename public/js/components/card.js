@@ -9,7 +9,7 @@ function createCard(data) {
     };
 
     let clutter = `
-        <div id="${data.id}" data-json='${JSON.stringify(data)}' oncontextmenu='${data.oncontextmenu || ""}' class="item card relative border border-gray-600 shadow rounded-xl min-w-[100px] ${!data.image ? "h-full" : "h-[8rem]"} flex gap-4 p-4 cursor-pointer overflow-hidden fade-in" onclick='${data.onclick || ""}'>
+        <div id="${data.id}" data-json='${JSON.stringify(data)}' oncontextmenu='${data.oncontextmenu || ""}' class="item card relative border border-gray-600 shadow rounded-xl min-w-[100px] ${!data.image ? "h-full" : "h-[8rem]"} p-4 cursor-pointer overflow-hidden fade-in" onclick='${data.onclick || ""}'>
 
         ${!data.checkbox ? `
             <button type="button" class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
@@ -30,6 +30,7 @@ function createCard(data) {
         `;
     }
 
+    clutter += '<div class="flex gap-4">';
     if (data.image) {
         clutter += `
             <div class="${data.classImg ?? ''} img aspect-square h-full ${!data.profile ? 'rounded-[0.4rem]' : 'rounded-[41.5%]'} ${data.image && data.image == '/images/no_image_icon.png' ? 'p-1' : 'scale-[1.16]'} overflow-hidden relative">
@@ -37,7 +38,13 @@ function createCard(data) {
             </div>
         `;
     } else if (data.svgIcon) {
-        clutter += data.svgIcon;
+        clutter += `
+            <div>
+                <div class='w-10 aspect-square bg-[var(--primary-color)] rounded-lg flex items-center justify-center'>
+                    ${ data.svgIcon }
+                </div>
+            </div>
+        `;
     }
 
     let detailsHTML = '';
@@ -70,6 +77,14 @@ function createCard(data) {
             ${checkboxHTML}
         </div>
     `;
+
+    clutter += '</div>';
+
+    if (data.bottomChip) {
+        clutter += `
+            <div class='border border-gray-600 rounded-lg tex--xs px-2 py-0.5 font-medium w-fit text-[var(--secondary-text)] mt-6'>${data.bottomChip}</div>
+        `;
+    }
 
     clutter += '</div>'; // Close the card div
     return clutter;

@@ -20,7 +20,13 @@ class ProductionController extends Controller
      */
     public function index()
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $productions = Production::with('article', 'work', 'worker')->orderby('id', 'desc')->get();
+
+        return view('productions.index', compact('productions'));
     }
 
     /**
