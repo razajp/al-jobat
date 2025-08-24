@@ -846,3 +846,26 @@ function renderCardsInModal(data) {
     }
     return cardsData;
 }
+
+function openSubMenu(event, card) {
+    closeAllSubMenus();
+
+    const subMenuDom = card.querySelector('.subMenu');
+
+    subMenuDom.style.top = event.y + 'px';
+    subMenuDom.style.left = event.x + 'px';
+
+    subMenuDom.classList.remove('hidden');
+}
+
+function closeAllSubMenus() {
+    document.querySelectorAll('.subMenu').forEach(subMenu => {
+        subMenu.classList.add('hidden');
+    });
+}
+
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.card')) {
+        closeAllSubMenus();
+    }
+})

@@ -169,8 +169,11 @@
             position: relative;
         }
 
-        .card:hover {
+        .card:not(.no-translate):hover {
             transform: translateY(-0.3rem);
+        }
+
+        .card:hover {
             background-color: var(--h-secondary-bg-color);
             box-shadow: 0 5px 0.8rem var(--bg-color);
         }

@@ -9,7 +9,7 @@ function createCard(data) {
     };
 
     let clutter = `
-        <div id="${data.id}" data-json='${JSON.stringify(data)}' oncontextmenu='${data.oncontextmenu || ""}' class="item card relative border border-gray-600 shadow rounded-xl min-w-[100px] ${!data.image ? "h-full" : "h-[8rem]"} p-4 cursor-pointer overflow-hidden fade-in" onclick='${data.onclick || ""}'>
+        <div id="${data.id}" data-json='${JSON.stringify(data)}' oncontextmenu='${data.oncontextmenu || ""}' class="item card ${data.subMenu ? 'no-translate' : ''} relative border border-gray-600 shadow rounded-xl min-w-[100px] ${!data.image ? "h-full" : "h-[8rem]"} p-4 cursor-pointer overflow-hidden fade-in" onclick='${data.onclick || ""}'>
 
         ${!data.checkbox ? `
             <button type="button" class="absolute bottom-0 right-0 rounded-full w-[25%] aspect-square flex items-center justify-center text-lg translate-x-1/4 translate-y-1/4 transition-all duration-200 ease-in-out cursor-pointer">
@@ -30,7 +30,7 @@ function createCard(data) {
         `;
     }
 
-    clutter += '<div class="flex gap-4">';
+    clutter += `<div class="flex gap-4 ${data.image ? 'h-full' : ''}">`;
     if (data.image) {
         clutter += `
             <div class="${data.classImg ?? ''} img aspect-square h-full ${!data.profile ? 'rounded-[0.4rem]' : 'rounded-[41.5%]'} ${data.image && data.image == '/images/no_image_icon.png' ? 'p-1' : 'scale-[1.16]'} overflow-hidden relative">
@@ -83,6 +83,28 @@ function createCard(data) {
     if (data.bottomChip) {
         clutter += `
             <div class='border border-gray-600 rounded-lg tex--xs px-2 py-0.5 font-medium w-fit text-[var(--secondary-text)] mt-6'>${data.bottomChip}</div>
+        `;
+    }
+
+    if (data.subMenu) {
+        clutter += `
+            <div class="subMenu text-sm fixed border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in hidden" style="top: 0; left: 0;">
+                <ul class="p-2">
+        `;
+
+        data.subMenu.forEach(subMenuAction => {
+            clutter += `
+                <li>
+                    <a href="${subMenuAction.href}" class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out">
+                        ${subMenuAction.name}
+                    </a>
+                </li>
+            `;
+        })
+
+        clutter += `
+                </ul>
+            </div>
         `;
     }
 
