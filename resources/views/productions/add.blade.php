@@ -230,6 +230,12 @@
 
                     const productionItems = selectedArticle.production.filter(p => p.work.title === workTitle);
 
+                    if (existingWorks.length === 1 && !afterCutting.includes('CMT')) {
+                        afterCutting.push('CMT');
+                    } else if (existingWorks.length !== 1 && afterCutting.includes('CMT')) {
+                        afterCutting = afterCutting.filter(w => w !== 'CMT');
+                    }
+
                     if (existingWorks.length == 1 && afterCutting.includes(workTitle)) {
                         shouldShowWork = true;
                     } else if (allIssuedParts.length === 0 && workTitle !== 'Cutting' && parts.length == partsRecievedFromSinger.length) {
@@ -594,7 +600,7 @@
 
                         ${selectedArticle.category != '1_pc' ? `
                             {{-- parts --}}
-                            <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />
+                            <x-input label="Parts" name="partsInView" id="parts" withCheckbox :checkBoxes="[]" required />
                             <input type="hidden" name="parts" id="dbParts" value="[]" />
                         ` : `` }
 

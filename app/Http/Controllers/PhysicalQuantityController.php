@@ -104,25 +104,27 @@ class PhysicalQuantityController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
-        $articles = Article::withSum('physicalQuantity', 'packets')->get();
-        
+
+        $articles = Article::withSum('physicalQuantity', 'packets')
+            ->whereHas('production.work', function ($q) {
+                $q->where('title', 'CMT');
+            })
+            ->get();
+
         foreach ($articles as $article) {
             $physical_quantity = $article['physical_quantity_sum_packets'];
 
-            if ($physical_quantity) {
-                $article['physical_quantity'] = $physical_quantity * $article->pcs_per_packet;
-            } else {
-                $article['physical_quantity'] = 0;
-            }
+            $article['physical_quantity'] = $physical_quantity
+                ? $physical_quantity * $article->pcs_per_packet
+                : 0;
 
             $article['category'] = ucfirst(str_replace('_', ' ', $article['category']));
-            $article['season'] = ucfirst(str_replace('_', ' ', $article['season']));
-            $article['size'] = ucfirst(str_replace('_', '-', $article['size']));
+            $article['season']  = ucfirst(str_replace('_', ' ', $article['season']));
+            $article['size']    = ucfirst(str_replace('_', '-', $article['size']));
         }
 
         $articles = $articles->filter(function ($article) {
-            return $article['physical_quantity'] < $article->quantity; // Keep articles with lesser physical quantity
+            return $article['physical_quantity'] < $article->quantity;
         });
 
         return view('physical-quantities.create', compact('articles'));
@@ -137,7 +139,7 @@ class PhysicalQuantityController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'date' => 'required|date',
             'article_id' => 'required|integer|exists:articles,id',
@@ -145,14 +147,14 @@ class PhysicalQuantityController extends Controller
             'pcs_per_packet' => 'required|integer|min:1',
             'packets' => 'required|integer|min:1',
         ]);
-        
+
         if ($validator->fails())
         {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-        
+
         $data = $request->all();
-        
+
         $article = Article::where('id', $data['article_id'])->update([
             'pcs_per_packet' => $data['pcs_per_packet'],
             'processed_by' => $data['processed_by'],
@@ -168,7 +170,7 @@ class PhysicalQuantityController extends Controller
      */
     public function show()
     {
-        // 
+        //
     }
 
     /**
