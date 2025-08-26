@@ -56,8 +56,8 @@
                                 <div>Article No.</div>
                                 <div class="col-span-2">Worker Name</div>
                                 <div>Ticket</div>
-                                <div>Receive Date</div>
                                 <div>Issue Date</div>
+                                <div>Receive Date</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>
@@ -91,8 +91,8 @@
                 <span>${data.article_no}</span>
                 <span class="col-span-2">${data.worker_name}</span>
                 <span>${data.ticket}</span>
-                <span>${data.receive_date}</span>
                 <span>${data.issue_date}</span>
+                <span>${data.receive_date}</span>
             </div>`;
         }
 
@@ -104,8 +104,8 @@
                 article_no: item.article.article_no,
                 worker_name: item.worker.employee_name + ' | ' + item.work.title,
                 ticket: item.ticket,
-                receive_date: item.receive_date ? formatDate(item.receive_date) : '-',
                 issue_date: item.issue_date ? formatDate(item.issue_date) : '-',
+                receive_date: item.receive_date ? formatDate(item.receive_date) : '-',
                 visible: true,
             };
         });
