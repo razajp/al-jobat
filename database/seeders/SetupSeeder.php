@@ -36,6 +36,7 @@ class SetupSeeder extends Seeder
             ['short_title' => 'PRT', 'title' => 'Print',   'type' => 'worker_type'],
             ['short_title' => 'WSH', 'title' => 'Wash',   'type' => 'worker_type'],
             ['short_title' => 'KBT', 'title' => 'Kaj Button',   'type' => 'worker_type'],
+            ['short_title' => 'CTP', 'title' => 'Cut to Pack',   'type' => 'worker_type'],
         ];
 
         foreach ($setups as $setup) {

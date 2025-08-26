@@ -61,7 +61,7 @@ class FabricController extends Controller
             }
             return strtotime($b['date']) - strtotime($a['date']); // date DESC
         });
-        
+
         $fabrics_options = [];
 
         $fabrics = Setup::where('type', 'fabric')->get();
@@ -181,7 +181,7 @@ class FabricController extends Controller
         $all_fabrics = Fabric::all()
             ->groupBy('tag')
             ->map(function ($items) {
-                return [ 
+                return [
                     'tag' => $items->first()->tag,
                     'unit' => $items->first()->unit,
                     'quantity' => $items->sum('quantity'),
@@ -192,14 +192,15 @@ class FabricController extends Controller
         foreach($all_fabrics as $fabric) {
             $total_issued = IssuedFabric::where('tag', $fabric['tag'])->sum('quantity') ?? 0;
             $fabric['avalaible_sock'] = $fabric['quantity'] - $total_issued;
-            $tags_options[$fabric['tag']] = ['text' => $fabric['tag'], "data_option" => json_encode($fabric)];
+            if ($fabric['avalaible_sock'] > 0) {
+                $tags_options[$fabric['tag']] = ['text' => $fabric['tag'], "data_option" => json_encode($fabric)];
+            }
         }
 
         $workers_options = [];
 
-        $all_workers = Employee::with('type')
-            ->whereHas('type', function ($query) {
-                $query->where('title', 'Cutting');
+        $all_workers = Employee::whereHas('type', function ($query) {
+                $query->whereIn('title', ['Cutting', 'Cut to Pack']);
             })
             ->get();
 
