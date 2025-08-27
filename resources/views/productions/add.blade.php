@@ -228,20 +228,23 @@
                     const workTitle = workValue.text;
                     let shouldShowWork = false;
 
-                    const productionItems = selectedArticle.production.filter(p => p.work.title === workTitle);
-
+                    // --- Dynamic CMT ---
                     if (existingWorks.length === 1 && !afterCutting.includes('CMT')) {
                         afterCutting.push('CMT');
                     } else if (existingWorks.length !== 1 && afterCutting.includes('CMT')) {
                         afterCutting = afterCutting.filter(w => w !== 'CMT');
                     }
 
-                    if (existingWorks.length == 1 && afterCutting.includes(workTitle)) {
-                        shouldShowWork = true;
-                    } else if (allIssuedParts.length === 0 && workTitle !== 'Cutting' && parts.length == partsRecievedFromSinger.length) {
-                        shouldShowWork = true;
-                    } else if (allIssuedParts.length < partsRecievedFromCutting.length && afterCutting.includes(workTitle)) {
-                        shouldShowWork = true;
+                    // --- Parts issued to current work ---
+                    const currentWorkParts = selectedArticle.production
+                        .filter(p => p.work.title === workTitle)
+                        .flatMap(p => p.parts);
+
+                    // --- Main Condition ---
+                    if (afterCutting.includes(workTitle)) {
+                        if (currentWorkParts.length < partsRecievedFromCutting.length) {
+                            shouldShowWork = true;
+                        }
                     }
 
                     // --- Add to UI ---
@@ -635,10 +638,28 @@
                 let partKey = selectedArticle.category + '_' + selectedArticle.season;
                 let partsClutter = '';
                 const checkboxes_container = document.querySelector('.checkboxes_container');
-                const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === "Cutting").flatMap(p => p.parts);
-                const allIssuedParts = selectedArticle.production.filter(p => p.receive_date === null).flatMap(p => p.parts);
-                const availableParts = partsRecivedFromCutting.filter(p => !allIssuedParts.includes(p));
 
+                // Cutting se sab parts
+                const partsRecivedFromCutting = selectedArticle.production
+                    .filter(p => p.work.title === "Cutting")
+                    .flatMap(p => p.parts);
+
+                // Abhi tak jo parts kisi bhi work ke liye issue hue aur receive nahi hue
+                const allIssuedParts = selectedArticle.production
+                    .filter(p => p.receive_date === null)
+                    .flatMap(p => p.parts);
+
+                // Jo work abhi select hua hai (current work)
+                const currentWorkParts = selectedArticle.production
+                    .filter(p => p.work.title === work) // <-- yahan selectedWorkTitle pass karein
+                    .flatMap(p => p.parts);
+
+                // Available parts = cutting se aaye - issued - current work ke already issued
+                const availableParts = partsRecivedFromCutting.filter(p =>
+                    !currentWorkParts.includes(p)
+                );
+
+                // Checkbox rendering
                 availableParts.forEach((part) => {
                     partsClutter += `
                         <label class="flex items-center gap-2 cursor-pointer rounded-md border border-[var(--h-bg-color)] bg-[var(--h-bg-color)] px-2 py-[0.1875rem] shadow-sm transition hover:shadow-md hover:border-primary">
@@ -765,7 +786,21 @@
                 const data = @json($articles);
                 let cardData = [];
 
-                const articles = data.filter(a => a.production.length == 0);
+                const articles = data.filter(a => {
+                    // saare parts (category + season se)
+                    const partKey = `${a.category}_${a.season}`;
+                    const allPartsForArticle = allParts
+                        .filter(([key]) => key === partKey)
+                        .flatMap(([_, value]) => value);
+
+                    // Cutting ke parts
+                    const cuttingParts = a.production
+                        .filter(p => p.work.title === "Cutting")
+                        .flatMap(p => p.parts);
+
+                    // Filter condition
+                    return cuttingParts.length !== allPartsForArticle.length;
+                });
 
                 if (data.length > 0) {
                     cardData.push(...articles.map(item => {
@@ -809,9 +844,10 @@
 
                 if (articleElem.dataset?.json) {
                     closeModal('modalForm');
+                    document.querySelector('input[name="work_name"]').disabled = false;
+                } else {
+                    articleSelectInputDOM.disabled = true;
                 }
-
-                document.querySelector('input[name="work_name"]').disabled = false;
 
                 const ul = document.querySelector('ul[data-for="work"]');
 
@@ -846,25 +882,7 @@
                         return parts.filter(p => !existingParts.includes(p));
                     };
 
-                    shouldShowWork =
-                        (cuttingNotStarted && workValue.text === "Cutting") ||
-                        (productionItems.length > 0 && (
-                            productionItems.some(p => p.receive_date == null) ||
-                            missingParts.length > 0
-                        ));
-
-                    if (workValue.text === 'Cutting') {
-                        const categorySeasonKey = `${selectedArticle.category}_${selectedArticle.season}`;
-                        const parts = allParts
-                            .filter(([key]) => key === categorySeasonKey)
-                            .flatMap(([_, value]) => value);
-
-                        const partsRecivedFromCutting = selectedArticle.production.filter(p => p.work.title === 'Cutting').flatMap(p => p.parts);
-
-                        if (partsRecivedFromCutting.length !== parts.length) {
-                            shouldShowWork = true;
-                        }
-                    }
+                    shouldShowWork = !articleElem.dataset?.json ? true : workValue.text === "Cutting";
 
                     if (shouldShowWork) {
                         ul.innerHTML += `
@@ -945,6 +963,10 @@
                         ratesUL.innerHTML += `
                             <li data-for="select_rate" data-value="0" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">Other</li>
                         `;
+                    }
+
+                    if (document.querySelector('input[data-for="ticket"]').value != '') {
+                        document.querySelector('input[name="worker_name"]').disabled = true;
                     }
                 }
             }
@@ -1099,17 +1121,16 @@
                             id="select_rate"
                             :options="[]"
                             showDefault
-                            required
                             onchange="trackSelectRateState(this)"
                         />
 
                         <div id="titleContainer" class="col-span-full hidden">
                             {{-- title --}}
-                            <x-input label="Title" name="title" id="title" placeholder="Enter Title" required/>
+                            <x-input label="Title" name="title" id="title" placeholder="Enter Title"/>
                         </div>
 
                         {{-- rate --}}
-                        <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" dataValidate="required|numeric" />
+                        <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" dataValidate="numeric" />
 
                         {{-- amount --}}
                         <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
@@ -1130,10 +1151,10 @@
                         <x-input label="Quantity" name="article_quantity" id="article_quantity" type="number" value="${selectedArticle.quantity}" disabled />
 
                         {{-- title --}}
-                        <x-input label="Title" name="title" id="title" placeholder="Enter Title" required/>
+                        <x-input label="Title" name="title" id="title" placeholder="Enter Title"/>
 
                         {{-- rate --}}
-                        <x-input label="Rate" name="rate" id="rate" placeholder="Rate" oninput="calculateAmount()" dataValidate="required|numeric" required />
+                        <x-input label="Rate" name="rate" id="rate" placeholder="Rate" oninput="calculateAmount()" dataValidate="numeric" />
 
                         {{-- amount --}}
                         <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
