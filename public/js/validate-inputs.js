@@ -1,4 +1,6 @@
 function validateInput(input) {
+    console.log('hshs');
+
     const rules = (input.dataset.validate || '').split('|');
     let value = input.value;
     const originalValue = value;
@@ -62,6 +64,27 @@ function validateInput(input) {
             if (parseFloat(value) > max) {
                 error = `Maximum allowed value is ${max}.`;
                 value = max;
+            }
+        }
+
+        if (rule === 'amount') {
+            // Remove everything except digits and decimal point
+            value = value.replace(/[^0-9.]/g, '');
+
+            // Allow only one decimal point
+            const firstDotIndex = value.indexOf('.');
+            if (firstDotIndex !== -1) {
+                // Split integer and decimal parts
+                let integerPart = value.slice(0, firstDotIndex).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                let decimalPart = value.slice(firstDotIndex + 1).replace(/\./g, ''); // remove extra dots
+
+                // Limit decimal places to 2
+                decimalPart = decimalPart.substring(0, 2);
+
+                value = integerPart + '.' + decimalPart;
+            } else {
+                // If no dot yet, just format integer part
+                value = value.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
             }
         }
 
