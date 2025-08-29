@@ -336,11 +336,9 @@
                 </div>
             @endif
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                <div class="relative group">
-                    <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
-                </div>
-            @endif
+            <div class="relative group">
+                <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
+            </div>
         </nav>
 
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
@@ -473,46 +471,373 @@
 </div>
 </div>
 <script>
+    const menuData = [
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "user",
+                name: "User",
+                details: {
+                    '': 'Manage your users',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Users', href: "/users"},
+                    {name: 'Add User', href: "/users/create"},
+                ],
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "supplier",
+                name: "Supplier",
+                details: {
+                    '': 'Manage your suppliers',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Suppliers', href: "/suppliers"},
+                    {name: 'Add Supplier', href: "/suppliers/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "voucher",
+                name: "Voucher",
+                details: {
+                    '': 'Manage your vouchers',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Vouchers', href: "/vouchers"},
+                    {name: 'Add Voucher', href: "/vouchers/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "customer",
+                name: "Customer",
+                details: {
+                    '': 'Manage your customers',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Customers', href: "/customers"},
+                    {name: 'Add Customer', href: "/customers/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "payment",
+                name: "Payment",
+                details: {
+                    '': 'Manage your payments',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Payments', href: "/payments"},
+                    {name: 'Add Payment', href: "/payments/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+            {
+                id: "article",
+                name: "Article",
+                details: {
+                    '': 'Manage your articles and content',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1411.82 1222.49"><path d="M1293.89,1033.7H636.33V799.41h15.52q93.3,0,186.6,0c24.51,0,32.26-7.88,32.27-32.7q.06-132.23,0-264.43c0-23.92-8-32.06-31.4-32.08q-144.72-.07-289.45,0c-23.78,0-31,7.19-32.07,31.51-2.58,58-54,108.29-112.23,109.42-16.63.32-33.27,0-52.26,0,0,23.3-.11,46.07,0,68.84.08,13-6,21.65-18.45,24.77-14.82,3.71-28.08-7.17-28.38-23.38-.43-22.88-.11-45.78-.11-70.18-16.87,0-32.4.1-47.94,0a117,117,0,0,1-116.6-116.93q-.36-155,0-310C142.16,85.21,226.59.26,325.49.17q437.1-.42,874.22-.06c52.78,0,94.1,41.25,94.12,94q.17,463.47.06,927Zm-234.8-916.12c-76.86-.21-141.4,64.21-141.35,141.1,0,76.28,63.55,140.21,140,141,76.66.76,141.6-63.41,142.07-140.4C1200.31,182.43,1136.09,117.79,1059.09,117.58Z"/><path d="M705.67,1222.48H72.54c-30.49,0-52.87-14-65.47-41.25-12.38-26.78-8.32-52.68,10.74-75.36,12.84-15.29,29.68-24,49.91-24.21,38.68-.35,77.37-.37,116,.22,4.5.07,10.87,3.81,13.08,7.71,15,26.43,37.59,38.92,67.47,38.94q146.91.09,293.8.06c31,0,54.46-12.18,69.92-39.91,2.32-4.16,10.85-6.84,16.52-6.86q180.68-.57,361.37-.29,167.46,0,334.93.06c36.46,0,67.06,27.23,70.4,61.89,3.61,37.49-20.07,70.52-56.37,77.93-6.62,1.35-13.64,1-20.48,1Q1020,1222.51,705.67,1222.48Z"/><path d="M411.75,1081.42q-73.44,0-146.88,0c-21.6,0-29-7.42-29-29.06q-.06-135.84,0-271.68c0-20.69,7.58-28.23,28.32-28.25q148.35-.07,296.7,0c19.66,0,27.51,7.88,27.53,27.57q.11,136.57,0,273.15c0,20.64-7.64,28.23-28.34,28.26Q485.92,1081.52,411.75,1081.42Z"/><path d="M71.7,1033.61c0-51.62-2.31-102.52.68-153.11,2.69-45.39,45.32-80.57,91.25-81.07,7.75-.08,15.51,0,24.16,0v234.19Z"/><path d="M1341.69,469V165.73c34.69-2.3,68.85,28.14,69.42,63.63q1.42,88,0,176.15C1410.52,441,1376.11,471.52,1341.69,469Z"/><path d="M1152.79,258.23c.09,52.79-41.09,94.28-93.63,94.37-52.79.08-94.28-41.09-94.35-93.63-.08-52.86,41-94.25,93.6-94.33C1111.27,164.56,1152.71,205.65,1152.79,258.23Z"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Articles', href: "/articles"},
+                    {name: 'Add Article', href: "/articles/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+            {
+                id: "physical-quantities",
+                name: "Physical Quantity",
+                details: {
+                    '': 'Manage your physical quantity',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show', href: "/physical-quantities"},
+                    {name: 'Add', href: "/physical-quantities/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "order",
+                name: "Order",
+                details: {
+                    '': 'Manage your orders',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Orders', href: "/orders"},
+                    {name: 'Add Order', href: "/orders/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "payment-program",
+                name: "Payment Program",
+                details: {
+                    '': 'Manage your programs',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Programs', href: "/payment-programs"},
+                    {name: 'Add Program', href: "/payment-programs/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "shipment",
+                name: "Shipment",
+                details: {
+                    '': 'Manage your shipments',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Shipments', href: "/shipments"},
+                    {name: 'Add Shipment', href: "/shipments/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "expense",
+                name: "Expense",
+                details: {
+                    '': 'Manage your expenses',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Expenses', href: "/expenses"},
+                    {name: 'Add Expense', href: "/expenses/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "invoice",
+                name: "Invoice",
+                details: {
+                    '': 'Manage your invoices',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Invoices', href: "/invoices"},
+                    {name: 'Add Invoice', href: "/invoices/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "cargo",
+                name: "Cargo",
+                details: {
+                    '': 'Manage your cargos',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Cargos', href: "/cargos"},
+                    {name: 'Add Cargo', href: "/cargos/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "bilty",
+                name: "Bilty",
+                details: {
+                    '': 'Manage your bilties',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Bilties', href: "/bilties"},
+                    {name: 'Add Bilty', href: "/bilties/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "bank-account",
+                name: "Bank Account",
+                details: {
+                    '': 'Manage your bank account',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Accounts', href: "/bank-accounts"},
+                    {name: 'Add Account', href: "/bank-accounts/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "fabric",
+                name: "Fabric",
+                details: {
+                    '': 'Manage your fabrics',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Fabrics', href: "/fabrics"},
+                    {name: 'Add Fabric', href: "/fabrics/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "employee",
+                name: "Employee",
+                details: {
+                    '': 'Manage your employees',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Employees', href: "/employees"},
+                    {name: 'Add Employee', href: "/employees/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+            {
+                id: "production",
+                name: "Production",
+                details: {
+                    '': 'Manage your productions',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1411.82 1222.49"><path d="M1293.89,1033.7H636.33V799.41h15.52q93.3,0,186.6,0c24.51,0,32.26-7.88,32.27-32.7q.06-132.23,0-264.43c0-23.92-8-32.06-31.4-32.08q-144.72-.07-289.45,0c-23.78,0-31,7.19-32.07,31.51-2.58,58-54,108.29-112.23,109.42-16.63.32-33.27,0-52.26,0,0,23.3-.11,46.07,0,68.84.08,13-6,21.65-18.45,24.77-14.82,3.71-28.08-7.17-28.38-23.38-.43-22.88-.11-45.78-.11-70.18-16.87,0-32.4.1-47.94,0a117,117,0,0,1-116.6-116.93q-.36-155,0-310C142.16,85.21,226.59.26,325.49.17q437.1-.42,874.22-.06c52.78,0,94.1,41.25,94.12,94q.17,463.47.06,927Zm-234.8-916.12c-76.86-.21-141.4,64.21-141.35,141.1,0,76.28,63.55,140.21,140,141,76.66.76,141.6-63.41,142.07-140.4C1200.31,182.43,1136.09,117.79,1059.09,117.58Z"/><path d="M705.67,1222.48H72.54c-30.49,0-52.87-14-65.47-41.25-12.38-26.78-8.32-52.68,10.74-75.36,12.84-15.29,29.68-24,49.91-24.21,38.68-.35,77.37-.37,116,.22,4.5.07,10.87,3.81,13.08,7.71,15,26.43,37.59,38.92,67.47,38.94q146.91.09,293.8.06c31,0,54.46-12.18,69.92-39.91,2.32-4.16,10.85-6.84,16.52-6.86q180.68-.57,361.37-.29,167.46,0,334.93.06c36.46,0,67.06,27.23,70.4,61.89,3.61,37.49-20.07,70.52-56.37,77.93-6.62,1.35-13.64,1-20.48,1Q1020,1222.51,705.67,1222.48Z"/><path d="M411.75,1081.42q-73.44,0-146.88,0c-21.6,0-29-7.42-29-29.06q-.06-135.84,0-271.68c0-20.69,7.58-28.23,28.32-28.25q148.35-.07,296.7,0c19.66,0,27.51,7.88,27.53,27.57q.11,136.57,0,273.15c0,20.64-7.64,28.23-28.34,28.26Q485.92,1081.52,411.75,1081.42Z"/><path d="M71.7,1033.61c0-51.62-2.31-102.52.68-153.11,2.69-45.39,45.32-80.57,91.25-81.07,7.75-.08,15.51,0,24.16,0v234.19Z"/><path d="M1341.69,469V165.73c34.69-2.3,68.85,28.14,69.42,63.63q1.42,88,0,176.15C1410.52,441,1376.11,471.52,1341.69,469Z"/><path d="M1152.79,258.23c.09,52.79-41.09,94.28-93.63,94.37-52.79.08-94.28-41.09-94.35-93.63-.08-52.86,41-94.25,93.6-94.33C1111.27,164.56,1152.71,205.65,1152.79,258.23Z"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                showSwitchButton: true,
+                subMenu: [
+                    {name: 'Show Productions', href: "/productions"},
+                    {name: 'Add Production', href: "/productions/create"},
+                ]
+            },
+        @endif
+    ];
+
     function generateMenuModal(){
         let modalData = {
             id: 'menuModal',
             class: 'h-[80%] w-full',
-            cards: {name: 'Menu', count: 3, data: [
-                {
-                    id: "article",
-                    name: "Article",
-                    details: {
-                        '': 'Manage your articles and content',
-                    },
-                    bottomChip: '2 actions',
-                    svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1411.82 1222.49"><path d="M1293.89,1033.7H636.33V799.41h15.52q93.3,0,186.6,0c24.51,0,32.26-7.88,32.27-32.7q.06-132.23,0-264.43c0-23.92-8-32.06-31.4-32.08q-144.72-.07-289.45,0c-23.78,0-31,7.19-32.07,31.51-2.58,58-54,108.29-112.23,109.42-16.63.32-33.27,0-52.26,0,0,23.3-.11,46.07,0,68.84.08,13-6,21.65-18.45,24.77-14.82,3.71-28.08-7.17-28.38-23.38-.43-22.88-.11-45.78-.11-70.18-16.87,0-32.4.1-47.94,0a117,117,0,0,1-116.6-116.93q-.36-155,0-310C142.16,85.21,226.59.26,325.49.17q437.1-.42,874.22-.06c52.78,0,94.1,41.25,94.12,94q.17,463.47.06,927Zm-234.8-916.12c-76.86-.21-141.4,64.21-141.35,141.1,0,76.28,63.55,140.21,140,141,76.66.76,141.6-63.41,142.07-140.4C1200.31,182.43,1136.09,117.79,1059.09,117.58Z"/><path d="M705.67,1222.48H72.54c-30.49,0-52.87-14-65.47-41.25-12.38-26.78-8.32-52.68,10.74-75.36,12.84-15.29,29.68-24,49.91-24.21,38.68-.35,77.37-.37,116,.22,4.5.07,10.87,3.81,13.08,7.71,15,26.43,37.59,38.92,67.47,38.94q146.91.09,293.8.06c31,0,54.46-12.18,69.92-39.91,2.32-4.16,10.85-6.84,16.52-6.86q180.68-.57,361.37-.29,167.46,0,334.93.06c36.46,0,67.06,27.23,70.4,61.89,3.61,37.49-20.07,70.52-56.37,77.93-6.62,1.35-13.64,1-20.48,1Q1020,1222.51,705.67,1222.48Z"/><path d="M411.75,1081.42q-73.44,0-146.88,0c-21.6,0-29-7.42-29-29.06q-.06-135.84,0-271.68c0-20.69,7.58-28.23,28.32-28.25q148.35-.07,296.7,0c19.66,0,27.51,7.88,27.53,27.57q.11,136.57,0,273.15c0,20.64-7.64,28.23-28.34,28.26Q485.92,1081.52,411.75,1081.42Z"/><path d="M71.7,1033.61c0-51.62-2.31-102.52.68-153.11,2.69-45.39,45.32-80.57,91.25-81.07,7.75-.08,15.51,0,24.16,0v234.19Z"/><path d="M1341.69,469V165.73c34.69-2.3,68.85,28.14,69.42,63.63q1.42,88,0,176.15C1410.52,441,1376.11,471.52,1341.69,469Z"/><path d="M1152.79,258.23c.09,52.79-41.09,94.28-93.63,94.37-52.79.08-94.28-41.09-94.35-93.63-.08-52.86,41-94.25,93.6-94.33C1111.27,164.56,1152.71,205.65,1152.79,258.23Z"/></svg>',
-                    noMargin: true,
-                    data: "item",
-                    onclick: 'openSubMenu(event, this)',
-                    oncontextmenu: 'openSubMenu(event, this)',
-                    subMenu: [
-                        {name: 'Show Articles', href: "/articles"},
-                        {name: 'Add Article', href: "/articles/create"},
-                    ]
-                },
-                {
-                    id: "production",
-                    name: "Production",
-                    details: {
-                        '': 'Manage your production'
-                    },
-                    bottomChip: '2 actions',
-                    svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1411.82 1222.49"><path d="M1293.89,1033.7H636.33V799.41h15.52q93.3,0,186.6,0c24.51,0,32.26-7.88,32.27-32.7q.06-132.23,0-264.43c0-23.92-8-32.06-31.4-32.08q-144.72-.07-289.45,0c-23.78,0-31,7.19-32.07,31.51-2.58,58-54,108.29-112.23,109.42-16.63.32-33.27,0-52.26,0,0,23.3-.11,46.07,0,68.84.08,13-6,21.65-18.45,24.77-14.82,3.71-28.08-7.17-28.38-23.38-.43-22.88-.11-45.78-.11-70.18-16.87,0-32.4.1-47.94,0a117,117,0,0,1-116.6-116.93q-.36-155,0-310C142.16,85.21,226.59.26,325.49.17q437.1-.42,874.22-.06c52.78,0,94.1,41.25,94.12,94q.17,463.47.06,927Zm-234.8-916.12c-76.86-.21-141.4,64.21-141.35,141.1,0,76.28,63.55,140.21,140,141,76.66.76,141.6-63.41,142.07-140.4C1200.31,182.43,1136.09,117.79,1059.09,117.58Z"/><path d="M705.67,1222.48H72.54c-30.49,0-52.87-14-65.47-41.25-12.38-26.78-8.32-52.68,10.74-75.36,12.84-15.29,29.68-24,49.91-24.21,38.68-.35,77.37-.37,116,.22,4.5.07,10.87,3.81,13.08,7.71,15,26.43,37.59,38.92,67.47,38.94q146.91.09,293.8.06c31,0,54.46-12.18,69.92-39.91,2.32-4.16,10.85-6.84,16.52-6.86q180.68-.57,361.37-.29,167.46,0,334.93.06c36.46,0,67.06,27.23,70.4,61.89,3.61,37.49-20.07,70.52-56.37,77.93-6.62,1.35-13.64,1-20.48,1Q1020,1222.51,705.67,1222.48Z"/><path d="M411.75,1081.42q-73.44,0-146.88,0c-21.6,0-29-7.42-29-29.06q-.06-135.84,0-271.68c0-20.69,7.58-28.23,28.32-28.25q148.35-.07,296.7,0c19.66,0,27.51,7.88,27.53,27.57q.11,136.57,0,273.15c0,20.64-7.64,28.23-28.34,28.26Q485.92,1081.52,411.75,1081.42Z"/><path d="M71.7,1033.61c0-51.62-2.31-102.52.68-153.11,2.69-45.39,45.32-80.57,91.25-81.07,7.75-.08,15.51,0,24.16,0v234.19Z"/><path d="M1341.69,469V165.73c34.69-2.3,68.85,28.14,69.42,63.63q1.42,88,0,176.15C1410.52,441,1376.11,471.52,1341.69,469Z"/><path d="M1152.79,258.23c.09,52.79-41.09,94.28-93.63,94.37-52.79.08-94.28-41.09-94.35-93.63-.08-52.86,41-94.25,93.6-94.33C1111.27,164.56,1152.71,205.65,1152.79,258.23Z"/></svg>',
-                    noMargin: true,
-                    data: "item",
-                    onclick: 'openSubMenu(event, this)',
-                    oncontextmenu: 'openSubMenu(event, this)',
-                    subMenu: [
-                        {name: 'Show Productions', href: "/productions"},
-                        {name: 'Add Production', href: "/productions/create"},
-                    ]
-                },
-            ]},
+            cards: {name: 'Menu', count: 3, data: menuData},
             flex_col: true,
         }
 

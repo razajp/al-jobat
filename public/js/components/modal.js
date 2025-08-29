@@ -848,7 +848,9 @@ function renderCardsInModal(data) {
 }
 
 function openSubMenu(event, card) {
-    closeAllSubMenus();
+    closeOpenedSubMenu();
+
+    if(event.target.closest('.switchBtn')) return false;
 
     const subMenuDom = card.querySelector('.subMenu');
 
@@ -858,14 +860,12 @@ function openSubMenu(event, card) {
     subMenuDom.classList.remove('hidden');
 }
 
-function closeAllSubMenus() {
-    document.querySelectorAll('.subMenu').forEach(subMenu => {
-        subMenu.classList.add('hidden');
-    });
+function closeOpenedSubMenu() {
+    document.querySelector('.subMenu:not(.hidden)')?.classList.add('hidden');
 }
 
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.card')) {
-        closeAllSubMenus();
+        closeOpenedSubMenu();
     }
 })

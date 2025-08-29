@@ -86,6 +86,15 @@ function createCard(data) {
         `;
     }
 
+    if (data.showSwitchButton) {
+        clutter += `
+            <div class="switchBtn absolute top-4 right-4 w-8 border-4 border-[var(--h-bg-color)] bg-[var(--h-bg-color)] rounded-full">
+                <div class="circle rounded-full h-3 aspect-square bg-[var(--bg-color)]">
+                </div>
+            </div>
+        `;
+    }
+
     if (data.subMenu) {
         clutter += `
             <div class="subMenu text-sm fixed border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in hidden" style="top: 0; left: 0;">
