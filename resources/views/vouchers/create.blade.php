@@ -342,10 +342,9 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
+                        type: 'number',
                         required: true,
                         placeholder: 'Enter amount',
-                        dataValidator: 'required|amount',
-                        oninput: 'validateInput(this)'
                     },
                     @if($voucherType == 'self_account')
                     {
