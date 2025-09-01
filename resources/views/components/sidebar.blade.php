@@ -315,6 +315,15 @@
 
             @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
+                    <x-nav-link-item label="CR" icon="fas fa-users" includesDropdown :items="[
+                        ['type' => 'link', 'href' => route('employees.index'), 'label' => 'Show Employees'],
+                        ['type' => 'link', 'href' => route('employees.create'), 'label' => 'Add Employee'],
+                    ]" />
+                </div>
+            @endif
+
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
                     <x-nav-link-item label="Reports" icon="fas fa-file" includesDropdown :items="[
                         ['type' => 'link', 'href' => route('reports.statement'), 'label' => 'Statement'],
                     ]" />
