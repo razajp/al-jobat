@@ -114,6 +114,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
     Route::post('set-voucher-type', [Controller::class, 'setVoucherType'])->name('set-voucher-type');
     Route::post('set-production-type', [Controller::class, 'setProductionType'])->name('set-production-type');
+    Route::post('get-voucher-details', [Controller::class, 'getVoucherDetails'])->name('get-voucher-details');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');

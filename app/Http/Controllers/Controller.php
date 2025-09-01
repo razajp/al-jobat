@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\BankAccount;
 use App\Models\Customer;
-use App\Models\Invoice;
 use App\Models\Order;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use App\Models\Supplier;
-use App\Models\User;
+use App\Models\Voucher;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -368,5 +367,10 @@ class Controller extends BaseController
             'shipment' => $shipment,
             'customers' => $Customers,
         ]);
+    }
+
+    public function getVoucherDetails(Request $request) {
+        $voucher = Voucher::where('voucher_no', $request->voucher_no)->with('supplier', 'payments.cheque')->first();
+        return response()->json($voucher);
     }
 }
