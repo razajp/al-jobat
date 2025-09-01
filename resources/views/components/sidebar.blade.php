@@ -484,7 +484,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("user")
+                },
                 subMenu: [
                     {name: 'Show Users', href: "/users"},
                     {name: 'Add User', href: "/users/create"},
@@ -504,7 +506,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("supplier")
+                },
                 subMenu: [
                     {name: 'Show Suppliers', href: "/suppliers"},
                     {name: 'Add Supplier', href: "/suppliers/create"},
@@ -524,7 +528,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("voucher")
+                },
                 subMenu: [
                     {name: 'Show Vouchers', href: "/vouchers"},
                     {name: 'Add Voucher', href: "/vouchers/create"},
@@ -544,7 +550,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("customer")
+                },
                 subMenu: [
                     {name: 'Show Customers', href: "/customers"},
                     {name: 'Add Customer', href: "/customers/create"},
@@ -564,7 +572,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("payment")
+                },
                 subMenu: [
                     {name: 'Show Payments', href: "/payments"},
                     {name: 'Add Payment', href: "/payments/create"},
@@ -584,7 +594,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("article")
+                },
                 subMenu: [
                     {name: 'Show Articles', href: "/articles"},
                     {name: 'Add Article', href: "/articles/create"},
@@ -604,7 +616,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("physical-quantities")
+                },
                 subMenu: [
                     {name: 'Show', href: "/physical-quantities"},
                     {name: 'Add', href: "/physical-quantities/create"},
@@ -624,7 +638,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("order")
+                },
                 subMenu: [
                     {name: 'Show Orders', href: "/orders"},
                     {name: 'Add Order', href: "/orders/create"},
@@ -644,7 +660,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("payment-program")
+                },
                 subMenu: [
                     {name: 'Show Programs', href: "/payment-programs"},
                     {name: 'Add Program', href: "/payment-programs/create"},
@@ -664,7 +682,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("shipment")
+                },
                 subMenu: [
                     {name: 'Show Shipments', href: "/shipments"},
                     {name: 'Add Shipment', href: "/shipments/create"},
@@ -684,7 +704,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("expense")
+                },
                 subMenu: [
                     {name: 'Show Expenses', href: "/expenses"},
                     {name: 'Add Expense', href: "/expenses/create"},
@@ -704,7 +726,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("invoice")
+                },
                 subMenu: [
                     {name: 'Show Invoices', href: "/invoices"},
                     {name: 'Add Invoice', href: "/invoices/create"},
@@ -724,7 +748,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("cargo")
+                },
                 subMenu: [
                     {name: 'Show Cargos', href: "/cargos"},
                     {name: 'Add Cargo', href: "/cargos/create"},
@@ -744,7 +770,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("bilty")
+                },
                 subMenu: [
                     {name: 'Show Bilties', href: "/bilties"},
                     {name: 'Add Bilty', href: "/bilties/create"},
@@ -764,7 +792,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("bank-account")
+                },
                 subMenu: [
                     {name: 'Show Accounts', href: "/bank-accounts"},
                     {name: 'Add Account', href: "/bank-accounts/create"},
@@ -784,7 +814,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("fabric")
+                },
                 subMenu: [
                     {name: 'Show Fabrics', href: "/fabrics"},
                     {name: 'Add Fabric', href: "/fabrics/create"},
@@ -804,7 +836,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("employee")
+                },
                 subMenu: [
                     {name: 'Show Employees', href: "/employees"},
                     {name: 'Add Employee', href: "/employees/create"},
@@ -824,7 +858,9 @@
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
-                showSwitchButton: true,
+                switchBtn: {
+                    active: menu_shortcuts.includes("production")
+                },
                 subMenu: [
                     {name: 'Show Productions', href: "/productions"},
                     {name: 'Add Production', href: "/productions/create"},

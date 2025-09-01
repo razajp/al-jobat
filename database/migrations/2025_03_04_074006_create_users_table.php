@@ -25,6 +25,8 @@ return new class extends Migration
             $table->string('voucher_type')->default('supplier');
             $table->string('production_type')->default('issue');
 
+            $table->json('menu_shortcuts')->default('[]');
+
             $table->timestamps();
         });
     }

@@ -264,6 +264,23 @@
             opacity: 1 !important;
             pointer-events: all !important;
         }
+
+        .switchBtn {
+            display: flex;
+            justify-content: left;
+        }
+
+        .switchBtn .circle {
+            background-color: var(--bg-color);
+        }
+
+        .switchBtn.active {
+            justify-content: right;
+        }
+
+        .switchBtn.active .circle {
+            background-color: var(--secondary-text);
+        }
     </style>
 
     @vite('resources/css/app.css')
@@ -310,6 +327,7 @@
             }).format(number);
             return formatted;
         }
+
     </script>
 
     <script src="{{ asset('js/components/card.js') }}"></script>
@@ -1188,6 +1206,30 @@
             }
         } else if (event.key === "Escape") {
             input.blur();
+        }
+    }
+
+    function switchBtnTogggle(switchBtn) {
+        if (switchBtn.classList.contains('active')) {
+            switchBtn.classList.remove('active');
+            updateMenuCustomization(switchBtn.dataset.for, 'not-active')
+        } else {
+            console.log(menu_shortcuts.length);
+
+            if (menu_shortcuts.length >= 5) {
+                return null;
+            }
+
+            switchBtn.classList.add('active');
+            updateMenuCustomization(switchBtn.dataset.for, 'active')
+        }
+    }
+
+    function updateMenuCustomization(moduleName, newState) {
+        if (newState == 'active' && !menu_shortcuts.includes(moduleName)) {
+            menu_shortcuts.push(moduleName); // moduleName = 'user'
+        } else {
+            menu_shortcuts = menu_shortcuts.filter(item => item !== moduleName);
         }
     }
 </script>
