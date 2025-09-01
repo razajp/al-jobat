@@ -328,6 +328,9 @@
             return formatted;
         }
 
+        @if (Auth::check())
+            let menu_shortcuts = JSON.parse(@json(Auth::user()->menu_shortcuts));
+        @endif
     </script>
 
     <script src="{{ asset('js/components/card.js') }}"></script>

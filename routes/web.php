@@ -6,6 +6,7 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BiltyController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\EmployeeController;
@@ -102,6 +103,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('employees', EmployeeController::class);
     Route::post('update-employee-status', [EmployeeController::class, 'updateStatus'])->name('update-employee-status');
+
+    Route::resource('cr', CRController::class);
 
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');

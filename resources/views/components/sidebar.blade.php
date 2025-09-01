@@ -317,7 +317,7 @@
                 <div class="relative group">
                     <x-nav-link-item label="CR" icon="fas fa-users" includesDropdown :items="[
                         ['type' => 'link', 'href' => route('employees.index'), 'label' => 'Show Employees'],
-                        ['type' => 'link', 'href' => route('employees.create'), 'label' => 'Add Employee'],
+                        ['type' => 'link', 'href' => route('cr.create'), 'label' => 'Generate CR'],
                     ]" />
                 </div>
             @endif
