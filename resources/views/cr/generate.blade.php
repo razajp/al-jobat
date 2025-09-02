@@ -74,8 +74,10 @@
     </form>
 
     <script>
+        let voucher = {};
         let selectedInvoicesArray = [];
         const dateDom = document.getElementById('date');
+        const supplierNameDom = document.getElementById('supplier_name');
 
         function trackVoucherState(e) {
             if (e.key == 'Enter') {
@@ -89,10 +91,19 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        console.log(response);
-                        date.disabled = false;
+                        voucher = response.data;
+                        if (voucher) {
+                            console.log(voucher);
+                            date.disabled = false;
+                            date.min = voucher.date;
+                            // supplierNameDom.value = voucher.supplier_name;
 
-                        selectedInvoicesArray = [];
+                            selectedInvoicesArray = [];
+                        } else {
+                            dateDom.value = '';
+                            dateDom.disabled = true;
+                            selectedInvoicesArray = [];
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.error("Failed to update last activity", error);

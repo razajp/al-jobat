@@ -370,7 +370,7 @@ class Controller extends BaseController
     }
 
     public function getVoucherDetails(Request $request) {
-        $voucher = Voucher::where('voucher_no', $request->voucher_no)->with('supplier', 'payments.cheque')->first();
-        return response()->json($voucher);
+        $voucher = Voucher::where('voucher_no', $request->voucher_no)->with('supplier', 'payments.cheque', 'payments.slip')->first();
+        return response()->json(['data' => $voucher]);
     }
 }
