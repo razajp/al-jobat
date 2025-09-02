@@ -96,7 +96,7 @@
                             console.log(voucher);
                             date.disabled = false;
                             date.min = voucher.date;
-                            // supplierNameDom.value = voucher.supplier_name;
+                            supplierNameDom.value = voucher.supplier_name;
 
                             selectedInvoicesArray = [];
                         } else {

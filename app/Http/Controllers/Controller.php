@@ -369,8 +369,44 @@ class Controller extends BaseController
         ]);
     }
 
-    public function getVoucherDetails(Request $request) {
-        $voucher = Voucher::where('voucher_no', $request->voucher_no)->with('supplier', 'payments.cheque', 'payments.slip')->first();
-        return response()->json(['data' => $voucher]);
+    public function getVoucherDetails(Request $request)
+    {
+        $voucher = Voucher::whereNotNull('supplier_id')->where('voucher_no', $request->voucher_no)
+            ->with([
+                'supplier:id,supplier_name', // only needed supplier columns
+                'payments.cheque:id,payment_id,cheque_no,cheque_date' // only needed cheque columns
+            ])
+            ->first();
+
+        if (!$voucher) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid voucher number.'
+            ], 404);
+        }
+
+        // Map only the required voucher fields
+        $mappedVoucher = [
+            'voucher_no'   => $voucher->voucher_no,
+            'date'         => $voucher->date,
+            'amount'       => $voucher->amount,
+            'supplier_name'     => $voucher->supplier->supplier_name,
+            'payments'     => $voucher->payments->map(function ($payment) {
+                return [
+                    'id'     => $payment->id,
+                    'method' => $payment->method,
+                    'amount' => $payment->amount,
+                    'cheque' => $payment->cheque ? [
+                        'cheque_no'   => $payment->cheque->cheque_no,
+                        'cheque_date' => $payment->cheque->cheque_date,
+                    ] : null,
+                ];
+            }),
+        ];
+
+        return response()->json([
+            'status' => 'success',
+            'data'   => $mappedVoucher
+        ]);
     }
 }
