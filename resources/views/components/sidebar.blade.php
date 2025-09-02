@@ -66,49 +66,51 @@
                 href="/" />
             </div>
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                <div class="relative group">
-                    <x-nav-link-item label="Users"
-                        svgIcon='
-                            <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>
-                        '
-                        includesDropdown :items="[
-                        ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
-                        ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User'],
-                    ]" />
-                </div>
-            @endif
+            <div id="customMenuShortcuts" class="flex flex-col space-y-4">
+                @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                    <div class="relative group">
+                        <x-nav-link-item label="Users"
+                            svgIcon='
+                                <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>
+                            '
+                            includesDropdown :items="[
+                            ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
+                            ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User'],
+                        ]" />
+                    </div>
+                @endif
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                <div class="relative group">
-                    <x-nav-link-item label="Suppliers" icon="fas fa-truck"
-                    :activatorTags="['vouchers']" includesDropdown
-                        :items="[
-                            [
-                                'label' => 'Supplier',
-                                'type' => 'group',
-                                'children' => [
-                                    ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
-                                    ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
-                                ],
-                            ],
-                            [
-                                'label' => 'Voucher',
-                                'type' => 'group',
-                                'children' => [
-                                    ['type' => 'link', 'href' => route('vouchers.index'), 'label' => 'Show Vouchers'],
-                                    [
-                                        'type' => 'link',
-                                        'href' => route('vouchers.create'),
-                                        'label' => 'Generater Voucher',
+                @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                    <div class="relative group">
+                        <x-nav-link-item label="Suppliers" icon="fas fa-truck"
+                        :activatorTags="['vouchers']" includesDropdown
+                            :items="[
+                                [
+                                    'label' => 'Supplier',
+                                    'type' => 'group',
+                                    'children' => [
+                                        ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                                        ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
                                     ],
                                 ],
-                            ],
-                        ]" />
-                </div>
-            @endif
+                                [
+                                    'label' => 'Voucher',
+                                    'type' => 'group',
+                                    'children' => [
+                                        ['type' => 'link', 'href' => route('vouchers.index'), 'label' => 'Show Vouchers'],
+                                        [
+                                            'type' => 'link',
+                                            'href' => route('vouchers.create'),
+                                            'label' => 'Generater Voucher',
+                                        ],
+                                    ],
+                                ],
+                            ]" />
+                    </div>
+                @endif
+            </div>
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
                     <x-nav-link-item label="Customers" :activatorTags="['customer-payments']" icon="fas fa-user-tag" includesDropdown
                         :items="[
@@ -343,7 +345,7 @@
                         ]"
                     />
                 </div>
-            @endif
+            @endif --}}
 
             <div class="relative group">
                 <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
@@ -877,6 +879,74 @@
             },
         @endif
     ];
+
+    function renderMenuShortcuts() {
+        const customMenuShortcutsDom = document.getElementById('customMenuShortcuts');
+        const filteredModules = menuData.filter(module =>
+            menu_shortcuts.includes(module.id)
+        );
+
+        let clutter = '';
+        filteredModules.forEach(element => {
+            clutter += `
+                <div class="relative group">
+                <!-- Main Icon Button -->
+                <button
+                    onclick="openDropDown(event, this)"
+                    class="nav-link users dropdown-trigger text-[var(--text-color)] p-3 rounded-[41.5%] group-hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative"
+                >
+                    <svg
+                    id="Layer_1"
+                    class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]"
+                    data-name="Layer 1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 1343.97 1363.9"
+                    >
+                    <circle cx="671.99" cy="300.42" r="300.42"></circle>
+                    <path
+                        d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z"
+                        transform="translate(421.61 432.3)"
+                    ></path>
+                    </svg>
+
+                    <span
+                    class="absolute shadow-xl left-18 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap"
+                    >
+                    Users
+                    </span>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div
+                    class="dropdownMenu text-sm absolute top-0 left-16 border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in"
+                >
+                    <ul class="p-2">
+                    <li>
+                        <a
+                        href="http://127.0.0.1:8000/users"
+                        class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out"
+                        >
+                        Show Users
+                        </a>
+                    </li>
+                    <li>
+                        <a
+                        href="http://127.0.0.1:8000/users/create"
+                        class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out"
+                        >
+                        Add User
+                        </a>
+                    </li>
+                    </ul>
+                </div>
+                </div>
+            `;
+        });
+        customMenuShortcutsDom.innerHTML = clutter;
+
+        console.log(filteredModules);
+    }
+    renderMenuShortcuts();
 
     function generateMenuModal(){
         let modalData = {

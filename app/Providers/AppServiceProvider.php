@@ -41,6 +41,7 @@ class AppServiceProvider extends ServiceProvider
                 ],
                 'sizes' => [
                     '1_2' => ['text' => '1-2'],
+                    'ml' => ['text' => 'ML'],
                     'sml' => ['text' => 'SML'],
                     '18_20_22' => ['text' => '18-20-22'],
                     '18_20_22_24' => ['text' => '18-20-22-24'],

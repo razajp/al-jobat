@@ -1217,9 +1217,7 @@
             switchBtn.classList.remove('active');
             updateMenuCustomization(switchBtn.dataset.for, 'not-active')
         } else {
-            console.log(menu_shortcuts.length);
-
-            if (menu_shortcuts.length >= 5) {
+            if (menu_shortcuts.length >= 7) {
                 return null;
             }
 
@@ -1234,6 +1232,27 @@
         } else {
             menu_shortcuts = menu_shortcuts.filter(item => item !== moduleName);
         }
+
+        $.ajax({
+            url: '/update-menu-shortcuts',
+            type: 'POST',
+            data: {
+                menu_shortcuts
+            }, // Optional if you want to send any data, can be left empty
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                console.log(response);
+
+                if (response.status === 'success') {
+                    console.log("Menu shortcuts updated successfully.");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to update last activity", error);
+            }
+        });
     }
 </script>
 

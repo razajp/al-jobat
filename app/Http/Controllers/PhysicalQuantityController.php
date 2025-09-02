@@ -106,9 +106,9 @@ class PhysicalQuantityController extends Controller
         };
 
         $articles = Article::withSum('physicalQuantity', 'packets')
-            ->whereHas('production.work', function ($q) {
-                $q->where('title', 'CMT');
-            })
+            // ->whereHas('production.work', function ($q) {
+            //     $q->where('title', 'CMT');
+            // })
             ->get();
 
         foreach ($articles as $article) {
