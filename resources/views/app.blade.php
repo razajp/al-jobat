@@ -329,7 +329,7 @@
         }
 
         @if (Auth::check())
-            let menu_shortcuts = JSON.parse(@json(Auth::user()->menu_shortcuts));
+            let menu_shortcuts = JSON.parse(@json(Auth::user()->menu_shortcuts)) || [];
         @endif
     </script>
 
@@ -1233,6 +1233,8 @@
             menu_shortcuts = menu_shortcuts.filter(item => item !== moduleName);
         }
 
+        renderMenuShortcuts();
+
         $.ajax({
             url: '/update-menu-shortcuts',
             type: 'POST',
@@ -1254,6 +1256,16 @@
             }
         });
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const url = window.location.href.toLowerCase();
+        console.log(url);
+
+
+        // if (url.includes(label)) {
+        //     document.querySelector(".nav-link." + label)?.classList.add("active");
+        // }
+    });
 </script>
 
 </html>

@@ -831,7 +831,7 @@
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/5">${payment.program?.customer.customer_name ? payment.program?.customer.customer_name : selected.customer.customer_name ? selected.customer.customer_name : '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/5">${payment.program?.customer?.customer_name ? payment.program?.customer?.customer_name : selected.customer?.customer_name ? selected.customer?.customer_name : '-'}</div>
                                                             <div class="td text-sm font-semibold w-1/4">${(selected?.bank_account?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank.short_title ?? '-')}</div>
                                                             <div class="td text-sm font-semibold w-[17%]">${formatDate(dateInpDom.value) ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-[11%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? '-'}</div>

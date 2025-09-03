@@ -67,50 +67,51 @@
             </div>
 
             <div id="customMenuShortcuts" class="flex flex-col space-y-4">
-                @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                    <div class="relative group">
-                        <x-nav-link-item label="Users"
-                            svgIcon='
-                                <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>
-                            '
-                            includesDropdown :items="[
-                            ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
-                            ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User'],
-                        ]" />
-                    </div>
-                @endif
 
-                @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                    <div class="relative group">
-                        <x-nav-link-item label="Suppliers" icon="fas fa-truck"
-                        :activatorTags="['vouchers']" includesDropdown
-                            :items="[
-                                [
-                                    'label' => 'Supplier',
-                                    'type' => 'group',
-                                    'children' => [
-                                        ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
-                                        ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
-                                    ],
-                                ],
-                                [
-                                    'label' => 'Voucher',
-                                    'type' => 'group',
-                                    'children' => [
-                                        ['type' => 'link', 'href' => route('vouchers.index'), 'label' => 'Show Vouchers'],
-                                        [
-                                            'type' => 'link',
-                                            'href' => route('vouchers.create'),
-                                            'label' => 'Generater Voucher',
-                                        ],
-                                    ],
-                                ],
-                            ]" />
-                    </div>
-                @endif
             </div>
-
             {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item label="Users"
+                        svgIcon='
+                            <svg id="Layer_1" class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>
+                        '
+                        includesDropdown :items="[
+                        ['type' => 'link', 'href' => route('users.index'), 'label' => 'Show Users'],
+                        ['type' => 'link', 'href' => route('users.create'), 'label' => 'Add User'],
+                    ]" />
+                </div>
+            @endif
+
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+                <div class="relative group">
+                    <x-nav-link-item label="Suppliers" icon="fas fa-truck"
+                    :activatorTags="['vouchers']" includesDropdown
+                        :items="[
+                            [
+                                'label' => 'Supplier',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('suppliers.index'), 'label' => 'Show Suppliers'],
+                                    ['type' => 'link', 'href' => route('suppliers.create'), 'label' => 'Add Supplier'],
+                                ],
+                            ],
+                            [
+                                'label' => 'Voucher',
+                                'type' => 'group',
+                                'children' => [
+                                    ['type' => 'link', 'href' => route('vouchers.index'), 'label' => 'Show Vouchers'],
+                                    [
+                                        'type' => 'link',
+                                        'href' => route('vouchers.create'),
+                                        'label' => 'Generater Voucher',
+                                    ],
+                                ],
+                            ],
+                        ]" />
+                </div>
+            @endif
+
+            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
                 <div class="relative group">
                     <x-nav-link-item label="Customers" :activatorTags="['customer-payments']" icon="fas fa-user-tag" includesDropdown
                         :items="[
@@ -485,8 +486,8 @@
     const menuData = [
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "user",
-                name: "User",
+                id: "users",
+                name: "Users",
                 details: {
                     '': 'Manage your users',
                 },
@@ -496,7 +497,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("user")
+                    active: menu_shortcuts.includes("users")
                 },
                 subMenu: [
                     {name: 'Show Users', href: "/users"},
@@ -507,8 +508,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "supplier",
-                name: "Supplier",
+                id: "suppliers",
+                name: "Suppliers",
                 details: {
                     '': 'Manage your suppliers',
                 },
@@ -518,7 +519,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("supplier")
+                    active: menu_shortcuts.includes("suppliers")
                 },
                 subMenu: [
                     {name: 'Show Suppliers', href: "/suppliers"},
@@ -529,8 +530,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "voucher",
-                name: "Voucher",
+                id: "vouchers",
+                name: "Vouchers",
                 details: {
                     '': 'Manage your vouchers',
                 },
@@ -540,7 +541,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("voucher")
+                    active: menu_shortcuts.includes("vouchers")
                 },
                 subMenu: [
                     {name: 'Show Vouchers', href: "/vouchers"},
@@ -551,8 +552,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "customer",
-                name: "Customer",
+                id: "customers",
+                name: "Customers",
                 details: {
                     '': 'Manage your customers',
                 },
@@ -562,7 +563,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("customer")
+                    active: menu_shortcuts.includes("customers")
                 },
                 subMenu: [
                     {name: 'Show Customers', href: "/customers"},
@@ -573,8 +574,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "payment",
-                name: "Payment",
+                id: "payments",
+                name: "Payments",
                 details: {
                     '': 'Manage your payments',
                 },
@@ -584,7 +585,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("payment")
+                    active: menu_shortcuts.includes("payments")
                 },
                 subMenu: [
                     {name: 'Show Payments', href: "/payments"},
@@ -595,8 +596,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
             {
-                id: "article",
-                name: "Article",
+                id: "articles",
+                name: "Articles",
                 details: {
                     '': 'Manage your articles and content',
                 },
@@ -606,7 +607,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("article")
+                    active: menu_shortcuts.includes("articles")
                 },
                 subMenu: [
                     {name: 'Show Articles', href: "/articles"},
@@ -618,7 +619,7 @@
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
             {
                 id: "physical-quantities",
-                name: "Physical Quantity",
+                name: "Physical Quantities",
                 details: {
                     '': 'Manage your physical quantity',
                 },
@@ -631,16 +632,16 @@
                     active: menu_shortcuts.includes("physical-quantities")
                 },
                 subMenu: [
-                    {name: 'Show', href: "/physical-quantities"},
-                    {name: 'Add', href: "/physical-quantities/create"},
+                    {name: 'Show Physical Quantities', href: "/physical-quantities"},
+                    {name: 'Add Physical Quantity', href: "/physical-quantities/create"},
                 ]
             },
         @endif
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "order",
-                name: "Order",
+                id: "orders",
+                name: "Orders",
                 details: {
                     '': 'Manage your orders',
                 },
@@ -650,7 +651,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("order")
+                    active: menu_shortcuts.includes("orders")
                 },
                 subMenu: [
                     {name: 'Show Orders', href: "/orders"},
@@ -661,8 +662,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "payment-program",
-                name: "Payment Program",
+                id: "payment-programs",
+                name: "Payment Programs",
                 details: {
                     '': 'Manage your programs',
                 },
@@ -672,7 +673,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("payment-program")
+                    active: menu_shortcuts.includes("payment-programs")
                 },
                 subMenu: [
                     {name: 'Show Programs', href: "/payment-programs"},
@@ -683,8 +684,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "shipment",
-                name: "Shipment",
+                id: "shipments",
+                name: "Shipments",
                 details: {
                     '': 'Manage your shipments',
                 },
@@ -694,7 +695,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("shipment")
+                    active: menu_shortcuts.includes("shipments")
                 },
                 subMenu: [
                     {name: 'Show Shipments', href: "/shipments"},
@@ -705,8 +706,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "expense",
-                name: "Expense",
+                id: "expenses",
+                name: "Expenses",
                 details: {
                     '': 'Manage your expenses',
                 },
@@ -716,7 +717,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("expense")
+                    active: menu_shortcuts.includes("expenses")
                 },
                 subMenu: [
                     {name: 'Show Expenses', href: "/expenses"},
@@ -727,8 +728,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "invoice",
-                name: "Invoice",
+                id: "invoices",
+                name: "Invoices",
                 details: {
                     '': 'Manage your invoices',
                 },
@@ -738,7 +739,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("invoice")
+                    active: menu_shortcuts.includes("invoices")
                 },
                 subMenu: [
                     {name: 'Show Invoices', href: "/invoices"},
@@ -749,8 +750,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "cargo",
-                name: "Cargo",
+                id: "cargos",
+                name: "Cargos",
                 details: {
                     '': 'Manage your cargos',
                 },
@@ -760,7 +761,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("cargo")
+                    active: menu_shortcuts.includes("cargos")
                 },
                 subMenu: [
                     {name: 'Show Cargos', href: "/cargos"},
@@ -771,8 +772,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "bilty",
-                name: "Bilty",
+                id: "bilties",
+                name: "Bilties",
                 details: {
                     '': 'Manage your bilties',
                 },
@@ -782,7 +783,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("bilty")
+                    active: menu_shortcuts.includes("bilties")
                 },
                 subMenu: [
                     {name: 'Show Bilties', href: "/bilties"},
@@ -793,8 +794,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "bank-account",
-                name: "Bank Account",
+                id: "bank-accounts",
+                name: "Bank Accounts",
                 details: {
                     '': 'Manage your bank account',
                 },
@@ -804,7 +805,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("bank-account")
+                    active: menu_shortcuts.includes("bank-accounts")
                 },
                 subMenu: [
                     {name: 'Show Accounts', href: "/bank-accounts"},
@@ -815,8 +816,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "fabric",
-                name: "Fabric",
+                id: "fabrics",
+                name: "Fabrics",
                 details: {
                     '': 'Manage your fabrics',
                 },
@@ -826,7 +827,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("fabric")
+                    active: menu_shortcuts.includes("fabrics")
                 },
                 subMenu: [
                     {name: 'Show Fabrics', href: "/fabrics"},
@@ -837,8 +838,8 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
-                id: "employee",
-                name: "Employee",
+                id: "employees",
+                name: "Employees",
                 details: {
                     '': 'Manage your employees',
                 },
@@ -848,7 +849,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("employee")
+                    active: menu_shortcuts.includes("employees")
                 },
                 subMenu: [
                     {name: 'Show Employees', href: "/employees"},
@@ -857,10 +858,52 @@
             },
         @endif
 
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "cr",
+                name: "CR",
+                details: {
+                    '': 'Manage your cheque returns',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                switchBtn: {
+                    active: menu_shortcuts.includes("cr")
+                },
+                subMenu: [
+                    {name: 'Generate CR', href: "/cr/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "reports",
+                name: "Reports",
+                details: {
+                    '': 'Manage your reports',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg id="Layer_1" class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1343.97 1363.9"><circle cx="671.99" cy="300.42" r="300.42"/><path d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z" transform="translate(421.61 432.3)"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                switchBtn: {
+                    active: menu_shortcuts.includes("reports")
+                },
+                subMenu: [
+                    {name: 'Statement', href: "/reports/statement"},
+                ]
+            },
+        @endif
+
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
             {
-                id: "production",
-                name: "Production",
+                id: "productions",
+                name: "Productions",
                 details: {
                     '': 'Manage your productions',
                 },
@@ -870,7 +913,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("production")
+                    active: menu_shortcuts.includes("productions")
                 },
                 subMenu: [
                     {name: 'Show Productions', href: "/productions"},
@@ -887,58 +930,41 @@
         );
 
         let clutter = '';
-        filteredModules.forEach(element => {
+        filteredModules.forEach(shortcut => {
+            const isActive = window.location.href.toLowerCase().includes(shortcut.name.toLowerCase());
             clutter += `
                 <div class="relative group">
-                <!-- Main Icon Button -->
-                <button
-                    onclick="openDropDown(event, this)"
-                    class="nav-link users dropdown-trigger text-[var(--text-color)] p-3 rounded-[41.5%] group-hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative"
-                >
-                    <svg
-                    id="Layer_1"
-                    class="fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]"
-                    data-name="Layer 1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 1343.97 1363.9"
+                    <!-- Main Icon Button -->
+                    <button
+                        onclick="openDropDown(event, this)"
+                        class="nav-link ${shortcut.name.toLowerCase()} ${isActive && 'active'} dropdown-trigger text-[var(--text-color)] p-3 rounded-[41.5%] group-hover:bg-[var(--h-bg-color)] transition-all duration-300 ease-in-out w-10 h-10 flex items-center justify-center cursor-pointer relative"
                     >
-                    <circle cx="671.99" cy="300.42" r="300.42"></circle>
-                    <path
-                        d="M715.46,931.61H-214.71c-163.37,0-262-180.66-173.85-318.17C-253.7,403.21-17.93,263.9,250.38,263.9S754.46,403.21,889.31,613.44C977.52,751,878.83,931.61,715.46,931.61Z"
-                        transform="translate(421.61 432.3)"
-                    ></path>
-                    </svg>
+                        ${shortcut.svgIcon}
 
-                    <span
-                    class="absolute shadow-xl left-18 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap"
+                        <span
+                            class="absolute shadow-xl left-18 top-1/2 transform -translate-y-1/2 bg-[var(--h-secondary-bg-color)] border border-gray-600 text-[var(--text-color)] text-xs rounded-lg px-2 py-1 opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none text-nowrap"
+                        >
+                            ${shortcut.name}
+                        </span>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div
+                        class="dropdownMenu text-sm absolute top-0 left-16 border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-0 scale-out hidden"
                     >
-                    Users
-                    </span>
-                </button>
-
-                <!-- Dropdown Menu -->
-                <div
-                    class="dropdownMenu text-sm absolute top-0 left-16 border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in"
-                >
-                    <ul class="p-2">
-                    <li>
-                        <a
-                        href="http://127.0.0.1:8000/users"
-                        class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out"
-                        >
-                        Show Users
-                        </a>
-                    </li>
-                    <li>
-                        <a
-                        href="http://127.0.0.1:8000/users/create"
-                        class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out"
-                        >
-                        Add User
-                        </a>
-                    </li>
-                    </ul>
-                </div>
+                        <ul class="p-2">
+                            ${shortcut.subMenu.map(item => `
+                                <li>
+                                    <a
+                                        href="${item.href}"
+                                        class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out"
+                                    >
+                                        ${item.name}
+                                    </a>
+                                </li>
+                            `).join('')}
+                        </ul>
+                    </div>
                 </div>
             `;
         });

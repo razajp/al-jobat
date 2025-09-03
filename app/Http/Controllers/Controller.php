@@ -371,37 +371,93 @@ class Controller extends BaseController
 
     public function getVoucherDetails(Request $request)
     {
-        $voucher = Voucher::whereNotNull('supplier_id')->where('voucher_no', $request->voucher_no)
+        $voucher = Voucher::where('voucher_no', $request->voucher_no)
             ->with([
-                'supplier:id,supplier_name', // only needed supplier columns
-                'payments.cheque:id,payment_id,cheque_no,cheque_date' // only needed cheque columns
+                'supplier:id,supplier_name',
+                'payments.cheque.customer.city',
+                'payments.slip.customer.city',
+                'payments.cheque.paymentClearRecord',
+                'payments.slip.paymentClearRecord',
             ])
             ->first();
 
+        // Case 1: Voucher not found
         if (!$voucher) {
             return response()->json([
-                'status' => 'error',
+                'status'  => 'error',
                 'message' => 'Invalid voucher number.'
-            ], 404);
+            ]);
         }
 
-        // Map only the required voucher fields
-        $mappedVoucher = [
-            'voucher_no'   => $voucher->voucher_no,
-            'date'         => $voucher->date,
-            'amount'       => $voucher->amount,
-            'supplier_name'     => $voucher->supplier->supplier_name,
-            'payments'     => $voucher->payments->map(function ($payment) {
-                return [
-                    'id'     => $payment->id,
-                    'method' => $payment->method,
-                    'amount' => $payment->amount,
-                    'cheque' => $payment->cheque ? [
-                        'cheque_no'   => $payment->cheque->cheque_no,
-                        'cheque_date' => $payment->cheque->cheque_date,
-                    ] : null,
+        // Case 2: No payments at all
+        if ($voucher->payments->isEmpty()) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No payments found for this voucher.'
+            ]);
+        }
+
+        $payments = [];
+        $hasChequeOrSlip = false;
+
+        foreach ($voucher->payments as $payment) {
+            // --- Cheque ---
+            $chequeNotCleared = false;
+            if ($payment->cheque) {
+                $hasChequeOrSlip = true;
+
+                $clearAmount  = $payment->cheque->paymentClearRecord->sum('amount');
+                $hasClearDate = !is_null($payment->cheque->clear_date);
+
+                // agar amount = 0 aur clear_date null hai tabhi "not cleared"
+                $chequeNotCleared = ($clearAmount == 0 && !$hasClearDate);
+            }
+
+            // --- Slip ---
+            $slipNotCleared = false;
+            if ($payment->slip) {
+                $hasChequeOrSlip = true;
+
+                $clearAmount  = $payment->slip->paymentClearRecord->sum('amount');
+                $hasClearDate = !is_null($payment->slip->clear_date);
+
+                $slipNotCleared = ($clearAmount == 0 && !$hasClearDate);
+            }
+
+            if ($chequeNotCleared || $slipNotCleared) {
+                $payments[] = [
+                    'date' => $payment->date,
+                    'method' => $payment->cheque ? 'cheque' : ($payment->slip ? 'slip' : ''),
+                    'reff_no' => $payment->cheque->cheque_no ?? $payment->slip->slip_no,
+                    'amount' => $payment->cheque->amount ?? $payment->slip->amount,
+                    'customer_name' => $payment->cheque ? ($payment->cheque->customer?->customer_name . ' | ' . $payment->cheque->customer?->city?->title) : ($payment->slip ? ($payment->slip->customer?->customer_name . ' | ' . $payment->slip->customer?->city?->title) : null),
                 ];
-            }),
+            }
+        }
+
+        // Case 3: No cheque or slip inside payments
+        if (!$hasChequeOrSlip) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'No cheque or slip found for this voucher.'
+            ]);
+        }
+
+        // Case 4: All cheques/slips cleared
+        if (empty($payments)) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'All cheques and slips for this voucher are cleared.'
+            ]);
+        }
+
+        // Success response
+        $mappedVoucher = [
+            'voucher_no'    => $voucher->voucher_no,
+            'date'          => $voucher->date,
+            'amount'        => $voucher->amount,
+            'supplier_name' => $voucher->supplier?->supplier_name ?? 'Al Jobat',
+            'payments'      => $payments,
         ];
 
         return response()->json([
