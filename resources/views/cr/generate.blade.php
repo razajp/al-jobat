@@ -1,11 +1,18 @@
 @extends('app')
 @section('title', 'Generate CR | ' . app('company')->name)
 @section('content')
+    @php
+        $method_options = [
+            'cheque' => ['text' => 'Cheque'],
+            'slip' => ['text' => 'Slip'],
+            'self_cheque' => ['text' => 'Self Cheque'],
+        ];
+    @endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate CR" link linkText="Show CR" linkHref="{{ route('cr.index') }}"/>
-        <x-progress-bar :steps="['Generate CR', 'Preview']" :currentStep="1" />
+        <x-progress-bar :steps="['Select Payment', 'Add Payment']" :currentStep="1" />
     </div>
 
     <!-- Form -->
@@ -28,7 +35,7 @@
                 />
 
                 {{-- cargo date --}}
-                <x-input label="Date" name="date" id="date" type="date" required disabled/>
+                <x-input label="Date" name="date" id="date" type="date" validateMax max="{{ today()->toDateString() }}" required disabled/>
 
                 <!-- supplier_name -->
                 <x-input
@@ -50,7 +57,7 @@
                     <div class="w-[10%] text-center">Select</div>
                 </div>
                 <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
-                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Rates Added</div>
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Payments Added</div>
                 </div>
             </div>
 
@@ -68,10 +75,53 @@
         </div>
 
         <!-- Step 2: view shipment -->
-        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
-            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                <div id="preview" class="preview flex flex-col h-full">
-                    <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
+        <div class="step2 hidden space-y-4">
+            <div class="grid grid-cols-3 gap-4">
+                <!-- method -->
+                <x-select
+                    label="Method"
+                    id="method"
+                    :options="$method_options"
+                    required
+                    showDefault
+                />
+
+                {{-- cargo date --}}
+                <x-input label="Date" name="date" id="date" type="date" validateMax max="{{ today()->toDateString() }}" required disabled/>
+
+                <!-- supplier_name -->
+                <x-input
+                    label="Supplier Name"
+                    id="supplier_name"
+                    disabled
+                    placeholder="Supplier Name"
+                />
+            </div>
+            {{-- cargo-list-table --}}
+            <div id="cargo-list-table" class="w-full text-left text-sm">
+                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                    <div class="w-[8%]">S.No.</div>
+                    <div class="w-1/6">Date</div>
+                    <div class="w-[10%]">Method</div>
+                    <div class="w-1/6">Reff. No.</div>
+                    <div class="w-1/6">Amount</div>
+                    <div class="grow">Customer</div>
+                    <div class="w-[10%] text-center">Select</div>
+                </div>
+                <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                    <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Payments Added</div>
+                </div>
+            </div>
+
+            <input type="hidden" name="invoices_array" id="invoices" value="">
+            <div class="w-full grid grid-cols-2 gap-4 text-sm mt-5 text-nowrap">
+                <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Total Amount</div>
+                    <div id="finalTotalAmount">0</div>
+                </div>
+                <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
+                    <div class="grow">Total Selected Amount</div>
+                    <div id="finalTotalSelectedAmount">0</div>
                 </div>
             </div>
         </div>
@@ -166,7 +216,7 @@
                 cargoListDOM.innerHTML = clutter;
             } else {
                 cargoListDOM.innerHTML =
-                    `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Invoices Yet</div>`;
+                    `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
             finalTotalAmountDOM.textContent = formatNumbersWithDigits(totalVoucherAmount, 1, 1);
             finalTotalSelectedAmountDOM.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
