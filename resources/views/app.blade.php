@@ -81,8 +81,12 @@
             filter: invert(1);
         }
 
-        .bg-\[var\(--primary-color\)\]{
+        .bg-\[var\(--primary-color\)\] {
             color: #e2e8f0 !important;
+        }
+
+        .bg-\[var\(--primary-color\)\] svg {
+            fill: #e2e8f0 !important;
         }
 
         .my-scrollbar-2::-webkit-scrollbar {
@@ -330,6 +334,7 @@
 
         @if (Auth::check())
             let menu_shortcuts = JSON.parse(@json(Auth::user()->menu_shortcuts)) || [];
+            const maxShortcutsLimit = 7;
         @endif
     </script>
 
@@ -1217,7 +1222,7 @@
             switchBtn.classList.remove('active');
             updateMenuCustomization(switchBtn.dataset.for, 'not-active')
         } else {
-            if (menu_shortcuts.length >= 7) {
+            if (menu_shortcuts.length >= maxShortcutsLimit) {
                 return null;
             }
 
@@ -1234,6 +1239,7 @@
         }
 
         renderMenuShortcuts();
+        reRenderInfoInModal('.menuModalInfo', `Enabled: ${menu_shortcuts.length}/${maxShortcutsLimit}`);
 
         $.ajax({
             url: '/update-menu-shortcuts',
