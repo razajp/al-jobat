@@ -45,7 +45,7 @@
         class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-3 h-full md:h-screen transition-all duration-300 ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
-            class="md:mb-6 text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
+            class="text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
             <h1 class="font-bold text-2xl text-[var(--primary-color)] m-0">AJ</h1>
         </a>
 
@@ -56,7 +56,7 @@
         </button>
 
         <!-- Navigation Menu -->
-        <nav class="space-y-4 hidden md:flex flex-col ">
+        <nav class="space-y-4 hidden md:flex flex-col my-auto">
             <div class="relative group">
                 <x-nav-link-item label="Home"
                 {{-- icon="fas fa-home" --}}
@@ -353,7 +353,7 @@
             </div>
         </nav>
 
-        <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-auto dropdown-trigger">
+        <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-4 dropdown-trigger">
             <!-- User Avatar -->
             <button type="button" onclick="openDropDown(event, this)"
                 class="w-10 h-10 ml-1.5 mb-1 flex items-center justify-center rounded-[41.5%] cursor-pointer transition-all duration-300 ease-in-out text-[var(--text-color)] font-semibold text-lg overflow-hidden">
@@ -588,8 +588,8 @@
                     active: menu_shortcuts.includes("payments")
                 },
                 subMenu: [
-                    {name: 'Show Payments', href: "/payments"},
-                    {name: 'Add Payment', href: "/payments/create"},
+                    {name: 'Show Payments', href: "/customer-payments"},
+                    {name: 'Add Payment', href: "/customer-payments/create"},
                 ]
             },
         @endif

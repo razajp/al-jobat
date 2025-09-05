@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BankAccount;
 use App\Models\CustomerPayment;
 use Illuminate\Http\Request;
 
@@ -38,7 +39,26 @@ class CRController extends Controller
             $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
 
             foreach ($slips as $slip) {
-                $slips_options[(int)$slip->id] = [
+                $payment_options[(int)$slip->id] = [
+                    'text' => $slip->slip_no . ' - ' . $slip->amount,
+                    'data_option' => $slip->makeHidden('creator'),
+                ];
+            }
+        } else if ($method === 'self_cheque') {
+            $self_accounts = BankAccount::where('category', 'self')->get()->makeHidden('creator');
+
+            foreach ($self_accounts as $self_account) {
+                foreach ($self_account->available_cheques as $available_cheque) {
+                    $payment_options[(int)$available_cheque] = [
+                        'text' => $available_cheque . ' |' . explode('|', $self_account->account_title)[1],
+                    ];
+                }
+            }
+        } else if ($method === 'program') {
+            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
+
+            foreach ($slips as $slip) {
+                $payment_options[(int)$slip->id] = [
                     'text' => $slip->slip_no . ' - ' . $slip->amount,
                     'data_option' => $slip->makeHidden('creator'),
                 ];

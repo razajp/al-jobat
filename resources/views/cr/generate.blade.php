@@ -46,8 +46,8 @@
                     placeholder="Supplier Name"
                 />
             </div>
-            {{-- cargo-list-table --}}
-            <div id="cargo-list-table" class="w-full text-left text-sm">
+            {{-- show-payment-table --}}
+            <div id="show-payment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
                     <div class="w-[8%]">S.No.</div>
                     <div class="w-1/6">Date</div>
@@ -57,7 +57,7 @@
                     <div class="grow">Customer</div>
                     <div class="w-[10%] text-center">Select</div>
                 </div>
-                <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                <div id="show-payment" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Payments Added</div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
 
         <!-- Step 2: view shipment -->
         <div class="step2 hidden space-y-4">
-            <div class="grid grid-cols-3 gap-4">
+            <div class="flex items-end gap-4">
                 <!-- method -->
                 <x-select
                     label="Method"
@@ -87,14 +87,17 @@
                     onchange="trackMethodState(this)"
                 />
 
-                <!-- payment -->
-                <x-select
-                    label="Payment"
-                    id="payment"
-                    :options="$payment_options"
-                    required
-                    showDefault
-                />
+                <div class="grow">
+                    <!-- payment -->
+                    <x-select
+                        label="Payment"
+                        id="payment"
+                        :options="$payment_options"
+                        required
+                        showDefault
+                        onchange="trackPaymentState(this)"
+                    />
+                </div>
 
                 <!-- supplier_name -->
                 <x-input
@@ -105,19 +108,19 @@
                     placeholder="Enter Amount"
                     type="number"
                 />
+
+                <button id="addPaymentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" onclick="addPayment()">Add Payment</button>
             </div>
-            {{-- cargo-list-table --}}
-            <div id="cargo-list-table" class="w-full text-left text-sm">
-                <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
-                    <div class="w-[8%]">S.No.</div>
-                    <div class="w-1/6">Date</div>
-                    <div class="w-[10%]">Method</div>
-                    <div class="w-1/6">Reff. No.</div>
-                    <div class="w-1/6">Amount</div>
-                    <div class="grow">Customer</div>
-                    <div class="w-[10%] text-center">Select</div>
+            {{-- add-payment-table --}}
+            <div id="add-payment-table" class="w-full text-left text-sm">
+                <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
+                    <div>S.No.</div>
+                    <div>Method</div>
+                    <div class="col-span-2">Payment</div>
+                    <div>Amount</div>
+                    <div class="text-center">Action</div>
                 </div>
-                <div id="cargo-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
+                <div id="add-payment" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-3 px-4">No Payments Added</div>
                 </div>
             </div>
@@ -138,11 +141,16 @@
     <script>
         let voucher = {};
         let paymentsArray = [];
+        let addedPaymentsArray = [];
         const dateDom = document.getElementById('date');
         const supplierNameDom = document.getElementById('supplier_name');
-        const cargoListDOM = document.getElementById('cargo-list');
+        const showPaymentListDOM = document.getElementById('show-payment');
+        const addPaymentListDOM = document.getElementById('add-payment');
         const finalTotalPaymentDOM = document.getElementById('finalTotalPayment');
         const finalTotalSelectedPaymentDOM = document.querySelectorAll('#finalTotalSelectedPayment');
+        const finalTotalAddedPaymentDOM = document.getElementById('finalTotalAddedPayment');
+        const methodSelectDOM = document.getElementById('method');
+        const amountDOM = document.getElementById('amount');
         let totalVoucherAmount = 0;
         let totalSelectedAmount = 0;
 
@@ -188,7 +196,7 @@
                             `;
                             messageBoxAnimation()
                         }
-                        renderList()
+                        renderSelectPaymentList()
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -197,7 +205,7 @@
             }
         }
 
-        function renderList() {
+        function renderSelectPaymentList() {
             totalVoucherAmount = 0;
             totalSelectedAmount = 0;
             if (paymentsArray.length > 0) {
@@ -221,9 +229,9 @@
                     `;
                 });
 
-                cargoListDOM.innerHTML = clutter;
+                showPaymentListDOM.innerHTML = clutter;
             } else {
-                cargoListDOM.innerHTML =
+                showPaymentListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
             finalTotalPaymentDOM.textContent = formatNumbersWithDigits(totalVoucherAmount, 1, 1);
@@ -231,21 +239,55 @@
                 elem.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
             });
         }
-        renderList();
+
+        function renderAddPaymentList() {
+            totalAmount = 0;
+            if (addedPaymentsArray.length > 0) {
+                let clutter = "";
+                addedPaymentsArray.forEach((payment, index) => {
+                    totalAmount += payment.amount;
+                    clutter += `
+                        <div class="grid grid-cols-6 border-t border-gray-600 py-3 px-4 cursor-pointer">
+                            <div>${index+1}</div>
+                            <div>${payment.method}</div>
+                            <div class="col-span-2">${payment.payment}</div>
+                            <div>${payment.amount}</div>
+                            <div class="text-center">
+                                <button onclick="deleteThis(this, ${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                addPaymentListDOM.innerHTML = clutter;
+            } else {
+                addPaymentListDOM.innerHTML =
+                    `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
+            }
+            finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAmount, 1, 1);
+        }
+        renderSelectPaymentList();
+        renderAddPaymentList();
 
         function selectThisPayment(elem, index) {
             let checkBox = elem.querySelector('.row-checkbox');
             checkBox.checked = !checkBox.checked;
             paymentsArray[index].checked = !paymentsArray[index].checked;
 
-            renderList();
+            renderSelectPaymentList();
         }
 
         function trackMethodState(elem) {
+            amountDOM.value = '';
+            amountDOM.disabled = true;
+            document.getElementById('payment').value = '';
+            document.getElementById('payment').disabled = true;
             if (elem.value != '') {
                 $.ajax({
                     url: '/cr/create',
-                    type: 'POST',
+                    type: 'GET',
                     data: {
                         method: elem.value,
                     },
@@ -253,14 +295,53 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
                     success: function(response) {
-                        console.log(response);
-
+                        $('#payment').closest('.selectParent').html($(response).find('#payment').closest('.selectParent').html());
+                        let allPaymentsDOM = document.querySelectorAll('ul[data-for="payment"] li');
+                        allPaymentsDOM.forEach(paymentDOM => {
+                            addedPaymentsArray.forEach(payment => {
+                                if (payment.data_value === paymentDOM.dataset.value) {
+                                    paymentDOM.remove();
+                                }
+                            })
+                        })
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
                     }
                 });
             }
+        }
+
+        function trackPaymentState(elem) {
+            amountDOM.value = '';
+            amountDOM.disabled = true;
+            if (elem.value != '') {
+                if (methodSelectDOM.value === 'Self Cheque') {
+                    amountDOM.disabled = false;
+                } else {
+                    const selectedPayment = JSON.parse(elem.parentElement.querySelector('ul[data-for="payment"] li.selected').dataset.option || '{}');
+                    amount.value = selectedPayment.amount;
+                }
+            }
+        }
+
+        function addPayment() {
+            addedPaymentsArray.push({
+                'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
+                'method': methodSelectDOM.value,
+                'payment': document.getElementById('payment').value,
+                'amount': amountDOM.value,
+            })
+
+            methodSelectDOM.value = '';
+            document.getElementById('payment').value = '';
+            amountDOM.value = '';
+            renderAddPaymentList();
+        }
+
+        function deleteThis(elem, index) {
+            addedPaymentsArray.splice(index, 1);
+            renderAddPaymentList();
         }
 
         function validateForNextStep() {
