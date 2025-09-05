@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CustomerPayment;
 use Illuminate\Http\Request;
 
 class CRController extends Controller
@@ -17,9 +18,34 @@ class CRController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('cr.generate');
+        $payment_options = [];
+
+        $method = $request->method;
+        $payment_options = [];
+
+        if ($method === 'cheque') {
+            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
+
+            foreach ($cheques as $cheque) {
+                $payment_options[(int)$cheque->id] = [
+                    'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                    'data_option' => $cheque->makeHidden('creator'),
+                ];
+            }
+        } else if ($method === 'slip') {
+            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
+
+            foreach ($slips as $slip) {
+                $slips_options[(int)$slip->id] = [
+                    'text' => $slip->slip_no . ' - ' . $slip->amount,
+                    'data_option' => $slip->makeHidden('creator'),
+                ];
+            }
+        }
+
+        return view('cr.generate', compact('payment_options'));
     }
 
     /**

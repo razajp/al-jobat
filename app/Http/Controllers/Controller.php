@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\BankAccount;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\Order;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;

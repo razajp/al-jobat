@@ -6,6 +6,7 @@
             'cheque' => ['text' => 'Cheque'],
             'slip' => ['text' => 'Slip'],
             'self_cheque' => ['text' => 'Self Cheque'],
+            'program' => ['text' => 'Payment Program'],
         ];
     @endphp
     <!-- Main Content -->
@@ -61,15 +62,14 @@
                 </div>
             </div>
 
-            <input type="hidden" name="invoices_array" id="invoices" value="">
             <div class="w-full grid grid-cols-2 gap-4 text-sm mt-5 text-nowrap">
                 <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Amount</div>
-                    <div id="finalTotalAmount">0</div>
+                    <div class="grow">Total Voucher Payment</div>
+                    <div id="finalTotalPayment">0</div>
                 </div>
                 <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Selected Amount</div>
-                    <div id="finalTotalSelectedAmount">0</div>
+                    <div class="grow">Total Selected Payment</div>
+                    <div id="finalTotalSelectedPayment">0</div>
                 </div>
             </div>
         </div>
@@ -84,17 +84,26 @@
                     :options="$method_options"
                     required
                     showDefault
+                    onchange="trackMethodState(this)"
                 />
 
-                {{-- cargo date --}}
-                <x-input label="Date" name="date" id="date" type="date" validateMax max="{{ today()->toDateString() }}" required disabled/>
+                <!-- payment -->
+                <x-select
+                    label="Payment"
+                    id="payment"
+                    :options="$payment_options"
+                    required
+                    showDefault
+                />
 
                 <!-- supplier_name -->
                 <x-input
-                    label="Supplier Name"
-                    id="supplier_name"
+                    label="Amount"
+                    id="amount"
+                    namr="amount"
                     disabled
-                    placeholder="Supplier Name"
+                    placeholder="Enter Amount"
+                    type="number"
                 />
             </div>
             {{-- cargo-list-table --}}
@@ -113,15 +122,14 @@
                 </div>
             </div>
 
-            <input type="hidden" name="invoices_array" id="invoices" value="">
             <div class="w-full grid grid-cols-2 gap-4 text-sm mt-5 text-nowrap">
                 <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Amount</div>
-                    <div id="finalTotalAmount">0</div>
+                    <div class="grow">Total Selected Payment</div>
+                    <div id="finalTotalSelectedPayment">0</div>
                 </div>
                 <div class="flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Selected Amount</div>
-                    <div id="finalTotalSelectedAmount">0</div>
+                    <div class="grow">Total Added Payment</div>
+                    <div id="finalTotalAddedPayment">0</div>
                 </div>
             </div>
         </div>
@@ -133,8 +141,8 @@
         const dateDom = document.getElementById('date');
         const supplierNameDom = document.getElementById('supplier_name');
         const cargoListDOM = document.getElementById('cargo-list');
-        const finalTotalAmountDOM = document.getElementById('finalTotalAmount');
-        const finalTotalSelectedAmountDOM = document.getElementById('finalTotalSelectedAmount');
+        const finalTotalPaymentDOM = document.getElementById('finalTotalPayment');
+        const finalTotalSelectedPaymentDOM = document.querySelectorAll('#finalTotalSelectedPayment');
         let totalVoucherAmount = 0;
         let totalSelectedAmount = 0;
 
@@ -218,8 +226,10 @@
                 cargoListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
-            finalTotalAmountDOM.textContent = formatNumbersWithDigits(totalVoucherAmount, 1, 1);
-            finalTotalSelectedAmountDOM.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
+            finalTotalPaymentDOM.textContent = formatNumbersWithDigits(totalVoucherAmount, 1, 1);
+            finalTotalSelectedPaymentDOM.forEach(elem => {
+                elem.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
+            });
         }
         renderList();
 
@@ -229,6 +239,28 @@
             paymentsArray[index].checked = !paymentsArray[index].checked;
 
             renderList();
+        }
+
+        function trackMethodState(elem) {
+            if (elem.value != '') {
+                $.ajax({
+                    url: '/cr/create',
+                    type: 'POST',
+                    data: {
+                        method: elem.value,
+                    },
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        console.log(response);
+
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            }
         }
 
         function validateForNextStep() {
