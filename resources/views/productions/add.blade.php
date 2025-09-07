@@ -88,6 +88,17 @@
     </script>
 
     @if ($productionType == 'issue')
+        @php
+            $units = app('defaults')->units;
+
+            $units_options = [];
+
+            foreach ($units as $unit) {
+                $units_options[$unit] = [
+                    'text' => $unit,
+                ];
+            }
+        @endphp
         <!-- Main Content -->
         <div class="max-w-4xl mx-auto">
             <x-search-header heading="Issue Production" link linkText="Show Productions" linkHref="{{ route('productions.index') }}"/>
@@ -346,7 +357,7 @@
                     return [
                         {data: index+1, class: 'w-[10%]'},
                         {data: item.title, class: 'w-[25%]'},
-                        {data: item.remarks, class: 'w-[25%]'},
+                        {data: item.unit, class: 'w-[25%]'},
                         {data: item.quantity, class: 'w-[15%]'},
                         {rawHTML: `
                             <div class="w-[10%] text-center">
@@ -373,10 +384,17 @@
                             focus: true,
                         },
                         {
-                            category: 'input',
-                            label: 'Remarks',
-                            id: 'remarks',
-                            placeholder: 'Enter Remarks',
+                            category: 'explicitHtml',
+                            html: `
+                                <x-select
+                                    label="Units"
+                                    name="unit"
+                                    id="unit"
+                                    :options="$units_options"
+                                    showDefault
+                                    required
+                                />
+                            `,
                         },
                         {
                             category: 'input',
@@ -395,7 +413,7 @@
                         headers: [
                             { label: "#", class: "w-[10%]" },
                             { label: "Title", class: "w-[25%]" },
-                            { label: "Remarks", class: "w-[25%]" },
+                            { label: "Unit", class: "w-[25%]" },
                             { label: "Quantity", class: "w-[15%]" },
                             { label: "Action", class: "w-[10%]" },
                         ],
@@ -412,10 +430,10 @@
 
                 const btnDom = formDom.querySelector('#addMaterial');
                 const titleInpDom = formDom.querySelector('#title');
-                const remarksInpDom = formDom.querySelector('#remarks');
+                const unitSelectDom = formDom.querySelector('#unit');
                 const quantityInpDom = formDom.querySelector('#quantity');
 
-                if (titleInpDom.value != '' && remarksInpDom.value != '' && quantityInpDom.value != '') {
+                if (titleInpDom.value != '' && unitSelectDom.value != '' && quantityInpDom.value != '') {
                     btnDom.disabled = false;
                 } else {
                     btnDom.disabled = true;
@@ -465,7 +483,7 @@
                             <div class="flex justify-between items-center border-t border-gray-600 py-2 px-4">
                                 <div class="w-[10%]">${index + 1}</div>
                                 <div class="w-[25%]">${material.title}</div>
-                                <div class="w-[25%]">${material.remarks}</div>
+                                <div class="w-[25%]">${material.unit}</div>
                                 <div class="w-[15%]">${formatNumbersWithDigits(material.quantity)}</div>
                                 <div class="w-[10%] text-center">
                                     <button onclick="deleteMaterial(this)" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
@@ -488,15 +506,15 @@
                 let materialObject = {};
                 const formDom = elem.closest('form');
                 const titleInpDom = formDom.querySelector('#title');
-                const remarksInpDom = formDom.querySelector('#remarks');
+                const unitSelectDom = formDom.querySelector('#unit');
                 const quantityInpDom = formDom.querySelector('#quantity');
                 const tableBodyDom = formDom.querySelector('#table-body');
                 materialObject.title = titleInpDom.value;
-                materialObject.remarks = remarksInpDom.value;
+                materialObject.unit = unitSelectDom.value;
                 materialObject.quantity = quantityInpDom.value;
                 materialsArray.push(materialObject);
                 titleInpDom.value = '';
-                remarksInpDom.value = '';
+                unitSelectDom.value = '';
                 quantityInpDom.value = '';
                 titleInpDom.focus();
                 document.getElementById('materials').value = `${materialsArray.length} Material${materialsArray > 1 ? 's' : ''} Selected`;
