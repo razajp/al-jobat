@@ -497,7 +497,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("users")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Users', href: "/users"},
@@ -519,7 +519,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("suppliers")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Suppliers', href: "/suppliers"},
@@ -541,7 +541,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("vouchers")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Vouchers', href: "/vouchers"},
@@ -563,7 +563,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("customers")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Customers', href: "/customers"},
@@ -585,7 +585,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("payments")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Payments', href: "/customer-payments"},
@@ -607,7 +607,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("articles")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Articles', href: "/articles"},
@@ -629,7 +629,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("physical-quantities")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Physical Quantities', href: "/physical-quantities"},
@@ -651,7 +651,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("orders")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Orders', href: "/orders"},
@@ -673,7 +673,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("payment-programs")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Programs', href: "/payment-programs"},
@@ -695,7 +695,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("shipments")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Shipments', href: "/shipments"},
@@ -717,7 +717,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("expenses")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Expenses', href: "/expenses"},
@@ -739,7 +739,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("invoices")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Invoices', href: "/invoices"},
@@ -761,7 +761,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("cargos")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Cargos', href: "/cargos"},
@@ -783,7 +783,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("bilties")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Bilties', href: "/bilties"},
@@ -805,7 +805,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("bank-accounts")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Accounts', href: "/bank-accounts"},
@@ -827,7 +827,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("fabrics")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Fabrics', href: "/fabrics"},
@@ -849,7 +849,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("employees")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Employees', href: "/employees"},
@@ -871,7 +871,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("cr")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Generate CR', href: "/cr/create"},
@@ -892,7 +892,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("reports")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Statement', href: "/reports/statement"},
@@ -913,7 +913,7 @@
                 onclick: 'openSubMenu(event, this)',
                 oncontextmenu: 'openSubMenu(event, this)',
                 switchBtn: {
-                    active: menu_shortcuts.includes("productions")
+                    active: false,
                 },
                 subMenu: [
                     {name: 'Show Productions', href: "/productions"},
@@ -983,6 +983,9 @@
     }
 
     function generateMenuModal(){
+        menuData.forEach((item)=>{
+            item.switchBtn.active = menu_shortcuts.includes(item.id);
+        });
         modalData.cards.data = menuData;
         createModal(modalData)
     }
