@@ -455,6 +455,7 @@ class Controller extends BaseController
 
         // Success response
         $mappedVoucher = [
+            'id'            => $voucher->id,
             'voucher_no'    => $voucher->voucher_no,
             'date'          => $voucher->date,
             'amount'        => $voucher->amount,

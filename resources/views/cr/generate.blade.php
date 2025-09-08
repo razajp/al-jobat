@@ -28,12 +28,12 @@
                 <!-- voucher_no -->
                 <x-input
                     label="Voucher No."
-                    name="voucher_no"
                     id="voucher_no"
                     placeholder="Enter Voucher No."
                     required
                     onkeydown="trackVoucherState(event)"
                 />
+                <input type="hidden" name="voucher_id" id="voucher_id">
 
                 {{-- cargo date --}}
                 <x-input label="Date" name="date" id="date" type="date" validateMax max="{{ today()->toDateString() }}" required disabled/>
@@ -145,6 +145,7 @@
         let voucher = {};
         let paymentsArray = [];
         let addedPaymentsArray = [];
+        const voucherIdInpDom = document.getElementById('voucher_id');
         const selectedPaymentsArrayDom = document.getElementById('selectedPaymentsArray');
         const addedPaymentsArrayDom = document.getElementById('addedPaymentsArray');
         const dateDom = document.getElementById('date');
@@ -174,7 +175,6 @@
                     success: function(response) {
                         voucher = response.data;
                         if (voucher) {
-                            console.log(voucher);
                             dateDom.disabled = false;
                             dateDom.min = voucher.date;
                             supplierNameDom.value = voucher.supplier_name;
@@ -191,6 +191,8 @@
                                     });
                                 }
                             });
+
+                            voucherIdInpDom.value = voucher.id;
                         } else {
                             dateDom.value = '';
                             dateDom.disabled = true;
@@ -228,8 +230,7 @@
                             <div class="w-1/6">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                             <div class="grow">${payment.customer_name ?? '-'}</div>
                             <div class="w-[10%] grid place-items-center">
-                                <input ${payment.checked ? 'checked' : ''} type="checkbox" name="selected_card[]"
-                                    class="row-checkbox hrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
+                                <input ${payment.checked ? 'checked' : ''} type="checkbox" class="row-checkbox hrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
                             </div>
                         </div>
                     `;
