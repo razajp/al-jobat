@@ -427,6 +427,7 @@ class Controller extends BaseController
 
             if ($chequeNotCleared || $slipNotCleared) {
                 $payments[] = [
+                    'id' => $payment->id,
                     'date' => $payment->date,
                     'method' => $payment->cheque ? 'cheque' : ($payment->slip ? 'slip' : ''),
                     'reff_no' => $payment->cheque->cheque_no ?? $payment->slip->slip_no,

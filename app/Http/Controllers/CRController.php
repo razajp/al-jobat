@@ -24,10 +24,12 @@ class CRController extends Controller
         $payment_options = [];
 
         $method = $request->method;
+        $maxDate = $request->max_date;
+        $voucherDate = $request->voucher_date;
         $payment_options = [];
 
         if ($method === 'cheque') {
-            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
+            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get();
 
             foreach ($cheques as $cheque) {
                 $payment_options[(int)$cheque->id] = [
@@ -36,7 +38,7 @@ class CRController extends Controller
                 ];
             }
         } else if ($method === 'slip') {
-            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
+            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get();
 
             foreach ($slips as $slip) {
                 $payment_options[(int)$slip->id] = [
@@ -73,7 +75,7 @@ class CRController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $request;
     }
 
     /**

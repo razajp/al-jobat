@@ -46,6 +46,7 @@
                     placeholder="Supplier Name"
                 />
             </div>
+            <input type="hidden" name="returnPayments" id="selectedPaymentsArray">
             {{-- show-payment-table --}}
             <div id="show-payment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
@@ -112,6 +113,7 @@
 
                 <button id="addPaymentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" onclick="addPayment()">Add Payment</button>
             </div>
+            <input type="hidden" name="newPayments" id="addedPaymentsArray">
             {{-- add-payment-table --}}
             <div id="add-payment-table" class="w-full text-left text-sm">
                 <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
@@ -143,6 +145,8 @@
         let voucher = {};
         let paymentsArray = [];
         let addedPaymentsArray = [];
+        const selectedPaymentsArrayDom = document.getElementById('selectedPaymentsArray');
+        const addedPaymentsArrayDom = document.getElementById('addedPaymentsArray');
         const dateDom = document.getElementById('date');
         const supplierNameDom = document.getElementById('supplier_name');
         const showPaymentListDOM = document.getElementById('show-payment');
@@ -171,8 +175,8 @@
                         voucher = response.data;
                         if (voucher) {
                             console.log(voucher);
-                            date.disabled = false;
-                            date.min = voucher.date;
+                            dateDom.disabled = false;
+                            dateDom.min = voucher.date;
                             supplierNameDom.value = voucher.supplier_name;
 
                             paymentsArray = voucher.payments;
@@ -240,12 +244,13 @@
             finalTotalSelectedPaymentDOM.forEach(elem => {
                 elem.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
             });
+            selectedPaymentsArrayDom.value = JSON.stringify(paymentsArray.filter(p => p.checked == true));
         }
 
         function renderAddPaymentList() {
+            totalAddedAmount = 0;
             if (addedPaymentsArray.length > 0) {
                 let clutter = "";
-                totalAddedAmount = 0;
                 addedPaymentsArray.forEach((payment, index) => {
                     totalAddedAmount += parseInt(payment.amount);
                     clutter += `
@@ -268,9 +273,20 @@
                 addPaymentListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
-            console.log(totalAddedAmount);
+
+            if (totalSelectedAmount != 0 && totalSelectedAmount === totalAddedAmount) {
+                methodSelectDOM.disabled = true;
+                methodSelectDOM.value = '';
+                document.getElementById('payment').disabled = true;
+                document.getElementById('payment').value = '';
+                amountDOM.disabled = true;
+                amountDOM.value = '';
+            } else {
+                methodSelectDOM.disabled = false;
+            }
 
             finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAddedAmount, 1, 1);
+            addedPaymentsArrayDom.value = JSON.stringify(addedPaymentsArray);
         }
         renderSelectPaymentList();
         renderAddPaymentList();
@@ -288,12 +304,15 @@
             amountDOM.disabled = true;
             document.getElementById('payment').value = '';
             document.getElementById('payment').disabled = true;
+
             if (elem.value != '') {
                 $.ajax({
                     url: '/cr/create',
                     type: 'GET',
                     data: {
                         method: elem.value,
+                        max_date: dateDom.value,
+                        voucher_date: voucher.date,
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -338,17 +357,19 @@
         }
 
         function addPayment() {
-            addedPaymentsArray.push({
-                'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
-                'method': methodSelectDOM.value,
-                'payment': document.getElementById('payment').value,
-                'amount': amountDOM.value,
-            })
+            if (amountDOM.value > 0) {
+                addedPaymentsArray.push({
+                    'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
+                    'method': methodSelectDOM.value,
+                    'payment': document.getElementById('payment').value,
+                    'amount': amountDOM.value,
+                })
 
-            methodSelectDOM.value = '';
-            document.getElementById('payment').value = '';
-            amountDOM.value = '';
-            renderAddPaymentList();
+                methodSelectDOM.value = '';
+                document.getElementById('payment').value = '';
+                amountDOM.value = '';
+                renderAddPaymentList();
+            }
         }
 
         function deleteThis(elem, index) {
