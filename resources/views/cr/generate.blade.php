@@ -107,6 +107,7 @@
                     disabled
                     placeholder="Enter Amount"
                     type="number"
+                    oninput="trackAmountState(event)"
                 />
 
                 <button id="addPaymentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" onclick="addPayment()">Add Payment</button>
@@ -153,6 +154,7 @@
         const amountDOM = document.getElementById('amount');
         let totalVoucherAmount = 0;
         let totalSelectedAmount = 0;
+        let totalAddedAmount = 0;
 
         function trackVoucherState(e) {
             if (e.key == 'Enter') {
@@ -241,11 +243,11 @@
         }
 
         function renderAddPaymentList() {
-            totalAmount = 0;
             if (addedPaymentsArray.length > 0) {
                 let clutter = "";
+                totalAddedAmount = 0;
                 addedPaymentsArray.forEach((payment, index) => {
-                    totalAmount += payment.amount;
+                    totalAddedAmount += parseInt(payment.amount);
                     clutter += `
                         <div class="grid grid-cols-6 border-t border-gray-600 py-3 px-4 cursor-pointer">
                             <div>${index+1}</div>
@@ -266,7 +268,9 @@
                 addPaymentListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
-            finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAmount, 1, 1);
+            console.log(totalAddedAmount);
+
+            finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAddedAmount, 1, 1);
         }
         renderSelectPaymentList();
         renderAddPaymentList();
@@ -303,7 +307,15 @@
                                     paymentDOM.remove();
                                 }
                             })
+                            if (JSON.parse(paymentDOM.dataset.option || '{}').amount > totalSelectedAmount) {
+                                paymentDOM.remove();
+                            };
                         })
+                        if (document.querySelectorAll('ul[data-for="payment"] li').length <= 1) {
+                            document.getElementById('payment').value = '';
+                            document.getElementById('payment').disabled = true;
+                            document.getElementById('payment').placeholder = '-- No options available --';
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -342,6 +354,12 @@
         function deleteThis(elem, index) {
             addedPaymentsArray.splice(index, 1);
             renderAddPaymentList();
+        }
+
+        function trackAmountState(event) {
+            if (event.target.value > (totalSelectedAmount - totalAddedAmount)) {
+                event.target.value = totalSelectedAmount - totalAddedAmount;
+            }
         }
 
         function validateForNextStep() {
