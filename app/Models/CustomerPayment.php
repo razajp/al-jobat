@@ -33,6 +33,7 @@ class CustomerPayment extends Model
         "remarks",
         "program_id",
         "bank_account_id",
+        "is_return",
     ];
 
     protected $casts = [
@@ -40,6 +41,7 @@ class CustomerPayment extends Model
         'cheque_date' => 'date',
         'slip_date' => 'date',
         'clear_date' => 'date',
+        'is_return' => 'boolean',
     ];
 
     protected static function booted()

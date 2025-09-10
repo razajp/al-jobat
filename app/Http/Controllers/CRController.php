@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
+use App\Models\CR;
 use App\Models\CustomerPayment;
+use App\Models\SupplierPayment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class CRController extends Controller
 {
@@ -21,29 +24,35 @@ class CRController extends Controller
      */
     public function create(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
         $payment_options = [];
 
+        $supplier_id = $request->supplier_id;
         $method = $request->method;
         $maxDate = $request->max_date;
         $voucherDate = $request->voucher_date;
         $payment_options = [];
 
         if ($method === 'cheque') {
-            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get();
+            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get()->makeHidden('creator');
 
             foreach ($cheques as $cheque) {
                 $payment_options[(int)$cheque->id] = [
                     'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
-                    'data_option' => $cheque->makeHidden('creator'),
+                    'data_option' => $cheque,
                 ];
             }
         } else if ($method === 'slip') {
-            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get();
+            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get()->makeHidden('creator');
 
             foreach ($slips as $slip) {
                 $payment_options[(int)$slip->id] = [
                     'text' => $slip->slip_no . ' - ' . $slip->amount,
-                    'data_option' => $slip->makeHidden('creator'),
+                    'data_option' => $slip,
                 ];
             }
         } else if ($method === 'self_cheque') {
@@ -53,16 +62,18 @@ class CRController extends Controller
                 foreach ($self_account->available_cheques as $available_cheque) {
                     $payment_options[(int)$available_cheque] = [
                         'text' => $available_cheque . ' |' . explode('|', $self_account->account_title)[1],
+                        'data_option' => $self_account,
                     ];
                 }
             }
         } else if ($method === 'program') {
-            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
+            // ->whereBetween('date', [$voucherDate, $maxDate])
+            $payments = SupplierPayment::where('supplier_id', $supplier_id)->where('method', 'program')->whereNull('voucher_id')->with('program.customer')->get()->makeHidden('creator');
 
-            foreach ($slips as $slip) {
-                $payment_options[(int)$slip->id] = [
-                    'text' => $slip->slip_no . ' - ' . $slip->amount,
-                    'data_option' => $slip->makeHidden('creator'),
+            foreach ($payments as $payment) {
+                $payment_options[(int)$payment->id] = [
+                    'text' => $payment->program->customer->customer_name . ' - Rs. ' . number_format($payment->amount),
+                    'data_option' => $payment,
                 ];
             }
         }
@@ -75,7 +86,75 @@ class CRController extends Controller
      */
     public function store(Request $request)
     {
-        return $request;
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'date' => 'required|date',
+            'voucher_no' => 'required|string',
+            'voucher_id' => 'required|integer|exists:vouchers,id',
+            'returnPayments' => 'required|string',
+            'newPayments' => 'required|string',
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+        $data['return_payments'] = json_decode($data['returnPayments'] ?? '[]');
+        $data['new_payments'] = json_decode($data['newPayments'] ?? '[]');
+
+        $returnEmpty = empty($data['return_payments']);
+        $newEmpty = empty($data['new_payments']);
+
+        if ($returnEmpty && $newEmpty) {
+            return redirect()->back()->with('error', 'Payments not selected and Payments not added.');
+        }
+
+        if ($returnEmpty) {
+            return redirect()->back()->with('error', 'Payments not selected.');
+        }
+
+        if ($newEmpty) {
+            return redirect()->back()->with('error', 'Payments not added.');
+        }
+
+        foreach($data['return_payments'] as $payment) {
+            CustomerPayment::find($payment->id)->update(['is_return' => true,]);
+        }
+
+        foreach ($data['new_payments'] as $payment) {
+            if ($payment->method == 'Payment Program') {
+                SupplierPayment::find($payment->data_value)->update(['method' => $payment->method . ' | CR']);
+            } else {
+                $columnMap = [
+                    'Self Cheque' => 'cheque_no',
+                    'Cheque'      => 'cheque_id',
+                    'Slip'        => 'slip_id',
+                ];
+
+                // Skip unknown methods
+                if (!isset($columnMap[$payment->method])) {
+                    continue;
+                }
+
+                SupplierPayment::create([
+                    'date'             => $data['date'],
+                    'method'           => $payment->method . ' | CR',
+                    'amount'           => $payment->amount,
+                    'bank_account_id'  => $payment->bank_account_id,
+                    $columnMap[$payment->method] => $payment->data_value,
+                ]);
+            }
+        }
+
+        // CR::create($data);
+
+        return redirect()->route('cr.create')->with('success', 'CR Generated successfully.');
     }
 
     /**

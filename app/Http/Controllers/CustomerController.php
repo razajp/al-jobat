@@ -111,8 +111,8 @@ class CustomerController extends Controller
             return redirect()->back()->with('error', 'This user already exists.')->withInput();
         }
 
-        // Create a new supplier
-        $supplier = Customer::create([
+        // Create a new customer
+        $customer = Customer::create([
             'user_id' => $user->id,
             'customer_name' => $user->name,
             'person_name' => $data['person_name'],

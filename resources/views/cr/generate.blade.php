@@ -29,6 +29,7 @@
                 <x-input
                     label="Voucher No."
                     id="voucher_no"
+                    name="voucher_no"
                     placeholder="Enter Voucher No."
                     required
                     onkeydown="trackVoucherState(event)"
@@ -108,7 +109,8 @@
                     disabled
                     placeholder="Enter Amount"
                     type="number"
-                    oninput="trackAmountState(event)"
+                    oninput="trackAmountState(this)"
+                    onkeydown="enterToAdd(event)"
                 />
 
                 <button id="addPaymentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" onclick="addPayment()">Add Payment</button>
@@ -311,6 +313,7 @@
                     url: '/cr/create',
                     type: 'GET',
                     data: {
+                        supplier: voucher.supplier_id,
                         method: elem.value,
                         max_date: dateDom.value,
                         voucher_date: voucher.date,
@@ -360,6 +363,7 @@
         function addPayment() {
             if (amountDOM.value > 0) {
                 addedPaymentsArray.push({
+                    'bank_account_id': JSON.parse(document.querySelector('ul[data-for="payment"] li.selected').dataset.option || '{}').id,
                     'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
                     'method': methodSelectDOM.value,
                     'payment': document.getElementById('payment').value,
@@ -378,9 +382,15 @@
             renderAddPaymentList();
         }
 
-        function trackAmountState(event) {
-            if (event.target.value > (totalSelectedAmount - totalAddedAmount)) {
-                event.target.value = totalSelectedAmount - totalAddedAmount;
+        function trackAmountState(elem) {
+            if (elem.value > (totalSelectedAmount - totalAddedAmount)) {
+                elem.value = totalSelectedAmount - totalAddedAmount;
+            }
+        }
+
+        function enterToAdd(event) {
+            if (event.key == 'Enter') {
+                addPayment();
             }
         }
 

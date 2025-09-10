@@ -22,14 +22,16 @@ class CustomerPaymentController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $payments = CustomerPayment::with("customer.city", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
-            if (($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) {
+            if ((($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) && $payment->is_return) {
                 $payment['issued'] = 'Issued';
+            } else if ($payment->is_return) {
+                $payment['issued'] = 'Return';
             } else {
                 $payment['issued'] = 'Not Issued';
             }
@@ -89,7 +91,7 @@ class CustomerPaymentController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $banks_options = [];
         $banks = Setup::where('type', 'bank_name')->get();
         foreach ($banks as $bank) {
@@ -112,16 +114,16 @@ class CustomerPaymentController extends Controller
             if ($program && $program->customer) {
                 $customers = $program->customer->toArray();
                 $program->customer['payment_programs'] = $program->toArray();
-                
+
                 $customers_options = [(int)$program->customer->id => [
                     'text' => $program->customer->customer_name . ' | ' . $program->customer->city->title,
                     'data_option' => $program->customer,
                 ]];
-        
+
                 return view("customer-payments.create", compact("customers", "customers_options", "banks_options", 'lastRecord'));
             }
         }
-        
+
         $customers = Customer::with([
             'orders',
             'payments',
@@ -138,7 +140,7 @@ class CustomerPaymentController extends Controller
         foreach ($customers as $customer) {
             foreach ($customer->paymentPrograms as $program) {
                 $subCategory = $program->subCategory;
-        
+
                 if (isset($subCategory->type)) {
                     if ($subCategory->type === '"App\Models\BankAccount"') {
                         $subCategory = $subCategory;
@@ -155,7 +157,7 @@ class CustomerPaymentController extends Controller
             foreach ($customer['orders'] as $order) {
                 $customer['totalAmount'] += $order->netAmount;
             }
-            
+
             foreach ($customer['payments'] as $payment) {
                 $customer['totalPayment'] += $payment->amount;
             }
@@ -206,7 +208,7 @@ class CustomerPaymentController extends Controller
         $data = $request->all();
 
         CustomerPayment::create($data);
-        
+
         if (isset($data['program_id']) && $data['program_id']) {
             $program = PaymentProgram::find($data['program_id']);
             if ($program && $data['method'] == 'program') {
@@ -218,7 +220,7 @@ class CustomerPaymentController extends Controller
         }
 
         $currentProgram = PaymentProgram::find($request->program_id);
-        
+
         if (isset($currentProgram)) {
             if ($currentProgram->balance <= 1000 && $currentProgram->balance >= 0) {
                 $currentProgram->status = 'Paid';
