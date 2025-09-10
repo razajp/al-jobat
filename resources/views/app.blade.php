@@ -1262,16 +1262,6 @@
             }
         });
     }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const url = window.location.href.toLowerCase();
-        console.log(url);
-
-
-        // if (url.includes(label)) {
-        //     document.querySelector(".nav-link." + label)?.classList.add("active");
-        // }
-    });
 </script>
 
 </html>

@@ -19,6 +19,7 @@ use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesReturnController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
@@ -105,6 +106,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('update-employee-status', [EmployeeController::class, 'updateStatus'])->name('update-employee-status');
 
     Route::resource('cr', CRController::class);
+
+    Route::resource('sales-returns', SalesReturnController::class);
 
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');

@@ -405,28 +405,33 @@ class Controller extends BaseController
             // --- Cheque ---
             $chequeNotCleared = false;
             if ($payment->cheque) {
-                $hasChequeOrSlip = true;
+                if (!$payment->cheque->is_return) {
+                    $hasChequeOrSlip = true;
 
-                $clearAmount  = $payment->cheque->paymentClearRecord->sum('amount');
-                $hasClearDate = !is_null($payment->cheque->clear_date);
+                    $clearAmount  = $payment->cheque->paymentClearRecord->sum('amount');
+                    $hasClearDate = !is_null($payment->cheque->clear_date);
 
-                // agar amount = 0 aur clear_date null hai tabhi "not cleared"
-                $chequeNotCleared = ($clearAmount == 0 && !$hasClearDate);
+                    // agar amount = 0 aur clear_date null hai tabhi "not cleared"
+                    $chequeNotCleared = ($clearAmount == 0 && !$hasClearDate);
+                }
             }
 
             // --- Slip ---
             $slipNotCleared = false;
             if ($payment->slip) {
-                $hasChequeOrSlip = true;
+                if (!$payment->slip->is_return) {
+                    $hasChequeOrSlip = true;
 
-                $clearAmount  = $payment->slip->paymentClearRecord->sum('amount');
-                $hasClearDate = !is_null($payment->slip->clear_date);
+                    $clearAmount  = $payment->slip->paymentClearRecord->sum('amount');
+                    $hasClearDate = !is_null($payment->slip->clear_date);
 
-                $slipNotCleared = ($clearAmount == 0 && !$hasClearDate);
+                    $slipNotCleared = ($clearAmount == 0 && !$hasClearDate);
+                }
             }
 
             if ($chequeNotCleared || $slipNotCleared) {
                 $payments[] = [
+                    'id' => $payment->cheque_id ?? $payment->slip_id,
                     'date' => $payment->date,
                     'method' => $payment->cheque ? 'cheque' : ($payment->slip ? 'slip' : ''),
                     'reff_no' => $payment->cheque->cheque_no ?? $payment->slip->slip_no,
@@ -454,10 +459,12 @@ class Controller extends BaseController
 
         // Success response
         $mappedVoucher = [
+            'id'            => $voucher->id,
             'voucher_no'    => $voucher->voucher_no,
             'date'          => $voucher->date,
             'amount'        => $voucher->amount,
             'supplier_name' => $voucher->supplier?->supplier_name ?? 'Al Jobat',
+            'supplier_id'   => $voucher->supplier_id,
             'payments'      => $payments,
         ];
 

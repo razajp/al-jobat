@@ -28,12 +28,13 @@
                 <!-- voucher_no -->
                 <x-input
                     label="Voucher No."
-                    name="voucher_no"
                     id="voucher_no"
+                    name="voucher_no"
                     placeholder="Enter Voucher No."
                     required
                     onkeydown="trackVoucherState(event)"
                 />
+                <input type="hidden" name="voucher_id" id="voucher_id">
 
                 {{-- cargo date --}}
                 <x-input label="Date" name="date" id="date" type="date" validateMax max="{{ today()->toDateString() }}" required disabled/>
@@ -46,6 +47,7 @@
                     placeholder="Supplier Name"
                 />
             </div>
+            <input type="hidden" name="returnPayments" id="selectedPaymentsArray">
             {{-- show-payment-table --}}
             <div id="show-payment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
@@ -107,10 +109,13 @@
                     disabled
                     placeholder="Enter Amount"
                     type="number"
+                    oninput="trackAmountState(this)"
+                    onkeydown="enterToAdd(event)"
                 />
 
                 <button id="addPaymentBtn" type="button" class="bg-[var(--primary-color)] px-4 py-2 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out text-nowrap cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" onclick="addPayment()">Add Payment</button>
             </div>
+            <input type="hidden" name="newPayments" id="addedPaymentsArray">
             {{-- add-payment-table --}}
             <div id="add-payment-table" class="w-full text-left text-sm">
                 <div class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
@@ -142,6 +147,9 @@
         let voucher = {};
         let paymentsArray = [];
         let addedPaymentsArray = [];
+        const voucherIdInpDom = document.getElementById('voucher_id');
+        const selectedPaymentsArrayDom = document.getElementById('selectedPaymentsArray');
+        const addedPaymentsArrayDom = document.getElementById('addedPaymentsArray');
         const dateDom = document.getElementById('date');
         const supplierNameDom = document.getElementById('supplier_name');
         const showPaymentListDOM = document.getElementById('show-payment');
@@ -153,6 +161,7 @@
         const amountDOM = document.getElementById('amount');
         let totalVoucherAmount = 0;
         let totalSelectedAmount = 0;
+        let totalAddedAmount = 0;
 
         function trackVoucherState(e) {
             if (e.key == 'Enter') {
@@ -168,9 +177,8 @@
                     success: function(response) {
                         voucher = response.data;
                         if (voucher) {
-                            console.log(voucher);
-                            date.disabled = false;
-                            date.min = voucher.date;
+                            dateDom.disabled = false;
+                            dateDom.min = voucher.date;
                             supplierNameDom.value = voucher.supplier_name;
 
                             paymentsArray = voucher.payments;
@@ -185,6 +193,8 @@
                                     });
                                 }
                             });
+
+                            voucherIdInpDom.value = voucher.id;
                         } else {
                             dateDom.value = '';
                             dateDom.disabled = true;
@@ -222,8 +232,7 @@
                             <div class="w-1/6">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                             <div class="grow">${payment.customer_name ?? '-'}</div>
                             <div class="w-[10%] grid place-items-center">
-                                <input ${payment.checked ? 'checked' : ''} type="checkbox" name="selected_card[]"
-                                    class="row-checkbox hrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
+                                <input ${payment.checked ? 'checked' : ''} type="checkbox" class="row-checkbox hrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer"/>
                             </div>
                         </div>
                     `;
@@ -238,14 +247,15 @@
             finalTotalSelectedPaymentDOM.forEach(elem => {
                 elem.textContent = formatNumbersWithDigits(totalSelectedAmount, 1, 1);
             });
+            selectedPaymentsArrayDom.value = JSON.stringify(paymentsArray.filter(p => p.checked == true));
         }
 
         function renderAddPaymentList() {
-            totalAmount = 0;
+            totalAddedAmount = 0;
             if (addedPaymentsArray.length > 0) {
                 let clutter = "";
                 addedPaymentsArray.forEach((payment, index) => {
-                    totalAmount += payment.amount;
+                    totalAddedAmount += parseInt(payment.amount);
                     clutter += `
                         <div class="grid grid-cols-6 border-t border-gray-600 py-3 px-4 cursor-pointer">
                             <div>${index+1}</div>
@@ -266,7 +276,20 @@
                 addPaymentListDOM.innerHTML =
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payments Yet</div>`;
             }
-            finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAmount, 1, 1);
+
+            if (totalSelectedAmount != 0 && totalSelectedAmount === totalAddedAmount) {
+                methodSelectDOM.disabled = true;
+                methodSelectDOM.value = '';
+                document.getElementById('payment').disabled = true;
+                document.getElementById('payment').value = '';
+                amountDOM.disabled = true;
+                amountDOM.value = '';
+            } else {
+                methodSelectDOM.disabled = false;
+            }
+
+            finalTotalAddedPaymentDOM.textContent = formatNumbersWithDigits(totalAddedAmount, 1, 1);
+            addedPaymentsArrayDom.value = JSON.stringify(addedPaymentsArray);
         }
         renderSelectPaymentList();
         renderAddPaymentList();
@@ -284,12 +307,16 @@
             amountDOM.disabled = true;
             document.getElementById('payment').value = '';
             document.getElementById('payment').disabled = true;
+
             if (elem.value != '') {
                 $.ajax({
                     url: '/cr/create',
                     type: 'GET',
                     data: {
+                        supplier: voucher.supplier_id,
                         method: elem.value,
+                        max_date: dateDom.value,
+                        voucher_date: voucher.date,
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -303,7 +330,15 @@
                                     paymentDOM.remove();
                                 }
                             })
+                            if (JSON.parse(paymentDOM.dataset.option || '{}').amount > totalSelectedAmount) {
+                                paymentDOM.remove();
+                            };
                         })
+                        if (document.querySelectorAll('ul[data-for="payment"] li').length <= 1) {
+                            document.getElementById('payment').value = '';
+                            document.getElementById('payment').disabled = true;
+                            document.getElementById('payment').placeholder = '-- No options available --';
+                        }
                     },
                     error: function(xhr, status, error) {
                         console.error(error);
@@ -326,22 +361,37 @@
         }
 
         function addPayment() {
-            addedPaymentsArray.push({
-                'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
-                'method': methodSelectDOM.value,
-                'payment': document.getElementById('payment').value,
-                'amount': amountDOM.value,
-            })
+            if (amountDOM.value > 0) {
+                addedPaymentsArray.push({
+                    'bank_account_id': JSON.parse(document.querySelector('ul[data-for="payment"] li.selected').dataset.option || '{}').id,
+                    'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
+                    'method': methodSelectDOM.value,
+                    'payment': document.getElementById('payment').value,
+                    'amount': amountDOM.value,
+                })
 
-            methodSelectDOM.value = '';
-            document.getElementById('payment').value = '';
-            amountDOM.value = '';
-            renderAddPaymentList();
+                methodSelectDOM.value = '';
+                document.getElementById('payment').value = '';
+                amountDOM.value = '';
+                renderAddPaymentList();
+            }
         }
 
         function deleteThis(elem, index) {
             addedPaymentsArray.splice(index, 1);
             renderAddPaymentList();
+        }
+
+        function trackAmountState(elem) {
+            if (elem.value > (totalSelectedAmount - totalAddedAmount)) {
+                elem.value = totalSelectedAmount - totalAddedAmount;
+            }
+        }
+
+        function enterToAdd(event) {
+            if (event.key == 'Enter') {
+                addPayment();
+            }
         }
 
         function validateForNextStep() {
