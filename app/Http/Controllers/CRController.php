@@ -6,6 +6,7 @@ use App\Models\BankAccount;
 use App\Models\CR;
 use App\Models\CustomerPayment;
 use App\Models\SupplierPayment;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -124,7 +125,8 @@ class CRController extends Controller
         }
 
         foreach($data['return_payments'] as $payment) {
-            CustomerPayment::find($payment->id)->update(['is_return' => true,]);
+            SupplierPayment::destroy($payment->id);
+            CustomerPayment::find($payment->payment_id)->update(['is_return' => true, 'bank_account_id' => null]);
         }
 
         foreach ($data['new_payments'] as $payment) {
@@ -143,10 +145,12 @@ class CRController extends Controller
                 }
 
                 SupplierPayment::create([
+                    'supplier_id'      => Voucher::find($data['voucher_id'])->supplier_id,
                     'date'             => $data['date'],
                     'method'           => $payment->method . ' | CR',
                     'amount'           => $payment->amount,
                     'bank_account_id'  => $payment->bank_account_id,
+                    'voucher_id'       => $payment->voucher_id,
                     $columnMap[$payment->method] => $payment->data_value,
                 ]);
             }

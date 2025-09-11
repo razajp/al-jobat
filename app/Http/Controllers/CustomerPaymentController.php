@@ -28,7 +28,7 @@ class CustomerPaymentController extends Controller
         $payments = CustomerPayment::with("customer.city", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
-            if ((($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) && $payment->is_return) {
+            if ((($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) && !$payment->is_return) {
                 $payment['issued'] = 'Issued';
             } else if ($payment->is_return) {
                 $payment['issued'] = 'Return';
@@ -48,20 +48,22 @@ class CustomerPaymentController extends Controller
                 $payment['cheque']['supplier'] = Supplier::with('bankAccounts')->find($payment['cheque']['supplier_id']);
             }
 
-            if (!empty($payment['paymentClearRecord'])) {
-                $clearAmount = collect($payment['paymentClearRecord'])->sum('amount');
-                $payment['clear_amount'] = $clearAmount;
+            if ($payment['clear_date'] !== null && $payment['clear_date'] !== 'Pending' ) {
+                $payment['clear_amount'] = $payment['amount'];
+            } else {
+                if (!empty($payment['paymentClearRecord'])) {
+                    $clearAmount = collect($payment['paymentClearRecord'])->sum('amount');
+                    $payment['clear_amount'] = $clearAmount;
 
-                if (floatval($clearAmount) >= floatval($payment['amount'])) {
-                    // Get last partial record's clear date
-                    $lastPartial = collect($payment['paymentClearRecord'])->last();
-                    if (isset($lastPartial['clear_date'])) {
-                        $payment['clear_date'] = $lastPartial['clear_date'];
+                    if (floatval($clearAmount) >= floatval($payment['amount'])) {
+                        // Get last partial record's clear date
+                        $lastPartial = collect($payment['paymentClearRecord'])->last();
+                        if (isset($lastPartial['clear_date'])) {
+                            $payment['clear_date'] = $lastPartial['clear_date'];
+                        }
                     }
                 }
             }
-
-            $payment['customer']['city']['title'] = $payment['customer']['city']['title'] . ' | ' . $payment['customer']['city']['short_title'];
 
             if ($payment['remarks'] == null) {
                 $payment['remarks'] = 'No Remarks';
@@ -277,7 +279,7 @@ class CustomerPaymentController extends Controller
 
         $validator = Validator::make($request->all(), [
             'clear_date' => 'required|date',
-            'method' => 'required|string',
+            'method_select' => 'required|string',
             'bank_account_id' => 'required|integer|exists:bank_accounts,id',
             'amount' => 'required|integer',
             'reff_no' => 'nullable|string',
@@ -289,6 +291,7 @@ class CustomerPaymentController extends Controller
         }
 
         $data = $request->all();
+        $data['method'] = $data['method_select'];
         $data['payment_id'] = $id;
 
         PaymentClear::create($data);
