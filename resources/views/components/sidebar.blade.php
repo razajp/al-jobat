@@ -333,7 +333,7 @@
                 </div>
             @endif
 
-            @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+            {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
                 <div class="relative group">
                     <x-nav-link-item
                         label="Productions"

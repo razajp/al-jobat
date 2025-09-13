@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PhysicalQuantityController extends Controller
