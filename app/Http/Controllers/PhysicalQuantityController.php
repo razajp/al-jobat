@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class PhysicalQuantityController extends Controller
@@ -106,9 +107,9 @@ class PhysicalQuantityController extends Controller
         };
 
         $articles = Article::withSum('physicalQuantity', 'packets')
-            ->whereHas('production.work', function ($q) {
-                $q->where('title', 'CMT');
-            })
+            // ->whereHas('production.work', function ($q) {
+            //     $q->where('title', 'CMT');
+            // })
             ->get();
 
         foreach ($articles as $article) {
@@ -135,7 +136,7 @@ class PhysicalQuantityController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant'. 'store_keeper']))
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
