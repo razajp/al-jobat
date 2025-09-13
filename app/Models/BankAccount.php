@@ -93,7 +93,7 @@ class BankAccount extends Model
     {
         $customerPaymetns = CustomerPayment::where('bank_account_id', $this->id);
         $supplierPaymetns = SupplierPayment::where('bank_account_id', $this->id)->whereNotNull('voucher_id');
-    
+
         // Handle different date scenarios
         if ($fromDate && $toDate) {
             if ($includeGivenDate) {
@@ -112,7 +112,7 @@ class BankAccount extends Model
             $customerPaymetns->where('date', $operator, $toDate);
             $supplierPaymetns->where('date', $operator, $toDate);
         }
-    
+
         // Calculate totals
         $totalPayments = $customerPaymetns->sum('amount') ?? 0;
         $totalPays = $supplierPaymetns->sum('amount') ?? 0;
@@ -120,5 +120,79 @@ class BankAccount extends Model
         $balance = $totalPayments - $totalPays;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
-    }    
+    }
+
+    public function getStatement($fromDate, $toDate)
+    {
+        // Opening balance (before fromDate)
+        $openingBalance = $this->calculateBalance(null, $fromDate, false, false);
+
+        // Period balance (fromDate → toDate)
+        $periodBalance = $this->calculateBalance($fromDate, $toDate);
+
+        $closingBalance = $openingBalance + $periodBalance;
+
+        // Customer payments
+        $customerPayments = collect(CustomerPayment::where('bank_account_id', $this->id)
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->get())
+            ->map(fn($p) => [
+                'date' => $p->date ?? null,
+                'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
+                'type' => 'customer_payment',
+                'bill' => $p->amount ?? 0,
+                'payment' => 0,
+                'created_at' => $p->created_at ?? null,
+            ]);
+
+        // Supplier payments
+        $supplierPayments = collect(SupplierPayment::where('bank_account_id', $this->id)
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->with('bankAccount.bank')
+            ->get())
+            ->map(fn($p) => [
+                'date' => $p->date ?? null,
+                'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
+                'type' => 'supplier_payment',
+                'method' => $p->method ?? null,
+                'payment' => $p->amount ?? 0,
+                'bill' => 0,
+                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title
+                    ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |')
+                    : null,
+                'created_at' => $p->created_at ?? null,
+            ]);
+
+        $statement = $customerPayments->merge($supplierPayments)
+            ->sort(function ($a, $b) {
+                $aDate = $a['date'] ?? '1970-01-01';
+                $bDate = $b['date'] ?? '1970-01-01';
+                $dateCompare = strcmp($aDate, $bDate);
+
+                if ($dateCompare === 0) {
+                    $aCreated = $a['created_at'] ?? '1970-01-01 00:00:00';
+                    $bCreated = $b['created_at'] ?? '1970-01-01 00:00:00';
+                    return strtotime($aCreated) <=> strtotime($bCreated);
+                }
+
+                return $dateCompare;
+            })->values();
+
+        // Totals
+        $totals = [
+            'bill' => $customerPayments->sum('payment'), // customer payments considered as 'bill' if needed
+            'payment' => $supplierPayments->sum('payment'),
+            'balance' => $customerPayments->sum('payment') - $supplierPayments->sum('payment'),
+        ];
+
+        return [
+            'date' => $fromDate . ' - ' . $toDate,
+            'name' => $this->account_title . ' | ' . $this->bank->short_title,
+            'opening_balance' => $openingBalance,
+            'closing_balance' => $closingBalance,
+            'statements' => $statement,
+            'totals' => $totals,
+            'category' => 'account',
+        ];
+    }
 }

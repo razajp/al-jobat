@@ -28,6 +28,7 @@
                     :options="[
                         'customer' => ['text' => 'Customer'],
                         'supplier' => ['text' => 'Supplier'],
+                        'bank_account' => ['text' => 'Bank Account'],
                     ]"
                     showDefault
                     onchange="fetchNames(this.value)"
@@ -338,11 +339,22 @@
                         `;
 
                         response.forEach(function(item) {
+                            let displayText = '';
+                            if (category === 'customer') {
+                                displayText = item.customer_name;
+                            } else if (category === 'supplier') {
+                                displayText = item.supplier_name || '';
+                            } else if (category === 'bank_account') {
+                                displayText = item.account_title || '';
+                            }
+
                             clutter += `
-                                <li data-for="nameSelect" data-value="${item.id}" data-reg-date="${item.date}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
-                                    ${category == 'customer' ? item.customer_name : category == 'supplier' ? item.supplier_name : ''}
+                                <li data-for="nameSelect" data-value="${item.id}" data-reg-date="${item.date}"
+                                    onmousedown="selectThisOption(this)"
+                                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                                    ${displayText}
                                 </li>
-                            `
+                            `;
                         });
 
                         nameSelectDropDown.innerHTML = clutter;

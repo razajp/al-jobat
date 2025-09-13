@@ -1,4 +1,4 @@
-function validateInput(input) {
+function validateInput(input, listner) {
     const rules = (input.dataset.validate || '').split('|');
     let value = input.value;
     const originalValue = value;
@@ -14,6 +14,9 @@ function validateInput(input) {
         }
 
         if (rule === 'alphanumeric') {
+            if (/[^a-z0-9]/gi.test(value)) {
+                error = 'Only letters and numbers are allowed.';
+            }
             value = value.replace(/[^a-z0-9]/gi, '');
         }
 
@@ -22,11 +25,17 @@ function validateInput(input) {
         }
 
         if (rule === 'numeric') {
+            if (/[^0-9.]/g.test(value)) {
+                error = 'Only numbers are allowed.';
+            }
             value = value.replace(/[^0-9.]/g, '');
         }
 
         // friendly = allows letters, numbers, space, dot, dash
         if (rule === 'friendly') {
+            if (/[^a-zA-Z0-9 .-]/g.test(value)) {
+                error = 'Only letters, numbers, space, dot, and dash are allowed.';
+            }
             value = value.replace(/[^a-zA-Z0-9 .-]/g, '');
         }
 

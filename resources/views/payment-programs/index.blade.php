@@ -122,7 +122,7 @@
                 <span class="w-[10%]">${data.status}</span>
             </div>`;
         }
-        
+
         const fetchedData = @json($finalData);
         console.log(fetchedData);
         let allDataArray = fetchedData.map(item => {
@@ -171,7 +171,7 @@
                 visible: true,
             };
         });
-        
+
         let subCategoryDom;
         let remarksInputDom;
 
@@ -289,18 +289,16 @@
             subCategoryFirstOptDom = subCategoryDom?.options?.[0];
             customerSelectDom = form.querySelector('#customer_id');
             remarksInputDom = form.querySelector('#remarks');
-            
+
             if (elem.value != "") {
                 subCategoryDom.disabled = false;
-                getCategoryData(elem.value);    
+                getCategoryData(elem.value);
             } else {
                 subCategoryDom.disabled = true;
             }
         }
 
         function generateUpdateProgramModal(item) {
-            console.log(item);
-
             let modalData = {
                 id: 'updateProgramModalForm',
                 class: 'h-auto',
@@ -435,7 +433,7 @@
                 id: 'modalForm',
                 cards: {name: 'Payment Details', count: 3, data: cardData},
             }
-            
+
             if (data.status != 'Paid' && data.status != 'Overpaid') {
                 modalData.bottomActions = [
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},

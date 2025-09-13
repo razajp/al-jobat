@@ -181,12 +181,14 @@ function createModal(data, animate = 'animate') {
                                 <label for="${field.name ?? ''}" class="block font-medium text-[var(--secondary-text)] mb-2 ${!field.label ? 'hidden' : ''}">${field.label}</label>
 
                                 <div class="relative flex gap-3">
-                                    <input onkeydown="${field.enterToSubmitListener ? 'enterToSubmit(event)' : ''}" id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" min="${field.min}" max="${field.max}" placeholder="${field.placeholder ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''} oninput="${field.oninput ?? ''}" onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
+                                    <input onkeydown="${field.enterToSubmitListener ? 'enterToSubmit(event)' : ''}" id="${field.id ?? ''}" type="${field.type ?? 'text'}" name="${field.name ?? ''}" value="${field.value ?? ''}" min="${field.min}" max="${field.max}" placeholder="${field.placeholder ?? ''}" data-validate="${field.data_validate ?? ''}" ${field.required ? 'required' : ''} ${field.disabled ? 'disabled' : ''} ${field.readonly ? 'readonly' : ''}
+                                    ${field.data_validate ? `oninput="validateInput(this); ${field.oninput ?? ''}"` : (field.oninput ? `oninput="${field.oninput}"` : '')}
+                                    onchange="${field.onchange ?? ''}" class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 ${field.type == 'date' ? 'py-[7px]' : 'py-2'} border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent placeholder:capitalize">
                                     ${buttonHTML}
                                 </div>
                             </div>
 
-                            <div id="${field.name}-error" class="absolute -bottom-5 left-1 text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"></div>
+                            <div id="${field.name}-error" class="text-[var(--border-error)] text-xs mt-1.5 hidden transition-all duration-300 ease-in-out leading-none"></div>
                         </div>
                     `;
 

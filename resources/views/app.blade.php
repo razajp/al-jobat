@@ -611,6 +611,20 @@
 
             const dataObject = data.data;
 
+            @if(!request()->is('login'))
+                if ((dataObject.type === "user_inactivated" || dataObject.type === "password_reset")
+                    && dataObject.id == {{Auth::user()->id}}) {
+
+                    // Show notification immediately
+                    showNotification(dataObject.title, dataObject.message);
+
+                    // Logout after 1.5 seconds
+                    setTimeout(() => {
+                        document.getElementById("logoutForm").submit();
+                    }, 2000); // 1.5 sec delay
+                }
+            @endif
+
             @if(request()->is('orders/create'))
                 if (dataObject.title === "New Article Added.") {
                     const dateInput = document.querySelector("#date");
@@ -619,12 +633,6 @@
                         getDataByDate(dateInput);
                         showNotification(dataObject.title, dataObject.message);
                     }
-                }
-            @endif
-
-            @if(!request()->is('login'))
-                if (dataObject.title == "User Inactivated" && dataObject.id == {{Auth::user()->id}}) {
-                    document.getElementById("logoutForm").submit();
                 }
             @endif
         });
@@ -916,6 +924,10 @@
                 tempItem.visible = visible;
 
                 newlyFilteredData.push(tempItem);
+
+                if (typeof onFilter === "function") {
+                    onFilter();
+                }
             });
             renderFilteredData();
 
@@ -1262,6 +1274,18 @@
             }
         });
     }
+
+    document.addEventListener("submit", function (e) {
+        if (e.target.matches("form")) {   // sirf form ke liye trigger
+            if (!validateAllInputs()) {
+                e.preventDefault();
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'Some fields are incorrect. Please fix them.'" />
+                `;
+                messageBoxAnimation();
+            }
+        }
+    });
 </script>
 
 </html>

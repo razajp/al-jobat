@@ -8,21 +8,21 @@
                 "type" => "text",
                 "placeholder" => "Enter customer name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "invoice.customer.customer_name",
+                "dataFilterPath" => "customer_name",
             ],
             "Invoice No" => [
                 "id" => "invoice_no",
                 "type" => "text",
                 "placeholder" => "Enter invoice no",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "invoice.invoice_no",
+                "dataFilterPath" => "invoice_no",
             ],
             "Cargo Name" => [
                 "id" => "cargo_name",
                 "type" => "text",
                 "placeholder" => "Enter cargo name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "invoice.cargo_name",
+                "dataFilterPath" => "cargo_name",
             ],
             "Bilty No" => [
                 "id" => "bilty_no",
@@ -49,12 +49,13 @@
 
     <!-- Main Content -->
     <section class="text-center mx-auto ">
-        <div 
+        <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
             <x-form-title-bar title="Show Bilties" />
 
             @if (count($bilties) > 0)
-                <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                    <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                     <x-section-navigation-button link="{{ route('bilties.create') }}" title="Add New Bilty" icon="fa-plus" />
                 </div>
 
@@ -106,7 +107,6 @@
         }
 
         const fetchedData = @json($bilties);
-        console.log(fetchedData);
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
@@ -118,5 +118,13 @@
                 visible: true,
             };
         });
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Records: ${allDataArray.length}`;
+
+        function onFilter() {
+            let visibleCount = newlyFilteredData.filter(item => item.visible).length;
+            infoDom.textContent = `Total Records: ${visibleCount}`;
+        }
     </script>
 @endsection

@@ -47,7 +47,7 @@
     @endphp
     <!-- Main Content -->
     <div>
-        
+
         <div class="w-[80%] mx-auto">
             <x-search-header heading="Users" :search_fields=$searchFields/>
         </div>
@@ -145,9 +145,15 @@
                 y: e.pageY,
                 action: "{{ route('update-user-status') }}",
             };
-            
+
             if (currentUserRole != data.details['Role']) {
                 contextMenuData.forceStatusBtn = true;
+            }
+
+            if ((currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') && currentUserRole != data.details['Role']) {
+                contextMenuData.actions = [
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data)})`},
+                ];
             }
 
             createContextMenu(contextMenuData);
@@ -169,10 +175,64 @@
                     'Role': data.details['Role'],
                 },
                 profile: true,
-                forceStatusBtn: true,
+            }
+
+            if (currentUserRole != data.details['Role']) {
+                modalData.forceStatusBtn = true;
+            }
+
+            if ((currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') && currentUserRole != data.details['Role']) {
+                modalData.bottomActions = [
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data)})`},
+                ];
             }
 
             createModal(modalData);
+        }
+
+        function generateResetPasswordModel(data) {
+            let modalData = {
+                id: 'resetPasswordModalForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ route("users.reset-password") }}',
+                name: 'Reset Password',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Username',
+                        value: data.details['Username'],
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'user_id',
+                        value: data.id,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Password',
+                        name: 'password',
+                        id: 'password',
+                        type: 'password',
+                        placeholder: 'Enter new password',
+                        data_validate: 'required|min:4|alphanumeric|lowercase',
+                        oninput: 'check(this)',
+                        required: true,
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'reset-password-btn', text: 'Reset Password', type: 'submit'}
+                ]
+            }
+
+            createModal(modalData);
+        }
+
+        function check(elem) {
+            console.log(elem);
         }
     </script>
 @endsection

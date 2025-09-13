@@ -51,6 +51,10 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
         return view('home');
     })->name('home');
 
+    Route::resource('users', UserController::class);
+    Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');
+    Route::post('users.reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+
     Route::post('update-theme', [AuthController::class, 'updateTheme']);
 
     Route::resource('setups', SetupController::class);
@@ -126,7 +130,4 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
     Route::post('update-menu-shortcuts', [AuthController::class, 'updateMenuShortcuts'])->name('updateMenuShortcuts');
-
-    Route::resource('users', UserController::class);
-    Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');
 });

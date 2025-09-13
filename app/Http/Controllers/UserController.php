@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\NewNotificationEvent;
 use App\Models\User;
+use App\Models\UserSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,11 +19,11 @@ class UserController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
-        
+
         $users = User::whereNotIn('role', ['supplier', 'customer'])->get();
         return view("user.index", compact('users', 'authLayout'));
     }
@@ -36,7 +37,7 @@ class UserController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
-        
+
         $usernames = User::pluck('username')->toArray();
         return view('user.create', compact('usernames'));
     }
@@ -50,7 +51,7 @@ class UserController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // Validation rules
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -119,7 +120,7 @@ class UserController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $user = User::find($request->user_id);
 
         if ($request->status == 'active') {
@@ -127,10 +128,17 @@ class UserController extends Controller
                 $user->status = 'in_active';
                 $user->save();
 
+                $userSession = UserSession::where('user_id', $user->id)->latest()->first();
+                if ($userSession) {
+                    $userSession->delete();
+                }
+
                 try {
                     event(new NewNotificationEvent([
-                        'title' => 'User Inactivated',
+                        'title' => 'Your Account Has Been Deactivated',
+                        'message' => 'Your account is now inactive. Please contact admin for details.',
                         'id' => $user->id,
+                        'type' => 'user_inactivated' // ✅ easy condition check
                     ]));
                 } catch (\Exception $e) {
                     return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
@@ -145,4 +153,43 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Status has been updated successfully!');
     }
 
+    public function resetPassword(Request $request)
+    {
+        if(!$this->checkRole(['developer', 'owner', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'user_id' => 'required|exists:users,id',
+            'password' => 'required|string|min:4',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $user = User::find($request->user_id);
+
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        $userSession = UserSession::where('user_id', $user->id)->latest()->first();
+        if ($userSession) {
+            $userSession->delete();
+        }
+
+        try {
+            event(new NewNotificationEvent([
+                'title' => 'Your Password Has Been Reset',
+                'message' => 'Your password was reset by ' . Auth::user()->name . '. Please use the new password to login.',
+                'id' => $user->id,
+                'type' => 'password_reset' // ✅ easy condition check
+            ]));
+        } catch (\Exception $e) {
+            return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+        }
+
+        return redirect()->back()->with('success', 'Password reset successfully!');
+    }
 }
