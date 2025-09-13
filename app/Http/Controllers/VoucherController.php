@@ -186,6 +186,7 @@ class VoucherController extends Controller
                     if ($customerPayment) {
                         $customerPayment->update([
                             'bank_account_id' => $paymentDetails['self_account_id'],
+                            'is_return' => false,
                         ]);
 
                         SupplierPayment::create([
@@ -203,6 +204,7 @@ class VoucherController extends Controller
                     if ($customerPayment) {
                         $customerPayment->update([
                             'bank_account_id' => $paymentDetails['self_account_id'],
+                            'is_return' => false,
                         ]);
 
                         SupplierPayment::create([

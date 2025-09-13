@@ -40,7 +40,7 @@ class AuthController extends Controller
                     ->where('is_active', true)
                     ->where('last_activity', '>=', now()->subMinutes(60)) // optional timeout
                     ->first();
-                
+
                 if ($existingSession) {
                     // return back with error message
                     return redirect('/login')->with('error', 'Already logged in on another device.');
@@ -86,12 +86,12 @@ class AuthController extends Controller
         $request->validate([
             'theme' => 'required|in:light,dark', // Validate theme input
         ]);
-        
+
         $user = Auth::user();
         User::where('id', $user->id)->update(['theme' => $request->theme]);
 
         return response()->json([
-            'success' => true, 
+            'success' => true,
             'message' => 'Theme updated successfully! Your preferences have been saved.'
         ]);
     }
@@ -104,7 +104,19 @@ class AuthController extends Controller
                 ->update(['last_activity' => now()]);
             return response()->json(['status' => 'updated']);
         }
-    
+
+        return response()->json(['status' => 'unauthorized'], 401);
+    }
+
+    public function updateMenuShortcuts(Request $request)
+    {
+        if (auth()->check()) {
+            $userId = Auth::user()->id;
+            User::where('id', $userId)->update(['menu_shortcuts' => $request->menu_shortcuts]);
+
+            return response()->json(['status' => 'updated']);
+        }
+
         return response()->json(['status' => 'unauthorized'], 401);
     }
 }

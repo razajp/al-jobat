@@ -34,6 +34,27 @@ function createModal(data, animate = 'animate') {
                     </button>
                 </div>
 
+                ${data.info ? `<div
+                  class="${data.id}Info absolute z-10 bottom-4 left-4 border border-[var(--glass-border-color)]/10 group bg-[var(--glass-border-color)]/5 backdrop-blur-md rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden h-auto pr-3 transition-all duration-300 ease-in-out shadow-md pointer-events-auto"
+                >
+                  <div
+                    class="flex items-center justify-center bg-[var(--bg-color)] border border-[var(--glass-border-color)]/20 rounded-lg p-2"
+                  >
+                    <div
+                      class="transition-all duration-300 ease-in-out size-2.5 relative"
+                    >
+                      <i
+                        class="fas fa-info text-xs absolute top-1/2 left-1/2 -translate-1/2"
+                      ></i>
+                    </div>
+                  </div>
+                  <span
+                    class="main-text inline-block overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 max-w-[300px] ml-2"
+                  >
+                    ${data.info}
+                  </span>
+                </div>` : ''}
+
                 <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full">
                     <div class="w-full h-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
@@ -287,7 +308,40 @@ function createModal(data, animate = 'animate') {
         //     </div>
         // `;
 
-        clutter += renderCardsInModal(data)
+        clutter += `
+            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-auto w-full overflow-y-auto my-scrollbar-2">
+                <div class="flex justify-between">
+                    <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold leading-[1.5]">${data.cards.name}</h5>
+                    ${data.basicSearch ? `<div class="form-group relative">
+                        <div class="relative flex gap-2 w-sm pt-0.5">
+                            <input
+                                type="text"
+                                placeholder="🔍 Search..."
+                                autocomplete="off"
+                                class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent disabled:opacity-70 placeholder:capitalize"
+                                oninput="${data.onBasicSearch}"
+                            />
+
+                            <button
+                                type="button"
+                                class="bg-[var(--primary-color)] px-4 rounded-lg hover:bg-[var(--h-primary-color)] transition-all duration-300 ease-in-out cursor-pointer text-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                                <i class="text-xs fa-solid fa-magnifying-glass"></i>
+                            </button>
+                        </div>
+
+                        <div
+                            id="search_box-error"
+                            class="text-[var(--border-error)] text-xs mt-1 hidden transition-all duration-300 ease-in-out"
+                        ></div>
+                    </div>` : ''}
+                </div>
+                <hr class="w-full my-3 border-gray-600">
+                <div class="${data.id}CardsContainer grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
+                    ${returnCardsInModal(data)}
+                </div>
+            </div>
+        `
     }
 
     if (data.table) {
@@ -820,35 +874,28 @@ function renderTableBody(tableBody) {
     document.getElementById('table-body').innerHTML = bodyHTML;
 }
 
-function renderCardsInModal(data) {
-    let cardsData = '';
-    if (data.cards) {
-        let cardsHTML = '';
-        if (data.cards.data.length > 0) {
-            data.cards.data.forEach(item => {
-                cardsHTML += createCard(item)
-            });
-        } else {
-            cardsHTML= `
-                <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
-            `;
-        }
-
-        cardsData = `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-auto w-full overflow-y-auto my-scrollbar-2">
-                <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
-                <hr class="w-full my-3 border-gray-600">
-                <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
-                    ${cardsHTML}
-                </div>
-            </div>
+function returnCardsInModal(data) {
+    let cardsHTML = '';
+    if (data.cards.data.length > 0) {
+        data.cards.data.forEach(item => {
+            cardsHTML += createCard(item);
+        });
+    } else {
+        cardsHTML= `
+            <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
         `;
     }
-    return cardsData;
+    return cardsHTML;
+}
+
+function renderCardsInModal(data) {
+    document.querySelector(`.${data.id}CardsContainer`).innerHTML = returnCardsInModal(data);
 }
 
 function openSubMenu(event, card) {
-    closeAllSubMenus();
+    closeOpenedSubMenu();
+
+    if(event.target.closest('.switchBtn')) return false;
 
     const subMenuDom = card.querySelector('.subMenu');
 
@@ -858,14 +905,22 @@ function openSubMenu(event, card) {
     subMenuDom.classList.remove('hidden');
 }
 
-function closeAllSubMenus() {
-    document.querySelectorAll('.subMenu').forEach(subMenu => {
-        subMenu.classList.add('hidden');
-    });
+function closeOpenedSubMenu() {
+    document.querySelector('.subMenu:not(.hidden)')?.classList.add('hidden');
 }
 
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.card')) {
-        closeAllSubMenus();
+        closeOpenedSubMenu();
     }
 })
+
+// function basicSearch(searchValue) {
+//     if (searchValue == '') return;
+
+//     console.log(searchValue, data.cards);
+// }
+
+function reRenderInfoInModal(specifier, value) {
+    document.querySelector(specifier + ' .main-text').innerHTML = value;
+}

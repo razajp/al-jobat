@@ -81,8 +81,12 @@
             filter: invert(1);
         }
 
-        .bg-\[var\(--primary-color\)\]{
+        .bg-\[var\(--primary-color\)\] {
             color: #e2e8f0 !important;
+        }
+
+        .bg-\[var\(--primary-color\)\] svg {
+            fill: #e2e8f0 !important;
         }
 
         .my-scrollbar-2::-webkit-scrollbar {
@@ -264,6 +268,23 @@
             opacity: 1 !important;
             pointer-events: all !important;
         }
+
+        .switchBtn {
+            display: flex;
+            justify-content: left;
+        }
+
+        .switchBtn .circle {
+            background-color: var(--bg-color);
+        }
+
+        .switchBtn.active {
+            justify-content: right;
+        }
+
+        .switchBtn.active .circle {
+            background-color: var(--secondary-text);
+        }
     </style>
 
     @vite('resources/css/app.css')
@@ -310,6 +331,11 @@
             }).format(number);
             return formatted;
         }
+
+        @if (Auth::check())
+            let menu_shortcuts = JSON.parse(@json(Auth::user()->menu_shortcuts)) || [];
+            const maxShortcutsLimit = 7;
+        @endif
     </script>
 
     <script src="{{ asset('js/components/card.js') }}"></script>
@@ -1189,6 +1215,52 @@
         } else if (event.key === "Escape") {
             input.blur();
         }
+    }
+
+    function switchBtnTogggle(switchBtn) {
+        if (switchBtn.classList.contains('active')) {
+            switchBtn.classList.remove('active');
+            updateMenuCustomization(switchBtn.dataset.for, 'not-active')
+        } else {
+            if (menu_shortcuts.length >= maxShortcutsLimit) {
+                return null;
+            }
+
+            switchBtn.classList.add('active');
+            updateMenuCustomization(switchBtn.dataset.for, 'active')
+        }
+    }
+
+    function updateMenuCustomization(moduleName, newState) {
+        if (newState == 'active' && !menu_shortcuts.includes(moduleName)) {
+            menu_shortcuts.push(moduleName); // moduleName = 'user'
+        } else {
+            menu_shortcuts = menu_shortcuts.filter(item => item !== moduleName);
+        }
+
+        renderMenuShortcuts();
+        reRenderInfoInModal('.menuModalInfo', `Enabled: ${menu_shortcuts.length}/${maxShortcutsLimit}`);
+
+        $.ajax({
+            url: '/update-menu-shortcuts',
+            type: 'POST',
+            data: {
+                menu_shortcuts
+            }, // Optional if you want to send any data, can be left empty
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(response) {
+                console.log(response);
+
+                if (response.status === 'success') {
+                    console.log("Menu shortcuts updated successfully.");
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("Failed to update last activity", error);
+            }
+        });
     }
 </script>
 

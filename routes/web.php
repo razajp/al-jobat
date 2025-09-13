@@ -6,6 +6,7 @@ use App\Http\Controllers\BankAccountController;
 use App\Http\Controllers\BiltyController;
 use App\Http\Controllers\CargoController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\EmployeeController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\PaymentProgramController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\RateController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SalesReturnController;
 use App\Http\Controllers\SetupController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
@@ -103,6 +105,10 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('employees', EmployeeController::class);
     Route::post('update-employee-status', [EmployeeController::class, 'updateStatus'])->name('update-employee-status');
 
+    Route::resource('cr', CRController::class);
+
+    Route::resource('sales-returns', SalesReturnController::class);
+
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
@@ -111,12 +117,15 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-shipment-details', [Controller::class, 'getShipmentDetails'])->name('get-shipment-details');
     Route::post('set-voucher-type', [Controller::class, 'setVoucherType'])->name('set-voucher-type');
     Route::post('set-production-type', [Controller::class, 'setProductionType'])->name('set-production-type');
+    Route::post('get-voucher-details', [Controller::class, 'getVoucherDetails'])->name('get-voucher-details');
+    Route::post('get-payments-by-method', [Controller::class, 'getPaymentsByMethod'])->name('get-payments-by-method');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');
+    Route::post('update-menu-shortcuts', [AuthController::class, 'updateMenuShortcuts'])->name('updateMenuShortcuts');
 
     Route::resource('users', UserController::class);
     Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');

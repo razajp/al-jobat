@@ -98,6 +98,17 @@ class UserSeeder extends Seeder
                 'layout' => null,
                 'invoice_type' => 'order',
             ],
+            [
+                'name' => 'Qasim',
+                'username' => 'qasim',
+                'password' => '$2y$12$yUf5P2b4.YKMflkAKT61.usbLx.4tKanp9MJkHHarMqopJC0OD.nu',
+                'role' => 'accountant',
+                'status' => 'active',
+                'profile_picture' => 'default_avatar.png',
+                'theme' => 'light',
+                'layout' => null,
+                'invoice_type' => 'order',
+            ],
         ];
 
         foreach ($users as $user) {
