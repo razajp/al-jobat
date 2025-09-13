@@ -25,7 +25,7 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $payments = CustomerPayment::with("customer.city", 'cheque.supplier.bankAccounts', 'slip.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
+        $payments = CustomerPayment::with("customer.city", 'cheque.voucher.supplier.bankAccounts', 'slip.voucher.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
 
         $payments->each(function ($payment) {
             if ((($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) && !$payment->is_return) {
@@ -64,6 +64,8 @@ class CustomerPaymentController extends Controller
                     }
                 }
             }
+
+            $payment['customer']['city']['title'] = $payment['customer']['city']['title'] . ' | ' . $payment['customer']['city']['short_title'];
 
             if ($payment['remarks'] == null) {
                 $payment['remarks'] = 'No Remarks';

@@ -348,17 +348,9 @@
                 </div>
             @endif --}}
 
-<<<<<<< HEAD
-            {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
-                <div class="relative group">
-                    <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
-                </div>
-            @endif --}}
-=======
             <div class="relative group">
                 <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
             </div>
->>>>>>> a87488a328ae041d0a83f2064bfef9d958e98089
         </nav>
 
         <div class="relative hidden md:flex group md:pt-3 md:ml-0 md:mt-4 dropdown-trigger">
@@ -392,7 +384,7 @@
                             </a>
                         </li>
                     @endif
-                    {{-- @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
+                    @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
                         <!-- rates -->
                         <li>
                             <a href="{{ route('rates.index') }}"
@@ -401,7 +393,7 @@
                                 Rates
                             </a>
                     </li>
-                    @endif --}}
+                    @endif
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"

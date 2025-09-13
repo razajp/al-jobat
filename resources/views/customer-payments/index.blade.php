@@ -3,6 +3,20 @@
 @section('content')
 @php
     $searchFields = [
+        "Beneficiary" => [
+            "id" => "beneficiary",
+            "type" => "text",
+            "placeholder" => "Enter beneficiary",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "beneficiary",
+        ],
+        "Voucher No." => [
+            "id" => "voucher_no",
+            "type" => "text",
+            "placeholder" => "Enter voucher no.",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "voucher_no",
+        ],
         "Customer Name" => [
             "id" => "customer_name",
             "type" => "text",
@@ -41,6 +55,20 @@
             "onchange" => "runDynamicFilter()",
             "dataFilterPath" => "details.Method",
         ],
+        "Date" => [
+            "id" => "date",
+            "type" => "text",
+            "placeholder" => "Enter date",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "details.Date",
+        ],
+        "Reff. No." => [
+            "id" => "reff_no",
+            "type" => "text",
+            "placeholder" => "Enter reff. no.",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "reff_no",
+        ],
         "Issued" => [
             "id" => "issued",
             "type" => "select",
@@ -62,14 +90,14 @@
             "onchange" => "runDynamicFilter()",
             "dataFilterPath" => "clearStatus",
         ],
-        "Date Range" => [
-            "id" => "date_range_start",
-            "type" => "date",
-            "id2" => "date_range_end",
-            "type2" => "date",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "date",
-        ]
+        // "Date Range" => [
+        //     "id" => "date_range_start",
+        //     "type" => "date",
+        //     "id2" => "date_range_end",
+        //     "type2" => "date",
+        //     "oninput" => "runDynamicFilter()",
+        //     "dataFilterPath" => "details.Date",
+        // ]
     ];
 @endphp
     <div class="w-[80%] mx-auto">
@@ -99,6 +127,7 @@
                             </div> --}}
                             <div id="table-head" class="flex justify-between bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-center w-1/7">Beneficiary</div>
+                                <div class="text-center w-1/10">Voucher No.</div>
                                 <div class="text-center w-1/7">Customer</div>
                                 <div class="text-center w-1/9">Type</div>
                                 <div class="text-center w-1/10">Method</div>
@@ -150,6 +179,7 @@
                     data-json='${JSON.stringify(data)}'>
 
                     <span class="text-center w-1/7">${data.beneficiary}</span>
+                    <span class="text-center w-1/10">${data.voucher_no}</span>
                     <span class="text-center w-1/7">${data.name}</span>
                     <span class="text-center w-1/9">${data.details["Type"]}</span>
                     <span class="text-center w-1/10">${data.details["Method"]}</span>
@@ -177,6 +207,7 @@
                     'Date': formatDate(item.slip_date || item.cheque_date || item.date),
                     'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
+                voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || '-',
                 beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || '-',
                 reff_no: item.cheque_no || item.slip_no || item.transaction_id || item.reff_no || '-',
                 data: item,
