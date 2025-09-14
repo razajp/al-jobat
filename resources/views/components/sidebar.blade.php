@@ -349,7 +349,7 @@
             @endif --}}
 
             <div class="relative group">
-                <x-nav-link-item label="Menu" icon="fas fa-line" onclick="generateMenuModal()" />
+                <x-nav-link-item label="Menu" icon="fas fa-bars" onclick="generateMenuModal()" />
             </div>
         </nav>
 

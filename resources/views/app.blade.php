@@ -1270,7 +1270,7 @@
                 }
             },
             error: function(xhr, status, error) {
-                console.error("Failed to update last activity", error);
+                console.error("Menu shortcuts not updated", error);
             }
         });
     }

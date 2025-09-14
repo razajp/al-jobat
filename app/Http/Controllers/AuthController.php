@@ -74,11 +74,24 @@ class AuthController extends Controller
         }
     }
 
+    // Normal logout
     public function logout(Request $request)
     {
-        UserSession::where('session_token', session()->getId())->update(['is_active' => false]);
-        Auth::logout(); // Log the user out
-        return redirect()->route('login')->with('success', 'Logout successful! You’ve been logged out. See you soon!');
+        if (auth()->check()) {
+            UserSession::where('user_id', auth()->id())
+                ->where('session_token', session()->getId())
+                ->update([
+                    'is_active' => false,
+                    'last_activity' => now(),
+                ]);
+        }
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login')
+            ->with('success', 'Logout successful! You’ve been logged out. See you soon!');
     }
 
     public function updateTheme(Request $request)

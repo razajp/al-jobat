@@ -207,7 +207,7 @@
                     'Date': formatDate(item.slip_date || item.cheque_date || item.date),
                     'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
-                voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || '-',
+                voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || '-',
                 beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || '-',
                 reff_no: item.cheque_no || item.slip_no || item.transaction_id || item.reff_no || '-',
                 data: item,

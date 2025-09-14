@@ -70,6 +70,10 @@ class CustomerPaymentController extends Controller
             if ($payment['remarks'] == null) {
                 $payment['remarks'] = 'No Remarks';
             }
+
+            if ($payment['method'] == 'program' && $payment['program_id']) {
+                $payment['voucher'] = SupplierPayment::where('program_id', $payment['program_id'])->get();
+            }
         }
 
         // $self_accounts = BankAccount::with('bank')->where('category', 'self')->where('status', 'active')->get();

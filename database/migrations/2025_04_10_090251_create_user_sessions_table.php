@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('user_sessions', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->string('session_token')->unique(); // UUID or Laravel session ID
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->string('session_token')->unique();
             $table->timestamp('last_activity')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->timestamps();
         });
     }
 
