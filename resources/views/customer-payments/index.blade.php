@@ -159,6 +159,8 @@
     </section>
 
     <script>
+        let totalAmount = 0;
+        let totalPayment = 0;
         let companyData = @json(app('company'));
         let authLayout = '{{ $authLayout }}';
 
@@ -194,11 +196,9 @@
         }
 
         const fetchedData = @json($payments);
-        console.log(fetchedData);
-
         let allDataArray = fetchedData.map(item => {
-            console.log(item);
-
+            totalAmount += parseFloat(item.amount);
+            totalPayment += parseFloat(item.clear_amount);
             return {
                 id: item.id,
                 name: item.customer.customer_name + ' | ' + item.customer.city.short_title,
@@ -384,11 +384,12 @@
         }
 
         let infoDom = document.getElementById('info').querySelector('span');
-        infoDom.textContent = `Total Records: ${allDataArray.length}`;
 
         function onFilter() {
-            let visibleCount = newlyFilteredData.filter(item => item.visible).length;
-            infoDom.textContent = `Total Records: ${visibleCount}`;
+            totalAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.amount, 0);
+            totalPayment = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.clear_amount, 0);
+
+            infoDom.textContent = `Total Amount: ${formatNumbersWithDigits(totalAmount, 1, 1)} | Total Payment: ${formatNumbersWithDigits(totalPayment, 1, 1)} | Balance: ${formatNumbersWithDigits((totalAmount - totalPayment), 1, 1)}`;
         }
     </script>
 @endsection
