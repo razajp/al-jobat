@@ -311,7 +311,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'cheque') {
                 detailsDom.innerHTML = `
@@ -328,7 +328,7 @@
                     <x-input label="Cheque No" placeholder="Enter cheque no" type="number" name="cheque_no" id="cheque_no" required dataValidate="required|unique:chequeNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
                     <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
@@ -348,7 +348,7 @@
                     <x-input label="Slip No" placeholder="Enter slip no" type="number" name="slip_no" id="slip_no" required dataValidate="required|unique:slipNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
                     <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
@@ -359,7 +359,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'program') {
                 let programSelectDom = document.getElementById('payment_programs');
@@ -404,7 +404,7 @@
                         <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required dataValidate="required|alphanumeric" oninput="validateInput(this)"/>
 
                         {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="required|friendly" oninput="validateInput(this)"/>
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
                     `;
 
                     let bankAccountData = selectedProgramData.sub_category.bank_accounts;

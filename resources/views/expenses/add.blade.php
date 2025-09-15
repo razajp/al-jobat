@@ -89,7 +89,7 @@
 
                         <!-- lot_no -->
                         <x-input label="Lot No." name="last_lot_no" id="last_lot_no" type="number" disabled
-                            value="{{ $lastExpense->lot_no }}" />
+                            value="{{ $lastExpense->lot_no ?? '-' }}" />
 
                         {{-- remarks --}}
                         <x-input label="Remarks" name="last_remarks" id="last_remarks" type="text" disabled

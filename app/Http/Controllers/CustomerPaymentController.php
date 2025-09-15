@@ -20,70 +20,85 @@ class CustomerPaymentController extends Controller
      */
     public function index(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
+        }
 
-        $payments = CustomerPayment::with("customer.city", 'cheque.voucher.supplier.bankAccounts', 'slip.voucher.supplier.bankAccounts', 'bankAccount', 'paymentClearRecord')->whereNotNull('customer_id')->get();
+        $payments = CustomerPayment::with(
+            "customer.city",
+            "cheque.voucher.supplier.bankAccounts",
+            "slip.voucher.supplier.bankAccounts",
+            "bankAccount",
+            "paymentClearRecord"
+        )
+            ->whereNotNull("customer_id")
+            ->get();
 
         $payments->each(function ($payment) {
-            if ((($payment->cheque()->exists() || $payment->slip()->exists()) || (($payment->method == 'cheque' || $payment->method == 'slip') && $payment->bank_account_id != null)) && !$payment->is_return) {
-                $payment['issued'] = 'Issued';
-            } else if ($payment->is_return) {
-                $payment['issued'] = 'Return';
+            if ((($payment->cheque()->exists() || $payment->slip()->exists()) ||
+                    (($payment->method == "cheque" || $payment->method == "slip") && $payment->bank_account_id != null)) &&
+                !$payment->is_return
+            ) {
+                $payment->issued = "Issued";
+            } elseif ($payment->is_return) {
+                $payment->issued = "Return";
             } else {
-                $payment['issued'] = 'Not Issued';
+                $payment->issued = "Not Issued";
             }
         });
 
         foreach ($payments as $payment) {
-            if ($payment['clear_date'] == null) {
-                if ($payment['type'] == 'cheque' || $payment['type'] == 'slip') {
-                    $payment['clear_date'] = 'Pending';
+            // Clear date pending check
+            if ($payment->clear_date === null) {
+                if ($payment->type == "cheque" || $payment->type == "slip") {
+                    $payment->clear_date = "Pending";
                 }
             }
 
-            if ($payment['cheque'] && $payment['cheque']['supplier_id']) {
-                $payment['cheque']['supplier'] = Supplier::with('bankAccounts')->find($payment['cheque']['supplier_id']);
+            // Load supplier if cheque has supplier_id
+            if ($payment->cheque && $payment->cheque->supplier_id) {
+                $payment->cheque->supplier = Supplier::with("bankAccounts")->find($payment->cheque->supplier_id);
             }
 
-            if ($payment['clear_date'] !== null && $payment['clear_date'] !== 'Pending' ) {
-                $payment['clear_amount'] = $payment['amount'];
+            // Clear amount logic
+            if ($payment->clear_date !== null && $payment->clear_date !== "Pending") {
+                $payment->clear_amount = $payment->amount;
             } else {
-                if (!empty($payment['paymentClearRecord'])) {
-                    $clearAmount = collect($payment['paymentClearRecord'])->sum('amount');
-                    $payment['clear_amount'] = $clearAmount;
+                if (!empty($payment->paymentClearRecord)) {
+                    $clearAmount = collect($payment->paymentClearRecord)->sum("amount");
+                    $payment->clear_amount = $clearAmount;
 
-                    if (floatval($clearAmount) >= floatval($payment['amount'])) {
-                        // Get last partial record's clear date
-                        $lastPartial = collect($payment['paymentClearRecord'])->last();
-                        if (isset($lastPartial['clear_date'])) {
-                            $payment['clear_date'] = $lastPartial['clear_date'];
+                    if (floatval($clearAmount) >= floatval($payment->amount)) {
+                        $lastPartial = collect($payment->paymentClearRecord)->last();
+                        if (isset($lastPartial["clear_date"])) {
+                            $payment->clear_date = $lastPartial["clear_date"];
                         }
                     }
                 }
             }
 
-            $payment['customer']['city']['title'] = $payment['customer']['city']['title'] . ' | ' . $payment['customer']['city']['short_title'];
-
-            if ($payment['remarks'] == null) {
-                $payment['remarks'] = 'No Remarks';
+            // City title formatting
+            if ($payment->customer && $payment->customer->city) {
+                $payment->customer->city->title =
+                    $payment->customer->city->title . " | " . $payment->customer->city->short_title;
             }
 
-            if ($payment['method'] == 'program' && $payment['program_id']) {
-                $payment['voucher'] = SupplierPayment::where('program_id', $payment['program_id'])->get();
+            // Remarks fallback
+            if ($payment->remarks === null) {
+                $payment->remarks = "No Remarks";
+            }
+
+            // Handle program vouchers
+            if ($payment->method == "program" && $payment->program_id) {
+                $supplierPayment = SupplierPayment::where("program_id", $payment->program_id)
+                    ->where("supplier_id", $payment->bankAccount->sub_category_id ?? null)
+                    ->where("transaction_id", $payment->transaction_id ?? null)
+                    ->with("voucher")
+                    ->first();
+
+                $payment->voucher = $supplierPayment?->voucher; // assign directly as object (or null)
             }
         }
-
-        // $self_accounts = BankAccount::with('bank')->where('category', 'self')->where('status', 'active')->get();
-        // $self_accounts_options = [];
-
-        // foreach ($self_accounts as $self_account) {
-        //     $self_accounts_options[(int)$self_account->id] = [
-        //         'text' => $self_account->account_title . ' | ' . $self_account->bank->short_title,
-        //     ];
-        // }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
