@@ -18,7 +18,7 @@ class SupplierController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
         $suppliers = Supplier::with('user')->get();
@@ -27,7 +27,7 @@ class SupplierController extends Controller
             // foreach ($supplier['orders'] as $order) {
             //     $supplier['totalAmount'] += $order->netAmount;
             // }
-            
+
             // foreach ($supplier['payments'] as $payment) {
             //     $supplier['totalPayment'] += $payment->amount;
             // }
@@ -42,24 +42,24 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $categories_options[strtolower($supplier_category->short_title)] = ['text' => $supplier_category->title];
+            $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
-        
+
         // foreach ($suppliers as $supplier) {
         //     // Decode JSON array of category IDs
         //     $categoriesIdArray = json_decode($supplier->categories_array, true);
-    
+
         //     // Fetch categories from Setups model
         //     $categories = Setup::whereIn('id', $categoriesIdArray)
         //         ->where('type', 'supplier_category')
         //         ->get();
-    
+
         //     // Attach the categories to the supplier
         //     $supplier["categories"] = $categories;
         // }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
-    
+
         // return $suppliers;
         return view("suppliers.index", compact('suppliers', 'categories_options', 'authLayout'));
     }
@@ -73,7 +73,7 @@ class SupplierController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $suppliers = Supplier::with('user')->get();
         $supplier_categories = Setup::where('type','supplier_category')->get();
 
@@ -96,7 +96,7 @@ class SupplierController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
             'urdu_title' => 'nullable|string|max:255',
@@ -108,12 +108,12 @@ class SupplierController extends Controller
             'date' => 'required|string',
             'categories_array' => 'required|json',
         ]);
-        
+
         // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-            
+
         $data = $request->all();
         $data['password'] = Hash::make($data['password']); // Hash the password
 
@@ -143,7 +143,7 @@ class SupplierController extends Controller
             'date' => $data['date'],
             'categories_array' => $data['categories_array'],
         ]);
-        
+
         return redirect()->route('suppliers.create')->with('success', 'Supplier created successfully.');
     }
 
@@ -181,12 +181,12 @@ class SupplierController extends Controller
             'phone_number' => 'required|string|max:255',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
-        
+
         // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-            
+
         $data = $request->all();
 
         $user = User::where('username', $supplier->user->username)->first();
@@ -214,7 +214,7 @@ class SupplierController extends Controller
         $supplier->update([
             'phone_number' => $data['phone_number'],
         ]);
-        
+
         return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
     }
 
@@ -231,19 +231,19 @@ class SupplierController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // Validate input first
         $validator = Validator::make($request->all(), [
             'supplier_id' => 'integer|required|exists:suppliers,id',
             'categories_array' => 'required|json',
         ]);
-    
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $data = $request->all();
-    
+
         Supplier::where('id', $request->supplier_id)->update(['categories_array' => $data['categories_array']]);
 
         return redirect()->route('suppliers.index')->with('success', 'Categoies updated successfully');
