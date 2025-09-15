@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
+use App\Models\Customer;
 use App\Models\SalesReturn;
 use Illuminate\Http\Request;
 
@@ -20,7 +22,53 @@ class SalesReturnController extends Controller
      */
     public function create()
     {
-        return view('sales-return.return');
+        // $customerOptions = [
+        //     'guest' => ['text' => 'Guest'],
+        //     'accountant' => ['text' => 'Accountant'],
+        //     'store_keeper' => ['text' => 'Store Keeper '],
+        // ];
+
+        $customers = Customer::whereHas('user', function ($query) {
+                    $query->where('status', 'active');
+                })->get()->makeHidden('creator');
+
+        $customerOptions = $customers->mapWithKeys(function ($customer) {
+            return [$customer->id => ['text' => $customer->customer_name]];
+        })->toArray();
+
+        return view('sales-return.return', compact('customerOptions'));
+    }
+
+    public function getDetails(Request $request)
+    {
+        if ($request->customer_id && $request->getArticles) {
+            $articles = Article::where('sold_quantity', '>', 0)->select(['id', 'article_no'])->get();
+
+            return $articles;
+        }
+        // $customerId = $request->input('customer_id');
+
+        // $customer = Customer::with(['user' => function ($query) {
+        //     $query->where('status', 'active');
+        // }])->find($customerId);
+
+        // if ($customer) {
+        //     return response()->json([
+        //         'status' => 'success',
+        //         'data' => [
+        //             'customer_name' => $customer->customer_name,
+        //             'contact_person' => $customer->contact_person,
+        //             'phone' => $customer->phone,
+        //             'email' => $customer->email,
+        //             'address' => $customer->address,
+        //         ],
+        //     ]);
+        // } else {
+        //     return response()->json([
+        //         'status' => 'error',
+        //         'message' => 'Customer not found or inactive.',
+        //     ], 404);
+        // }
     }
 
     /**

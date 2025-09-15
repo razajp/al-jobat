@@ -314,7 +314,7 @@ function createModal(data, animate = 'animate') {
             <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-auto w-full overflow-y-auto my-scrollbar-2">
                 <div class="flex justify-between">
                     <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold leading-[1.5]">${data.cards.name}</h5>
-                    ${data.basicSearch ? `<div class="form-group relative">
+                    ${data.basicSearch ? `<div class="form-group relative" id="basicSearch">
                         <div class="relative flex gap-2 w-sm pt-0.5">
                             <input
                                 type="text"
@@ -820,6 +820,8 @@ function createModal(data, animate = 'animate') {
             document.querySelector(`#${field.focus}`).focus();
         }
     })
+
+    data.basicSearch ? document.querySelector('#basicSearch input').focus() : '';
 }
 
 function renderTableBody(tableBody) {
