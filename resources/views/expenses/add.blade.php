@@ -117,7 +117,10 @@
 
                 const supplierCategories = selectedSupplierData.categories;
 
-                let expenseOptions = "";
+                let expenseOptions = `
+                    <li data-for="expense" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">-- Select Expense --</li>
+                `;
+
                 supplierCategories.forEach(category => {
                     console.log(category);
                     expenseOptions += `

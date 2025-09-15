@@ -28,50 +28,48 @@
                     <x-input label="Balance" id="balance" disabled value="{{ $expense->supplier->balance }}" />
 
                     {{-- expense --}}
-                    <x-select label="Expense" name="expense" id="expense" required showDefault />
+                    <x-select label="Expense" name="expense" id="expense" required />
 
                     <!-- reff_no -->
-                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no"
-                        required />
+                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no" required value="{{ $expense->reff_no }}" />
 
                     <!-- amount -->
-                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount "
-                        required />
+                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required value="{{ $expense->amount }}" />
 
                     <!-- lot_no -->
-                    <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no" />
+                    <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no" value="{{ $expense->lot_no }}" />
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />
+                    <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" value="{{ $expense->remarks }}" />
                 </div>
             </div>
 
             <div class="w-full flex justify-end mt-4">
                 <button type="submit"
                     class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all 0.3s ease-in-out cursor-pointer">
-                    <i class='fas fa-save mr-1'></i> Save
+                    <i class='fas fa-save mr-1'></i> Update
                 </button>
             </div>
         </form>
     </div>
 
     <script>
-        const expenseSelect = document.getElementById('expense');
         const selectedExpense = "{{ $expense->expense }}";
 
         function supplierSelected(supplier) {
+            const expenseSelect = document.getElementById('expense');
             const selectedSupplierData = JSON.parse(supplier);
             console.log(selectedSupplierData);
 
             const supplierCategories = selectedSupplierData.categories;
 
-            let expenseOptions = "";
+            let expenseOptions = `
+                <li data-for="expense" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">-- Select Expense --</li>
+            `;
 
             supplierCategories.forEach(category => {
-                console.log(category.id == parseInt(selectedExpense));
-
                 expenseOptions += `
-                    <li data-for="expense" data-value="${category.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ${category.id == parseInt(selectedExpense) ? 'selected' : ''}">${category.title}</li>
+                    <li data-for="expense" data-value="${category.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">${category.title}</li>
                 `;
             });
             expenseOptions += `
@@ -83,5 +81,13 @@
         }
 
         supplierSelected(document.getElementById('supplier').value);
+
+        window.onload = function () {
+            selectThisOption(
+                document.getElementById("expense")
+                    .parentElement.parentElement.parentElement
+                    .querySelector(`ul li[data-value="${selectedExpense}"]`)
+            );
+        };
     </script>
 @endsection

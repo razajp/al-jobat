@@ -111,7 +111,8 @@
             <x-form-title-bar title="Show Customer Payments" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($payments) > 0)
-                <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                    <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                     <x-section-navigation-button link="{{ route('customer-payments.create') }}" title="Add New Payment" icon="fa-plus" />
                 </div>
 
@@ -380,6 +381,14 @@
             }
 
             createModal(modalData);
+        }
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Total Records: ${allDataArray.length}`;
+
+        function onFilter() {
+            let visibleCount = newlyFilteredData.filter(item => item.visible).length;
+            infoDom.textContent = `Total Records: ${visibleCount}`;
         }
     </script>
 @endsection

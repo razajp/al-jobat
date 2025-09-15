@@ -107,7 +107,7 @@ class ExpenseController extends Controller
      */
     public function edit(Expense $expense)
     {
-        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
@@ -119,7 +119,29 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, Expense $expense)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'expense' => 'required|exists:setups,id',
+            'reff_no' => 'required|integer',
+            'amount' => 'required|integer|min:0',
+            'lot_no' => 'nullable|integer',
+            'remarks' => 'nullable|string|max:255'
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        // Update the customer
+        $expense->update($data);
+
+        return redirect()->route('expenses.index')->with('success', 'Expense updated successfully.');
     }
 
     /**
@@ -128,10 +150,5 @@ class ExpenseController extends Controller
     public function destroy(Expense $expense)
     {
         //
-    }
-
-    public function getSupplierData(Request $request)
-    {
-        return "done hai";
     }
 }
