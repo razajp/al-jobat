@@ -44,7 +44,7 @@
     <div class="w-[80%] mx-auto">
         <x-search-header heading="Expenses" :search_fields=$searchFields/>
     </div>
-    
+
     <!-- Main Content -->
     <section class="text-center mx-auto ">
         <div
@@ -119,8 +119,50 @@
                 lot_no: item.lot_no || '-',
                 amount: formatNumbersWithDigits(item.amount, 1, 1),
                 remarks: item.remarks || 'No Remarks',
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
                 visible: true,
             };
         });
+
+        function generateContextMenu(e) {
+            e.preventDefault();
+            let item = e.target.closest('.item');
+            let data = JSON.parse(item.dataset.json);
+
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                actions: [
+                    {id: 'edit', text: 'Edit Expense'}
+                ],
+            };
+
+            createContextMenu(contextMenuData);
+        }
+
+        function generateModal(item) {
+            let data = JSON.parse(item.dataset.json);
+
+            let modalData = {
+                id: 'modalForm',
+                name: data.supplier_name,
+                details: {
+                    'Date': data.date,
+                    'Reff. No.': data.reff_no,
+                    'Expense': data.expense,
+                    'Lot No.': data.lot_no,
+                    'Amount': data.amount,
+                    'Remarks': data.remarks,
+                },
+                bottomActions: [
+                    {id: 'edit', text: 'Edit Expense', dataId: data.id}
+                ],
+            }
+
+            createModal(modalData);
+        }
     </script>
 @endsection

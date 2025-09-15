@@ -2,7 +2,7 @@
 @section('title', 'Add Article | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
-    <!-- Progress Bar -->
+    <!-- header -->
     <div class="mb-5 max-w-5xl mx-auto">
         <x-search-header heading="Add Expense" link linkText="Show Expenses" linkHref="{{ route('expenses.index') }}" />
     </div>
@@ -112,7 +112,7 @@
             const selectedOptionDataset = supplierElem.parentElement.parentElement.parentElement?.querySelector('ul li.selected').dataset.option;
             if (selectedOptionDataset) {
                 const selectedSupplierData = JSON.parse(selectedOptionDataset);
-                
+
                 balanceInput.value = selectedSupplierData.balance || '0.00';
 
                 const supplierCategories = selectedSupplierData.categories;

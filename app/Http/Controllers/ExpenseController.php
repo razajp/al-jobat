@@ -107,7 +107,11 @@ class ExpenseController extends Controller
      */
     public function edit(Expense $expense)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        return view('expenses.edit', compact('expense'));
     }
 
     /**
