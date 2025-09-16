@@ -1235,6 +1235,10 @@
             updateMenuCustomization(switchBtn.dataset.for, 'not-active')
         } else {
             if (menu_shortcuts.length >= maxShortcutsLimit) {
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'You have reached the maximum limit of ${maxShortcutsLimit} shortcuts.'" />
+                `;
+                messageBoxAnimation();
                 return null;
             }
 

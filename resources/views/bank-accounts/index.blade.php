@@ -170,7 +170,9 @@
                 y: e.pageY,
             };
 
-            if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
+            console.log(data);
+
+            if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') && data.details['Category'] === 'self') {
                 contextMenuData.actions = [
                     {id: 'update-cheque-book-serial', text: 'Update Serial', onclick: `generateUpdateChequeBookSerialModel(${JSON.stringify(data)})`},
                 ];

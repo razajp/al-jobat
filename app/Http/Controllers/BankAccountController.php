@@ -172,6 +172,23 @@ class BankAccountController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        return $account;
+        $validator = Validator::make($request->all(), [
+            'cheque_book_serial' => 'nullable|array',
+            'cheque_book_serial.start' => 'nullable|numeric',
+            'cheque_book_serial.end' => 'nullable|numeric|gte:cheque_book_serial.start',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $chqbk_serial_start = $request->input('cheque_book_serial.start');
+        $chqbk_serial_end = $request->input('cheque_book_serial.end');
+
+        $account->chqbk_serial_start = $chqbk_serial_start;
+        $account->chqbk_serial_end = $chqbk_serial_end;
+        $account->save();
+
+        return redirect()->route('bank-accounts.index')->with('success', 'Serial updated successfully!');
     }
 }

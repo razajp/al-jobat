@@ -62,10 +62,20 @@ class BankAccount extends Model
     {
         return $this->hasOne(BankAccount::class, 'id');
     }
+
     public function getAvailableChequesAttribute()
     {
         if ($this->category !== 'self') {
             return null;
+        }
+
+        // Ensure serial start and end are valid numbers
+        $start = (int) $this->chqbk_serial_start;
+        $end = (int) $this->chqbk_serial_end;
+
+        if ($start <= 0 || $end <= 0 || $end < $start) {
+            // Invalid or missing serials → return empty array
+            return [];
         }
 
         // Get all the used cheques for this bank account
@@ -74,8 +84,6 @@ class BankAccount extends Model
             ->toArray();
 
         // Generate full range of cheque numbers
-        $start = (int) $this->chqbk_serial_start;
-        $end = (int) $this->chqbk_serial_end;
         $fullRange = range($start, $end);
 
         // Filter out the used ones
@@ -84,7 +92,6 @@ class BankAccount extends Model
         // Return available cheque numbers
         return array_values($available);
     }
-
     public function getBalanceAttribute()
     {
         return $this->calculateBalance();
