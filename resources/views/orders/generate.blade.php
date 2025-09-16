@@ -609,11 +609,11 @@
         function populateOptions(customers_options) {
             const customerSelectDom = document.getElementById('customer_id');
             customerSelectDom.disabled = false;
-            customerSelectDom.parentElement.parentElement.parentElement.querySelector('input[id="customer_id"]').value = "-- Select Customer --";
+            customerSelectDom.value = "-- Select Customer --";
             const dropdownUl = customerSelectDom.parentElement.parentElement.parentElement.querySelector('ul');
             dropdownUl.innerHTML = ""; // Clear existing options
             optionsHTML = `
-                <li data-for="customer_id" data-value="" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected">-- Select Customer --</li>
+                <li data-for="customer_id" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected">-- Select Customer --</li>
             `;
             customers_options.forEach(customer => {
                 optionsHTML += `
