@@ -111,21 +111,14 @@
             <x-form-title-bar title="Show Customer Payments" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($payments) > 0)
-                <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                <div class="absolute bottom-14 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
                     <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                     <x-section-navigation-button link="{{ route('customer-payments.create') }}" title="Add New Payment" icon="fa-plus" />
                 </div>
 
                 <div class="details h-full z-40">
                     <div class="container-parent h-full">
-                        <div class="card_container px-3 h-full flex flex-col">
-                            {{-- <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-center">Customer</div>
-                                <div class="text-center">Type</div>
-                                <div class="text-center">Method</div>
-                                <div class="text-center">Date</div>
-                                <div class="text-center">Amount</div>
-                            </div> --}}
+                        <div class="card_container px-3 pb-3 h-full flex flex-col">
                             <div id="table-head" class="flex justify-between bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-center w-1/7">Beneficiary</div>
                                 <div class="text-center w-1/10">Voucher No.</div>
@@ -142,6 +135,23 @@
                             <div class="overflow-y-auto grow my-scrollbar-2">
                                 <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
                                     {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
+                                </div>
+                            </div>
+                            <div id="calc-bottom" class="flex w-full gap-4 text-sm bg-[var(--secondary-bg-color)] py-2 rounded-lg">
+                                <div
+                                    class="total-Amount flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Total Amount - Rs.</div>
+                                    <div class="text-right">0.00</div>
+                                </div>
+                                <div
+                                    class="total-Payment flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Total Payment - Rs.</div>
+                                    <div class="text-right">0.00</div>
+                                </div>
+                                <div
+                                    class="balance flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Balance - Rs.</div>
+                                    <div class="text-right">0.00</div>
                                 </div>
                             </div>
                         </div>
@@ -165,17 +175,6 @@
         let authLayout = '{{ $authLayout }}';
 
         function createRow(data) {
-            // return `
-            // <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-            //     class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
-            //     data-json='${JSON.stringify(data)}'>
-
-            //     <span class="text-center">${data.name}</span>
-            //     <span class="text-center">${data.details["Type"]}</span>
-            //     <span class="text-center">${data.details["Method"]}</span>
-            //     <span class="text-center">${data.details['Date']}</span>
-            //     <span class="text-center">${data.details['Amount']}</span>
-            // </div>`;
             return `
                 <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
                     class="item row relative group flex justify-between border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
@@ -385,13 +384,19 @@
             createModal(modalData);
         }
 
+        let totalAmountDom = document.querySelector('#calc-bottom >.total-Amount .text-right');
+        let totalPaymentDom = document.querySelector('#calc-bottom >.total-Payment .text-right');
+        let balanceDom = document.querySelector('#calc-bottom >.balance .text-right');
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
             totalAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.amount, 0);
             totalPayment = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.clear_amount, 0);
+            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
 
-            infoDom.textContent = `Total Amount: ${formatNumbersWithDigits(totalAmount, 1, 1)} | Total Payment: ${formatNumbersWithDigits(totalPayment, 1, 1)} | Balance: ${formatNumbersWithDigits((totalAmount - totalPayment), 1, 1)}`;
+            totalAmountDom.innerText = formatNumbersWithDigits(totalAmount, 1, 1);
+            totalPaymentDom.innerText = formatNumbersWithDigits(totalPayment, 1, 1);
+            balanceDom.innerText = formatNumbersWithDigits(totalAmount - totalPayment, 1, 1);
         }
     </script>
 @endsection

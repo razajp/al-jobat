@@ -797,10 +797,10 @@
 
             if (isGrid) {
                 tableHead.classList.add("hidden");
-                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2 pb-4";
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2";
             } else {
                 tableHead.classList.remove("hidden");
-                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3 pb-4";
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3";
             }
 
             search_container.innerHTML = "";
@@ -1037,10 +1037,10 @@
         function renderData() {
             if (authLayout == "grid") {
                 tableHead.classList.add("hidden");
-                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2 pb-4";
+                search_container.classList = "search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 pt-4 px-2 overflow-y-auto grow my-scrollbar-2";
             } else {
                 tableHead.classList.remove("hidden");
-                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3 pb-4";
+                search_container.classList = "search_container overflow-y-auto grow my-scrollbar-2 mx-2 mb-3";
             }
             search_container.innerHTML = "";
             startIndex = 0;
