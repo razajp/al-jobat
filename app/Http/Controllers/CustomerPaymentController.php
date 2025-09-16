@@ -319,4 +319,44 @@ class CustomerPaymentController extends Controller
 
         return redirect()->back()->with('success', 'Payment partial cleared successfully.');
     }
+
+    public function split(Request $request, CustomerPayment $payment)
+    {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            'reff_no'      => 'required|string',
+            'new_reff_no'  => 'required|string',
+            'split_amount' => 'required|integer|min:1|max:' . ($payment->amount - 1),
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $data = $request->all();
+
+        // Choose field name based on payment method
+        $reffField = match ($payment->method) {
+            'cheque'   => 'cheque_no',
+            'slip'     => 'slip_no',
+            'program'  => 'transaction_id',
+            default    => 'reff_no',
+        };
+
+        // Step 1: Update original payment
+        $payment->$reffField = $data['reff_no'];
+        $payment->amount = $payment->amount - $data['split_amount'];
+        $payment->save();
+
+        // Step 2: Create duplicate payment with split amount
+        $newPayment = $payment->replicate(); // copy all attributes
+        $newPayment->amount = $data['split_amount'];
+        $newPayment->$reffField = $data['new_reff_no'];
+        $newPayment->save();
+
+        return redirect()->back()->with('success', 'Payment split successfully.');
+    }
 }

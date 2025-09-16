@@ -336,6 +336,12 @@
                 }
             }
 
+            if (data.data.issued !== "Issued" && data.data.method !== "cash") {
+                contextMenuData.actions.push(
+                    {id: 'split-payment', text: 'Split Payment', onclick: `generateSplitPaymentModal(${JSON.stringify(data.data)})`},
+                );
+            }
+
             createContextMenu(contextMenuData);
         }
 
@@ -381,7 +387,106 @@
                 }
             }
 
+            if (data.data.issued !== "Issued" && data.data.method !== "cash") {
+                modalData.bottomActions.push(
+                    {id: 'split-payment', text: 'Split Payment', onclick: `generateSplitPaymentModal(${JSON.stringify(data.data)})`},
+                );
+            }
+
             createModal(modalData);
+        }
+
+        function generateReffNos(rawReffNo, count = 2) {
+            let base, startNum;
+
+            // Normalize separator → sabko "|" mein badal do
+            rawReffNo = rawReffNo.toString().replace('/', '|').trim();
+
+            // Agar already "| n" hai
+            if (rawReffNo.includes('|')) {
+                let [b, n] = rawReffNo.split('|').map(s => s.trim());
+                base = b;
+                startNum = parseInt(n, 10);
+            } else {
+                base = rawReffNo;
+                startNum = 0;
+            }
+
+            // References generate karo
+            let refs = [];
+            for (let i = 1; i <= count; i++) {
+                refs.push(`${base} | ${startNum + i}`);
+            }
+
+            return refs;
+        }
+
+        function generateSplitPaymentModal(data) {
+            let rawReffNo = data.cheque_no || data.slip_no || data.transaction_id || data.reff_no || '-';
+            let modalData = {
+                id: 'splitModalForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ url("customer-payments") }}/' + data.id + '/split',
+                name: 'Payment Split',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Customer',
+                        value: data.customer.customer_name + ' | ' + data.customer.city.short_title,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Method',
+                        name: 'method',
+                        value: data.method,
+                        readonly: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Amount',
+                        value: formatNumbersWithDigits(data.amount, 1, 1),
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Reff. No.',
+                        name: 'reff_no',
+                        value: generateReffNos(rawReffNo, 2)[0],
+                        readonly: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'New Reff. No.',
+                        name: 'new_reff_no',
+                        value: generateReffNos(rawReffNo, 2)[1],
+                        readonly: true,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Split Amount',
+                        name: 'split_amount',
+                        id: 'split_amount',
+                        type: 'number',
+                        placeholder: 'Enter split amount',
+                        oninput: `validateSplitAmount(this, ${data.amount - 1})`,
+                        required: true,
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'split-payment-btn', text: 'Split Payment', type: 'submit'}
+                ]
+            }
+
+            createModal(modalData);
+        }
+
+        function validateSplitAmount(input, maxAmount) {
+            if (parseFloat(input.value) > parseFloat(maxAmount)) {
+                input.value = maxAmount;
+            }
         }
 
         let totalAmountDom = document.querySelector('#calc-bottom >.total-Amount .text-right');
