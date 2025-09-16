@@ -21,7 +21,7 @@
                 <x-select label="Customer" name="customer" id="customer" :options="$customerOptions" showDefault onchange="onCustomerSelect(this)" />
 
                 {{-- Article --}}
-                <x-select label="Article" name="article" id="article" :options="[]" showDefault disabled />
+                <x-select label="Article" name="article" id="article" :options="[]" showDefault disabled onchange="onArticleSelect(this)" />
 
                 {{-- Invoice --}}
                 <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled />
@@ -50,20 +50,75 @@
                         _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
-                        console.log(response);
-                        const articleSelectDropdown = document.getElementById('article').parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
+                        const articleSelect = document.getElementById('article');
+                        articleSelect.disabled = false;
 
-                        let clutter = '<li data-for="article" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Customer --</li>';
+                        const articleSelectDropdown = articleSelect.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
+                        articleSelectDropdown.innerHTML = '';
+                        let clutter = '<li data-for="article" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Article --</li>';
                         response.forEach(article => {
                             clutter += `<li data-for="article" data-value="${article.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${article.article_no}</li>`;
                         });
                         articleSelectDropdown.innerHTML = clutter;
-                        document.getElementById('article').disabled = false;
+
+                        const firstOption = articleSelectDropdown.querySelector('li');
+                        if (firstOption) {
+                            selectThisOption(firstOption);
+                        }
                     },
                     error: function(xhr) {
                         console.error('Error fetching details:', xhr);
                     }
                 });
+            } else {
+                const articleSelect = document.getElementById('article');
+                articleSelect.disabled = true;
+            }
+        }
+
+        function onArticleSelect(selectElement) {
+            const selectedArticleId = selectElement.value;
+            const customerId = document.querySelector('.dbInput[data-for="customer"]').value;
+
+            if (selectedArticleId && customerId) {
+                $.ajax({
+                    url: "{{ route('sales-returns.get-details') }}",
+                    type: 'POST',
+                    data: {
+                        customer_id: customerId,
+                        article_id: selectedArticleId,
+                        getInvoices: true,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        console.log(response);
+                        // const invoiceSelect = document.getElementById('invoice');
+                        // invoiceSelect.disabled = false;
+
+                        // const invoiceSelectDropdown = invoiceSelect.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
+                        // invoiceSelectDropdown.innerHTML = '';
+                        // let clutter = '<li data-for="invoice" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Invoice --</li>';
+                        // response.forEach(invoice => {
+                        //     clutter += `<li data-for="invoice" data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} (Qty: ${invoice.quantity})</li>`;
+                        // });
+                        // invoiceSelectDropdown.innerHTML = clutter;
+
+                        // const firstOption = invoiceSelectDropdown.querySelector('li');
+                        // if (firstOption) {
+                        //     selectThisOption(firstOption);
+                        // }
+
+                        // // Enable quantity input
+                        // document.getElementById('quantity').disabled = false;
+                    },
+                    error: function(xhr) {
+                        console.error('Error fetching details:', xhr);
+                    }
+                });
+            } else {
+                // const invoiceSelect = document.getElementById('invoice');
+                // invoiceSelect.disabled = true;
+                // document.getElementById('quantity').disabled = true;
             }
         }
     </script>

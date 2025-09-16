@@ -45,6 +45,18 @@ class SalesReturnController extends Controller
             $articles = Article::where('sold_quantity', '>', 0)->select(['id', 'article_no'])->get();
 
             return $articles;
+        } else if ($request->customer_id && $request->article_id && $request->getInvoices) {
+            $customer = Customer::find($request->customer_id);
+
+            if ($customer) {
+                $invoices = $customer->invoices()->get()->filter(function ($invoice) use ($request) {
+                    return collect($invoice->articles_in_invoice)
+                        ->pluck('id')
+                        ->contains((int) $request->article_id);
+                });
+
+                return [$invoices, $request->article_id, $customer->invoices()->get()];
+            }
         }
         // $customerId = $request->input('customer_id');
 
