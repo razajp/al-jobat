@@ -159,12 +159,11 @@ class ProductionController extends Controller
 
             $work = Setup::find($request->work_id);
 
+            $data['ticket'] = 'TEMP';
             $production = Production::create($data);
 
             $ticket = $work->short_title . str_pad($production->id, 3, '0', STR_PAD_LEFT);
-
-            $production->ticket = $ticket;
-            $production->save();
+            $production->update(['ticket' => $ticket]);
         }
 
         $issueOrReceive = '';

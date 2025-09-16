@@ -22,11 +22,11 @@
     <div class="row max-w-6xl mx-auto flex gap-4">
         <!-- Form -->
         <form id="form" action="{{ route('customer-payments.store') }}" method="post"
-            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-7 border border-[var(--h-bg-color)] pt-12 w-[60%] mx-auto relative overflow-hidden">
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-7 border border-[var(--h-bg-color)] pt-12 w-[70%] mx-auto relative overflow-hidden">
             @csrf
             <x-form-title-bar title="Add Customer Payment" />
 
-            <div class="step space-y-4 overflow-y-auto max-h-[55vh] p-1 my-scrollbar-2">
+            <div class="step space-y-4 overflow-y-auto max-h-[65vh] p-1 my-scrollbar-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- customer --}}
                     <x-select
@@ -59,7 +59,6 @@
                     <div class="col-span-full">
                         <div id="details-inputs-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-full">
                         </div>
-
                         {{-- method --}}
                         <x-select
                             label="Method"
@@ -73,7 +72,7 @@
 
                         <hr class="border-gray-600 my-3">
 
-                        <div id="details" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div id="details" class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         </div>
                     </div>
@@ -87,7 +86,7 @@
             </div>
         </form>
 
-        <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--glass-border-color)]/20 w-[40%] pt-12 relative overflow-hidden fade-in">
+        <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--glass-border-color)]/20 w-[35%] pt-12 relative overflow-hidden fade-in">
             <x-form-title-bar title="Last Record" />
 
             <!-- Step last record -->
@@ -263,7 +262,7 @@
 
                 let allProgramsArray = JSON.parse(typeSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
 
-                detailsInputsContainer.innerHTML = `
+                detailsInputsContainer.innerHTML += `
                     <div class="col-span-full">
                         {{-- payment_programs --}}
                         <x-select
@@ -414,7 +413,7 @@
                         bankAccountsSelect.disabled = false;
                         bankAccountsSelect.value = '-- Select Bank Account --';
                         bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML = `
-                            <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>
+                     <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>       
                         `;
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {

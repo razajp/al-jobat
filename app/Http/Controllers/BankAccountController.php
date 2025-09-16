@@ -21,7 +21,7 @@ class BankAccountController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $bankAccounts = BankAccount::with('subCategory', 'bank')->get();
+        $bankAccounts = BankAccount::with('subCategory', 'bank')->orderBy('id', 'desc')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
@@ -63,7 +63,7 @@ class BankAccountController extends Controller
             'category' => 'required|in:self,supplier,customer',
             'sub_category' => 'nullable|integer',
             'bank_id' => 'required|string',
-            'account_title' => 'required|string|unique:bank_accounts,account_title',
+            'account_title' => 'required|string',
             'date' => 'required|date',
             'remarks' => 'nullable|string',
             'account_no' => 'nullable|string|unique:bank_accounts,account_no',

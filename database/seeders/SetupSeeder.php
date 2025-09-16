@@ -22,6 +22,7 @@ class SetupSeeder extends Seeder
             ['short_title' => 'PVT', 'title' => 'Private',       'type' => 'supplier_category'],
             ['short_title' => 'SRV', 'title' => 'Services',      'type' => 'supplier_category'],
 
+            ['short_title' => 'FSH', 'title' => 'Fashion',   'type' => 'worker_type'],
             ['short_title' => 'CUT', 'title' => 'Cutting',   'type' => 'worker_type'],
             ['short_title' => 'DHP', 'title' => 'Dhaap',     'type' => 'worker_type'],
             ['short_title' => 'SNG', 'title' => 'Singer',    'type' => 'worker_type'],

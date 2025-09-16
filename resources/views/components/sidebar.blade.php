@@ -832,6 +832,7 @@
                 subMenu: [
                     {name: 'Show Fabrics', href: "/fabrics"},
                     {name: 'Add Fabric', href: "/fabrics/create"},
+                    {name: 'Issue Fabric', href: "/fabrics/issue"},
                 ]
             },
         @endif

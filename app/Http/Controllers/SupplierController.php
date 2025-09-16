@@ -21,7 +21,7 @@ class SupplierController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $suppliers = Supplier::with('user')->get();
+        $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
 
         foreach ($suppliers as $supplier) {
             // foreach ($supplier['orders'] as $order) {

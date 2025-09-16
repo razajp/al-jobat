@@ -107,10 +107,10 @@
                 class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="text-left pl-5">${data.name}</span>
+                <span class="text-left pl-5 capitalize">${data.name}</span>
                 <span class="text-left pl-5">${data.details["Urdu Title"]}</span>
                 <span class="text-center capitalize">${data.details["Phone"]}</span>
-                <span class="text-right">${Number(data.details["Balance"]).toFixed(1)}</span>
+                <span class="text-right">${data.details["Balance"]}</span>
                 <span class="text-right pr-5 capitalize ${data.user.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
                     ${data.user.status}
                 </span>

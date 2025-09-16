@@ -1186,7 +1186,7 @@
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
-                let selectedTicket = JSON.parse(document.getElementById('ticket')?.closest('.selectParent').querySelector('li.selected').dataset.option || '{}');
+                let selectedTicket = JSON.parse(document.getElementById('ticket')?.closest('.selectParent').querySelector('li.selected')?.dataset.option || '{}');
                 const checkboxes_container = document.querySelector('.checkboxes_container');
                 let parts = [];
                 let partsClutter = '';
