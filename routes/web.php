@@ -89,6 +89,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('bank-accounts', BankAccountController::class);
     Route::post('update-bank-account-status', [BankAccountController::class, 'updateStatus'])->name('update-bank-account-status');
+    Route::put('bank-accounts/{account}/update-serial', [BankAccountController::class, 'updateSerial'])->name('bank-accounts.update-serial');
 
     Route::resource('cargos', CargoController::class);
 

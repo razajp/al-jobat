@@ -131,8 +131,6 @@
 
         const fetchedData = @json($bankAccounts);
         let allDataArray = fetchedData.map(item => {
-            console.log(item);
-
             return {
                 id: item.id,
                 uId: item.id,
@@ -148,6 +146,7 @@
                 date: item.date,
                 chqbkSerialStart: item.chqbk_serial_start ?? 0,
                 chqbkSerialEnd: item.chqbk_serial_end ?? 0,
+                available_cheques: item.available_cheques ?? [],
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 visible: true,
@@ -170,6 +169,12 @@
                 x: e.pageX,
                 y: e.pageY,
             };
+
+            if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
+                contextMenuData.actions = [
+                    {id: 'update-cheque-book-serial', text: 'Update Serial', onclick: `generateUpdateChequeBookSerialModel(${JSON.stringify(data)})`},
+                ];
+            }
 
             createContextMenu(contextMenuData);
         }
@@ -195,6 +200,78 @@
             if (data.details['Category'] === 'self') {
                 modalData.details['Account No'] = data.accountNo;
                 modalData.details['Cheque Book Serial'] = data.chqbkSerialStart + ' - ' + data.chqbkSerialEnd;
+            }
+
+            if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
+                modalData.bottomActions = [
+                    {id: 'update-cheque-book-serial', text: 'Update Serial', onclick: `generateUpdateChequeBookSerialModel(${JSON.stringify(data)})`},
+                ];
+            }
+
+            createModal(modalData);
+        }
+
+        function generateUpdateChequeBookSerialModel(data) {
+            console.log(data);
+
+            let modalData = {
+                id: 'updateChequeBookSerialModelForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ url("bank-accounts") }}/' + data.id + '/update-serial',
+                name: 'Update Serial',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Account Title',
+                        value: data.name,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: '_method',
+                        value: 'PUT',
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <!-- Cheque Book Serial Input -->
+                            <div id="cheque_book_serial" class="form-group">
+                                <label for="cheque_book_serial_start" class="block font-medium text-[var(--secondary-text)] mb-2">
+                                    Cheque Book Serial (Start - End)
+                                </label>
+
+                                <div class="flex gap-4">
+                                    <!-- Start Serial Input -->
+                                    <input
+                                        type="number"
+                                        id="cheque_book_serial_start"
+                                        name="cheque_book_serial[start]"
+                                        placeholder="Start"
+                                        class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                                    />
+
+                                    <!-- End Serial Input -->
+                                    <input
+                                        type="number"
+                                        id="cheque_book_serial_end"
+                                        name="cheque_book_serial[end]"
+                                        placeholder="End"
+                                        class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
+                                    />
+                                </div>
+
+                                <!-- Error Message -->
+                                <div id="cheque_book_serial_error" class="text-[var(--border-error)] text-xs mt-1 hidden"></div>
+                            </div>
+                        `,
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'update-serial-btn', text: 'Update Serial', type: 'submit'}
+                ]
             }
 
             createModal(modalData);

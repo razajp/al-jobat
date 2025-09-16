@@ -218,7 +218,6 @@
                         type: 'password',
                         placeholder: 'Enter new password',
                         data_validate: 'required|min:4|alphanumeric|lowercase',
-                        oninput: 'check(this)',
                         required: true,
                     },
                 ],
@@ -229,10 +228,6 @@
             }
 
             createModal(modalData);
-        }
-
-        function check(elem) {
-            console.log(elem);
         }
     </script>
 @endsection

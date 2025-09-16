@@ -18,9 +18,9 @@ class BankAccountController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $bankAccounts = BankAccount::with('subCategory', 'bank')->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -37,7 +37,7 @@ class BankAccountController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $bank_options = [];
         $banks = Setup::where('type', 'bank_name')->get();
 
@@ -58,7 +58,7 @@ class BankAccountController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:self,supplier,customer',
             'sub_category' => 'nullable|integer',
@@ -94,7 +94,7 @@ class BankAccountController extends Controller
 
         $chqbk_serial_start = $request->input('cheque_book_serial.start');
         $chqbk_serial_end = $request->input('cheque_book_serial.end');
-    
+
         $bankAccount = new BankAccount([
             'category' => $data['category'],
             'bank_id' => $data['bank_id'],
@@ -104,13 +104,13 @@ class BankAccountController extends Controller
             'chqbk_serial_start' => $chqbk_serial_start,
             'chqbk_serial_end' => $chqbk_serial_end,
         ]);
-        
+
         if ($subCategoryModel) {
             $subCategoryModel->bankAccounts()->save($bankAccount);
         } else {
             $bankAccount->save(); // Self category ke liye direct save
         }
-    
+
         return redirect()->route('bank-accounts.create')->with('success', 'Bank account added successfully!');
     }
 
@@ -152,7 +152,7 @@ class BankAccountController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $bankAccount = BankAccount::find($request->user_id);
 
         if ($request->status == 'active') {
@@ -163,5 +163,15 @@ class BankAccountController extends Controller
             $bankAccount->save();
         }
         return redirect()->back()->with('success', 'Status has been updated successfully!');
+    }
+
+    public function updateSerial(BankAccount $account, Request $request)
+    {
+        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        return $account;
     }
 }

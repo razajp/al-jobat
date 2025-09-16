@@ -121,8 +121,8 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                image: item.user.profile_picture === 'default_avatar.png' 
-                    ? '/images/default_avatar.png' 
+                image: item.user.profile_picture === 'default_avatar.png'
+                    ? '/images/default_avatar.png'
                     : `/storage/uploads/images/${item.user.profile_picture}`,
                 name: item.supplier_name,
                 details: {
@@ -168,12 +168,18 @@
                 ],
             };
 
+            if ((currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') && currentUserRole != data.details['Role']) {
+                contextMenuData.actions.push(
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data.user)})`},
+                );
+            }
+
             createContextMenu(contextMenuData);
         }
 
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
-            
+
             let modalData = {
                 id: 'modalForm',
                 method: "POST",
@@ -195,6 +201,12 @@
                 ],
             }
 
+            if (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') {
+                modalData.bottomActions.push(
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data.user)})`},
+                );
+            }
+
             createModal(modalData);
         }
 
@@ -214,7 +226,7 @@
 
                 if (dataIds.includes(elem.value)) {
                     chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
-                    let existingChip = Array.from(chipsContainer.children).find(chip => 
+                    let existingChip = Array.from(chipsContainer.children).find(chip =>
                         chip.getAttribute('data-id') === elem.value
                     );
 
@@ -231,9 +243,9 @@
                         addCategoryBtn.disabled = true;
                         elem.focus();
                     }
-                    
+
                     return;
-                } 
+                }
 
                 if (elem.value != '') {
                     chipsContainer.querySelector('.bg-\\[var\\(--bg-error\\)\\]')?.classList.remove('bg-[var(--bg-error)]');
@@ -248,7 +260,7 @@
                             </button>
                         </div>
                     `;
-                    
+
                     elem.value = '';
                     addCategoryBtn.disabled = true;
                     elem.focus();
@@ -316,13 +328,13 @@
                     {id: 'add', text: 'Add', onclick: 'trackAddBtnState(this)'},
                 ],
             }
-            
+
             createModal(modalData);
-            
+
             const chipsContainer = document.getElementById('manageCategoryModalForm').querySelector('#chipsContainer');
-            
+
             chipsContainer.addEventListener('click', (e) => {
-                
+
                 const deleteButton = e.target.closest('.delete');
 
                 if (deleteButton) {
@@ -348,6 +360,46 @@
                 }
             })
             return;
+        }
+
+        function generateResetPasswordModel(data) {
+            let modalData = {
+                id: 'resetPasswordModalForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ route("users.reset-password") }}',
+                name: 'Reset Password',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Username',
+                        value: data.username,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'user_id',
+                        value: data.id,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Password',
+                        name: 'password',
+                        id: 'password',
+                        type: 'password',
+                        placeholder: 'Enter new password',
+                        data_validate: 'required|min:4|alphanumeric|lowercase',
+                        required: true,
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'reset-password-btn', text: 'Reset Password', type: 'submit'}
+                ]
+            }
+
+            createModal(modalData);
         }
     </script>
 @endsection

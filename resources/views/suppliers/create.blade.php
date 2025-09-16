@@ -4,8 +4,8 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Add Supplier" link linkText="Show Suppliers" linkHref="{{ route('suppliers.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Upload Image']" 
+        <x-progress-bar
+            :steps="['Enter Details', 'Upload Image']"
             :currentStep="1"
         />
     </div>
@@ -19,74 +19,74 @@
         <div class="step1 space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <!-- supplier_name -->
-                <x-input 
+                <x-input
                     label="Supplier Name"
-                    name="supplier_name" 
-                    id="supplier_name" 
-                    placeholder="Enter supplire name" 
-                    required 
+                    name="supplier_name"
+                    id="supplier_name"
+                    placeholder="Enter supplire name"
+                    required
                     capitalized
                     dataValidate="required|friendly"
                 />
 
                 <!-- urdu_title -->
-                <x-input 
+                <x-input
                     label="Urdu Title"
-                    name="urdu_title" 
-                    id="urdu_title" 
-                    placeholder="Enter urdu title" 
-                    required 
+                    name="urdu_title"
+                    id="urdu_title"
+                    placeholder="Enter urdu title"
+                    required
                     dataValidate="required|urdu"
                 />
-                
+
                 {{-- person name --}}
-                <x-input 
+                <x-input
                     label="Person Name"
-                    name="person_name" 
-                    id="person_name" 
-                    placeholder="Enter person name" 
-                    required 
+                    name="person_name"
+                    id="person_name"
+                    placeholder="Enter person name"
+                    required
                     capitalized
                     dataValidate="required|friendly"
                 />
 
                 {{-- supplier_phone_number --}}
-                <x-input 
-                    label="Phone Number" 
-                    name="phone_number" 
-                    id="phone_number" 
-                    placeholder="Enter phone number" 
+                <x-input
+                    label="Phone Number"
+                    name="phone_number"
+                    id="phone_number"
+                    placeholder="Enter phone number"
                     required
                     dataValidate="required|phone"
                 />
 
                 {{-- supplier_username --}}
-                <x-input 
-                    label="Username" 
-                    name="username" 
-                    id="username" 
+                <x-input
+                    label="Username"
+                    name="username"
+                    id="username"
                     type="username"
-                    placeholder="Enter username" 
+                    placeholder="Enter username"
                     required
                     data-validate="required|alphanumeric|lowercase|unique:username"
                     data-clean="lowercase|alphanumeric|no-space"
                 />
 
                 {{-- supplier_password --}}
-                <x-input 
-                    label="Password" 
-                    name="password" 
-                    id="password" 
-                    type="password" 
-                    placeholder="Enter password" 
-                    required 
-                    dataValidate="required|min:4|alphanumeric|lowercase" 
+                <x-input
+                    label="Password"
+                    name="password"
+                    id="password"
+                    type="password"
+                    placeholder="Enter password"
+                    required
+                    dataValidate="required|min:4|alphanumeric|lowercase"
                 />
 
                 {{-- supplier_registration_date --}}
-                <x-input 
-                    label="Date" 
-                    name="date" 
+                <x-input
+                    label="Date"
+                    name="date"
                     id="date"
                     min="{{ now()->subMonth()->toDateString() }}"
                     validateMin
@@ -97,7 +97,7 @@
                 />
 
                 {{-- supplier_category --}}
-                <x-select 
+                <x-select
                     label="Category"
                     id="category_select"
                     :options="$categories_options"
@@ -112,7 +112,7 @@
                 <input type="hidden" name="categories_array" id="categories_array" value="">
 
                 <hr class="col-span-2 border-gray-600">
-                
+
                 <div class="chipsContainer col-span-2">
                     <div id="chips" class="w-full flex gap-2">
                         <div class="chip border border-gray-600 text-gray-300 text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto fade-in">
@@ -126,7 +126,7 @@
 
         <!-- Step 2: Production Details -->
         <div class="step2 hidden space-y-4">
-            <x-image-upload 
+            <x-image-upload
                 id="profile_picture"
                 name="profile_picture"
                 placeholder="{{ asset('images/image_icon.png') }}"
@@ -136,7 +136,13 @@
     </form>
 
     <script>
+        let categoriesArray = [];
         window.usernames = @json($usernames);
+        let addCategoryBtnDom = document.getElementById('addCategoryBtn');
+        let categorySelectDom = document.getElementById('category_select');
+        let chipsDom = document.getElementById('chips');
+        let categoriesArrayInput = document.getElementById('categories_array');
+        let categoryErrorDom = document.getElementById('category-error');
 
         function trackStateOfCategoryBtn(elem){
             if (elem.value != "") {
@@ -156,15 +162,15 @@
             }
 
             let selectedCategoryId = categorySelectDom.value;  // Get category ID
-            
+
             let selectedCategoryName = categorySelectDom.parentElement.parentElement.parentElement.querySelector("ul li.selected").textContent.trim();  // Get category name
 
             // Check for duplicates based on ID
             if (categoriesArray.includes(selectedCategoryId)) {
                 console.warn('Category already exists!');
-                
+
                 // Highlight the existing chip
-                let existingChip = Array.from(chipsDom.children).find(chip => 
+                let existingChip = Array.from(chipsDom.children).find(chip =>
                     chip.getAttribute('data-id') === selectedCategoryId
                 );
 
@@ -203,13 +209,11 @@
                 // Handle chip deletion
                 chip.querySelector('.delete').onclick = () => {
                     chip.classList.add('fade-out');
-                    
+
                     setTimeout(() => {
                         chip.remove();
                         categoriesArray = categoriesArray.filter(cat => cat !== selectedCategoryId);
-                        
-                        validateCategory()
-                        
+
                         if (categoriesArray.length <= 0) {
                             chipsDom.innerHTML = `
                                 <div class="chip border border-gray-600 text-[var(--secondary-text)] text-xs rounded-xl py-2 px-4 inline-flex items-center gap-2 mx-auto">
@@ -226,10 +230,9 @@
                     chipsDom.appendChild(chip);
                     categoriesArray.push(selectedCategoryId);  // Store category ID in array
                     categoriesArrayInput.value = JSON.stringify(categoriesArray);  // Update hidden input with IDs
-                    categorySelectDom.value = '';  // Clear selection
                     addCategoryBtnDom.disabled = true;  // Disable button
+                    selectThisOption(categorySelectDom.parentElement.parentElement.parentElement.querySelector("ul li"));
                     categorySelectDom.focus();
-                    validateCategory()
                 } else {
                     console.error('Chip container not found!');
                 }

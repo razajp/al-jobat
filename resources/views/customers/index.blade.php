@@ -183,6 +183,12 @@
                 ],
             };
 
+            if ((currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') && currentUserRole != data.details['Role']) {
+                contextMenuData.actions.push(
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data.user)})`},
+                );
+            }
+
             createContextMenu(contextMenuData);
         }
 
@@ -209,6 +215,52 @@
                 bottomActions: [
                     {id: 'edit', text: 'Edit Customer', dataId: data.id}
                 ],
+            }
+
+            if (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner') {
+                modalData.bottomActions.push(
+                    {id: 'reset-password', text: 'Reset Password', onclick: `generateResetPasswordModel(${JSON.stringify(data.user)})`},
+                );
+            }
+
+            createModal(modalData);
+        }
+
+        function generateResetPasswordModel(data) {
+            let modalData = {
+                id: 'resetPasswordModalForm',
+                class: 'h-auto',
+                method: 'POST',
+                action: '{{ route("users.reset-password") }}',
+                name: 'Reset Password',
+                fields: [
+                    {
+                        category: 'input',
+                        label: 'Username',
+                        value: data.username,
+                        disabled: true,
+                    },
+                    {
+                        category: 'input',
+                        type: 'hidden',
+                        name: 'user_id',
+                        value: data.id,
+                    },
+                    {
+                        category: 'input',
+                        label: 'Password',
+                        name: 'password',
+                        id: 'password',
+                        type: 'password',
+                        placeholder: 'Enter new password',
+                        data_validate: 'required|min:4|alphanumeric|lowercase',
+                        required: true,
+                    },
+                ],
+                fieldsGridCount: '2',
+                bottomActions: [
+                    {id: 'reset-password-btn', text: 'Reset Password', type: 'submit'}
+                ]
             }
 
             createModal(modalData);
