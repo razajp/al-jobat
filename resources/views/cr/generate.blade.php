@@ -316,7 +316,6 @@
                         supplier: voucher.supplier_id,
                         method: elem.value,
                         max_date: dateDom.value,
-                        voucher_date: voucher.date,
                     },
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

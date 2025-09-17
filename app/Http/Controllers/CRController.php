@@ -35,11 +35,10 @@ class CRController extends Controller
         $supplier_id = $request->supplier_id;
         $method = $request->method;
         $maxDate = $request->max_date;
-        $voucherDate = $request->voucher_date;
         $payment_options = [];
 
         if ($method === 'cheque') {
-            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get()->makeHidden('creator');
+            $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->where('date', '<', $maxDate)->get()->makeHidden('creator');
 
             foreach ($cheques as $cheque) {
                 $payment_options[(int)$cheque->id] = [
@@ -48,7 +47,7 @@ class CRController extends Controller
                 ];
             }
         } else if ($method === 'slip') {
-            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->whereBetween('date', [$voucherDate, $maxDate])->get()->makeHidden('creator');
+            $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->where('date', '<', $maxDate)->get()->makeHidden('creator');
 
             foreach ($slips as $slip) {
                 $payment_options[(int)$slip->id] = [
@@ -125,8 +124,8 @@ class CRController extends Controller
         }
 
         foreach($data['return_payments'] as $payment) {
-            SupplierPayment::destroy($payment->id);
-            CustomerPayment::find($payment->payment_id)->update(['is_return' => true, 'bank_account_id' => null]);
+            SupplierPayment::find($payment->id)->update(['is_return' => true]);
+            CustomerPayment::find($payment->payment_id)->update(['is_return' => true]);
         }
 
         foreach ($data['new_payments'] as $payment) {
@@ -150,7 +149,7 @@ class CRController extends Controller
                     'method'           => $payment->method . ' | CR',
                     'amount'           => $payment->amount,
                     'bank_account_id'  => $payment->bank_account_id,
-                    'voucher_id'       => $payment->voucher_id,
+                    'voucher_id'       => null,
                     $columnMap[$payment->method] => $payment->data_value,
                 ]);
             }

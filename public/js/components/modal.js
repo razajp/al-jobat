@@ -454,8 +454,8 @@ function createModal(data, animate = 'animate') {
                 <div class="th text-sm font-medium w-[11%]">Method</div>
                 ${previewData.supplier ? '<div class="th text-sm font-medium w-1/5">Customer</div>' : ''}
                 <div class="th text-sm font-medium w-1/4">Account</div>
-                <div class="th text-sm font-medium w-[17%]">Date</div>
-                <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
+                <div class="th text-sm font-medium w-[14%]">Date</div>
+                <div class="th text-sm font-medium w-[14%]">Reff. No.</div>
                 <div class="th text-sm font-medium w-[10%]">Amount</div>
             `;
 
@@ -474,8 +474,8 @@ function createModal(data, animate = 'animate') {
                             ${previewData.supplier ? `<div class="td text-sm font-semibold w-1/4">${(payment.bank_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.bank_account?.bank.short_title ?? '-')}</div>` :
                                 `<div class="td text-sm font-semibold w-1/4">${(payment.self_account?.account_title?.split('|')[0] ?? '-') + ' | ' + (payment.self_account?.bank.short_title ?? '-')}</div>
                             `}
-                            <div class="td text-sm font-semibold w-[17%]">${formatDate(payment.date) ?? '-'}</div>
-                            <div class="td text-sm font-semibold w-[11%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
+                            <div class="td text-sm font-semibold w-[14%]">${formatDate(payment.date, true) ?? '-'}</div>
+                            <div class="td text-sm font-semibold w-[14%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
                                 payment.transaction_id ?? '-'}</div>
                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
                             </div>

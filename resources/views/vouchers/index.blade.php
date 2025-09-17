@@ -110,8 +110,6 @@
 
         const fetchedData = @json($vouchers);
         let allDataArray = fetchedData.map(item => {
-            console.log(item);
-            
             return {
                 id: item.id,
                 name: item.voucher_no,

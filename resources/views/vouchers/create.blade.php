@@ -258,7 +258,7 @@
 
         function setSelectedAccount(elem) {
             let hiddenAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="self_account_id"]`);
-            hiddenAccountInSelfAccount.querySelectorAll('li').forEach(li => {
+            hiddenAccountInSelfAccount?.querySelectorAll('li').forEach(li => {
                 if (li.style.display == 'none') {
                     li.style.display = 'block';
                 }

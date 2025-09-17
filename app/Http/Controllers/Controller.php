@@ -437,7 +437,7 @@ class Controller extends BaseController
                     'method' => $payment->cheque ? 'cheque' : ($payment->slip ? 'slip' : ''),
                     'reff_no' => $payment->cheque->cheque_no ?? $payment->slip->slip_no,
                     'amount' => $payment->cheque->amount ?? $payment->slip->amount,
-                    'customer_name' => $payment->cheque ? ($payment->cheque->customer?->customer_name . ' | ' . $payment->cheque->customer?->city?->title) : ($payment->slip ? ($payment->slip->customer?->customer_name . ' | ' . $payment->slip->customer?->city?->title) : null),
+                    'customer_name' => $payment->cheque ? ($payment->cheque->customer?->customer_name . ' | ' . $payment->cheque->customer?->city?->short_title) : ($payment->slip ? ($payment->slip->customer?->customer_name . ' | ' . $payment->slip->customer?->city?->short_title) : null),
                 ];
             }
         }

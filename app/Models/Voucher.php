@@ -20,6 +20,10 @@ class Voucher extends Model
         "voucher_no",
     ];
 
+    protected $casts = [
+        'date' => 'date',
+    ];
+
     public function supplier() {
         return $this->belongsTo(Supplier::class, "supplier_id");
     }

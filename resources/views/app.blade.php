@@ -305,7 +305,7 @@
         let escToClose;
         let enterToSubmit;
 
-        function formatDate(date) {
+        function formatDate(date, notDay) {
             const inputDate = new Date(date);
 
             const day = inputDate.getDate().toString().padStart(2, '0');
@@ -313,7 +313,10 @@
             const year = inputDate.getFullYear();
             const weekday = inputDate.toLocaleString('en-US', { weekday: 'short' });
 
-            const formatted = `${day}-${month}-${year} ${weekday}`;
+            let formatted = `${day}-${month}-${year} ${weekday}`;
+            if (notDay) {
+                formatted = `${day}-${month}-${year}`;
+            }
             return formatted;
         }
 
