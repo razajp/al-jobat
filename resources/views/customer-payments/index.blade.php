@@ -183,8 +183,8 @@
                     <span class="text-center w-1/7">${data.beneficiary}</span>
                     <span class="text-center w-1/10">${data.voucher_no}</span>
                     <span class="text-center w-1/7">${data.name}</span>
-                    <span class="text-center w-1/9">${data.details["Type"]}</span>
-                    <span class="text-center w-1/10">${data.details["Method"]}</span>
+                    <span class="text-center w-1/9 capitalize">${data.details["Type"]}</span>
+                    <span class="text-center w-1/10 capitalize">${data.details["Method"]}</span>
                     <span class="text-center w-1/10">${data.details['Amount']}</span>
                     <span class="text-center w-1/10">${data.details['Date']}</span>
                     <span class="text-center w-1/10">${data.reff_no}</span>
@@ -209,8 +209,8 @@
                     'Date': formatDate(item.slip_date || item.cheque_date || item.date),
                     'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
-                voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || item.voucher?.voucher_no || '-',
-                beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || '-',
+                voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || item.voucher?.voucher_no || item.cheque?.cr?.c_r_no || item.slip?.cr?.c_r_no || '-',
+                beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || item.cheque?.voucher?.supplier?.supplier_name || item.slip?.voucher?.supplier?.supplier_name ||'-',
                 reff_no: item.cheque_no || item.slip_no || item.transaction_id || item.reff_no || '-',
                 data: item,
                 clear_date: item.clear_date ? formatDate(item.clear_date) : (item.method == 'cheque' || item.method == 'slip') ? 'Pending' : '-',
@@ -233,18 +233,19 @@
                 fields: [
                     {
                         category: 'input',
+                        label: 'Method',
+                        value: data.customer.customer_name + ' | ' + data.customer.city.short_title + ' | ' + data.method.charAt(0).toUpperCase() + data.method.slice(1) + (data.method === 'cheque' ? ` | Cheque No. ${data.cheque_no}` : data.method === 'slip' ? ` | Slip No. ${data.slip_no}` : '') + ' | ' + formatNumbersWithDigits(data.amount, 1, 1) + ' - Rs.',
+                        disabled: true,
+                        full: true,
+                    },
+                    {
+                        category: 'input',
                         name: 'clear_date',
                         label: 'Clear Date',
                         type: 'date',
                         min: (data.cheque_date || data.slip_date)?.split('T')[0],
                         max: new Date().toISOString().split('T')[0],
                         required: true,
-                    },
-                    {
-                        category: 'explicitHtml',
-                        html: `
-                            <x-select label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required showDefault />
-                        `,
                     },
                     {
                         category: 'explicitHtml',
@@ -259,7 +260,14 @@
                                 ]"
                                 required
                                 showDefault
+                                onchange="trackMethodState(this)"
                             />
+                        `,
+                    },
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required disabled showDefault />
                         `,
                     },
                     {
@@ -271,7 +279,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff. no."/>
+                            <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff. no." required disabled/>
                         `,
                     },
                     {
@@ -294,10 +302,9 @@
             let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
             let bankAccountDom = form.querySelector('ul[data-for="bank_account_id"]');
 
-            bankAccountInpDom.disabled = false;
-            bankAccountInpDom.value = '-- Select bank account --';
+            bankAccountInpDom.disabled = true;
             bankAccountDom.innerHTML = `
-                <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 selected "">-- Select bank account --</li>
+                <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2"">-- Select bank account --</li>
             `;
 
             bankAccounts.forEach(bankAccount => {
@@ -396,33 +403,37 @@
             createModal(modalData);
         }
 
-        function generateReffNos(rawReffNo, count = 2) {
-            let base, startNum;
-
-            // Normalize separator → sabko "|" mein badal do
+        function generateReffNos(rawReffNo, hasPipe, maxSuffix) {
             rawReffNo = rawReffNo.toString().replace('/', '|').trim();
+            let base = rawReffNo.includes('|') ? rawReffNo.split('|')[0].trim() : rawReffNo;
 
-            // Agar already "| n" hai
-            if (rawReffNo.includes('|')) {
-                let [b, n] = rawReffNo.split('|').map(s => s.trim());
-                base = b;
-                startNum = parseInt(n, 10);
+            let current, next;
+
+            if (hasPipe) {
+                // Agar already pipe hai → current wahi rahega
+                current = rawReffNo;
+                next = `${base} | ${maxSuffix + 1}`;
             } else {
-                base = rawReffNo;
-                startNum = 0;
+                // Agar pipe nahi hai → current update hoga | 1
+                current = `${base} | 1`;
+                next = `${base} | ${maxSuffix + 2}`; // kyunki 1 abhi assign ho gaya
             }
 
-            // References generate karo
-            let refs = [];
-            for (let i = 1; i <= count; i++) {
-                refs.push(`${base} | ${startNum + i}`);
-            }
-
-            return refs;
+            return [current, next];
         }
 
         function generateSplitPaymentModal(data) {
-            let rawReffNo = data.cheque_no || data.slip_no || data.transaction_id || data.reff_no || '-';
+            let rawReffNo =
+                data.method === "cheque" ? data.cheque_no :
+                data.method === "slip" ? data.slip_no :
+                data.method === "program" ? data.transaction_id :
+                data.reff_no;
+
+            console.log(data);
+
+
+            let [currentRef, newRef] = generateReffNos(rawReffNo, data.has_pipe, data.max_reff_suffix);
+
             let modalData = {
                 id: 'splitModalForm',
                 class: 'h-auto',
@@ -453,14 +464,14 @@
                         category: 'input',
                         label: 'Reff. No.',
                         name: 'reff_no',
-                        value: generateReffNos(rawReffNo, 2)[0],
+                        value: currentRef,
                         readonly: true,
                     },
                     {
                         category: 'input',
                         label: 'New Reff. No.',
                         name: 'new_reff_no',
-                        value: generateReffNos(rawReffNo, 2)[1],
+                        value: newRef,
                         readonly: true,
                     },
                     {
@@ -486,6 +497,26 @@
         function validateSplitAmount(input, maxAmount) {
             if (parseFloat(input.value) > parseFloat(maxAmount)) {
                 input.value = maxAmount;
+            }
+        }
+
+        function trackMethodState(select) {
+            let form = select.closest('form');
+            let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
+            let reffNoDom = form.querySelector('input[id="reff_no"]');
+
+            if (select.value === 'online') {
+                bankAccountInpDom.disabled = false;
+                bankAccountInpDom.value = '';
+                bankAccountInpDom.placeholder = '-- Select Bank Account --';
+                reffNoDom.disabled = false;
+            } else {
+                bankAccountInpDom.disabled = true;
+                bankAccountInpDom.value = '';
+                bankAccountInpDom.placeholder = '-- No Options Available --';
+
+                reffNoDom.disabled = true;
+                reffNoDom.value = '';
             }
         }
 

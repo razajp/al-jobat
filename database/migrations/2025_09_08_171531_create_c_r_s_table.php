@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('c_r_s', function (Blueprint $table) {
             $table->id();
             $table->date('date');
+            $table->string('c_r_no');
             $table->foreignId('voucher_id')->constrained('vouchers')->onDelete('cascade');
             $table->json('return_payments');
             $table->json('new_payments');

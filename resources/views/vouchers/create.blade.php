@@ -692,7 +692,10 @@
             }
 
             if (Object.keys(detail).length > 0) {
-                const selectedMethod = methodSelectDom.value;
+                let selectedMethod = methodSelectDom.value;
+                if (selectedMethod == 'Payment Program') {
+                    selectedMethod = 'program';
+                }
                 totalPayment += detail.amount;
                 detail['method'] = selectedMethod;
                 allDetail['method'] = selectedMethod;
@@ -814,8 +817,8 @@
                                             <div class="th text-sm font-medium w-[11%]">Method</div>
                                             <div class="th text-sm font-medium w-1/5">Customer</div>
                                             <div class="th text-sm font-medium w-1/4">Account</div>
-                                            <div class="th text-sm font-medium w-[17%]">Date</div>
-                                            <div class="th text-sm font-medium w-[11%]">Reff. No.</div>
+                                            <div class="th text-sm font-medium w-[14%]">Date</div>
+                                            <div class="th text-sm font-medium w-[14%]">Reff. No.</div>
                                             <div class="th text-sm font-medium w-[10%]">Amount</div>
                                         </div>
                                     </div>
@@ -833,8 +836,8 @@
                                                             <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-1/5">${payment.program?.customer?.customer_name ? payment.program?.customer?.customer_name : selected.customer?.customer_name ? selected.customer?.customer_name : '-'}</div>
                                                             <div class="td text-sm font-semibold w-1/4">${(selected?.bank_account?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank.short_title ?? '-')}</div>
-                                                            <div class="td text-sm font-semibold w-[17%]">${formatDate(dateInpDom.value) ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-[11%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[14%]">${formatDate(dateInpDom.value, true) ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[14%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                         </div>
                                                     </div>

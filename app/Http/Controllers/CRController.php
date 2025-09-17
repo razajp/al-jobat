@@ -17,7 +17,9 @@ class CRController extends Controller
      */
     public function index()
     {
-        //
+        $crs = CR::with('voucher.supplier')->orderBy('id', 'desc')->get()->makeHidden('creator');
+
+        return view('cr.index', compact('crs'));
     }
 
     /**
@@ -128,6 +130,8 @@ class CRController extends Controller
             CustomerPayment::find($payment->payment_id)->update(['is_return' => true]);
         }
 
+        $cr = new CR($data);
+
         foreach ($data['new_payments'] as $payment) {
             if ($payment->method == 'Payment Program') {
                 SupplierPayment::find($payment->data_value)->update(['method' => $payment->method . ' | CR']);
@@ -143,19 +147,23 @@ class CRController extends Controller
                     continue;
                 }
 
-                SupplierPayment::create([
+                $newSupplierPayment = SupplierPayment::create([
                     'supplier_id'      => Voucher::find($data['voucher_id'])->supplier_id,
                     'date'             => $data['date'],
                     'method'           => $payment->method . ' | CR',
                     'amount'           => $payment->amount,
                     'bank_account_id'  => $payment->bank_account_id,
                     'voucher_id'       => null,
+                    'c_r_id'           => $cr->id,
                     $columnMap[$payment->method] => $payment->data_value,
                 ]);
+
+                $payment->payment_id = $newSupplierPayment->id;
             }
         }
 
-        // CR::create($data);
+        $cr->new_payments = $data['new_payments'];
+        $cr->save();
 
         return redirect()->route('cr.create')->with('success', 'CR Generated successfully.');
     }

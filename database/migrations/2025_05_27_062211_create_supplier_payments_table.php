@@ -18,14 +18,15 @@ return new class extends Migration
             $table->string('method');
             $table->integer('amount');
             $table->string('transaction_id')->nullable();
-            $table->integer('cheque_no')->nullable()->unique();
-            $table->integer('reff_no')->nullable()->unique();
+            $table->integer('cheque_no')->nullable();
+            $table->integer('reff_no')->nullable();
             $table->foreignId('cheque_id')->nullable()->constrained('customer_payments')->onDelete('cascade');
             $table->foreignId('slip_id')->nullable()->constrained('customer_payments')->onDelete('cascade');
             $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->foreignId('self_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->foreignId('program_id')->nullable()->constrained('payment_programs')->onDelete('cascade');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->onDelete('cascade');
+            $table->foreignId('c_r_id')->nullable()->constrained('c_r_s')->onDelete('cascade');
             $table->boolean('is_return')->default(false);
             $table->string('remarks')->nullable();
 

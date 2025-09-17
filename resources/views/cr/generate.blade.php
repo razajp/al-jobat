@@ -11,20 +11,20 @@
     @endphp
     <!-- Main Content -->
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-4xl mx-auto">
+    <div class="mb-5 max-w-5xl mx-auto">
         <x-search-header heading="Generate CR" link linkText="Show CR" linkHref="{{ route('cr.index') }}"/>
         <x-progress-bar :steps="['Select Payment', 'Add Payment']" :currentStep="1" />
     </div>
 
     <!-- Form -->
     <form id="form" action="{{ route('cr.store') }}" method="post" enctype="multipart/form-data"
-        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-4xl mx-auto  relative overflow-hidden">
+        class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-5xl mx-auto  relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Generate CR" />
 
         <!-- Step 1: Generate cargo list -->
         <div class="step1 space-y-4 ">
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-4 gap-4">
                 <!-- voucher_no -->
                 <x-input
                     label="Voucher No."
@@ -46,6 +46,9 @@
                     disabled
                     placeholder="Supplier Name"
                 />
+
+                {{-- c_r_no --}}
+                <x-input label="CR No." name="c_r_no" id="c_r_no" required value="CR"/>
             </div>
             <input type="hidden" name="returnPayments" id="selectedPaymentsArray">
             {{-- show-payment-table --}}

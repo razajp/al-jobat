@@ -86,12 +86,12 @@ class CustomerPayment extends Model
 
     public function cheque()
     {
-        return $this->hasOne(SupplierPayment::class, "cheque_id");
+        return $this->hasOne(SupplierPayment::class, "cheque_id")->where('is_return', false);
     }
 
     public function slip()
     {
-        return $this->hasOne(SupplierPayment::class, "slip_id");
+        return $this->hasOne(SupplierPayment::class, "slip_id")->where('is_return', false);
     }
 
     public function paymentClearRecord()

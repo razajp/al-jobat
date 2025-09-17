@@ -87,7 +87,18 @@ class Supplier extends Model
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $expenseQuery = $this->expenses();
-        $paymentsQuery = $this->payments()->whereNotNull('voucher_id')->where('method', '!==', 'Self Cheque | CR')->where('method', '!==', 'Cheque | CR')->where('method', '!==', 'Slip | CR')->where('method', '!==', 'Payment Program | CR');
+        $paymentsQuery = $this->payments()
+            ->whereNotNull('voucher_id')
+            ->whereIn('method', [
+                'Cheque',
+                'Cash',
+                'Slip',
+                'ATM',
+                'Self Cheque',
+                'Program',
+                'Adjustment',
+            ]);
+
 
         // Handle different date scenarios
         if ($fromDate && $toDate) {

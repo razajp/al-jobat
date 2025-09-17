@@ -147,8 +147,6 @@ class VoucherController extends Controller
             return redirect()->back()->withErrors($validator);
         }
 
-        // return $request;
-
         $voucher = Voucher::create([
             'voucher_no' => $request->voucher_no,
             'supplier_id' => $request->supplier_id,
@@ -265,6 +263,16 @@ class VoucherController extends Controller
                 $paymentDetails['supplier_id'] = $request->supplier_id;
                 $paymentDetails['date'] = $request->date;
                 $paymentDetails['voucher_id'] = $voucher->id;
+
+                if ($paymentDetails['method'] == 'Cheque' || $paymentDetails['method'] == 'Slip') {
+                    $customerPayment = CustomerPayment::find($paymentDetails[$paymentDetails['method'] == 'Cheque' ? 'cheque_id' : 'slip_id']);
+                    if ($customerPayment) {
+                        $customerPayment->update([
+                            'bank_account_id' => $paymentDetails['bank_account_id'] ?? null,
+                            'is_return' => false,
+                        ]);
+                    }
+                }
 
                 if ($paymentDetails['payment_id'] ?? false) {
                     $payment = SupplierPayment::find($paymentDetails['payment_id']);

@@ -11,6 +11,7 @@ class CR extends Model
 
     protected $fillable = [
         'date',
+        'c_r_no',
         'voucher_id',
         'return_payments',
         'new_payments',
@@ -24,5 +25,9 @@ class CR extends Model
 
     public function voucher() {
         return $this->belongsTo(Voucher::class, 'voucher_id');
+    }
+
+    public function payments() {
+        return $this->hasMany(SupplierPayment::class, 'c_r_id');
     }
 }

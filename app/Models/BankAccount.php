@@ -92,39 +92,50 @@ class BankAccount extends Model
         // Return available cheque numbers
         return array_values($available);
     }
+
     public function getBalanceAttribute()
     {
         return $this->calculateBalance();
     }
+
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
-        $customerPaymetns = CustomerPayment::where('bank_account_id', $this->id);
-        $supplierPaymetns = SupplierPayment::where('bank_account_id', $this->id)->whereNotNull('voucher_id');
+        if ($this->category === 'self') {
+            // Self category: existing logic
+            $customerPayments = CustomerPayment::where('bank_account_id', $this->id);
+            $supplierPayments = SupplierPayment::where('bank_account_id', $this->id)->whereNotNull('voucher_id');
 
-        // Handle different date scenarios
-        if ($fromDate && $toDate) {
-            if ($includeGivenDate) {
-                $customerPaymetns->whereBetween('date', [$fromDate, $toDate]);
-                $supplierPaymetns->whereBetween('date', [$fromDate, $toDate]);
-            } else {
-                $customerPaymetns->where('date', '>', $fromDate)->where('date', '<', $toDate);
-                $supplierPaymetns->where('date', '>', $fromDate)->where('date', '<', $toDate);
+            // Apply date filters
+            if ($fromDate && $toDate) {
+                if ($includeGivenDate) {
+                    $customerPayments->whereBetween('date', [$fromDate, $toDate]);
+                    $supplierPayments->whereBetween('date', [$fromDate, $toDate]);
+                } else {
+                    $customerPayments->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                    $supplierPayments->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                }
+            } elseif ($fromDate) {
+                $operator = $includeGivenDate ? '>=' : '>';
+                $customerPayments->where('date', $operator, $fromDate);
+                $supplierPayments->where('date', $operator, $fromDate);
+            } elseif ($toDate) {
+                $operator = $includeGivenDate ? '<=' : '<';
+                $customerPayments->where('date', $operator, $toDate);
+                $supplierPayments->where('date', $operator, $toDate);
             }
-        } elseif ($fromDate) {
-            $operator = $includeGivenDate ? '>=' : '>';
-            $customerPaymetns->where('date', $operator, $fromDate);
-            $supplierPaymetns->where('date', $operator, $fromDate);
-        } elseif ($toDate) {
-            $operator = $includeGivenDate ? '<=' : '<';
-            $customerPaymetns->where('date', $operator, $toDate);
-            $supplierPaymetns->where('date', $operator, $toDate);
+
+            $totalPayments = $customerPayments->sum('amount') ?? 0;
+            $totalPays = $supplierPayments->sum('amount') ?? 0;
+
+            $balance = $totalPayments - $totalPays;
+
+        } else if ($this->category === 'supplier') {
+            $balance = PaymentClear::where('bank_account_id', $this->id)
+                ->where('method', '!=', 'cash') // ignore cash
+                ->when($fromDate, fn($q) => $q->where('date', $includeGivenDate ? '>=' : '>', $fromDate))
+                ->when($toDate, fn($q) => $q->where('date', $includeGivenDate ? '<=' : '<', $toDate))
+                ->sum('amount');
         }
-
-        // Calculate totals
-        $totalPayments = $customerPaymetns->sum('amount') ?? 0;
-        $totalPays = $supplierPaymetns->sum('amount') ?? 0;
-
-        $balance = $totalPayments - $totalPays;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }

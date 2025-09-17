@@ -13,7 +13,7 @@ class Voucher extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         "supplier_id",
         "date",
@@ -30,5 +30,9 @@ class Voucher extends Model
 
     public function payments() {
         return $this->hasMany(SupplierPayment::class);
+    }
+
+    public function crs() {
+        return $this->hasMany(CR::class);
     }
 }

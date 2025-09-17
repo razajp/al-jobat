@@ -26,14 +26,18 @@ class CustomerPaymentController extends Controller
 
         $payments = CustomerPayment::with(
             "customer.city",
+            "cheque.cr",
+            "slip.cr",
             "cheque.voucher.supplier.bankAccounts",
             "slip.voucher.supplier.bankAccounts",
             "bankAccount",
             "paymentClearRecord"
         )
             ->whereNotNull("customer_id")
+            ->orderBy("id", "desc")
             ->get();
 
+        // Issued/Return/Not Issued flag
         $payments->each(function ($payment) {
             if ((($payment->cheque()->exists() || $payment->slip()->exists()) ||
                     (($payment->method == "cheque" || $payment->method == "slip") && $payment->bank_account_id != null)) &&
@@ -98,12 +102,63 @@ class CustomerPaymentController extends Controller
 
                 $payment->voucher = $supplierPayment?->voucher; // assign directly as object (or null)
             }
+
+            // Base reference number
+            $baseRef = null;
+            if ($payment->method === 'cheque') {
+                $raw = $payment->cheque_no;
+            } elseif ($payment->method === 'slip') {
+                $raw = $payment->slip_no;
+            } elseif ($payment->method === 'program') {
+                $raw = $payment->transaction_id;
+            } else {
+                $raw = $payment->reff_no;
+            }
+
+            // Split by | aur 0 index le lo
+            $baseRef = explode('|', $raw)[0];  // base part
+            $baseRef = trim($baseRef);         // whitespace remove
+
+            $payment->existing_reff_nos = [];
+            $payment->max_reff_suffix = 0;
+            $payment->has_pipe = str_contains($raw, '|');
+
+            if ($baseRef) {
+                $field = match ($payment->method) {
+                    'cheque'  => 'cheque_no',
+                    'slip'    => 'slip_no',
+                    'program' => 'transaction_id',
+                    default   => 'reff_no',
+                };
+
+                $refs = CustomerPayment::where(function($q) use ($field, $baseRef) {
+                        $q->where($field, $baseRef)
+                        ->orWhere($field, 'like', $baseRef.' |%');
+                    })
+                    ->pluck($field)
+                    ->toArray();
+
+                $payment->existing_reff_nos = $refs;
+
+                // Max suffix calculate
+                $max = 0;
+                foreach ($refs as $ref) {
+                    if (str_contains($ref, '|')) {
+                        [$b, $n] = array_map('trim', explode('|', $ref));
+                        if (trim($b) == explode('|', $baseRef)[0] && is_numeric($n)) {
+                            $max = max($max, (int) $n);
+                        }
+                    }
+                }
+                $payment->max_reff_suffix = $max;
+            }
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
         return view("customer-payments.index", compact("payments", "authLayout"));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -327,8 +382,6 @@ class CustomerPaymentController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'reff_no'      => 'required|string',
-            'new_reff_no'  => 'required|string',
             'split_amount' => 'required|integer|min:1|max:' . ($payment->amount - 1),
         ]);
 
@@ -336,9 +389,7 @@ class CustomerPaymentController extends Controller
             return redirect()->back()->withErrors($validator);
         }
 
-        $data = $request->all();
-
-        // Choose field name based on payment method
+        // Determine reference field
         $reffField = match ($payment->method) {
             'cheque'   => 'cheque_no',
             'slip'     => 'slip_no',
@@ -346,15 +397,35 @@ class CustomerPaymentController extends Controller
             default    => 'reff_no',
         };
 
-        // Step 1: Update original payment
-        $payment->$reffField = $data['reff_no'];
-        $payment->amount = $payment->amount - $data['split_amount'];
+        // Get base (before | n)
+        $currentReff = $payment->$reffField;
+        $parts = explode('|', $currentReff);
+        $baseReff = trim($parts[0]);
+
+        // Find max suffix already used for this base
+        $maxSuffix = CustomerPayment::where($reffField, 'like', $baseReff.' | %')
+            ->pluck($reffField)
+            ->map(function ($r) use ($baseReff) {
+                $pieces = explode('|', $r);
+                return isset($pieces[1]) ? (int) trim($pieces[1]) : 0;
+            })
+            ->max();
+
+        // If no suffix found, start from 1
+        if (!$maxSuffix) {
+            $maxSuffix = 1;
+            // Update original payment reff_no → base | 1
+            $payment->$reffField = $baseReff . ' | ' . $maxSuffix;
+        }
+
+        // Step 1: Reduce amount in original payment
+        $payment->amount = $payment->amount - $request->split_amount;
         $payment->save();
 
-        // Step 2: Create duplicate payment with split amount
-        $newPayment = $payment->replicate(); // copy all attributes
-        $newPayment->amount = $data['split_amount'];
-        $newPayment->$reffField = $data['new_reff_no'];
+        // Step 2: Create duplicate with next suffix
+        $newPayment = $payment->replicate();
+        $newPayment->amount = $request->split_amount;
+        $newPayment->$reffField = $baseReff . ' | ' . ($maxSuffix + 1);
         $newPayment->save();
 
         return redirect()->back()->with('success', 'Payment split successfully.');

@@ -8,7 +8,7 @@
                 "type" => "text",
                 "placeholder" => "Enter article no",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "article.article_no",
+                "dataFilterPath" => "name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -94,7 +94,7 @@
             </div>`;
         }
 
-        
+
         const fetchedData = @json($physicalQuantities);
         console.log(fetchedData);
         let allDataArray = fetchedData.map(item => {

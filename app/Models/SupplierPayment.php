@@ -32,6 +32,7 @@ class SupplierPayment extends Model
         "remarks",
         "voucher_id",
         "is_return",
+        "c_r_id",
     ];
 
     protected $casts = [
@@ -92,5 +93,9 @@ class SupplierPayment extends Model
 
     public function selfAccount() {
         return $this->belongsTo(BankAccount::class, 'self_account_id');
+    }
+
+    public function cr() {
+        return $this->belongsTo(CR::class, 'c_r_id');
     }
 }
