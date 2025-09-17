@@ -10,7 +10,7 @@
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('users.store') }}" method="post" enctype="multipart/form-data"
+    <form id="form" action="{{ route('sales-returns.store') }}" method="post" enctype="multipart/form-data"
         class="bg-[var(--secondary-bg-color)] rounded-xl shadow-lg p-8 border border-[var(--h-bg-color)] pt-12 max-w-3xl mx-auto relative overflow-hidden">
         @csrf
         <x-form-title-bar title="Sales Return" />
@@ -24,10 +24,15 @@
                 <x-select label="Article" name="article" id="article" :options="[]" showDefault disabled onchange="onArticleSelect(this)" />
 
                 {{-- Invoice --}}
-                <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled />
+                <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled onchange="onInvoiceSelect(this)" />
+
+                {{-- Date --}}
+                <x-input label="Date" name="date" id="date" type="date" max="{{ now()->toDateString() }}" required disabled />
 
                 {{-- Quantity --}}
-                <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required disabled />
+                <div class="col-span-2">
+                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" oninput="onQuantityInput(this)" required disabled />
+                </div>
             </div>
         </div>
         <div class="w-full flex justify-end mt-4">
@@ -92,34 +97,57 @@
                     },
                     success: function(response) {
                         console.log(response);
-                        // const invoiceSelect = document.getElementById('invoice');
-                        // invoiceSelect.disabled = false;
 
-                        // const invoiceSelectDropdown = invoiceSelect.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
-                        // invoiceSelectDropdown.innerHTML = '';
-                        // let clutter = '<li data-for="invoice" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Invoice --</li>';
-                        // response.forEach(invoice => {
-                        //     clutter += `<li data-for="invoice" data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} (Qty: ${invoice.quantity})</li>`;
-                        // });
-                        // invoiceSelectDropdown.innerHTML = clutter;
+                        const invoiceSelect = document.getElementById('invoice');
+                        invoiceSelect.disabled = false;
 
-                        // const firstOption = invoiceSelectDropdown.querySelector('li');
-                        // if (firstOption) {
-                        //     selectThisOption(firstOption);
-                        // }
+                        const invoiceSelectDropdown = invoiceSelect.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
+                        invoiceSelectDropdown.innerHTML = '';
+                        let clutter = '<li data-for="invoice" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Invoice --</li>';
+                        response.forEach(invoice => {
+                            clutter += `<li data-for="invoice" data-invoice-data='${JSON.stringify(invoice)}' data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} | ${invoice.articles_in_invoice[0].invoice_quantity} - PCs</li>`;
+                        });
+                        invoiceSelectDropdown.innerHTML = clutter;
 
-                        // // Enable quantity input
-                        // document.getElementById('quantity').disabled = false;
+                        const firstOption = invoiceSelectDropdown.querySelector('li');
+                        if (firstOption) {
+                            selectThisOption(firstOption);
+                        }
                     },
                     error: function(xhr) {
                         console.error('Error fetching details:', xhr);
                     }
                 });
             } else {
-                // const invoiceSelect = document.getElementById('invoice');
-                // invoiceSelect.disabled = true;
-                // document.getElementById('quantity').disabled = true;
+                const invoiceSelect = document.getElementById('invoice');
+                invoiceSelect.disabled = true;
             }
+        }
+
+        function onInvoiceSelect(selectElement) {
+            if (selectElement.value) {
+                const invoiceData = JSON.parse(selectElement.parentElement.querySelector(`.optionsDropdown li.selected`).dataset.invoiceData);
+
+                const invoiceDate = invoiceData.date;
+                const dateInput = document.getElementById('date');
+                dateInput.min = invoiceDate.split('T')[0];
+                dateInput.disabled = false;
+                dateInput.value = new Date().toISOString().split('T')[0];
+
+                const quantityInput = document.getElementById('quantity');
+                quantityInput.max = invoiceData.articles_in_invoice[0].invoice_quantity;
+                quantityInput.disabled = false;
+            } else {
+                document.getElementById('date').value = '';
+                document.getElementById('date').disabled = true;
+
+                document.getElementById('quantity').value = '';
+                document.getElementById('quantity').disabled = true;
+            }
+        }
+
+        function onQuantityInput(quantityInput) {
+            // max is 84
         }
     </script>
 @endsection

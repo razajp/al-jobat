@@ -45,42 +45,31 @@ class SalesReturnController extends Controller
             $articles = Article::where('sold_quantity', '>', 0)->select(['id', 'article_no'])->get();
 
             return $articles;
-        } else if ($request->customer_id && $request->article_id && $request->getInvoices) {
+        }else if ($request->customer_id && $request->article_id && $request->getInvoices) {
             $customer = Customer::find($request->customer_id);
 
             if ($customer) {
-                $invoices = $customer->invoices()->get()->filter(function ($invoice) use ($request) {
-                    return collect($invoice->articles_in_invoice)
-                        ->pluck('id')
-                        ->contains((int) $request->article_id);
-                });
+                $invoices = $customer->invoices()
+                    ->select(['id', 'articles_in_invoice', 'invoice_no', 'date'])
+                    ->get()
+                    ->filter(function ($invoice) use ($request) {
+                        return collect($invoice->articles_in_invoice)
+                            ->pluck('id')
+                            ->contains((int) $request->article_id);
+                    })
+                    ->map(function ($invoice) use ($request) {
+                        // Keep only the requested article
+                        $invoice->articles_in_invoice = collect($invoice->articles_in_invoice)
+                            ->filter(function ($article) use ($request) {
+                                return (int) $article['id'] === (int) $request->article_id;
+                            })
+                            ->values(); // reset array keys
+                        return $invoice;
+                    });
 
-                return [$invoices, $request->article_id, $customer->invoices()->get()];
+                return $invoices;
             }
         }
-        // $customerId = $request->input('customer_id');
-
-        // $customer = Customer::with(['user' => function ($query) {
-        //     $query->where('status', 'active');
-        // }])->find($customerId);
-
-        // if ($customer) {
-        //     return response()->json([
-        //         'status' => 'success',
-        //         'data' => [
-        //             'customer_name' => $customer->customer_name,
-        //             'contact_person' => $customer->contact_person,
-        //             'phone' => $customer->phone,
-        //             'email' => $customer->email,
-        //             'address' => $customer->address,
-        //         ],
-        //     ]);
-        // } else {
-        //     return response()->json([
-        //         'status' => 'error',
-        //         'message' => 'Customer not found or inactive.',
-        //     ], 404);
-        // }
     }
 
     /**
@@ -88,7 +77,7 @@ class SalesReturnController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $request->all();
     }
 
     /**
