@@ -31,6 +31,7 @@ class SupplierPayment extends Model
         "transaction_id",
         "remarks",
         "voucher_id",
+        "is_return",
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class SupplierPayment extends Model
         'cheque_date' => 'date',
         'slip_date' => 'date',
         'clear_date' => 'date',
+        'is_return' => 'boolean',
     ];
 
     protected static function booted()

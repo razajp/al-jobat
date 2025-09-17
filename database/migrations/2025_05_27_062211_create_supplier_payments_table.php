@@ -26,6 +26,7 @@ return new class extends Migration
             $table->foreignId('self_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->foreignId('program_id')->nullable()->constrained('payment_programs')->onDelete('cascade');
             $table->foreignId('voucher_id')->nullable()->constrained('vouchers')->onDelete('cascade');
+            $table->boolean('is_return')->default(false);
             $table->string('remarks')->nullable();
 
             $table->unsignedBigInteger('creator_id');
