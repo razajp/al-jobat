@@ -92,35 +92,8 @@
                 c_r_no: item.c_r_no,
                 voucher_no: item.voucher?.voucher_no,
                 supplier_name: item.voucher?.supplier?.supplier_name,
-                oncontextmenu: "generateContextMenu(event)",
-                onclick: "generateModal(this)",
                 visible: true,
             };
         });
-
-        function generateContextMenu(e) {
-            e.preventDefault();
-            let item = e.target.closest('.item');
-            let data = JSON.parse(item.dataset.json);
-
-            let contextMenuData = {
-                item: item,
-                data: data,
-                x: e.pageX,
-                y: e.pageY,
-            };
-
-            createContextMenu(contextMenuData);
-        }
-
-        function generateModal(item) {
-            let data = JSON.parse(item.dataset.json);
-
-            let modalData = {
-                id: 'modalForm',
-            }
-
-            createModal(modalData);
-        }
     </script>
 @endsection

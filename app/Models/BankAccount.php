@@ -158,8 +158,10 @@ class BankAccount extends Model
                 'date' => $p->date ?? null,
                 'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
                 'type' => 'customer_payment',
+                'method' => $p->method ?? null,
                 'bill' => $p->amount ?? 0,
                 'payment' => 0,
+                'account' => $p->customer?->customer_name ?? null,
                 'created_at' => $p->created_at ?? null,
             ]);
 
@@ -198,9 +200,9 @@ class BankAccount extends Model
 
         // Totals
         $totals = [
-            'bill' => $customerPayments->sum('payment'), // customer payments considered as 'bill' if needed
+            'bill' => $customerPayments->sum('bill'), // customer payments considered as 'bill' if needed
             'payment' => $supplierPayments->sum('payment'),
-            'balance' => $customerPayments->sum('payment') - $supplierPayments->sum('payment'),
+            'balance' => $customerPayments->sum('bill') - $supplierPayments->sum('payment'),
         ];
 
         return [
