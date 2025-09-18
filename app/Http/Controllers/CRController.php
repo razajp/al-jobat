@@ -97,6 +97,7 @@ class CRController extends Controller
             'date' => 'required|date',
             'voucher_no' => 'required|string',
             'voucher_id' => 'required|integer|exists:vouchers,id',
+            'c_r_no' => 'required|string',
             'returnPayments' => 'required|string',
             'newPayments' => 'required|string',
         ]);
@@ -109,6 +110,11 @@ class CRController extends Controller
         $data = $request->all();
         $data['return_payments'] = json_decode($data['returnPayments'] ?? '[]');
         $data['new_payments'] = json_decode($data['newPayments'] ?? '[]');
+
+        if (!str_starts_with($data['c_r_no'], 'CR')) {
+            $data['c_r_no'] = 'CR' . $data['c_r_no'];
+        }
+
 
         $returnEmpty = empty($data['return_payments']);
         $newEmpty = empty($data['new_payments']);

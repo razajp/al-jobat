@@ -58,7 +58,6 @@
                     name="urdu_title" 
                     id="urdu_title" 
                     placeholder="Enter urdu title" 
-                    required 
                 />
                 
                 {{-- employee_phone_number --}}
@@ -169,7 +168,7 @@
 
                 salaryInpDom.disabled = false;
                 salaryInpDom.required = true;
-                salaryLabelDom.textContent = "Salary *"
+                salaryLabelDom.textContent = "Salary"
 
                 typeArray.forEach(type => {
                     clutter += `
