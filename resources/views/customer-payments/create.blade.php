@@ -324,7 +324,7 @@
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
 
                     {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" type="number" name="cheque_no" id="cheque_no" required dataValidate="required|unique:chequeNo" oninput="validateInput(this)"/>
+                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -344,7 +344,7 @@
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
 
                     {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter slip no" type="number" name="slip_no" id="slip_no" required dataValidate="required|unique:slipNo" oninput="validateInput(this)"/>
+                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>

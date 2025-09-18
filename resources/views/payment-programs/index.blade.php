@@ -15,7 +15,7 @@
                 'type' => 'text',
                 'placeholder' => 'Enter customer name',
                 'oninput' => 'runDynamicFilter()',
-                'dataFilterPath' => 'customer.customer_name',
+                'dataFilterPath' => 'customer_name',
             ],
             'Category' => [
                 'id' => 'category',
@@ -360,7 +360,6 @@
                         value: item.amount,
                         placeholder: 'Enter amount here',
                         full: true,
-                        readonly: true,
                     },
                 ],
                 fieldsGridCount: '2',

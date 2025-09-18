@@ -120,16 +120,15 @@
                     <div class="container-parent h-full">
                         <div class="card_container px-3 pb-3 h-full flex flex-col">
                             <div id="table-head" class="flex justify-between bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-center w-1/7">Beneficiary</div>
-                                <div class="text-center w-1/10">Voucher No.</div>
-                                <div class="text-center w-1/7">Customer</div>
-                                <div class="text-center w-1/9">Type</div>
-                                <div class="text-center w-1/10">Method</div>
-                                <div class="text-center w-1/10">Amount</div>
                                 <div class="text-center w-1/10">Date</div>
+                                <div class="text-center w-1/7">Customer</div>
+                                <div class="text-center w-1/7">Beneficiary</div>
+                                <div class="text-center w-1/11">Method</div>
+                                <div class="text-center w-1/10">Amount</div>
                                 <div class="text-center w-1/10">Reff. No.</div>
                                 <div class="text-center w-1/10">Clear Date</div>
                                 <div class="text-center w-1/9">Cleared Amount</div>
+                                <div class="text-center w-1/10">Voucher No.</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -180,16 +179,15 @@
                     class="item row relative group flex justify-between border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
-                    <span class="text-center w-1/7">${data.beneficiary}</span>
-                    <span class="text-center w-1/10">${data.voucher_no}</span>
-                    <span class="text-center w-1/7">${data.name}</span>
-                    <span class="text-center w-1/9 capitalize">${data.details["Type"]}</span>
-                    <span class="text-center w-1/10 capitalize">${data.details["Method"]}</span>
-                    <span class="text-center w-1/10">${data.details['Amount']}</span>
                     <span class="text-center w-1/10">${data.details['Date']}</span>
+                    <span class="text-center w-1/7">${data.name}</span>
+                    <span class="text-center w-1/7">${data.beneficiary}</span>
+                    <span class="text-center w-1/11 capitalize">${data.details["Method"]}</span>
+                    <span class="text-center w-1/10">${data.details['Amount']}</span>
                     <span class="text-center w-1/10">${data.reff_no}</span>
                     <span class="text-center w-1/10">${data.clear_date}</span>
                     <span class="text-center w-1/9">${data.cleared_amount}</span>
+                    <span class="text-center w-1/10">${data.voucher_no}</span>
                 </div>
             `;
         }
