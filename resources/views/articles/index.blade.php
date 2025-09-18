@@ -10,6 +10,13 @@
                 "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "name",
             ],
+            "Processed By" => [
+                "id" => "processed_by",
+                "type" => "text",
+                "placeholder" => "Enter article no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "processed_by",
+            ],
             "Category" => [
                 "id" => "category",
                 "type" => "select",
@@ -62,12 +69,13 @@
                 <div class="details h-full z-40">
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
-                            <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                            <div id="table-head" class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-center">Article No</div>
                                 <div class="text-center">Category</div>
                                 <div class="text-center">Season</div>
                                 <div class="text-center">Size</div>
                                 <div class="text-center">Sales Rate</div>
+                                <div class="text-center">Processed By</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>
@@ -96,7 +104,7 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid text- grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
                 <span class="text-center">${data.name}</span>
@@ -104,6 +112,7 @@
                 <span class="text-center">${data.details["Season"]}</span>
                 <span class="text-center">${data.details["Size"]}</span>
                 <span class="text-center">${data.sales_rate}</span>
+                <span class="text-center">${data.processed_by}</span>
             </div>`;
         }
 
@@ -120,6 +129,7 @@
                     'Size': item.size,
                 },
                 sales_rate: item.sales_rate,
+                processed_by: item.processed_by,
                 fabric_type: item.fabric_type,
                 quantity: item.quantity,
                 current_stock: item.quantity - item.ordered_quantity,
