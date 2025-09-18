@@ -19,59 +19,95 @@
             @method('PUT')
             <x-form-title-bar title="Edit Employee" />
 
-            <!-- Step 1: Basic Information -->
+            <!-- Step1 : Basic Information -->
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <!-- customer_name -->
-                    <x-input
-                        label="Customer Name"
-                        value="{{ $customer->customer_name }}"
+                    {{-- employee_category --}}
+                    <x-input 
+                        label="Category"
+                        value="{{ Str::ucfirst($employee->category) }}"
                         disabled
                     />
 
-                    {{-- person name --}}
-                    <x-input
-                        label="Person Name"
-                        value="{{ $customer->person_name }}"
-                        disabled
+                    {{-- employee_type --}}
+                    <x-select 
+                        label="Type"
+                        name="type_id"
+                        id="type"
+                        :options="$types_options"
+                        required
                     />
 
-                    {{-- customer_phone_number --}}
-                    <x-input
-                        label="Phone Number"
-                        name="phone_number"
-                        id="phone_number"
-                        value="{{ $customer->phone_number }}"
+                    <!-- employee_name -->
+                    <x-input 
+                        label="Employee Name"
+                        value="{{ $employee->employee_name }}"
+                        disabled
+                    />
+                    
+                    <!-- urdu_title -->
+                    <x-input 
+                        label="Urdu Title"
+                        name="urdu_title"
+                        value="{{ $employee->urdu_title }}"
+                        placeholder="Enter urdu title" 
+                    />
+                    
+                    {{-- employee_phone_number --}}
+                    <x-input 
+                        label="Phone Number" 
+                        name="phone_number" 
+                        value="{{ $employee->phone_number }}"
                         placeholder="Enter phone number"
                         required
+                        oninput="formatPhoneNo(this)"
                     />
 
-                    {{-- customer_address --}}
-                    <x-input
-                        label="Address"
-                        name="address"
-                        id="address"
-                        value="{{ $customer->address }}"
-                        placeholder="Enter address"
-                        required
+                    {{-- employee_joining_date --}}
+                    <x-input 
+                        label="Joining Date" 
+                        value="{{ $employee->joining_date->format('d-M-Y, D') }}"
+                        disabled
+                    />
+
+                    {{-- employee_cnic --}}
+                    <x-input 
+                        label="C.N.I.C No." 
+                        name="cnic_no" 
+                        value="{{ $employee->cnic_no }}"
+                        placeholder="Enter C.N.I.C No."
+                        capitalized
+                        oninput="formatCnicNo(this)"
+                    />
+
+                    {{-- employee_salary --}}
+                    <x-input 
+                        label="Salary" 
+                        name="salary" 
+                        value="{{ $employee->salary }}"
+                        placeholder="Enter salary"
+                        type="number"
+                        :disabled="$employee->category !== 'staff'"
+                        :required="$employee->category !== 'staff'"
+                        capitalized
                     />
                 </div>
             </div>
 
             <!-- Step 2: Image -->
             <div class="step2 hidden space-y-4">
-                @if ($customer->user->profile_picture == 'default_avatar.png')
+                @if ($employee->profile_picture == 'default_avatar.png')
                     <x-image-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('images/image_icon.png') }}"
-                        uploadText="Upload customer image"
+                        uploadText="Upload employee image"
                     />
                 @else
                     <x-image-upload
                         id="image_upload"
                         name="image_upload"
-                        placeholder="{{ asset('storage/uploads/images/' . $customer->user->profile_picture) }}"
+                        placeholder="{{ asset('storage/uploads/images/' . $employee->profile_picture) }}"
                         uploadText="Preview"
                     />
                     <script>
@@ -85,6 +121,38 @@
     </div>
 
     <script>
+        let employee = @json($employee);
+        
+        document.addEventListener('DOMContentLoaded', function () {
+            const option = document.querySelector('li[data-value="{{ $employee->type_id }}"]');
+            if (option) {
+                selectThisOption(option);
+            }
+        });
+        
+        function formatPhoneNo(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (value.length > 4) {
+                value = value.slice(0, 4) + '-' + value.slice(4, 11); // Insert hyphen after 4 digits
+            }
+
+            input.value = value; // Update the input field
+        }
+
+        function formatCnicNo(input) {
+            let value = input.value.replace(/\D/g, ''); // Remove all non-numeric characters
+
+            if (value.length > 5 && value.length <= 12) {
+                value = value.slice(0, 5) + '-' + value.slice(5);
+            }
+            if (value.length > 12) {
+                value = value.slice(0, 5) + '-' + value.slice(5, 12) + '-' + value.slice(12, 13);
+            }
+
+            input.value = value; // Update the input field
+        }
+
         function validateForNextStep() {
             return true;
         }

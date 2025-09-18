@@ -28,7 +28,7 @@ class Employee extends Model
     ];
 
     protected $casts = [
-        'date' => 'date',
+        'joining_date' => 'date',
     ];
 
     public function type() {

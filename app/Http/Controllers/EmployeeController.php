@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Setup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class EmployeeController extends Controller
 {
@@ -71,8 +72,8 @@ class EmployeeController extends Controller
         $request->validate([
             'category' => 'required|string|in:staff,worker',
             'type_id' => 'required|exists:setups,id',
-            'employee_name' => 'required|string',
-            'urdu_title' => 'required|string',
+            'employee_name' => 'required|string|unique:employees,employee_name',
+            'urdu_title' => 'nullable|string',
             'phone_number' => 'required|string',
             'joining_date' => 'required|date',
             'cnic_no' => 'nullable|string',
@@ -109,7 +110,12 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        return view('employees.edit', compact('employee'));
+        $category = $employee->category == 'staff' ? ['staff_type'] : ['worker_type'];
+        $types = Setup::whereIn('type', $category)->get();
+        $types_options = $types->mapWithKeys(fn($type) => [
+            $type->id => ['text' => $type->title]
+        ])->toArray();
+        return view('employees.edit', compact('employee', 'types_options'));
     }
 
     /**
@@ -117,7 +123,42 @@ class EmployeeController extends Controller
      */
     public function update(Request $request, Employee $employee)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $validator = Validator::make($request->all(), [
+            'type_id' => 'required|integer|exists:setups,id',
+            'urdu_title' => 'nullable|string|max:255',
+            'phone_number' => 'required|string|max:255',
+            'cnic_no' => 'nullable|string|max:255',
+            'salary' => 'nullable|integer|min:1',
+            'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = $request->all();
+
+        if ($request->hasFile('image_upload')) {
+            $file = $request->file('image_upload');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('uploads/images', $fileName, 'public'); // Store in public disk
+
+            $data['profile_picture'] = $fileName; // Save the file path in the database
+        } else {
+            $data['profile_picture'] = "default_avatar.png";
+        }
+
+        // return $data;
+
+        // Update the employee
+        $employee->update($data);
+
+        return redirect()->route('employees.index')->with('success', 'Employee updated successfully.');
     }
 
     /**

@@ -109,7 +109,7 @@
                 current_stock: `${formatNumbersWithDigits((item.current_stock * item.article.pcs_per_packet) / 12, 1, 1)} - Dz. | ${item.current_stock}- Pkts.`,
                 a_category: `${formatNumbersWithDigits((item.a_category * item.article.pcs_per_packet) / 12, 1, 1)} - Dz. | ${item.a_category} - Pkts.`,
                 b_category: `${formatNumbersWithDigits((item.b_category * item.article.pcs_per_packet) / 12, 1, 1)} - Dz. | ${item.b_category} - Pkts.`,
-                remaining_quantity: `${formatNumbersWithDigits((item.article.quantity - (item.total_packets * item.article.pcs_per_packet)) / 12, 1, 1)} - Dz. | ${(item.article.quantity / item.total_packets) - item.total_packets} - Pkts.`,
+                remaining_quantity: `${formatNumbersWithDigits((item.article.quantity - (item.total_packets * item.article.pcs_per_packet)) / 12, 1, 1)} - Dz. | ${formatNumbersWithDigits((item.article.quantity / item.total_packets) - item.total_packets, 1, 1)} - Pkts.`,
                 shipment: item.shipment || '-',
                 visible: true,
             };
