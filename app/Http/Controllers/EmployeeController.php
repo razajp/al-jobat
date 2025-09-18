@@ -79,7 +79,7 @@ class EmployeeController extends Controller
             'salary' => 'nullable|integer|min:1',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png,gif,webp|max:2048',
         ]);
-        
+
         $data = $request->all();
 
         // Handle the image upload if present
@@ -109,7 +109,7 @@ class EmployeeController extends Controller
      */
     public function edit(Employee $employee)
     {
-        //
+        return view('employees.edit', compact('employee'));
     }
 
     /**
@@ -134,7 +134,7 @@ class EmployeeController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $employee = Employee::find($request->user_id);
 
         if ($request->status == 'active') {

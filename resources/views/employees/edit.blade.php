@@ -1,55 +1,55 @@
 @extends('app')
-@section('title', 'Edit Customer | ' . app('company')->name)
+@section('title', 'Edit Employee | ' . app('company')->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
-        <x-search-header heading="Edit Customer" link linkText="Show Customers" linkHref="{{ route('customers.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Upload Image']" 
+        <x-search-header heading="Edit Employee" link linkText="Show Employee" linkHref="{{ route('employees.index') }}"/>
+        <x-progress-bar
+            :steps="['Enter Details', 'Upload Image']"
             :currentStep="1"
         />
     </div>
 
     <div class="row max-w-3xl mx-auto flex gap-4">
         <!-- Form -->
-        <form id="form" action="{{ route('customers.update', ['customer' => $customer->id]) }}" method="POST" enctype="multipart/form-data"
+        <form id="form" action="{{ route('employees.update', ['employee' => $employee->id]) }}" method="POST" enctype="multipart/form-data"
             class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 grow relative overflow-hidden">
             @csrf
             @method('PUT')
-            <x-form-title-bar title="Edit Customer" />
+            <x-form-title-bar title="Edit Employee" />
 
             <!-- Step 1: Basic Information -->
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- customer_name -->
-                    <x-input 
+                    <x-input
                         label="Customer Name"
                         value="{{ $customer->customer_name }}"
                         disabled
                     />
 
                     {{-- person name --}}
-                    <x-input 
+                    <x-input
                         label="Person Name"
                         value="{{ $customer->person_name }}"
                         disabled
                     />
 
                     {{-- customer_phone_number --}}
-                    <x-input 
-                        label="Phone Number" 
-                        name="phone_number" 
-                        id="phone_number" 
+                    <x-input
+                        label="Phone Number"
+                        name="phone_number"
+                        id="phone_number"
                         value="{{ $customer->phone_number }}"
                         placeholder="Enter phone number"
                         required
                     />
 
                     {{-- customer_address --}}
-                    <x-input 
-                        label="Address" 
-                        name="address" 
+                    <x-input
+                        label="Address"
+                        name="address"
                         id="address"
                         value="{{ $customer->address }}"
                         placeholder="Enter address"
@@ -61,14 +61,14 @@
             <!-- Step 2: Image -->
             <div class="step2 hidden space-y-4">
                 @if ($customer->user->profile_picture == 'default_avatar.png')
-                    <x-image-upload 
+                    <x-image-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('images/image_icon.png') }}"
                         uploadText="Upload customer image"
                     />
                 @else
-                    <x-image-upload 
+                    <x-image-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('storage/uploads/images/' . $customer->user->profile_picture) }}"
