@@ -9,8 +9,6 @@
     <meta name="description" content="Al Jobat`s Garments Busniess Management Solution!">
     <link rel="manifest" href="/manifest.json">
     <title>@yield('title', app('company')->name)</title>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
     <style>
         @font-face {
             font-family: 'Calibri';
@@ -1300,51 +1298,6 @@
             }
         }
     });
-</script>
-<script>
-document.querySelectorAll('input[id$="_flatpickr"]').forEach(input => {
-    const hiddenId = input.dataset.hiddenId; // yahan correct dataset key
-    const hiddenInput = document.getElementById(hiddenId);
-
-    if (!hiddenInput) return; // safety check
-
-    // Initialize Flatpickr
-    const fp = flatpickr(input, {
-        dateFormat: "Y-m-d",
-        altInput: true,
-        altFormat: "d-M-Y",
-        allowInput: true,
-        maxDate: input.dataset.max || null,
-        minDate: input.dataset.min || null,
-        defaultDate: hiddenInput.value || null,
-        onChange: (selectedDates, dateStr) => {
-            hiddenInput.value = dateStr;
-        }
-    });
-
-    // Override .disabled
-    Object.defineProperty(hiddenInput, 'disabled', {
-        set(val) {
-            input.disabled = val;
-            if (val) this.setAttribute('disabled', 'disabled');
-            else this.removeAttribute('disabled');
-        },
-        get() {
-            return input.disabled;
-        }
-    });
-
-    // Override .value
-    Object.defineProperty(hiddenInput, 'value', {
-        set(val) {
-            fp.setDate(val, true); // updates visible input
-            this.setAttribute('value', val); // updates hidden input
-        },
-        get() {
-            return fp.input.value;
-        }
-    });
-});
 </script>
 
 </html>

@@ -627,7 +627,7 @@ function createModal(data, animate = 'animate') {
                         <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="logo">
-                                    <img src="images/${companyData.logo}" alt="Track Point"
+                                    <img src="images/${companyData.logo}" alt="aljobat"
                                         class="w-[12rem]" />
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>

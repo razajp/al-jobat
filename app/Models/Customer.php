@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -156,7 +157,7 @@ class Customer extends Model
                 'method' => $p->method ?? null,
                 'payment' => $p->amount ?? 0,
                 'bill' =>  0,
-                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |') : null,
+                'description' => $p->cheque_date?->format('d-M-Y, D') ?? $p->slip_date?->format('d-M-Y, D') ?? ($p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ($p->bankAccount?->bank?->short_title ? ' | ' . $p->bankAccount->bank->short_title : ''), ' |' ) : null ),
                 'created_at' => $p->created_at ?? null,
             ]);
 
@@ -183,7 +184,7 @@ class Customer extends Model
         ];
 
         return [
-            'date' => $fromDate . ' - ' . $toDate,
+            'date' => Carbon::parse($fromDate)->format('d-M-Y') . ' - ' . Carbon::parse($toDate)->format('d-M-Y'),
             'name' => $this->customer_name . ' | ' . $this->city->title,
             'opening_balance' => $openingBalance,
             'closing_balance' => $closingBalance,

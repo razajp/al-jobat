@@ -413,7 +413,7 @@
                         bankAccountsSelect.disabled = false;
                         bankAccountsSelect.value = '-- Select Bank Account --';
                         bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML = `
-                     <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>       
+                     <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select Bank Account --</li>
                         `;
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {

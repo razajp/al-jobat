@@ -103,9 +103,6 @@
                     // Bachi hui rows ko 29-29 ke chunks mai tod do
                     $otherPages = $statements->skip(26)->chunk(29);
                 @endphp
-                <script>
-                    console.log(@json($data));
-                </script>
 
                 {{-- First Page (26 rows) --}}
                 <div id="preview-container" class="h-full relative">
@@ -117,7 +114,7 @@
                                 <div id="preview-banner" class="preview-banner w-full flex justify-between items-center pl-5 pr-8">
                                     <div class="left">
                                         <div class="company-logo">
-                                            <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                            <img src="{{ asset('images/'.$companyData->logo) }}" alt="aljobat"
                                                 class="w-[12rem]" />
                                         </div>
                                     </div>
@@ -161,7 +158,7 @@
                                                     <div class="th font-medium w-[12%]">Date</div>
                                                     <div class="th font-medium w-[12%]">Reff. No.</div>
                                                     <div class="th font-medium w-[10%]">Method</div>
-                                                    <div class="th font-medium w-[31%]">Account</div>
+                                                    <div class="th font-medium w-[31%]">Description</div>
                                                     <div class="th font-medium w-[9%]">Bill</div>
                                                     <div class="th font-medium w-[9%]">Payment</div>
                                                     <div class="th font-medium w-[9%]">Balance</div>
@@ -190,8 +187,8 @@
                                                             <div class="td font-semibold w-[4%]">{{ $loop->iteration }}.</div>
                                                             <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
                                                             <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
-                                                            <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
-                                                            <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
+                                                            <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
+                                                            <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
                                                             <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
                                                             <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
                                                             <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
@@ -225,7 +222,7 @@
                                     <div id="preview-banner" class="preview-banner w-full flex justify-between items-center pl-5 pr-8">
                                         <div class="left">
                                             <div class="company-logo">
-                                                <img src="{{ asset('images/'.$companyData->logo) }}" alt="Track Point"
+                                                <img src="{{ asset('images/'.$companyData->logo) }}" alt="aljobat"
                                                     class="w-[10.5rem]" />
                                             </div>
                                         </div>
@@ -250,7 +247,7 @@
                                                         <div class="th font-medium w-[12%]">Date</div>
                                                         <div class="th font-medium w-[12%]">Reff. No.</div>
                                                         <div class="th font-medium w-[10%]">Method</div>
-                                                        <div class="th font-medium w-[31%]">Account</div>
+                                                        <div class="th font-medium w-[31%]">Description</div>
                                                         <div class="th font-medium w-[9%]">Bill</div>
                                                         <div class="th font-medium w-[9%]">Payment</div>
                                                         <div class="th font-medium w-[9%]">Balance</div>
@@ -279,8 +276,8 @@
                                                                 <div class="td font-semibold w-[4%]">{{ $loop->iteration + 26 + ($pageIndex * 29) }}.</div>
                                                                 <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
                                                                 <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
-                                                                <div class="td font-medium w-[10%]">{{ $statement['method'] ?? "-" }}</div>
-                                                                <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['account'] ?? "-" }}</div>
+                                                                <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
+                                                                <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
                                                                 <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
                                                                 <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
                                                                 <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
@@ -309,6 +306,7 @@
     </form>
 
     <script>
+        const today = new Date();
         const nameSelect = document.getElementById('nameSelect');
         const nameSelectDropDown = nameSelect.parentElement.parentElement.parentElement.querySelector('ul.optionsDropdown');
         const rangeSelect = document.getElementById('range');
@@ -341,7 +339,7 @@
                         response.forEach(function(item) {
                             let displayText = '';
                             if (category === 'customer') {
-                                displayText = item.customer_name;
+                                displayText = item.customer_name + ' | ' + item.city?.short_title;
                             } else if (category === 'supplier') {
                                 displayText = item.supplier_name || '';
                             } else if (category === 'bank_account') {
@@ -378,7 +376,6 @@
         }
 
         function nameChanged(nameSelectDbInput) {
-            console.log(nameSelectDbInput.value != '');
             if (nameSelectDbInput.value) {
                 let selectedName = nameSelectDbInput.nextElementSibling.querySelector(`li[data-value="${nameSelectDbInput.value}"]`);
 
@@ -446,50 +443,56 @@
 
         // Helper: local YYYY-MM-DD (without UTC shift)
         const formatDateLocal = (d) => {
-        const y = d.getFullYear();
-        const m = String(d.getMonth() + 1).padStart(2, "0");
-        const day = String(d.getDate()).padStart(2, "0");
-        return `${y}-${m}-${day}`;
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, "0");
+            const day = String(d.getDate()).padStart(2, "0");
+            return `${y}-${m}-${day}`;
         };
 
+        function isLastDayOfMonth(date) {
+            return date.getDate() === new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+        }
+
         function applyRange(rangeValue) {
-            const today = new Date();
             let from = null, to = null;
+
+            // check if today is last date of month
+            const todayIsLast = isLastDayOfMonth(today);
 
             switch (rangeValue) {
                 case "custom":
-                dateFrom.value = regDate;
-                dateTo.value = new Date().toISOString().split("T")[0];
-                dateFrom.disabled = false;
-                dateTo.disabled = false;
-                return;
+                    dateFrom.value = regDate;
+                    dateTo.value = new Date().toISOString().split("T")[0];
+                    dateFrom.disabled = false;
+                    dateTo.disabled = false;
+                    return;
 
                 case "current_month":
-                from = new Date(today.getFullYear(), today.getMonth(), 1);
-                to = today;
-                break;
+                    from = new Date(today.getFullYear(), today.getMonth(), 1);
+                    to = today; // only till today
+                    break;
 
                 case "last_month":
-                from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
-                to   = new Date(today.getFullYear(), today.getMonth(), 0);
-                break;
+                    from = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                    to = today; // include last month fully + current month till today
+                    break;
 
                 case "last_three_months":
-                from = new Date(today.getFullYear(), today.getMonth() - 3, 1);
-                to   = new Date(today.getFullYear(), today.getMonth(), 0);
-                break;
+                    from = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+                    to = today;
+                    break;
 
                 case "last_six_months":
-                from = new Date(today.getFullYear(), today.getMonth() - 6, 1);
-                to   = new Date(today.getFullYear(), today.getMonth(), 0);
-                break;
+                    from = new Date(today.getFullYear(), today.getMonth() - 5, 1);
+                    to = today;
+                    break;
 
                 default:
-                dateFrom.value = "";
-                dateTo.value = "";
-                dateFrom.disabled = true;
-                dateTo.disabled = true;
-                return;
+                    dateFrom.value = "";
+                    dateTo.value = "";
+                    dateFrom.disabled = true;
+                    dateTo.disabled = true;
+                    return;
             }
 
             dateFrom.value = formatDateLocal(from);
@@ -506,6 +509,7 @@
             const dateFrom = document.getElementById('date_from').value;
             const dateTo = document.getElementById('date_to').value;
 
+
             $.ajax({
                 url: "{{ route('reports.statement') }}",
                 type: 'GET',
@@ -514,8 +518,8 @@
                     withData: false,
                     category: category,
                     id: id,
-                    date_from: dateFrom,
-                    date_to: dateTo,
+                    date_from: dateFrom !== '' ? dateFrom : regDate,
+                    date_to: dateTo !== '' ? dateTo : today.toISOString().split("T")[0],
                 },
                 success: function(response) {
                     renderStatement(response);

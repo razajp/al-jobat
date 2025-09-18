@@ -27,7 +27,7 @@
                                     <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                                         <div class="left">
                                             <div class="invoice-logo">
-                                                <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                                <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
                                                     class="w-[12rem]" />
                                                 <div class='mt-1'>${ companyData.phone_number }</div>
                                             </div>

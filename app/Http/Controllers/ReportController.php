@@ -70,7 +70,7 @@ class ReportController extends Controller
         if ($category === 'customer') {
             $customers = Customer::whereHas('user', function ($query) {
                 $query->where('status', 'active');
-            })->get(); // select only needed fields
+            })->with('city')->get(); // select only needed fields
             return response()->json($customers);
         }
 

@@ -473,7 +473,7 @@
                         <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="order-logo">
-                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="Track Point"
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
                                         class="w-[12rem]" />
                                     <div class='mt-1'>${ companyData.phone_number }</div>
                                 </div>
