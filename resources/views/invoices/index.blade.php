@@ -167,7 +167,7 @@
                                     padding: 0;
                                     width: 210mm; /* A4 width */
                                     height: 297mm; /* A4 height */
-                                    
+
                                 }
 
                                 .preview-container, .preview-container * {
@@ -205,7 +205,7 @@
                 document.getElementById('modalForm').parentElement.remove();
             };
         }
-        
+
         function generateContextMenu(e) {
             e.preventDefault();
             let item = e.target.closest('.item');

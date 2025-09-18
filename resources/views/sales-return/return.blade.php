@@ -24,14 +24,19 @@
                 <x-select label="Article" name="article" id="article" :options="[]" showDefault disabled onchange="onArticleSelect(this)" />
 
                 {{-- Invoice --}}
-                <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled onchange="onInvoiceSelect(this)" />
-
-                {{-- Date --}}
-                <x-input label="Date" name="date" id="date" type="date" max="{{ now()->toDateString() }}" required disabled />
-
-                {{-- Quantity --}}
                 <div class="col-span-2">
+                    <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled onchange="onInvoiceSelect(this)" />
+                </div>
+
+                <div class="grid grid-cols-3 col-span-full gap-4">
+                    {{-- Date --}}
+                    <x-input label="Date" name="date" id="date" type="date" max="{{ now()->toDateString() }}" required disabled />
+
+                    {{-- Quantity --}}
                     <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" oninput="onQuantityInput(this)" required disabled />
+
+                    {{-- Amount --}}
+                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Amount" readonly />
                 </div>
             </div>
         </div>
@@ -105,7 +110,7 @@
                         invoiceSelectDropdown.innerHTML = '';
                         let clutter = '<li data-for="invoice" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Invoice --</li>';
                         response.forEach(invoice => {
-                            clutter += `<li data-for="invoice" data-invoice-data='${JSON.stringify(invoice)}' data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} | ${invoice.articles_in_invoice[0].invoice_quantity} - PCs</li>`;
+                            clutter += `<li data-for="invoice" data-invoice-data='${JSON.stringify(invoice)}' data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} | ${invoice.articles_in_invoice[0].invoice_quantity} - PCs | ${invoice.discount}% | Rs. ${invoice.sales_rate}</li>`;
                         });
                         invoiceSelectDropdown.innerHTML = clutter;
 
@@ -135,7 +140,6 @@
                 dateInput.value = new Date().toISOString().split('T')[0];
 
                 const quantityInput = document.getElementById('quantity');
-                quantityInput.max = invoiceData.articles_in_invoice[0].invoice_quantity;
                 quantityInput.disabled = false;
             } else {
                 document.getElementById('date').value = '';
@@ -147,7 +151,7 @@
         }
 
         function onQuantityInput(quantityInput) {
-            // max is 84
+            quantityInput.value = quantityInput.value.replace(/[^0-9]/g, '');
         }
     </script>
 @endsection

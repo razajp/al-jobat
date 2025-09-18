@@ -243,6 +243,11 @@
             cursor: not-allowed;
         }
 
+        input[readonly] {
+            background-color: transparent !important;
+            pointer-events: none !important;
+        }
+
         select[disabled] {
             cursor: not-allowed;
         }

@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\SalesReturn;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SalesReturnController extends Controller
 {
@@ -49,22 +50,30 @@ class SalesReturnController extends Controller
             $customer = Customer::find($request->customer_id);
 
             if ($customer) {
+                $salesRate = Article::find($request->article_id)?->sales_rate;
                 $invoices = $customer->invoices()
-                    ->select(['id', 'articles_in_invoice', 'invoice_no', 'date'])
+                    ->with('order', 'shipment')
                     ->get()
                     ->filter(function ($invoice) use ($request) {
                         return collect($invoice->articles_in_invoice)
                             ->pluck('id')
                             ->contains((int) $request->article_id);
                     })
-                    ->map(function ($invoice) use ($request) {
+                    ->map(function ($invoice) use ($request, $salesRate) {
                         // Keep only the requested article
-                        $invoice->articles_in_invoice = collect($invoice->articles_in_invoice)
-                            ->filter(function ($article) use ($request) {
-                                return (int) $article['id'] === (int) $request->article_id;
-                            })
-                            ->values(); // reset array keys
-                        return $invoice;
+                        $articles = collect($invoice->articles_in_invoice)
+                            ->filter(fn($article) => (int) $article['id'] === (int) $request->article_id)
+                            ->values();
+
+                        return [
+                            'id' => $invoice->id,
+                            'invoice_no' => $invoice->invoice_no,
+                            'date' => $invoice->date,
+                            'articles_in_invoice' => $articles,
+                            'discount' => optional($invoice->order)->discount
+                                        ?? optional($invoice->shipment)->discount,
+                            'sales_rate' => $salesRate,
+                        ];
                     });
 
                 return $invoices;
@@ -77,6 +86,32 @@ class SalesReturnController extends Controller
      */
     public function store(Request $request)
     {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        // return $request;
+
+        $validator = Validator::make($request->all(), [
+            'article' => 'required|integer|exists:articles,id',
+            'invoice' => 'required|integer|exists:invoices,id',
+            'date' => 'required|date',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $data = [
+            'article' => $request->article,
+            'invoice' => $request->invoice,
+            'date' => $request->date,
+            'quantity' => $request->quantity,
+            'amount' => '',
+        ];
+
         return $request->all();
     }
 

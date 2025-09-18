@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('sales_returns', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
+            $table->foreignId('invoice_id')->constrained('invoices')->onDelete('cascade');
+            $table->date('date');
+            $table->integer('quantity');
+            $table->integer('amount');
             $table->timestamps();
         });
     }
