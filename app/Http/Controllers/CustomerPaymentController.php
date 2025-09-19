@@ -12,6 +12,7 @@ use App\Models\Supplier;
 use App\Models\SupplierPayment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CustomerPaymentController extends Controller
 {
@@ -329,15 +330,110 @@ class CustomerPaymentController extends Controller
      */
     public function edit(CustomerPayment $customerPayment)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $customerPayment->load('customer.paymentPrograms.subCategory.bankAccounts.bank');
+
+        $banks_options = [];
+        $banks = Setup::where('type', 'bank_name')->get();
+        foreach ($banks as $bank) {
+            if ($bank) {
+                $banks_options[(int)$bank->id] = [
+                    'text' => $bank->title,
+                    'data_option' => $bank,
+                ];
+            }
+        }
+
+        $cheque_nos = CustomerPayment::pluck('cheque_no')->toArray();
+        $slip_nos = CustomerPayment::pluck('slip_no')->toArray();
+
+        return view('customer-payments.edit', compact('customerPayment', 'banks_options', 'cheque_nos', 'slip_nos'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, CustomerPayment $customerPayment)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $validator = Validator::make($request->all(), [
+            "date" => "required|date",
+            "type" => "required|string",
+            "method" => "required|string",
+            "amount" => "required|integer",
+            "bank_id" => "nullable|integer|exists:setups,id",
+            "cheque_date" => "nullable|date",
+            "slip_date" => "nullable|date",
+            "cheque_no" => [
+                "nullable",
+                "string",
+                Rule::unique('customer_payments', 'cheque_no')->ignore($customerPayment->id),
+            ],
+            "slip_no" => [
+                "nullable",
+                "string",
+                Rule::unique('customer_payments', 'slip_no')->ignore($customerPayment->id),
+            ],
+            "clear_date" => "nullable|date",
+            "bank_account_id" => "nullable|integer|exists:bank_accounts,id",
+            "transaction_id" => [
+                "nullable",
+                "string",
+                Rule::unique('customer_payments', 'transaction_id')->ignore($customerPayment->id),
+            ],
+            "program_id" => "nullable|exists:payment_programs,id",
+            "remarks" => "nullable|string",
+        ]);
+
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator);
+        }
+
+        $data = $request->all();
+
+        $customerPayment->update($data);
+
+        if (isset($data['program_id']) && $data['program_id']) {
+            SupplierPayment::where([
+                'program_id'     => $data['program_id'],
+                'method'         => $data['method'],
+                'transaction_id' => $data['transaction_id'],
+                'bank_account_id'=> $data['bank_account_id'],
+            ])->delete();
+
+            $program = PaymentProgram::find($data['program_id']);
+            if ($program && $data['method'] == 'program') {
+                if ($program['category'] == 'supplier') {
+                    $data['supplier_id'] = $program->sub_category_id;
+                    SupplierPayment::create($data);
+                }
+            }
+        }
+
+        $currentProgram = PaymentProgram::find($request->program_id);
+
+        if (isset($currentProgram)) {
+            if ($currentProgram->balance <= 1000 && $currentProgram->balance >= 0) {
+                $currentProgram->status = 'Paid';
+                $currentProgram->save();
+            } else if ($currentProgram->balance < 0.0) {
+                $currentProgram->status = 'Overpaid';
+                $currentProgram->save();
+            } else {
+                $currentProgram->status = 'Unpaid';
+                $currentProgram->save();
+            }
+        }
+
+        return redirect()->route('customer-payments.index')->with('success', 'Payment update successfully.');
     }
 
     /**

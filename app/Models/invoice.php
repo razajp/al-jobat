@@ -15,7 +15,7 @@ class Invoice extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         "invoice_no",
         "order_no",
@@ -32,7 +32,7 @@ class Invoice extends Model
         'articles_in_invoice' => 'array',
         'date' => 'datetime',
     ];
-    
+
     protected static function booted()
     {
         // Automatically set creator_id when creating a new Article
@@ -87,5 +87,9 @@ class Invoice extends Model
         }
 
         return false;
+    }
+
+    public function salesReturns() {
+        return $this->hasMany(SalesReturn::class, 'invoice_id');
     }
 }

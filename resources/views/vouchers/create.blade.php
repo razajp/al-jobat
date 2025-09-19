@@ -22,6 +22,9 @@
         $method_options = array_slice($method_options, 0, 3, true)
             + ['program' => ['text' => 'Payment Program']]
             + array_slice($method_options, 3, null, true);
+        $method_options = array_slice($method_options, 0, 3, true)
+            + ['purchase_return' => ['text' => 'Purchase Return']]
+            + array_slice($method_options, 3, null, true);
     }
 
     // Add remaining methods
@@ -293,6 +296,13 @@
             }
         }
 
+        function trackExpenseSelect(elem) {
+            let selectedOption = elem.nextElementSibling.querySelector('li.selected');
+            let selectedExpense = JSON.parse(selectedOption.getAttribute('data-option')) || ''
+            elem.closest('form').querySelector('input[name="selected"]').value = JSON.stringify(selectedExpense);
+            elem.closest('form').querySelector('input[name="reff_no"]').value = selectedExpense.reff_no;
+        }
+
         function updateSelectedAccount(elem) {
             let hiddenAccountInSelfAccount = elem.closest('form').querySelector(`ul[data-for="bank_account_id"]`);
             hiddenAccountInSelfAccount.querySelectorAll('li').forEach(li => {
@@ -526,6 +536,33 @@
                         type: 'hidden',
                     }
                 );
+            } else if (elem.value == 'purchase_return') {
+                fieldsData.push(
+                    {
+                        category: 'explicitHtml',
+                        html: `
+                            <x-select class="" label="Expense" name="expense_id" id="expense_id" required showDefault onchange="trackExpenseSelect(this)" />
+                        `,
+                    },
+                    {
+                        category: 'input',
+                        name: 'amount',
+                        label: 'Amount',
+                        type: 'number',
+                        required: true,
+                        placeholder: 'Enter amount',
+                    },
+                    {
+                        category: 'input',
+                        name: 'selected',
+                        type: 'hidden',
+                    },
+                    {
+                        category: 'input',
+                        name: 'reff_no',
+                        type: 'hidden',
+                    }
+                );
             } else if (elem.value == 'adjustment') {
                 fieldsData.push(
                     {
@@ -621,6 +658,40 @@
                     })
                 }
 
+                if (elem.value == 'purchase_return') {
+                    let expenseSelectDom = document.querySelector(`ul[data-for="expense_id"]`);
+
+                    let allExpenses = selectedSupplier.expenses;
+
+                    const filteredExpenses = allExpenses.filter(expense => {
+                        return new Date(expense.date) <= new Date(dateDom.value);
+                    });
+
+                    expenseSelectDom.innerHTML = `
+                        <li data-for="expense_id" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">-- Select expense --</li>
+                    `;
+
+                    filteredExpenses.forEach(expense => {
+                        expenseSelectDom.innerHTML += `
+                            <li data-for="expense_id" data-value="${expense.id}" data-option='${JSON.stringify(expense)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${formatNumbersWithDigits(expense.amount, 1, 1)} | ${expense.reff_no}</li>
+                        `;
+                    })
+
+                    if (filteredExpenses.length > 0) {
+                        document.querySelector('input[name="expense_id_name"]').disabled = false;
+                        document.querySelector('input[name="expense_id_name"]').placeholder = '-- Select program --';
+                    }
+
+                    document.querySelector('input[name="expense_id"]').addEventListener('change', () => {
+                        let selectedOption = expenseSelectDom.querySelector('li.selected');
+                        let selectedExpense = JSON.parse(selectedOption.getAttribute('data-option')) || '';
+
+                        selectedDom.value = JSON.stringify(selectedExpense);
+                        document.getElementById('amount').value = selectedExpense.amount;
+                        document.getElementById('payment_id').value = selectedExpense.id;
+                    })
+                }
+
                 if (elem.value === 'slip' || elem.value === 'cheque' || elem.value === 'program') {
                     const type = elem.value; // 'slip' or 'cheque'
                     const key = type + '_id'; // slip_id or cheque_id
@@ -695,6 +766,9 @@
                 let selectedMethod = methodSelectDom.value;
                 if (selectedMethod == 'Payment Program') {
                     selectedMethod = 'program';
+                }
+                if (selectedMethod == 'Purchase Return') {
+                    selectedMethod = 'p. return';
                 }
                 totalPayment += detail.amount;
                 detail['method'] = selectedMethod;
@@ -824,8 +898,9 @@
                                     </div>
                                     <div id="tbody" class="tbody w-full">
                                         ${paymentDetailsArray.map((payment, index) => {
+                                            console.log(payment);
+
                                             let selected = JSON.parse(payment.selected || '{}');
-                                            console.log(selected);
 
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             return `
@@ -837,7 +912,7 @@
                                                             <div class="td text-sm font-semibold w-1/5">${payment.program?.customer?.customer_name ? payment.program?.customer?.customer_name : selected.customer?.customer_name ? selected.customer?.customer_name : '-'}</div>
                                                             <div class="td text-sm font-semibold w-1/4">${(selected?.bank_account?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank.short_title ?? '-')}</div>
                                                             <div class="td text-sm font-semibold w-[14%]">${formatDate(dateInpDom.value, true) ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-[14%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[14%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? selected?.reff_no ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                         </div>
                                                     </div>

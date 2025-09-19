@@ -655,7 +655,7 @@
                 },
                 subMenu: [
                     {name: 'Show Orders', href: "/orders"},
-                    {name: 'Add Order', href: "/orders/create"},
+                    {name: 'Generate Order', href: "/orders/create"},
                 ]
             },
         @endif

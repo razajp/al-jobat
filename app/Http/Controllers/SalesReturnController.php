@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\SalesReturn;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -15,7 +16,8 @@ class SalesReturnController extends Controller
      */
     public function index()
     {
-        //
+        $sales_returns = SalesReturn::with('article', 'invoice.customer.city')->orderBy('id', 'desc')->get();
+        return view('sales-return.index', compact('sales_returns'));
     }
 
     /**
@@ -23,62 +25,16 @@ class SalesReturnController extends Controller
      */
     public function create()
     {
-        // $customerOptions = [
-        //     'guest' => ['text' => 'Guest'],
-        //     'accountant' => ['text' => 'Accountant'],
-        //     'store_keeper' => ['text' => 'Store Keeper '],
-        // ];
 
         $customers = Customer::whereHas('user', function ($query) {
                     $query->where('status', 'active');
-                })->get()->makeHidden('creator');
+                })->with('city')->get()->makeHidden('creator');
 
         $customerOptions = $customers->mapWithKeys(function ($customer) {
-            return [$customer->id => ['text' => $customer->customer_name]];
+            return [$customer->id => ['text' => $customer->customer_name . ' | ' . $customer->city->short_title]];
         })->toArray();
 
         return view('sales-return.return', compact('customerOptions'));
-    }
-
-    public function getDetails(Request $request)
-    {
-        if ($request->customer_id && $request->getArticles) {
-            $articles = Article::where('sold_quantity', '>', 0)->select(['id', 'article_no'])->get();
-
-            return $articles;
-        }else if ($request->customer_id && $request->article_id && $request->getInvoices) {
-            $customer = Customer::find($request->customer_id);
-
-            if ($customer) {
-                $salesRate = Article::find($request->article_id)?->sales_rate;
-                $invoices = $customer->invoices()
-                    ->with('order', 'shipment')
-                    ->get()
-                    ->filter(function ($invoice) use ($request) {
-                        return collect($invoice->articles_in_invoice)
-                            ->pluck('id')
-                            ->contains((int) $request->article_id);
-                    })
-                    ->map(function ($invoice) use ($request, $salesRate) {
-                        // Keep only the requested article
-                        $articles = collect($invoice->articles_in_invoice)
-                            ->filter(fn($article) => (int) $article['id'] === (int) $request->article_id)
-                            ->values();
-
-                        return [
-                            'id' => $invoice->id,
-                            'invoice_no' => $invoice->invoice_no,
-                            'date' => $invoice->date,
-                            'articles_in_invoice' => $articles,
-                            'discount' => optional($invoice->order)->discount
-                                        ?? optional($invoice->shipment)->discount,
-                            'sales_rate' => $salesRate,
-                        ];
-                    });
-
-                return $invoices;
-            }
-        }
     }
 
     /**
@@ -91,28 +47,34 @@ class SalesReturnController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        // return $request;
-
         $validator = Validator::make($request->all(), [
-            'article' => 'required|integer|exists:articles,id',
-            'invoice' => 'required|integer|exists:invoices,id',
+            'customer_id' => 'required|integer|exists:customers,id',
+            'article_id' => 'required|integer|exists:articles,id',
+            'invoice_id' => 'required|integer|exists:invoices,id',
             'date' => 'required|date',
             'quantity' => 'required|integer|min:1',
+            'amount' => 'required|integer|min:1',
         ]);
 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        $data = [
-            'article' => $request->article,
-            'invoice' => $request->invoice,
-            'date' => $request->date,
-            'quantity' => $request->quantity,
-            'amount' => '',
-        ];
+        $data = $request->all();
 
-        return $request->all();
+        SalesReturn::create($data);
+
+        Article::find($data['article_id'])->decrement('sold_quantity', $data['quantity']);
+
+        CustomerPayment::create([
+            'customer_id' => $data['customer_id'],
+            'date' => $data['date'],
+            'type' => 'sales_return',
+            'method' => 'return',
+            'amount' => $data['amount'],
+        ]);
+
+        return redirect()->route('sales-return.index')->with('success', 'Sales return successfully.');
     }
 
     /**
@@ -145,5 +107,70 @@ class SalesReturnController extends Controller
     public function destroy(SalesReturn $salesReturn)
     {
         //
+    }
+
+    public function getDetails(Request $request)
+    {
+        if ($request->customer_id && $request->getArticles) {
+            return Article::where('sold_quantity', '>', 0)
+                ->select(['id', 'article_no'])
+                ->get();
+        }
+
+        if ($request->customer_id && $request->article_id && $request->getInvoices) {
+            $customer = Customer::find($request->customer_id);
+
+            if (!$customer) {
+                return collect();
+            }
+
+            // Load all invoices with relations in one go
+            $invoices = $customer->invoices()
+                ->with(['order', 'shipment'])
+                ->get();
+
+            // Collect all article IDs from invoices (only requested one)
+            $articleId = (int) $request->article_id;
+
+            // Load article once (not in every loop)
+            $article = Article::find($articleId);
+
+            if (!$article) {
+                return collect();
+            }
+
+            $salesRate = $article->sales_rate;
+
+            return $invoices
+                ->filter(function ($invoice) use ($articleId) {
+                    return collect($invoice->articles_in_invoice)
+                        ->pluck('id')
+                        ->contains($articleId);
+                })
+                ->map(function ($invoice) use ($articleId, $salesRate) {
+                    // Keep only the requested article
+                    $articles_in_invoice = collect($invoice->articles_in_invoice)
+                        ->filter(fn($article) => (int) $article['id'] === $articleId)
+                        ->values();
+
+                    $articles = $articles_in_invoice->map(fn($article_in_invoice) => [
+                        'id' => $article_in_invoice['id'],
+                        'invoice_quantity' => $article_in_invoice['invoice_quantity'],
+                        'sales_rate' => $salesRate,
+                    ])->all();
+
+                    return [
+                        'id' => $invoice->id,
+                        'invoice_no' => $invoice->invoice_no,
+                        'date' => $invoice->date,
+                        'articles_in_invoice' => $articles,
+                        'discount' => optional($invoice->order)->discount
+                                    ?? optional($invoice->shipment)->discount,
+                        'sales_rate' => $salesRate,
+                    ];
+                });
+        }
+
+        return collect();
     }
 }

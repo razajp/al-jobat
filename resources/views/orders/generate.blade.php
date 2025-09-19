@@ -214,7 +214,7 @@
                     },
                     {
                         category: 'input',
-                        label: 'Current Stock - Pcs.',
+                        label: 'Available - Pcs.',
                         value: formatNumbersDigitLess(data.quantity - data.ordered_quantity),
                         disabled: true,
                     },

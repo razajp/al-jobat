@@ -87,6 +87,7 @@ class VoucherController extends Controller
         ->whereHas('user', function ($query) {
             $query->where('status', 'active'); // Supplier's user must be active
         })
+        ->with('expenses')
         ->get();
 
         // return $suppliers;

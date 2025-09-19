@@ -18,14 +18,14 @@
         <div class="step1 space-y-6 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Customer --}}
-                <x-select label="Customer" name="customer" id="customer" :options="$customerOptions" showDefault onchange="onCustomerSelect(this)" />
+                <x-select label="Customer" name="customer_id" id="customer" :options="$customerOptions" showDefault onchange="onCustomerSelect(this)" />
 
                 {{-- Article --}}
-                <x-select label="Article" name="article" id="article" :options="[]" showDefault disabled onchange="onArticleSelect(this)" />
+                <x-select label="Article" name="article_id" id="article" :options="[]" showDefault disabled onchange="onArticleSelect(this)" />
 
                 {{-- Invoice --}}
                 <div class="col-span-2">
-                    <x-select label="Invoice" name="invoice" id="invoice" :options="[]" showDefault disabled onchange="onInvoiceSelect(this)" />
+                    <x-select label="Invoice" name="invoice_id" id="invoice" :options="[]" showDefault disabled onchange="onInvoiceSelect(this)" />
                 </div>
 
                 <div class="grid grid-cols-3 col-span-full gap-4">
@@ -33,7 +33,7 @@
                     <x-input label="Date" name="date" id="date" type="date" max="{{ now()->toDateString() }}" required disabled />
 
                     {{-- Quantity --}}
-                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" oninput="onQuantityInput(this)" required disabled />
+                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" oninput="onQuantityInput(this)" required disabled dataValidate="required|numeric" />
 
                     {{-- Amount --}}
                     <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Amount" readonly />
@@ -48,6 +48,8 @@
         </div>
     </form>
     <script>
+        let selectedInvoice = {};
+        let selectedArticleId = 0;
         function onCustomerSelect(selectElement) {
             const selectedCustomerId = selectElement.value;
             if (selectedCustomerId) {
@@ -87,7 +89,7 @@
         }
 
         function onArticleSelect(selectElement) {
-            const selectedArticleId = selectElement.value;
+            selectedArticleId = parseInt(selectElement.value);
             const customerId = document.querySelector('.dbInput[data-for="customer"]').value;
 
             if (selectedArticleId && customerId) {
@@ -132,6 +134,7 @@
         function onInvoiceSelect(selectElement) {
             if (selectElement.value) {
                 const invoiceData = JSON.parse(selectElement.parentElement.querySelector(`.optionsDropdown li.selected`).dataset.invoiceData);
+                selectedInvoice = invoiceData;
 
                 const invoiceDate = invoiceData.date;
                 const dateInput = document.getElementById('date');
@@ -151,7 +154,11 @@
         }
 
         function onQuantityInput(quantityInput) {
-            quantityInput.value = quantityInput.value.replace(/[^0-9]/g, '');
+            selectedInvoice.articles_in_invoice.forEach(article => {
+                if (article.id === selectedArticleId) {
+                    document.getElementById('amount').value = (quantityInput.value * article.sales_rate) * (1 - selectedInvoice.discount / 100);
+                }
+            })
         }
     </script>
 @endsection

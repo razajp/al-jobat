@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Customer Payment | ' . app('company')->name)
+@section('title', 'Edit Customer Payment | ' . app('company')->name)
 @section('content')
     @php
         $method_options = [
@@ -15,35 +15,32 @@
         ]
     @endphp
     <!-- Progress Bar -->
-    <div class="mb-5 max-w-6xl mx-auto">
-        <x-search-header heading="Add Customer Payment" link linkText="Show Payments" linkHref="{{ route('customer-payments.index') }}"/>
+    <div class="mb-5 max-w-3xl mx-auto">
+        <x-search-header heading="Edit Customer Payment" link linkText="Show Payments" linkHref="{{ route('customer-payments.index') }}"/>
     </div>
 
-    <div class="row max-w-6xl mx-auto flex gap-4">
+    <div class="row max-w-3xl mx-auto flex gap-4">
         <!-- Form -->
-        <form id="form" action="{{ route('customer-payments.store') }}" method="post"
-            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-7 border border-[var(--h-bg-color)] pt-12 w-[70%] mx-auto relative overflow-hidden">
+        <form id="form" action="{{ route('customer-payments.update', ['customer_payment' => $customerPayment->id]) }}" method="post"
+            class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-7 border border-[var(--h-bg-color)] pt-12 w-full mx-auto relative overflow-hidden">
             @csrf
-            <x-form-title-bar title="Add Customer Payment" />
+            @method('PUT')
+            <x-form-title-bar title="Edit Customer Payment" />
 
             <div class="step space-y-4 overflow-y-auto max-h-[65vh] p-1 my-scrollbar-2">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- customer --}}
-                    <x-select
+                    <x-input
                         label="Customer"
-                        name="customer_id"
-                        id="customer_id"
-                        :options="$customers_options"
-                        required
-                        showDefault
-                        onchange="trackCustomerState()"
+                        value="{{ $customerPayment->customer->customer_name }}"
+                        disabled
                     />
 
                     {{-- balance --}}
-                    <x-input label="Balance" placeholder="Select customer first" name="balance" id="balance" disabled />
+                    <x-input label="Balance" value="{{ $customerPayment->customer->balance }}" disabled />
 
                     {{-- date --}}
-                    <x-input label="Date" name="date" id="date" type="date" required disabled onchange="trackDateState(this)"/>
+                    <x-input label="Date" name="date" id="date" type="date" required value="{{ $customerPayment->date->format('Y-m-d') }}" readonly onchange="trackDateState(this)"/>
 
                     {{-- type --}}
                     <x-select
@@ -85,67 +82,17 @@
                 </button>
             </div>
         </form>
-
-        <div class="bg-[var(--secondary-bg-color)] rounded-xl shadow-xl p-8 border border-[var(--glass-border-color)]/20 w-[35%] pt-12 relative overflow-hidden fade-in">
-            <x-form-title-bar title="Last Record" />
-
-            <!-- Step last record -->
-            <div class="step1 space-y-4">
-                @if ($lastRecord)
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {{-- Customer --}}
-                        <x-input label="Customer" name="last_customer" id="last_customer" type="text" disabled
-                            value="{{ $lastRecord->customer->customer_name ?? '-' }}" />
-
-                        <!-- date -->
-                        <x-input label="Date" name="last_date" id="last_date" disabled
-                            value="{{ $lastRecord->date->format('d-M-Y, D') ?? '-' }}" />
-
-                        {{-- type --}}
-                        <x-input label="Type" name="last_type" id="last_type" type="text" disabled capitalized
-                            value="{{ str_replace('_', ' ', $lastRecord->type) ?? '-' }}" />
-
-                        {{-- method --}}
-                        <x-input label="Method" name="last_method" id="last_method" type="text" disabled capitalized
-                            value="{{ $lastRecord->method ?? '-' }}" />
-
-                        <!-- reff_no -->
-                        <x-input label="Reff. No." name="last_reff_no" id="last_reff_no" disabled
-                            value="{{ $lastRecord->slip_no ?? $lastRecord->cheque_no ?? $lastRecord->transaction_id ?? '-' }}" />
-
-                        <!-- amount -->
-                        <x-input label="Amount" name="last_amount" id="last_amount" disabled
-                            value="{{ number_format($lastRecord->amount,) ?? '-' }}" />
-
-                        {{-- remarks --}}
-                        <x-input label="Remarks" name="last_remarks" id="last_remarks" type="text" disabled
-                            value="{{ $lastRecord->remarks ?? 'No Remarks' }}" />
-
-                        <div class="flex items-end">
-                            <button type="button" data-record='@json($lastRecord)' onclick="repeatThisRecord(this)"
-                                class="w-full px-6 py-2 bg-[var(--bg-warning)] border border-[var(--bg-warning)] text-[var(--text-warning)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-warning)] hover:border-[var(--border-warning)] hover:scale-90 transition-all duration-300 ease-in-out cursor-pointer">
-                                <i class='fas fa-repeat mr-1'></i> Repeat
-                            </button>
-                        </div>
-                    </div>
-                @else
-                    <div class="text-center text-gray-500">
-                        <p>No last record found.</p>
-                    </div>
-                @endif
-            </div>
-        </div>
     </div>
 
     <script>
         window.chequeNos = @json($cheque_nos ?? '');
         window.slipNos = @json($slip_nos ?? '');
 
-        let customerSelectDom = document.getElementById('customer_id');
+        let customerPayment = @json($customerPayment);
+        customerPayment.remarks = customerPayment.remarks || '';
         let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
         let dateDom = document.getElementById('date');
-        let balanceDom = document.getElementById('balance');
         let detailsDom = document.getElementById('details');
 
         selectedCustomerData = null;
@@ -162,19 +109,18 @@
 
         function trackCustomerState() {
             setOptionOnNthLi(typeSelectDom, 2, 'option');
-            dateDom.value = '';
-            balanceDom.value = '';
             methodSelectDom.value = '';
             typeSelectDom.value = '';
 
-            if (customerSelectDom.value != '') {
-                selectedCustomer = JSON.parse(customerSelectDom.closest(".selectParent")?.querySelector('ul li.selected')?.dataset.option || 'null');
+            if (customerPayment) {
+                selectedCustomer = customerPayment.customer;
                 dateDom.disabled = false;
                 methodSelectDom.disabled = false;
                 dateDom.min = selectedCustomer?.date.toString().split('T')[0];
                 dateDom.max = today;
-                balanceDom.value = formatNumbersWithDigits(selectedCustomer?.balance || 0, 1, 1);
                 selectedCustomerData = selectedCustomer;
+                console.log(selectedCustomerData);
+
                 setOptionOnNthLi(typeSelectDom, 2, 'option', JSON.stringify(selectedCustomer?.payment_programs) ?? '');
             } else {
                 dateDom.disabled = true;
@@ -185,68 +131,11 @@
             methodSelectDom.querySelector("option[value='program']")?.remove();
         }
 
+
         window.addEventListener('DOMContentLoaded', () => {
-            const url = new URL(window.location.href);
-
-            // Clean the URL after initial load (remove query params)
-            if (url.searchParams.has('program_id') || url.searchParams.has('source')) {
-                // reset url
-                url.search = ''; // remove all query parameters
-                window.history.replaceState({}, document.title, url.toString());
-
-                // select customer
-                for (const option of customerSelectDom.closest(".selectParent")?.querySelectorAll('ul li')) {
-                    if (option.dataset.value && option.textContent.trim() !== '') {
-                        customerSelectDom.value = option.textContent.trim();
-                        customerSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                        customerSelectDom.disabled = true;
-                        break;
-                    }
-                }
-                trackCustomerState();
-
-                // set date today
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                dateDom.value = `${yyyy}-${mm}-${dd}`;
-
-                let typeInp = typeSelectDom.closest(".selectParent")?.querySelector('input[type="hidden"]');
-                // select type
-                for (const option of typeSelectDom.closest(".selectParent")?.querySelectorAll('ul li')) {
-                    if (option.dataset.value.trim() === 'payment_program') {
-                        option.dataset.option = JSON.stringify([selectedCustomer.payment_programs]);
-                        typeSelectDom.value = option.textContent.trim();
-                        typeSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
-                        typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).classList.add('selected');
-                        typeSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="${option.dataset.value}"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                        typeInp.value = 'payment_program';
-                        typeSelectDom.disabled = true;
-                        break;
-                    }
-                }
-                trackTypeState(typeInp, true);
-
-                let programSelectDom = document.getElementById('payment_programs');
-                programSelectDom.closest(".selectParent").querySelectorAll('ul li')[1].classList.add('selected');
-                let ProgramData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
-                // programSelectDom.value = programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').textContent.trim();
-                programSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                programSelectDom.disabled = true;
-
-                if (ProgramData.category != 'waiting') {
-                    programSelectDom.dispatchEvent(new Event('change'));
-                    methodSelectDom.value = 'program'
-                    methodSelectDom.closest(".selectParent")?.querySelector(`ul li.selected`).classList.remove('selected');
-                    methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).classList.add('selected');
-                    methodSelectDom.closest(".selectParent")?.querySelector(`ul li[data-value="program"]`).dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                    methodSelectDom.disabled = true;
-                    // trackMethodState(methodSelectDom);
-                } else {
-                    methodSelectDom.querySelector("option[value='program']")?.remove();
-                }
-            }
+            trackCustomerState()
+            selectThisOption(document.querySelector(`li[data-for="type"][data-value="${customerPayment.type}"]`))
+            selectThisOption(document.querySelector(`li[data-for="method"][data-value="${customerPayment.method}"]`))
         });
 
         const detailsInputsContainer = document.getElementById("details-inputs-container");
@@ -294,6 +183,7 @@
                         <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- No options avalaible --</li>
                     `;
                 }
+                selectThisOption(document.querySelector(`li[data-for="payment_programs"][data-value="${customerPayment.program_id}"]`))
             } else {
                 detailsInputsContainer.innerHTML = "";
                 methodSelectDom.closest(".selectParent").querySelector("ul li[data-value='program']")?.remove();
@@ -307,10 +197,10 @@
             if (elem.value == 'cash') {
                 detailsDom.innerHTML = `
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'cheque') {
                 detailsDom.innerHTML = `
@@ -318,47 +208,48 @@
                     <x-select label="Bank" name="bank_id" id="bank" :options="$banks_options" required showDefault />
 
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- cheque_date --}}
-                    <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
+                    <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" value="${customerPayment.cheque_date}" required/>
 
                     {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
+                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" value="${customerPayment.cheque_no}" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${customerPayment.clear_date}"/>
                 `;
+                selectThisOption(document.querySelector(`li[data-for="bank"][data-value="${customerPayment.bank_id}"]`))
             } else if (elem.value == 'slip') {
                 detailsDom.innerHTML = `
                     {{-- customer --}}
                     <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
 
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- slip_date --}}
-                    <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
+                    <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" value="${customerPayment.slip_date}" required/>
 
                     {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
+                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" value="${customerPayment.slip_no}" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" value="${customerPayment.remarks}" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date"/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${customerPayment.clear_date}"/>
                 `;
             } else if (elem.value == 'adjustment') {
                 detailsDom.innerHTML = `
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- remarks --}}
-                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                    <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
                 `;
             } else if (elem.value == 'program') {
                 let programSelectDom = document.getElementById('payment_programs');
@@ -394,16 +285,16 @@
                         <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" disabled/>
 
                         {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                         {{-- bank account --}}
                         <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />
 
                         {{-- transaction id --}}
-                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required dataValidate="required|alphanumeric" oninput="validateInput(this)"/>
+                        <x-input label="Transaction Id" name="transaction_id" id="transaction_id" placeholder="Enter Transaction Id" required value="${customerPayment.transaction_id}" dataValidate="required|alphanumeric" oninput="validateInput(this)"/>
 
                         {{-- remarks --}}
-                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
+                        <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
                     `;
 
                     let bankAccountData = selectedProgramData.sub_category.bank_accounts;
@@ -411,6 +302,7 @@
                     if (bankAccountData) {
                         let bankAccountsSelect = document.getElementById('bank_accounts');
                         bankAccountsSelect.disabled = false;
+                        bankAccountsSelect.value = '-- Select Bank Account --';
                         bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML = '';
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {
@@ -423,8 +315,8 @@
                                 <li data-for="bank_accounts" data-value="${bankAccountData.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</li>
                             `;
                         }
-                        selectThisOption(bankAccountsSelect.closest(".selectParent").querySelector('ul li'));
                     }
+                    selectThisOption(document.querySelector(`li[data-for="bank_accounts"][data-value="${customerPayment.bank_account_id}"]`))
                 } else {
                     detailsDom.innerHTML = '';
                 }

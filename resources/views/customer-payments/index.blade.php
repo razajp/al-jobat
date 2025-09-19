@@ -324,7 +324,9 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
-                actions: [],
+                actions: [
+                    {id: 'edit-payment', text: 'Edit Payment', dataId: data.id}
+                ],
             };
 
             if (
@@ -375,7 +377,9 @@
                     ...((data.data.method == 'cheque' || data.data.method == 'slip') && { 'Issued': data.data.issued }),
                     'Remarks': data.data.remarks || 'No Remarks',
                 },
-                bottomActions: [],
+                bottomActions: [
+                    {id: 'edit-payment', text: 'Edit Payment', dataId: data.id}
+                ],
             }
 
             if (

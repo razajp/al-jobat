@@ -476,7 +476,7 @@ function createModal(data, animate = 'animate') {
                             `}
                             <div class="td text-sm font-semibold w-[14%]">${formatDate(payment.date, true) ?? '-'}</div>
                             <div class="td text-sm font-semibold w-[14%]">${payment.cheque?.cheque_no ?? payment.cheque_no ?? payment.reff_no ?? payment.slip?.slip_no ??
-                                payment.transaction_id ?? '-'}</div>
+                                payment.transaction_id ?? payment.reff_no ?? '-'}</div>
                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}
                             </div>
                         </div>
