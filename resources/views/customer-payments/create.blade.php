@@ -307,7 +307,7 @@
             if (elem.value == 'cash') {
                 detailsDom.innerHTML = `
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="amount" placeholder="Enter amount" name="amount" id="amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -318,7 +318,7 @@
                     <x-select label="Bank" name="bank_id" id="bank" :options="$banks_options" required showDefault />
 
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="amount" placeholder="Enter amount" name="amount" id="amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
 
                     {{-- cheque_date --}}
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
@@ -338,7 +338,7 @@
                     <x-input label="Customer" placeholder="Enter Customer" name="customer" id="customer" value="${selectedCustomer.customer_name}" disabled required/>
 
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="amount" placeholder="Enter amount" name="amount" id="amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
 
                     {{-- slip_date --}}
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
@@ -355,7 +355,7 @@
             } else if (elem.value == 'adjustment') {
                 detailsDom.innerHTML = `
                     {{-- amount --}}
-                    <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                    <x-input label="Amount" type="amount" placeholder="Enter amount" name="amount" id="amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -394,7 +394,7 @@
                         <x-input label="Program Balance" type="number" value="${selectedProgramData.balance}" disabled/>
 
                         {{-- amount --}}
-                        <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" required/>
+                        <x-input label="Amount" type="amount" placeholder="Enter amount" name="amount" id="amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
 
                         {{-- bank account --}}
                         <x-select label="Bank Accounts" name="bank_account_id" id="bank_accounts" required showDefault />

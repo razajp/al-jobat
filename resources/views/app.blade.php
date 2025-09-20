@@ -1292,6 +1292,18 @@
         });
     }
 
+    function formatAllAmountInputs() {
+        const allAmountInputs = document.querySelectorAll('input[type="amount"]');
+
+        allAmountInputs.forEach((input) => {
+            validateInput(input);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        formatAllAmountInputs();
+    })
+
     document.addEventListener("submit", function (e) {
         if (e.target.matches("form")) {   // sirf form ke liye trigger
             if (!validateAllInputs()) {
@@ -1302,6 +1314,20 @@
                 messageBoxAnimation();
             }
         }
+
+        document.querySelectorAll('input[type="amount"]').forEach(input => {
+            let value = input.value.replace(/[^0-9.]/g, ''); // only digits & dot
+
+            if (value.includes('.')) {
+                let [intPart, decPart] = value.split('.');
+                decPart = decPart.slice(0, 2); // max 2 decimals
+                value = decPart ? `${intPart}.${decPart}` : intPart;
+            }
+
+            input.value = value;
+            input.type = 'number';
+            input.step = '0.01';
+        });
     });
 </script>
 

@@ -36,7 +36,7 @@
                     <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" oninput="onQuantityInput(this)" required disabled dataValidate="required|numeric" />
 
                     {{-- Amount --}}
-                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Amount" readonly />
+                    <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Amount" readonly dataValidate="required|amount" />
                 </div>
             </div>
         </div>

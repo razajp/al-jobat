@@ -1151,7 +1151,7 @@
                         <x-input label="Rate" name="rate" id="rate" readonly placeholder="Rate" oninput="calculateAmount()" dataValidate="numeric" />
 
                         {{-- amount --}}
-                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
+                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" dataValidate="required|amount" oninput="validateInput(this)" />
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
@@ -1175,7 +1175,7 @@
                         <x-input label="Rate" name="rate" id="rate" placeholder="Rate" oninput="calculateAmount()" dataValidate="numeric" />
 
                         {{-- amount --}}
-                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" />
+                        <x-input label="Amount" name="amount" id="amount" disabled placeholder="Amount" dataValidate="required|amount" oninput="validateInput(this)" />
 
                         {{-- receive_date --}}
                         <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="${minDate}" validateMax max="{{ now()->toDateString() }}" />

@@ -355,6 +355,8 @@
                     {
                         category: 'input',
                         label: 'Amount',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         name: 'amount',
                         id: 'amount',
                         value: item.amount,

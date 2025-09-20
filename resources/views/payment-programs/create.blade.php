@@ -26,7 +26,7 @@
             <x-input label="Date" name="date" id="date" type="date" onchange="trackDateState(this)" required />
 
             {{-- cusomer --}}
-            <x-select 
+            <x-select
                 label="Customer"
                 name="customer_id"
                 id="customer_id"
@@ -35,10 +35,10 @@
                 required
                 showDefault
             />
-            
+
             {{-- category --}}
-            <x-select 
-                label="Category"    
+            <x-select
+                label="Category"
                 name="category"
                 id="category"
                 :options="$categories_options"
@@ -46,16 +46,16 @@
                 required
                 showDefault
             />
-            
+
             {{-- cusomer --}}
-            <x-select 
+            <x-select
                 label="Disabled"
                 name="sub_category"
                 id="subCategory"
                 disabled
                 showDefault
             />
-            
+
             {{-- remarks --}}
             <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
 
@@ -63,7 +63,7 @@
 
             <div class="col-span-full">
                 {{-- amount --}}
-                <x-input label="Amount" type="number" name="amount" id="amount" placeholder='Enter Amount' required />
+                <x-input label="Amount" type="amount" name="amount" id="amount" placeholder='Enter Amount' required dataValidate="required|amount" />
             </div>
         </div>
         <div class="w-full flex justify-end mt-4">
@@ -81,7 +81,7 @@
         let amountInpDom = document.getElementById('amount');
         customerSelect.disabled = true;
         categorySelectDom.disabled = true;
-        
+
         function trackDateState(dateInputElem) {
             customerSelect.disabled = false;
         }

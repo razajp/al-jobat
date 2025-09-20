@@ -822,6 +822,8 @@ function createModal(data, animate = 'animate') {
     })
 
     data.basicSearch ? document.querySelector('#basicSearch input').focus() : '';
+
+    formatAllAmountInputs();
 }
 
 function renderTableBody(tableBody) {

@@ -271,7 +271,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required/>
+                            <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount" dataValidate="required|amount" oninput="validateInput(this)" required/>
                         `,
                     },
                     {
@@ -481,7 +481,8 @@
                         label: 'Split Amount',
                         name: 'split_amount',
                         id: 'split_amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: "required|amount",
                         placeholder: 'Enter split amount',
                         oninput: `validateSplitAmount(this, ${data.amount - 1})`,
                         required: true,

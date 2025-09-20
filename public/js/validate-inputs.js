@@ -1,4 +1,6 @@
 function validateInput(input, listner) {
+    console.log(input);
+
     const rules = (input.dataset.validate || '').split('|');
     let value = input.value;
     const originalValue = value;
@@ -56,6 +58,25 @@ function validateInput(input, listner) {
             value = value.replace(/[^\u0600-\u06FF\s،۔!?؟]/g, '');
             if (!/[\u0600-\u06FF]/.test(value)) {
                 error = 'Please enter in Urdu only.';
+            }
+        }
+
+        if (rule === 'amount') {
+            // remove non-numeric characters except dot (for decimals)
+            value = value.replace(/[^0-9.]/g, '');
+
+            if (value) {
+                const parts = value.split('.');
+
+                // format integer part with commas
+                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+                // limit decimal part to max 2 digits
+                if (parts[1]) {
+                    parts[1] = parts[1].slice(0, 2);
+                }
+
+                value = parts.join('.');
             }
         }
 

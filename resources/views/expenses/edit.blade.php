@@ -34,7 +34,7 @@
                     <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no" required value="{{ $expense->reff_no }}" />
 
                     <!-- amount -->
-                    <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required value="{{ $expense->amount }}" />
+                    <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount" required value="{{ $expense->amount }}" dataValidate="required|amount"/>
 
                     <!-- lot_no -->
                     <x-input label="Lot No." name="lot_no" id="lot_no" type="number" placeholder="Enter lot no" value="{{ $expense->lot_no }}" />

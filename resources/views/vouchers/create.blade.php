@@ -352,7 +352,8 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                     },
@@ -385,7 +386,8 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                         readonly: true,
@@ -417,7 +419,8 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                         readonly: true,
@@ -442,7 +445,8 @@
                         name: 'amount',
                         id: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                         readonly: true,
@@ -477,7 +481,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
+                            <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" oninput="validateInput(this)"/>
                         `,
                     },
                     @if($voucherType == 'self_account')
@@ -519,7 +523,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-input label="Amount" name="amount" id="amount" type="number" placeholder="Enter amount" required dataValidate="required" oninput="validateInput(this)"/>
+                            <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" oninput="validateInput(this)"/>
                         `,
                     },
                     @if($voucherType == 'self_account')
@@ -548,7 +552,8 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                     },
@@ -569,7 +574,8 @@
                         category: 'input',
                         name: 'amount',
                         label: 'Amount',
-                        type: 'number',
+                        type: 'amount',
+                        data_validate: 'required|amount',
                         required: true,
                         placeholder: 'Enter amount',
                     },
@@ -659,6 +665,7 @@
                 }
 
                 if (elem.value == 'purchase_return') {
+                    selectedDom = document.querySelector('input[name="selected"]');
                     let expenseSelectDom = document.querySelector(`ul[data-for="expense_id"]`);
 
                     let allExpenses = selectedSupplier.expenses;
@@ -687,8 +694,7 @@
                         let selectedExpense = JSON.parse(selectedOption.getAttribute('data-option')) || '';
 
                         selectedDom.value = JSON.stringify(selectedExpense);
-                        document.getElementById('amount').value = selectedExpense.amount;
-                        document.getElementById('payment_id').value = selectedExpense.id;
+                        document.querySelector('input[name="amount"]').max = selectedExpense.amount;
                     })
                 }
 
@@ -740,8 +746,16 @@
                     const value = input.value;
 
                     if (name == "amount") {
-                        detail[name] = parseInt(value);
-                        allDetail[name] = parseInt(value);
+                        let amountValue = input.value.replace(/[^0-9.]/g, ''); // only digits & dot
+
+                        if (amountValue.includes('.')) {
+                            let [intPart, decPart] = amountValue.split('.');
+                            decPart = decPart.slice(0, 2); // max 2 decimals
+                            amountValue = decPart ? `${intPart}.${decPart}` : intPart;
+                        }
+
+                        detail[name] = parseInt(amountValue);
+                        allDetail[name] = parseInt(amountValue);
                     } else {
                         detail[name] = value;
                         allDetail[name] = value;

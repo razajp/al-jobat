@@ -108,10 +108,11 @@
                 <x-input
                     label="Amount"
                     id="amount"
-                    namr="amount"
+                    name="amount"
                     disabled
                     placeholder="Enter Amount"
-                    type="number"
+                    type="amount"
+                    dataValidate="required|amount"
                     oninput="trackAmountState(this)"
                     onkeydown="enterToAdd(event)"
                 />
