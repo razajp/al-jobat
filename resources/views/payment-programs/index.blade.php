@@ -71,12 +71,11 @@
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="w-[10%]">Date</div>
-                                <div class="w-[15%]">Customer</div>
-                                <div class="w-[10%]">O/P No.</div>
-                                <div class="w-[10%]">Category</div>
+                                <div class="w-[8%]">O/P No.</div>
+                                <div class="w-[19%]">Customer</div>
+                                <div class="w-[9%]">Category</div>
                                 <div class="w-[15%]">Beneficiary</div>
                                 <div class="w-[10%]">Amount</div>
-                                <div class="w-[10%]">Document</div>
                                 <div class="w-[10%]">Payment</div>
                                 <div class="w-[10%]">Balance</div>
                                 <div class="w-[10%]">Status</div>
@@ -110,13 +109,12 @@
                 class="item row relative group flex items-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="w-[10%]">${data.name}</span>
-                <span class="w-[15%]">${data.customer_name}</span>
-                <span class="w-[10%]">${data.o_p_no}</span>
-                <span class="w-[10%] capitalize">${data.category.replace(/_/g, ' ')}</span>
+                <span class="w-[10%]">${(data.date)}</span>
+                <span class="w-[8%]">${data.o_p_no}</span>
+                <span class="w-[19%] text-left">${data.customer_name}</span>
+                <span class="w-[9%] capitalize">${data.category.replace(/_/g, ' ')}</span>
                 <span class="w-[15%]">${data.beneficiary}</span>
                 <span class="w-[10%]">${formatNumbersWithDigits(data.amount, 1, 1)}</span>
-                <span class="w-[10%]">${data.discount}</span>
                 <span class="w-[10%]">${formatNumbersWithDigits(data.payment, 1, 1)}</span>
                 <span class="w-[10%]">${formatNumbersWithDigits(data.balance, 1, 1)}</span>
                 <span class="w-[10%]">${data.status}</span>
@@ -155,13 +153,12 @@
 
             return {
                 id: item.id,
-                name: item.date,
-                customer_name: item.customer?.customer_name || '',
-                o_p_no: item.order_no || item.program_no,
+                date: formatDate(item.date, true),
+                customer_name: item.customer?.customer_name + ' | ' + item.customer?.city?.title || '',
+                o_p_no: item.order_no ? item.order_no + ' | ' + item.document.split('')[0] : item.program_no ? item.program_no + ' | ' + item.document.split('')[0] : '-',
                 category: category,
                 beneficiary: beneficiary || '-',
                 amount: item.amount || item.netAmount,
-                discount: item.document || 0,
                 payment: item.payment || 0,
                 balance: item.balance || 0,
                 status: item.status || item.payment_programs.status || '-',
@@ -310,7 +307,7 @@
                         category: 'input',
                         label: 'Date',
                         id: 'date',
-                        value: formatDate(item.name),
+                        value: formatDate(item.date),
                         disabled: true,
                     },
                     {

@@ -58,7 +58,7 @@
             @else
                 <div class="no-record-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Record Found</h1>
-                    <a href="{{ route('physical-quantities.create') }}"
+                    <a href="{{ route('cr.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>

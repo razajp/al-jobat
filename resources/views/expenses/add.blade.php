@@ -36,7 +36,7 @@
                         required />
 
                     <!-- amount -->
-                    <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount " dataValidate="required|amount""
+                    <x-input label="Amount" name="amount" id="amount" type="amount" placeholder="Enter amount " dataValidate="required|amount"
                         required />
 
                     <!-- lot_no -->

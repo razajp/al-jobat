@@ -313,7 +313,7 @@ class CustomerPaymentController extends Controller
             }
         }
 
-        return redirect()->route('customer-payments.create')->with('success', 'Payment Added successfully.');
+        return redirect()->back()->with('success', 'Payment Added successfully.');
     }
 
 

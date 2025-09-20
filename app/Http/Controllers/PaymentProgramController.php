@@ -39,14 +39,6 @@ class PaymentProgramController extends Controller
         foreach($orders as $order) {
             $order['paymentPrograms']['customer'] = $order['customer'];
             $ordersArray[] = $order['paymentPrograms'];
-            // $order['payment'] = 0;
-            // $order['balance'] = 0;
-            // if ($order['paymentPrograms'] && $order['paymentPrograms']['payments']) {
-            //     foreach($order['paymentPrograms']['payments'] as $payment) {
-            //         $order['payment'] += $payment['amount'];
-            //     }
-            //     $order['balance'] =  $order['paymentPrograms']['amount'] - $order['payment'];
-            // }
         }
 
         // Fetch and sort payment programs by date and created_at
@@ -61,11 +53,7 @@ class PaymentProgramController extends Controller
                 return $paymentPrograms;
             });
 
-        // Convert collections to arrays
-        // $ordersArray = $orders->toArray();
         $paymentProgramsArray = $paymentPrograms->toArray();
-
-        // return $ordersArray;
 
         // Combine both arrays manually
         $finalData = array_merge($ordersArray, $paymentProgramsArray);
@@ -77,7 +65,6 @@ class PaymentProgramController extends Controller
             return strtotime($b['date']) - strtotime($a['date']); // date DESC
         });
 
-        // return $finalData;
         return view("payment-programs.index", compact('finalData'));
     }
     /**

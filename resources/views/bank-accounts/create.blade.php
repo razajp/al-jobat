@@ -65,6 +65,7 @@
                     name="account_title" 
                     id="account_title" 
                     placeholder="Enter account title" 
+                    capitalized
                     required 
                 />
 
