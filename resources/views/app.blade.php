@@ -310,10 +310,13 @@
         let escToClose;
         let enterToSubmit;
 
-        function formatDate(date, notDay) {
+        function formatDate(date, notDay, dbDate) {
+            if (!date) return '';
+
             const inputDate = new Date(date);
 
             const day = inputDate.getDate().toString().padStart(2, '0');
+            const monthNum = (inputDate.getMonth() + 1).toString().padStart(2, '0'); // numeric month
             const month = inputDate.toLocaleString('en-US', { month: 'short' });
             const year = inputDate.getFullYear();
             const weekday = inputDate.toLocaleString('en-US', { weekday: 'short' });
@@ -321,6 +324,8 @@
             let formatted = `${day}-${month}-${year} ${weekday}`;
             if (notDay) {
                 formatted = `${day}-${month}-${year}`;
+            } else if (dbDate) {
+                formatted = `${year}-${monthNum}-${day}`; // YYYY-MM-DD
             }
             return formatted;
         }

@@ -33,10 +33,10 @@ function validateInput(input, listner) {
 
         // friendly = allows letters, numbers, space, dot, dash
         if (rule === 'friendly') {
-            if (/[^a-zA-Z0-9 .-]/g.test(value)) {
-                error = 'Only letters, numbers, space, dot, and dash are allowed.';
+            if (/[^a-zA-Z0-9 .-|]/g.test(value)) {
+                error = 'Only letters, numbers, space, dot, dash, and pipe are allowed.';
             }
-            value = value.replace(/[^a-zA-Z0-9 .-]/g, '');
+            value = value.replace(/[^a-zA-Z0-9 .-|]/g, '');
         }
 
         // phone = auto-format to 0000-0000000

@@ -347,8 +347,8 @@ class CustomerPaymentController extends Controller
             }
         }
 
-        $cheque_nos = CustomerPayment::pluck('cheque_no')->toArray();
-        $slip_nos = CustomerPayment::pluck('slip_no')->toArray();
+        $cheque_nos = CustomerPayment::where('cheque_no', "!==", $customerPayment['cheque_no'])->pluck('cheque_no')->toArray();
+        $slip_nos = CustomerPayment::where('slip_no', "!==", $customerPayment['slip_no'])->pluck('slip_no')->toArray();
 
         return view('customer-payments.edit', compact('customerPayment', 'banks_options', 'cheque_nos', 'slip_nos'));
     }

@@ -211,7 +211,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- cheque_date --}}
-                    <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" value="${customerPayment.cheque_date}" required/>
+                    <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" value="${formatDate(customerPayment.cheque_date, false, true)}" required/>
 
                     {{-- cheque_no --}}
                     <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" value="${customerPayment.cheque_no}" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
@@ -220,7 +220,7 @@
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${customerPayment.clear_date}"/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${formatDate(customerPayment.clear_date, false, true)}"/>
                 `;
                 selectThisOption(document.querySelector(`li[data-for="bank"][data-value="${customerPayment.bank_id}"]`))
             } else if (elem.value == 'slip') {
@@ -232,7 +232,7 @@
                     <x-input label="Amount" type="number" placeholder="Enter amount" name="amount" id="amount" value="${customerPayment.amount}" required/>
 
                     {{-- slip_date --}}
-                    <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" value="${customerPayment.slip_date}" required/>
+                    <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" value="${formatDate(customerPayment.slip_date, false, true)}" required/>
 
                     {{-- slip_no --}}
                     <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" value="${customerPayment.slip_no}" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
@@ -241,7 +241,7 @@
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" value="${customerPayment.remarks}" oninput="validateInput(this)"/>
 
                     {{-- clear_date --}}
-                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${customerPayment.clear_date}"/>
+                    <x-input label="Clear Date" type="date" name="clear_date" id="clear_date" value="${formatDate(customerPayment.clear_date, false, true)}"/>
                 `;
             } else if (elem.value == 'adjustment') {
                 detailsDom.innerHTML = `
