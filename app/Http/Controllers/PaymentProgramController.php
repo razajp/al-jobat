@@ -28,11 +28,7 @@ class PaymentProgramController extends Controller
         $orders = Order::with(['customer.city', 'paymentPrograms.subCategory'])
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
-            ->get()
-            ->map(function ($order) {
-                $order['document'] = 'Order';
-                return $order;
-            });
+            ->get();
 
         $ordersArray = [];
 
@@ -47,11 +43,7 @@ class PaymentProgramController extends Controller
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->withPaymentDetails()
-            ->get()
-            ->map(function ($paymentPrograms) {
-                $paymentPrograms['document'] = 'Program';
-                return $paymentPrograms;
-            });
+            ->get();
 
         $paymentProgramsArray = $paymentPrograms->toArray();
 

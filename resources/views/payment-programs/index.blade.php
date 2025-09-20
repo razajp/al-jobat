@@ -151,11 +151,13 @@
                 }
             }
 
+            console.log(item);
+            
             return {
                 id: item.id,
                 date: formatDate(item.date, true),
                 customer_name: item.customer?.customer_name + ' | ' + item.customer?.city?.title || '',
-                o_p_no: item.order_no ? item.order_no + ' | ' + item.document.split('')[0] : item.program_no ? item.program_no + ' | ' + item.document.split('')[0] : '-',
+                o_p_no: item.order_no ? item.order_no + ' | O' : item.program_no ? item.program_no + ' | P' : '-',
                 category: category,
                 beneficiary: beneficiary || '-',
                 amount: item.amount || item.netAmount,

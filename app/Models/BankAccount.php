@@ -135,6 +135,12 @@ class BankAccount extends Model
                 ->when($fromDate, fn($q) => $q->where('date', $includeGivenDate ? '>=' : '>', $fromDate))
                 ->when($toDate, fn($q) => $q->where('date', $includeGivenDate ? '<=' : '<', $toDate))
                 ->sum('amount');
+        } else if ($this->category === 'customer') {
+            $balance = PaymentClear::where('bank_account_id', $this->id)
+                ->where('method', '!=', 'cash') // ignore cash
+                ->when($fromDate, fn($q) => $q->where('date', $includeGivenDate ? '>=' : '>', $fromDate))
+                ->when($toDate, fn($q) => $q->where('date', $includeGivenDate ? '<=' : '<', $toDate))
+                ->sum('amount');
         }
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;

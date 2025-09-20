@@ -294,6 +294,9 @@ class CustomerPaymentController extends Controller
                 if ($program['category'] == 'supplier') {
                     $data['supplier_id'] = $program->sub_category_id;
                     SupplierPayment::create($data);
+                } else if ($program['category'] == 'customer') {
+                    $data['customer_id'] = $program->sub_category_id;
+                    CustomerPayment::create($data);
                 }
             }
         }
