@@ -24,7 +24,7 @@ class UserController extends Controller
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        $users = User::whereNotIn('role', ['supplier', 'customer'])->get();
+        $users = User::whereNotIn('role', ['supplier', 'customer', 'developer'])->get();
         return view("user.index", compact('users', 'authLayout'));
     }
 
