@@ -14,7 +14,38 @@ class DailyLedgerController extends Controller
      */
     public function index()
     {
-        //
+        $totalDeposit = DailyLedgerDeposit::all()->map(fn($d) => [
+                'date' => $d->date ?? null,
+                'description' => ucfirst($d->method) . ' | ' . ($d->reff_no ?? '-'),
+                'deposit' => $d->amount,
+                'use' => 0,
+                'created_at' => $d->created_at ?? null,
+            ]);
+
+        $totalUse = DailyLedgerUse::all()->map(fn($u) => [
+                'date' => $u->date ?? null,
+                'description' => ucfirst($u->case) . ' | ' . ($u->remarks ?? '-'),
+                'deposit' => 0,
+                'use' => $u->amount,
+                'created_at' => $u->created_at ?? null,
+            ]);
+
+        $dailyLedgers = $totalDeposit->merge($totalUse)
+            ->sort(function ($a, $b) {
+                $aDate = $a['date'] ?? '1970-01-01';
+                $bDate = $b['date'] ?? '1970-01-01';
+                $dateCompare = strcmp($aDate, $bDate); // ascending (oldest first)
+
+                if ($dateCompare === 0) {
+                    $aCreated = $a['created_at'] ?? '1970-01-01 00:00:00';
+                    $bCreated = $b['created_at'] ?? '1970-01-01 00:00:00';
+                    return strtotime($aCreated) <=> strtotime($bCreated); // oldest created_at first
+                }
+
+                return $dateCompare;
+            })->values();
+
+        return view('daily-ledger.index', compact('dailyLedgers'));
     }
 
     public function deposit()

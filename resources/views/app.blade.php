@@ -1298,7 +1298,7 @@
         allAmountInputs.forEach((input) => {
             validateInput(input);
         });
-        document.getElementById('amount-error').classList.add('hidden');
+        document.getElementById('amount-error')?.classList.add('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
