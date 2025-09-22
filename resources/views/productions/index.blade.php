@@ -42,7 +42,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Productions"/>
+            <x-form-title-bar title="Show Productions" resetSortBtn />
 
             @if (count($productions) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -53,11 +53,11 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div>Article No.</div>
-                                <div class="col-span-2">Worker Name</div>
-                                <div>Ticket</div>
-                                <div>Issue Date</div>
-                                <div>Receive Date</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Article No.</div>
+                                <div class="col-span-2 cursor-pointer" onclick="sortByThis(this)">Worker Name</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Ticket</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Issue Date</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Receive Date</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>

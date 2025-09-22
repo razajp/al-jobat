@@ -29,7 +29,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Physical Quantities" />
+            <x-form-title-bar title="Show Physical Quantities" resetSortBtn />
 
             @if (count($physicalQuantities) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -41,16 +41,16 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="w-[10%]">Article No.</div>
-                                <div class="w-[7%]">Proc. By</div>
-                                <div class="w-[8%]">Unit</div>
-                                <div class="w-[15%]">Total Qty.</div>
-                                <div class="w-[15%]">Received Qty.</div>
-                                <div class="w-[15%]">Current Stock Qty.</div>
-                                <div class="w-[15%]">A</div>
-                                <div class="w-[15%]">B</div>
-                                <div class="w-[15%]">Remaining Qty.</div>
-                                <div class="w-[8%]">Shipment</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Article No.</div>
+                                <div class="w-[7%] cursor-pointer" onclick="sortByThis(this)">Proc. By</div>
+                                <div class="w-[8%] cursor-pointer" onclick="sortByThis(this)">Unit</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">Total Qty.</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">Received Qty.</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">Current Stock Qty.</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">A</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">B</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">Remaining Qty.</div>
+                                <div class="w-[8%] cursor-pointer" onclick="sortByThis(this)">Shipment</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>

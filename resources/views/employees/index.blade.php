@@ -59,7 +59,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow overflow-y-auto pt-8.5 pr-2 relative">
-                <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" />
+                <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
                 @if (count($employees) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -69,12 +69,12 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container px-3 h-full flex flex-col">
-                                <div id="table-head"class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2">
-                                    <div class="text-left pl-5">Employee Name</div>
-                                    <div class="text-left pl-5">Category</div>
-                                    <div class="text-center">Type</div>
-                                    <div class="text-center">Balance</div>
-                                    <div class="text-right pr-5">Status</div>
+                                <div id="table-head"class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 mt-4">
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-left pl-5">Employee Name</div>
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-left pl-5">Category</div>
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-center">Type</div>
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-center">Balance</div>
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-right pr-5">Status</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                                 <div>

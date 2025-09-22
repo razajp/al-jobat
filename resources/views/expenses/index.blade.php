@@ -49,7 +49,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Expenses"/>
+            <x-form-title-bar title="Show Expenses" resetSortBtn />
 
             @if (count($expenses) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -60,13 +60,13 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div>Date</div>
-                                <div class="col-span-2">Supplier Name</div>
-                                <div>Reff. No.</div>
-                                <div>Expense</div>
-                                <div>Lot No.</div>
-                                <div>Amount</div>
-                                <div>Remarks</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
+                                <div class="cursor-pointer col-span-2" onclick="sortByThis(this)">Supplier Name</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Reff. No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Expense</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Lot No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Amount</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Remarks</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>

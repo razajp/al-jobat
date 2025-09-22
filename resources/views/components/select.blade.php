@@ -61,12 +61,12 @@
 
 <div class="{{ $class }} form-group">
     @if ($label)
-        <span class="flex items-center justify-between">
-            <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">
+        <span class="flex items-center justify-between mb-2">
+            <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)]">
                 {{ $label }}
             </label>
             @if ($addBtnLink !== '')
-                <a href="{{ $addBtnLink }}">+</a>
+                <a class='text-lg px-2 leading-none' href="{{ $addBtnLink }}">+</a>
             @endif
         </span>
     @endif

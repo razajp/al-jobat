@@ -58,7 +58,7 @@
     <section class="text-center mx-auto">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Payment Programs" />
+            <x-form-title-bar title="Show Payment Programs" resetSortBtn />
 
             @if (count($finalData) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -70,17 +70,17 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="w-[10%]">Date</div>
-                                <div class="w-[8%]">O/P No.</div>
-                                <div class="w-[19%]">Customer</div>
-                                <div class="w-[9%]">Category</div>
-                                <div class="w-[15%]">Beneficiary</div>
-                                <div class="w-[10%]">Amount</div>
-                                <div class="w-[10%]">Payment</div>
-                                <div class="w-[10%]">Balance</div>
-                                <div class="w-[10%]">Status</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Date</div>
+                                <div class="w-[8%] cursor-pointer" onclick="sortByThis(this)">O/P No.</div>
+                                <div class="w-[19%] cursor-pointer" onclick="sortByThis(this)">Customer</div>
+                                <div class="w-[9%] cursor-pointer" onclick="sortByThis(this)">Category</div>
+                                <div class="w-[15%] cursor-pointer" onclick="sortByThis(this)">Beneficiary</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Amount</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Payment</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Balance</div>
+                                <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Status</div>
                             </div>
-                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
+                            <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3 cursor-pointer" onclick="sortByThis(this)">No items found</p>
                             <div>
                                 <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 overflow-y-auto grow my-scrollbar-2">
                                     {{-- class="search_container overflow-y-auto grow my-scrollbar-2"> --}}
@@ -152,7 +152,7 @@
             }
 
             console.log(item);
-            
+
             return {
                 id: item.id,
                 date: formatDate(item.date, true),

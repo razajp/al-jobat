@@ -49,7 +49,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Invoices" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar title="Show Invoices" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
             @if (count($invoices) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -60,10 +60,10 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-center">Invoice No.</div>
-                                <div class="text-center">Order No.</div>
-                                <div class="text-center">Customer</div>
-                                <div class="text-center">Date</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Invoice No.</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Order No.</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Customer</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Date</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>
@@ -92,7 +92,7 @@
         function createRow(data) {
             return `
                 <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                    class="item row relative group grid text- grid-cols-3 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                    class="item row relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
                     <span class="text-center">${data.name}</span>

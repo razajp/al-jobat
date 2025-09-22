@@ -57,7 +57,7 @@
         <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-                <x-form-title-bar title="Show Fabrics" />
+                <x-form-title-bar title="Show Fabrics" resetSortBtn />
 
                 @if (count($finalData) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -69,15 +69,15 @@
                         <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                             <div class="card_container px-3 h-full flex flex-col">
                                 <div id="table-head" class="flex items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                    <div class="text-center w-[10%]">Date</div>
-                                    <div class="text-center w-[15%]">Supplier / Worker</div>
-                                    <div class="text-center w-[10%]">Type</div>
-                                    <div class="text-center w-[10%]">Fabric</div>
-                                    <div class="text-center w-[10%]">Color</div>
-                                    <div class="text-center w-[10%]">Unit</div>
-                                    <div class="text-center w-[10%]">Quantity</div>
-                                    <div class="text-center w-[20%]">Tag</div>
-                                    <div class="text-center w-[10%]">Remarks</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Date</div>
+                                    <div class="cursor-pointer text-center w-[15%]" onclick="sortByThis(this)">Supplier / Worker</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Type</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Fabric</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Color</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Unit</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Quantity</div>
+                                    <div class="cursor-pointer text-center w-[20%]" onclick="sortByThis(this)">Tag</div>
+                                    <div class="cursor-pointer text-center w-[10%]" onclick="sortByThis(this)">Remarks</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                                 <div>
@@ -109,7 +109,7 @@
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
                 class="item row relative group flex border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
-                
+
                 <span class="text-center w-[10%]">${formatDate(data.date)}</span>
                 <span class="text-center w-[15%] capitalize">${data.supplier_name ?? data.employee_name}</span>
                 <span class="text-center w-[10%]">${data.type ?? "-"}</span>
@@ -141,6 +141,6 @@
         });
 
         console.log(allDataArray);
-        
+
     </script>
 @endsection

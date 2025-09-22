@@ -108,7 +108,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Customer Payments" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar title="Show Customer Payments" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
             @if (count($payments) > 0)
                 <div class="absolute bottom-14 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -120,15 +120,15 @@
                     <div class="container-parent h-full">
                         <div class="card_container px-3 pb-3 h-full flex flex-col">
                             <div id="table-head" class="flex justify-between bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-center w-1/10">Date</div>
-                                <div class="text-center w-1/7">Customer</div>
-                                <div class="text-center w-1/7">Beneficiary</div>
-                                <div class="text-center w-1/11">Method</div>
-                                <div class="text-center w-1/10">Amount</div>
-                                <div class="text-center w-1/10">Reff. No.</div>
-                                <div class="text-center w-1/10">Clear Date</div>
-                                <div class="text-center w-1/9">Cleared Amount</div>
-                                <div class="text-center w-1/10">Voucher No.</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Date</div>
+                                <div class="text-center w-1/7 cursor-pointer" onclick="sortByThis(this)">Customer</div>
+                                <div class="text-center w-1/7 cursor-pointer" onclick="sortByThis(this)">Beneficiary</div>
+                                <div class="text-center w-1/11 cursor-pointer" onclick="sortByThis(this)">Method</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Amount</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Reff. No.</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Clear Date</div>
+                                <div class="text-center w-1/9 cursor-pointer" onclick="sortByThis(this)">Cleared Amount</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Voucher No.</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -194,8 +194,6 @@
 
         const fetchedData = @json($payments);
         let allDataArray = fetchedData.map(item => {
-            console.log(item);
-
             totalAmount += parseFloat(item.amount);
             totalPayment += parseFloat(item.clear_amount);
             return {
@@ -430,9 +428,6 @@
                 data.method === "slip" ? data.slip_no :
                 data.method === "program" ? data.transaction_id :
                 data.reff_no;
-
-            console.log(data);
-
 
             let [currentRef, newRef] = generateReffNos(rawReffNo, data.has_pipe, data.max_reff_suffix);
 

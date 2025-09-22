@@ -58,7 +58,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
             @if (count($articles) > 0)
                 <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -70,12 +70,12 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div class="text-center">Article No</div>
-                                <div class="text-center">Category</div>
-                                <div class="text-center">Season</div>
-                                <div class="text-center">Size</div>
-                                <div class="text-center">Sales Rate</div>
-                                <div class="text-center">Processed By</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Article No</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Category</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Season</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Size</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Sales Rate</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Processed By</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>

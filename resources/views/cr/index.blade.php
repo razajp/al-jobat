@@ -29,7 +29,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow overflow-y-auto pt-8.5 relative">
-            <x-form-title-bar title="Show CRs" />
+            <x-form-title-bar title="Show CRs" resetSortBtn />
 
             @if (count($crs) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -41,10 +41,10 @@
                     <div class="container-parent h-full overflow-y-auto my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
                             <div id="table-head" class="grid grid-cols-4 items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
-                                <div>Date</div>
-                                <div>CR No.</div>
-                                <div>Voucher No.</div>
-                                <div>Supplier Name</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">CR No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Voucher No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Supplier Name</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div>

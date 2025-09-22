@@ -1329,6 +1329,133 @@
             input.step = '0.01';
         });
     });
+
+    function sortByThis(elem) {
+        const tableHead = elem.parentElement;
+        const index = Array.from(tableHead.children).indexOf(elem);
+        const searchContainer = tableHead.parentElement.querySelector('.search_container');
+        const rows = Array.from(searchContainer.querySelectorAll('.item'));
+
+        searchContainer.querySelectorAll('.item').forEach((row, i) => {
+            row.dataset.index = i;
+        });
+
+        // toggle order
+        const order = elem.dataset.sort === "asc" ? "desc" : "asc";
+        elem.dataset.sort = order;
+
+        // helper: strict numeric test (whole string is a number)
+        const isWholeNumberString = s => {
+            if (!s) return false;
+            const cleaned = s.replace(/,/g, '').trim();
+            return /^-?\d+(\.\d+)?$/.test(cleaned);
+        };
+
+        // helper: try many date formats and return timestamp or NaN
+        const parseDateString = s => {
+            if (!s) return NaN;
+            // remove weekday words and commas
+            s = s.replace(/\b(?:mon|tue|wed|thu|fri|sat|sun|monday|tuesday|wednesday|thursday|friday|saturday|sunday)\b/gi, '').replace(/,/g, '').trim();
+
+            // try native parse (ISO and many browser-parseable formats)
+            const iso = Date.parse(s);
+            if (!isNaN(iso)) return iso;
+
+            // normalize separators to spaces
+            const normalized = s.replace(/[-\/]/g, ' ').replace(/\s+/g, ' ').trim();
+
+            // month map
+            const months = {
+                jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5,
+                jul: 6, aug: 7, sep: 8, sept: 8, oct: 9, nov: 10, dec: 11
+            };
+
+            // DD MMM YYYY  (e.g. "20 Sep 2025" or "20 Sep 25")
+            let m = normalized.match(/^(\d{1,2})\s+([A-Za-z]{3,9})\s+(\d{2,4})$/);
+            if (m) {
+                const day = Number(m[1]);
+                const mon = months[m[2].slice(0,3).toLowerCase()];
+                const year = Number(m[3]) + (m[3].length === 2 ? 2000 : 0);
+                if (mon !== undefined) return new Date(year, mon, day).getTime();
+            }
+
+            // DD MMM  (no year) -> assume current year
+            m = normalized.match(/^(\d{1,2})\s+([A-Za-z]{3,9})$/);
+            if (m) {
+                const day = Number(m[1]);
+                const mon = months[m[2].slice(0,3).toLowerCase()];
+                const year = new Date().getFullYear();
+                if (mon !== undefined) return new Date(year, mon, day).getTime();
+            }
+
+            // MMM DD YYYY  (e.g. "Sep 20 2025")
+            m = normalized.match(/^([A-Za-z]{3,9})\s+(\d{1,2})\s+(\d{2,4})$/);
+            if (m) {
+                const mon = months[m[1].slice(0,3).toLowerCase()];
+                const day = Number(m[2]);
+                const year = Number(m[3]) + (m[3].length === 2 ? 2000 : 0);
+                if (mon !== undefined) return new Date(year, mon, day).getTime();
+            }
+
+            // numeric date-ish fallback like 21-07-2025 or 21/07/2025
+            m = normalized.match(/^(\d{1,2})\s+(\d{1,2})\s+(\d{2,4})$/);
+            if (m) {
+                const d1 = Number(m[1]), d2 = Number(m[2]), y = Number(m[3]) + (m[3].length === 2 ? 2000 : 0);
+                // assume format is day month year (common in your sample)
+                const day = d1;
+                const month = d2 - 1;
+                if (month >= 0 && month <= 11) return new Date(y, month, day).getTime();
+            }
+
+            return NaN;
+        };
+
+        // Main comparator that chooses numeric -> date -> string
+        rows.sort((a, b) => {
+            const aText = (a.children[index] && a.children[index].innerText) ? a.children[index].innerText.trim() : '';
+            const bText = (b.children[index] && b.children[index].innerText) ? b.children[index].innerText.trim() : '';
+
+            // 1) numeric (only if the whole string is numeric)
+            if (isWholeNumberString(aText) && isWholeNumberString(bText)) {
+                const na = parseFloat(aText.replace(/,/g, ''));
+                const nb = parseFloat(bText.replace(/,/g, ''));
+                return order === "asc" ? na - nb : nb - na;
+            }
+
+            // 2) date parsing
+            const ta = parseDateString(aText);
+            const tb = parseDateString(bText);
+            if (!isNaN(ta) && !isNaN(tb)) {
+                return order === "asc" ? ta - tb : tb - ta;
+            }
+
+            // 3) fallback to locale string compare (numeric option helps e.g. "10" vs "2")
+            return order === "asc"
+                ? aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
+                : bText.localeCompare(aText, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        // re-render
+        searchContainer.innerHTML = "";
+        rows.forEach(row => searchContainer.appendChild(row));
+    }
+
+    function resetSort() {
+        const searchContainer = document.querySelector('.search_container');
+        const rows = Array.from(searchContainer.querySelectorAll('.item'));
+
+        rows.sort((a, b) => {
+            return a.dataset.index - b.dataset.index;
+        });
+
+        searchContainer.innerHTML = "";
+        rows.forEach(row => searchContainer.appendChild(row));
+
+        // Clear sort state from all headers
+        document.querySelectorAll('#table-head > div').forEach(header => {
+            delete header.dataset.sort;
+        });
+    }
 </script>
 
 </html>
