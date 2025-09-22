@@ -38,4 +38,8 @@ class Employee extends Model
     public function tags() {
         return $this->hasMany(IssuedFabric::class, 'worker_id');
     }
+
+    public function payments() {
+        return $this->hasMany(EmployeePayment::class, 'employee_id');
+    }
 }

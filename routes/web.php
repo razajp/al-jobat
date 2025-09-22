@@ -129,6 +129,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('set-production-type', [Controller::class, 'setProductionType'])->name('set-production-type');
     Route::post('get-voucher-details', [Controller::class, 'getVoucherDetails'])->name('get-voucher-details');
     Route::post('get-payments-by-method', [Controller::class, 'getPaymentsByMethod'])->name('get-payments-by-method');
+    Route::post('get-employees-by-category', [Controller::class, 'getEmployeesByCategory'])->name('get-employees-by-category');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
