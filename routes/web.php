@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
+use App\Http\Controllers\DailyLedgerController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeePaymentController;
 use App\Http\Controllers\ExpenseController;
@@ -115,6 +116,12 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('employee-payments', EmployeePaymentController::class);
 
     Route::resource('cr', CRController::class);
+
+    Route::get('daily-ledger/deposit', [DailyLedgerController::class, 'deposit'])->name('daily-ledger.deposit');
+    Route::post('daily-ledger/deposit-store', [DailyLedgerController::class, 'depositStore'])->name('daily-ledger.deposit-store');
+    Route::get('daily-ledger/use', [DailyLedgerController::class, 'use'])->name('daily-ledger.use');
+    Route::post('daily-ledger/use-store', [DailyLedgerController::class, 'useStore'])->name('daily-ledger.use-store');
+    Route::resource('daily-ledger', DailyLedgerController::class);
 
     Route::resource('sales-returns', SalesReturnController::class);
     Route::post('sales-returns/get-details', [SalesReturnController::class, 'getDetails'])->name('sales-returns.get-details');

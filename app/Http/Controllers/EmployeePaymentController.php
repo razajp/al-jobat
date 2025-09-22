@@ -10,9 +10,17 @@ class EmployeePaymentController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $payments = EmployeePayment::with('employee.type')->get();
+
+        $authLayout = $this->getAuthLayout($request->route()->getName());
+
+        return view('employee-payments.index', compact('payments', 'authLayout'));
     }
 
     /**

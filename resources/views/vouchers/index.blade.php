@@ -114,7 +114,7 @@
                 id: item.id,
                 name: item.voucher_no,
                 details: {
-                    ...(item.supplier?.supplier_name && { 'Supplier': item.supplier.supplier_name }),
+                    'Supplier': item.supplier ? item.supplier.supplier_name : 'Al Jobat',
                     'Date': formatDate(item.date),
                     'Amount': formatNumbersWithDigits(item.total_payment, 1, 1),
                 },

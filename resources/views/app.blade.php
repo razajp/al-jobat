@@ -1298,6 +1298,7 @@
         allAmountInputs.forEach((input) => {
             validateInput(input);
         });
+        document.getElementById('amount-error').classList.add('hidden');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -1314,6 +1315,8 @@
                 messageBoxAnimation();
             }
         }
+
+        hideLoader();
 
         document.querySelectorAll('input[type="amount"]').forEach(input => {
             let value = input.value.replace(/[^0-9.]/g, ''); // only digits & dot
