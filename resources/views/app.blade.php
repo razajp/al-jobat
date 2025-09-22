@@ -634,7 +634,7 @@
                     // Logout after 1.5 seconds
                     setTimeout(() => {
                         document.getElementById("logoutForm").submit();
-                    }, 2000); // 1.5 sec delay
+                    }, 5000);
                 }
             @endif
 
