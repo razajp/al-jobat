@@ -14,6 +14,7 @@
     'dataFilterPath' => '',
     'dataClearable' => false,
     'disabled' => false,
+    'addBtnLink' => '',
 ])
 
 @php
@@ -60,9 +61,14 @@
 
 <div class="{{ $class }} form-group">
     @if ($label)
-        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">
-            {{ $label }}
-        </label>
+        <span class="flex items-center justify-between">
+            <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">
+                {{ $label }}
+            </label>
+            @if ($addBtnLink !== '')
+                <a href="{{ $addBtnLink }}">+</a>
+            @endif
+        </span>
     @endif
 
     <div class="selectParent flex gap-4">

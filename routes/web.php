@@ -10,6 +10,7 @@ use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeePaymentController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FabricController;
 use App\Http\Controllers\InvoiceController;
@@ -110,6 +111,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('employees', EmployeeController::class);
     Route::post('update-employee-status', [EmployeeController::class, 'updateStatus'])->name('update-employee-status');
+
+    Route::resource('employee-payments', EmployeePaymentController::class);
 
     Route::resource('cr', CRController::class);
 
