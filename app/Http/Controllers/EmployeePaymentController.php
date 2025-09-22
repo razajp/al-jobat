@@ -20,7 +20,11 @@ class EmployeePaymentController extends Controller
      */
     public function create()
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        return view('employee-payments.create');
     }
 
     /**
@@ -28,7 +32,20 @@ class EmployeePaymentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        };
+
+        $request->validate([
+            'employee_id' => 'required|integer|exists:employees,id',
+            'date' => 'required|date',
+            'method' => 'required|string',
+            'amount' => 'required|integer',
+        ]);
+
+        EmployeePayment::create($request->all());
+
+        return redirect()->back()->with('success', 'Payment added successfully.');
     }
 
     /**

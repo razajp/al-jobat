@@ -7,6 +7,7 @@ use App\Models\BankAccount;
 use App\Models\CR;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
+use App\Models\Employee;
 use App\Models\Order;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
@@ -473,6 +474,15 @@ class Controller extends BaseController
         return response()->json([
             'status' => 'success',
             'data'   => $mappedVoucher
+        ]);
+    }
+
+    public function getEmployeesByCategory(Request $request)
+    {
+        $employees = Employee::where('category', $request->category)->where('status', 'active')->with('type')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $employees
         ]);
     }
 }
