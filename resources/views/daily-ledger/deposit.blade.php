@@ -22,7 +22,7 @@
                     </div>
 
                     <!-- date -->
-                    <x-input label="Date" name="date" id="date" type="date" validateMin min="{{ now()->subDay(1)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" value="{{ now()->subDay(1)->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" validateMin min="{{ now()->subDay(7)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}" required />
 
                     {{-- method --}}
                     <x-select label="Method" name="method" id="method" :options="[
