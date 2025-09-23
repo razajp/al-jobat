@@ -5,7 +5,7 @@
         $categories_options = [
             'self_account' => ['text' => 'Self Account'],
             'supplier' => ['text' => 'Supplier'],
-            'customer' => ['text' => 'Customer'],
+            // 'customer' => ['text' => 'Customer'],
             'waiting' => ['text' => 'Waiting'],
         ];
 

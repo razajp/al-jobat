@@ -100,7 +100,7 @@
                     class="item row relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
-                    ${data.details["Supplier"] || '<span class="text-center">data.details["Supplier"]</span>'}
+                    <span class="text-center">${data.details["Supplier"]}</span>
                     <span class="text-center">${data.name}</span>
                     <span class="text-center">${data.details['Date']}</span>
                     <span class="text-center">${data.details['Amount']}</span>
