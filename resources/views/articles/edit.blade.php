@@ -12,8 +12,8 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Edit Article" link linkText="Show Articles" linkHref="{{ route('articles.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Enter Rates', 'Upload Image']" 
+        <x-progress-bar
+            :steps="['Enter Details', 'Enter Rates', 'Upload Image']"
             :currentStep="1"
         />
     </div>
@@ -30,24 +30,24 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- article_no -->
-                    <x-input 
+                    <x-input
                         label="Article No"
                         value="{{ $article->article_no }}"
                         disabled
                         name="article_no"
                     />
                     <input type="hidden" name="article_no" id="article_no" value="{{ $article->article_no }}" />
-                    
+
                     <!-- date -->
-                    <x-input 
+                    <x-input
                         label="Date"
                         value="{{ $article->date }}"
                         disabled
                     />
                     <input type="hidden" name="date" id="date" value="{{ $article->date }}" />
-                    
+
                     {{-- category --}}
-                    <x-select 
+                    <x-select
                         label="Category"
                         name="category"
                         id="category"
@@ -55,9 +55,9 @@
                         showDefault
                         value="{{ $article->category }}"
                     />
-                    
+
                     {{-- size --}}
-                    <x-select 
+                    <x-select
                         label="Size"
                         name="size"
                         id="size"
@@ -66,9 +66,9 @@
                         showDefault
                         value="{{ $article->size }}"
                     />
-                    
+
                     {{-- season --}}
-                    <x-select 
+                    <x-select
                         label="Season"
                         name="season"
                         id="season"
@@ -77,37 +77,37 @@
                         showDefault
                         value="{{ $article->season }}"
                     />
-                    
+
                     {{-- quantity --}}
-                    <x-input 
+                    <x-input
                         label="Quantity"
-                        name="quantity" 
-                        id="quantity" 
+                        name="quantity"
+                        id="quantity"
                         type="number"
                         value="{{ $article->quantity }}"
-                        placeholder="Enter quantity" 
-                        required 
+                        placeholder="Enter quantity"
+                        required
                     />
-                    
+
                     {{-- extra_pcs --}}
-                    <x-input 
+                    <x-input
                         label="Extra Pcs"
-                        name="extra_pcs" 
-                        id="extra_pcs" 
+                        name="extra_pcs"
+                        id="extra_pcs"
                         type="number"
                         value="{{ $article->extra_pcs }}"
-                        placeholder="Enter extra pcs" 
-                        required 
+                        placeholder="Enter extra pcs"
+                        required
                     />
 
                     {{-- fabric_type --}}
-                    <x-input 
-                        label="Fabric Type" 
-                        name="fabric_type" 
-                        id="fabric_type" 
+                    <x-input
+                        label="Fabric Type"
+                        name="fabric_type"
+                        id="fabric_type"
                         type="text"
                         value="{{ $article->fabric_type }}"
-                        placeholder="Enter fabric type" 
+                        placeholder="Enter fabric type"
                         required
                     />
                 </div>
@@ -119,17 +119,17 @@
                     <div class="flex justify-between gap-4">
                         {{-- title --}}
                         <div class="grow">
-                            <x-input 
-                                id="title" 
-                                placeholder="Enter title" 
+                            <x-input
+                                id="title"
+                                placeholder="Enter title"
                             />
                         </div>
-                        
+
                         {{-- rate --}}
-                        <x-input 
-                            id="rate" 
+                        <x-input
+                            id="rate"
                             type="number"
-                            placeholder="Enter rate" 
+                            placeholder="Enter rate"
                         />
 
                         {{-- add rate button --}}
@@ -198,14 +198,14 @@
             <!-- Step 3: Image -->
             <div class="step3 hidden space-y-4">
                 @if ($article->image == 'no_image_icon.png')
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('images/image_icon.png') }}"
                         uploadText="Upload article image"
                     />
                 @else
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('storage/uploads/images/' . $article->image) }}"

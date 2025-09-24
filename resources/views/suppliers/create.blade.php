@@ -126,7 +126,7 @@
 
         <!-- Step 2: Production Details -->
         <div class="step2 hidden space-y-4">
-            <x-image-upload
+            <x-file-upload
                 id="profile_picture"
                 name="profile_picture"
                 placeholder="{{ asset('images/image_icon.png') }}"

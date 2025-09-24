@@ -12,8 +12,8 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-5xl mx-auto">
         <x-search-header heading="Add Article" link linkText="Show Articles" linkHref="{{ route('articles.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Enter Rates', 'Upload Image']" 
+        <x-progress-bar
+            :steps="['Enter Details', 'Enter Rates', 'Upload Image']"
             :currentStep="1"
         />
     </div>
@@ -28,39 +28,39 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- article_no -->
-                    <x-input 
+                    <x-input
                         label="Article No"
-                        name="article_no" 
-                        id="article_no" 
-                        type="number" 
-                        placeholder="Enter article no" 
-                        required 
+                        name="article_no"
+                        id="article_no"
+                        type="number"
+                        placeholder="Enter article no"
+                        required
                     />
-                    
+
                     <!-- date -->
-                    <x-input 
+                    <x-input
                         label="Date"
-                        name="date" 
+                        name="date"
                         id="date"
                         validateMin
                         min="{{ now()->subDays('14')->toDateString() }}"
                         validateMax
                         max="{{ now()->toDateString() }}"
-                        type="date" 
-                        required 
+                        type="date"
+                        required
                     />
-                    
+
                     {{-- category --}}
-                    <x-select 
+                    <x-select
                         label="Category"
                         name="category"
                         id="category"
                         :options="$categories_options"
                         showDefault
                     />
-                    
+
                     {{-- size --}}
-                    <x-select 
+                    <x-select
                         label="Size"
                         name="size"
                         id="size"
@@ -69,9 +69,9 @@
                         showDefault
                         searchable
                     />
-                    
+
                     {{-- season --}}
-                    <x-select 
+                    <x-select
                         label="Season"
                         name="season"
                         id="season"
@@ -79,32 +79,32 @@
                         required
                         showDefault
                     />
-                    
+
                     {{-- quantity --}}
-                    <x-input 
+                    <x-input
                         label="Quantity - Pcs."
-                        name="quantity" 
-                        id="quantity" 
+                        name="quantity"
+                        id="quantity"
                         type="number"
-                        placeholder="Enter quantity" 
+                        placeholder="Enter quantity"
                     />
-                    
+
                     {{-- extra_pcs --}}
-                    <x-input 
+                    <x-input
                         label="Extra Pcs."
-                        name="extra_pcs" 
-                        id="extra_pcs" 
+                        name="extra_pcs"
+                        id="extra_pcs"
                         type="number"
-                        placeholder="Enter extra pcs" 
+                        placeholder="Enter extra pcs"
                     />
 
                     {{-- fabric_type --}}
-                    <x-input 
-                        label="Fabric Type" 
-                        name="fabric_type" 
-                        id="fabric_type" 
+                    <x-input
+                        label="Fabric Type"
+                        name="fabric_type"
+                        id="fabric_type"
                         type="text"
-                        placeholder="Enter fabric type" 
+                        placeholder="Enter fabric type"
                     />
                 </div>
             </div>
@@ -115,17 +115,17 @@
                     <div class="flex justify-between gap-4">
                         {{-- title --}}
                         <div class="grow">
-                            <x-input 
-                                id="title" 
-                                placeholder="Enter title" 
+                            <x-input
+                                id="title"
+                                placeholder="Enter title"
                             />
                         </div>
-                        
+
                         {{-- rate --}}
-                        <x-input 
-                            id="rate" 
+                        <x-input
+                            id="rate"
                             type="number"
-                            placeholder="Enter rate" 
+                            placeholder="Enter rate"
                         />
 
                         {{-- add rate button --}}
@@ -166,7 +166,7 @@
 
             <!-- Step 3: Image -->
             <div class="step3 hidden space-y-4">
-                <x-image-upload 
+                <x-file-upload
                     id="image_upload"
                     name="image_upload"
                     placeholder="{{ asset('images/image_icon.png') }}"
@@ -183,44 +183,44 @@
             <div class="step1 space-y-4 ">
                 @if ($lastRecord)
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <x-input 
+                        <x-input
                             label="Article No"
-                            value="{{ $lastRecord->article_no }}" 
+                            value="{{ $lastRecord->article_no }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Date"
-                            value="{{ $lastRecord->date->format('d-M-Y, D') }}" 
+                            value="{{ $lastRecord->date->format('d-M-Y, D') }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Category"
-                            value="{{ $lastRecord->category }}" 
+                            value="{{ $lastRecord->category }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Size"
-                            value="{{ $lastRecord->size }}" 
+                            value="{{ $lastRecord->size }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Season"
-                            value="{{ $lastRecord->season }}" 
+                            value="{{ $lastRecord->season }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Quantity-Pcs"
-                            value="{{ $lastRecord->quantity }}" 
+                            value="{{ $lastRecord->quantity }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Extra Pcs"
-                            value="{{ $lastRecord->extra_pcs }}" 
+                            value="{{ $lastRecord->extra_pcs }}"
                             disabled
                         />
-                        <x-input 
+                        <x-input
                             label="Fabric Type"
-                            value="{{ $lastRecord->fabric_type }}" 
+                            value="{{ $lastRecord->fabric_type }}"
                             disabled
                         />
                     </div>
@@ -279,14 +279,14 @@
                 @if ($lastRecord)
                     <div class="grid grid-cols-1 md:grid-cols-1">
                         @if ($lastRecord->image == 'no_image_icon.png')
-                            <x-image-upload 
+                            <x-file-upload
                                 id="image_upload"
                                 name="image_upload"
                                 placeholder="{{ asset('images/no_image_icon.png') }}"
                                 uploadText="Image"
                             />
                         @else
-                            <x-image-upload 
+                            <x-file-upload
                                 id="image_upload"
                                 name="image_upload"
                                 placeholder="{{ asset('storage/uploads/images/' . rawurlencode(html_entity_decode($lastRecord->image))) }}"
@@ -307,7 +307,7 @@
         let calcBottom = document.querySelector('#calc-bottom');
         let ratesArrayDom = document.getElementById('rates_array');
         let rateCount = 0;
- 
+
         let totalRate = 0.00;
 
         let ratesArray = [];

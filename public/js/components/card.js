@@ -97,14 +97,14 @@ function createCard(data) {
 
     if (data.subMenu) {
         clutter += `
-            <div class="subMenu text-sm fixed border border-gray-600 w-48 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in hidden" style="top: 0; left: 0;">
+            <div class="subMenu text-sm fixed border border-gray-600 w-52 bg-[var(--h-secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-2xl transform scale-95 transition-all duration-300 ease-in-out z-50 opacity-100 scale-in hidden" style="top: 0; left: 0;">
                 <ul class="p-2">
         `;
 
         data.subMenu.forEach(subMenuAction => {
             clutter += `
                 <li>
-                    <a href="${subMenuAction.href}" class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out">
+                    <a href="${subMenuAction.href}" class="block px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out text-nowrap">
                         ${subMenuAction.name}
                     </a>
                 </li>

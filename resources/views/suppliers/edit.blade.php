@@ -5,8 +5,8 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Edit Supplier" link linkText="Show Suppliers" linkHref="{{ route('suppliers.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Upload Image']" 
+        <x-progress-bar
+            :steps="['Enter Details', 'Upload Image']"
             :currentStep="1"
         />
     </div>
@@ -22,34 +22,34 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- supplier_name -->
-                    <x-input 
+                    <x-input
                         label="Supplier Name"
                         value="{{ $supplier->supplier_name }}"
                         disabled
                     />
 
                     {{-- urdu title --}}
-                    <x-input 
+                    <x-input
                         label="Urdu Title"
                         value="{{ $supplier->urdu_title }}"
                         disabled
                     />
 
                     {{-- person name --}}
-                    <x-input 
+                    <x-input
                         label="Person Name"
-                        name="person_name" 
-                        id="person_name" 
+                        name="person_name"
+                        id="person_name"
                         value="{{ $supplier->person_name }}"
                         placeholder="Enter person name"
                         required
                     />
 
                     {{-- supplier_phone_number --}}
-                    <x-input 
-                        label="Phone Number" 
-                        name="phone_number" 
-                        id="phone_number" 
+                    <x-input
+                        label="Phone Number"
+                        name="phone_number"
+                        id="phone_number"
                         value="{{ $supplier->phone_number }}"
                         placeholder="Enter phone number"
                         required
@@ -60,14 +60,14 @@
             <!-- Step 2: Image -->
             <div class="step2 hidden space-y-4">
                 @if ($supplier->user->profile_picture == 'default_avatar.png')
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('images/image_icon.png') }}"
                         uploadText="Upload customer image"
                     />
                 @else
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('storage/uploads/images/' . $supplier->user->profile_picture) }}"

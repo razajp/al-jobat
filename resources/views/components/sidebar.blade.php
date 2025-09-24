@@ -990,6 +990,28 @@
                 ]
             },
         @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
+                id: "attendances",
+                name: "Attendance",
+                details: {
+                    '': 'Manage your attendances',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 234.5C512 217.5 505.3 201.2 493.3 189.2L386.7 82.7C374.7 70.7 358.5 64 341.5 64L192 64zM453.5 240L360 240C346.7 240 336 229.3 336 216L336 122.5L453.5 240z"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                switchBtn: {
+                    active: false,
+                },
+                subMenu: [
+                    {name: 'Show Attendances', href: "/attendances"},
+                    {name: 'Record Attendance', href: "/attendances/create"},
+                ]
+            },
+        @endif
     ];
 
     const pageName = window.location.href.toLowerCase().split('/')[3];

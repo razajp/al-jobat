@@ -23,7 +23,7 @@
         <div class="step1 space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- employee_category --}}
-                <x-select 
+                <x-select
                     label="Category"
                     name="category"
                     id="category"
@@ -34,7 +34,7 @@
                 />
 
                 {{-- employee_type --}}
-                <x-select 
+                <x-select
                     label="Type"
                     name="type_id"
                     id="type"
@@ -42,38 +42,38 @@
                 />
 
                 <!-- employee_name -->
-                <x-input 
+                <x-input
                     label="Employee Name"
-                    name="employee_name" 
-                    id="employee_name" 
-                    placeholder="Enter employee name" 
-                    required 
+                    name="employee_name"
+                    id="employee_name"
+                    placeholder="Enter employee name"
+                    required
                     capitalized
                     dataValidate="required|letters"
                 />
-                
+
                 <!-- urdu_title -->
-                <x-input 
+                <x-input
                     label="Urdu Title"
-                    name="urdu_title" 
-                    id="urdu_title" 
-                    placeholder="Enter urdu title" 
+                    name="urdu_title"
+                    id="urdu_title"
+                    placeholder="Enter urdu title"
                 />
-                
+
                 {{-- employee_phone_number --}}
-                <x-input 
-                    label="Phone Number" 
-                    name="phone_number" 
-                    id="phone_number" 
+                <x-input
+                    label="Phone Number"
+                    name="phone_number"
+                    id="phone_number"
                     placeholder="Enter phone number"
                     required
                 />
 
                 {{-- employee_joining_date --}}
-                <x-input 
-                    label="Joining Date" 
-                    name="joining_date" 
-                    id="joining_date" 
+                <x-input
+                    label="Joining Date"
+                    name="joining_date"
+                    id="joining_date"
                     min="{{ now()->subMonth()->toDateString() }}"
                     validateMin
                     max="{{ now()->toDateString() }}"
@@ -83,18 +83,18 @@
                 />
 
                 {{-- employee_cnic --}}
-                <x-input 
-                    label="C.N.I.C No." 
-                    name="cnic_no" 
+                <x-input
+                    label="C.N.I.C No."
+                    name="cnic_no"
                     id="cnic_no"
                     placeholder="Enter C.N.I.C No."
                     capitalized
                 />
 
                 {{-- employee_salary --}}
-                <x-input 
-                    label="Salary" 
-                    name="salary" 
+                <x-input
+                    label="Salary"
+                    name="salary"
                     id="salary"
                     placeholder="Enter salary"
                     type="number"
@@ -106,7 +106,7 @@
 
         <!-- Step 2: Production Details -->
         <div class="step2 hidden space-y-6 ">
-            <x-image-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
+            <x-file-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
                 uploadText="Upload Profile Picture" />
         </div>
     </form>
@@ -154,9 +154,9 @@
             let clutter = '';
             if (categorySelectDom.value == 'Staff') {
                 const typeArray = allTypes.staff_type
-                
+
                 console.log(typeArray);
-                
+
                 if (typeArray.length > 0) {
                     clutter = `
                         <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
@@ -179,7 +179,7 @@
                 });
             } else if (categorySelectDom.value == 'Worker') {
                 const typeArray = allTypes.worker_type
-                
+
                 if (typeArray.length > 0) {
                     clutter = `
                         <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
@@ -188,7 +188,7 @@
                     `;
                     typeSelectDom.disabled = false;
                 }
-                
+
                 salaryInpDom.disabled = true;
                 salaryInpDom.required = false;
                 salaryLabelDom.textContent = "Salary"

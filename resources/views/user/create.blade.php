@@ -56,7 +56,7 @@
 
         <!-- Step 2: Production Details -->
         <div class="step2 hidden space-y-6 ">
-            <x-image-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
+            <x-file-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/image_icon.png') }}"
                 uploadText="Upload Profile Picture" />
         </div>
     </form>

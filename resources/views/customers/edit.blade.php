@@ -13,8 +13,8 @@
     <!-- Progress Bar -->
     <div class="mb-5 max-w-3xl mx-auto">
         <x-search-header heading="Edit Customer" link linkText="Show Customers" linkHref="{{ route('customers.index') }}"/>
-        <x-progress-bar 
-            :steps="['Enter Details', 'Upload Image']" 
+        <x-progress-bar
+            :steps="['Enter Details', 'Upload Image']"
             :currentStep="1"
         />
     </div>
@@ -31,44 +31,44 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- customer_name -->
-                    <x-input 
+                    <x-input
                         label="Customer Name"
                         value="{{ $customer->customer_name }}"
                         disabled
                     />
 
                     {{-- customer_person_name --}}
-                    <x-input 
-                        label="Person Name" 
-                        name="person_name" 
-                        id="person_name" 
+                    <x-input
+                        label="Person Name"
+                        name="person_name"
+                        id="person_name"
                         value="{{ $customer->person_name }}"
                         placeholder="Enter Person Name"
                         required
                     />
 
                     {{-- customer_urdu_title --}}
-                    <x-input 
-                        label="Urdu Title" 
-                        name="urdu_title" 
-                        id="urdu_title" 
+                    <x-input
+                        label="Urdu Title"
+                        name="urdu_title"
+                        id="urdu_title"
                         value="{{ $customer->urdu_title }}"
                         placeholder="Enter Urdu Title"
                         required
                     />
 
                     {{-- customer_phone_number --}}
-                    <x-input 
-                        label="Phone Number" 
-                        name="phone_number" 
-                        id="phone_number" 
+                    <x-input
+                        label="Phone Number"
+                        name="phone_number"
+                        id="phone_number"
                         value="{{ $customer->phone_number }}"
                         placeholder="Enter phone number"
                         required
                     />
 
                     {{-- customer_category --}}
-                    <x-select 
+                    <x-select
                         label="Category"
                         name="category"
                         id="category"
@@ -79,9 +79,9 @@
                     />
 
                     {{-- customer_address --}}
-                    <x-input 
-                        label="Address" 
-                        name="address" 
+                    <x-input
+                        label="Address"
+                        name="address"
                         id="address"
                         value="{{ $customer->address }}"
                         placeholder="Enter address"
@@ -93,14 +93,14 @@
             <!-- Step 2: Image -->
             <div class="step2 hidden space-y-4">
                 @if ($customer->user->profile_picture == 'default_avatar.png')
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('images/image_icon.png') }}"
                         uploadText="Upload customer image"
                     />
                 @else
-                    <x-image-upload 
+                    <x-file-upload
                         id="image_upload"
                         name="image_upload"
                         placeholder="{{ asset('storage/uploads/images/' . $customer->user->profile_picture) }}"
