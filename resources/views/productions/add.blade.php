@@ -114,7 +114,7 @@
             <div class="step1 space-y-4 ">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- article --}}
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" addBtnLink="/articles/create" required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
 
                     {{-- work --}}
@@ -169,7 +169,11 @@
             let tags = [];
             let selectedTagsArray = [];
 
-            articleSelectInputDOM.addEventListener('click', () => {
+            articleSelectInputDOM.addEventListener('keydown', (e) => {
+                e.preventDefault();
+            });
+
+            articleSelectInputDOM.addEventListener('click', (e) => {
                 generateArticlesModal();
             })
 
@@ -181,6 +185,7 @@
                 const articles = data.filter(a => !articlesIssuedOnCMT.includes(a));
 
                 if (data.length > 0) {
+
                     cardData.push(...articles.map(item => {
                         return {
                             id: item.id,
@@ -240,10 +245,10 @@
                     let shouldShowWork = false;
 
                     // --- Dynamic CMT ---
-                    if (existingWorks.length === 1 && !afterCutting.includes('CMT')) {
-                        afterCutting.push('CMT');
-                    } else if (existingWorks.length !== 1 && afterCutting.includes('CMT')) {
-                        afterCutting = afterCutting.filter(w => w !== 'CMT');
+                    if (existingWorks.length === 1 && !afterCutting.includes('CMT | E')) {
+                        afterCutting.push('CMT | E');
+                    } else if (existingWorks.length !== 1 && afterCutting.includes('CMT | E')) {
+                        afterCutting = afterCutting.filter(w => w !== 'CMT | E');
                     }
 
                     // --- Parts issued to current work ---
@@ -264,7 +269,7 @@
                             <li data-for="work" data-value="${workKey}"
                                 onmousedown="selectThisOption(this)"
                                 class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">
-                                ${workTitle}
+                                ${workTitle.split('|')[0].trim()}
                             </li>
                         `;
                     }
@@ -744,7 +749,7 @@
                     />
 
                     {{-- article --}}
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" addBtnLink="/articles/create" required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
 
                     {{-- work --}}
@@ -795,6 +800,10 @@
 
             let tags = [];
             let selectedTagsArray = [];
+
+            articleSelectInputDOM.addEventListener('keydown', (e) => {
+                e.preventDefault(); // kuch bhi type nahi hoga
+            });
 
             articleSelectInputDOM.addEventListener('click', () => {
                 generateArticlesModal();

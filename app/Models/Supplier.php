@@ -96,13 +96,7 @@ class Supplier extends Model
 
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
-       $expenseQuery = $this->expenses()->whereRaw('1=0'); // default empty query
-
-        foreach ($this->categories as $category) {
-            if (strtoupper($category->title) === 'CMT') {
-                return $formatted ? number_format(5000, 1, '.', ',') : 5000;
-            }
-        }
+        $expenseQuery = $this->expenses();
         $paymentsQuery = $this->payments()
             ->whereNotNull('voucher_id')
             ->whereIn('method', [

@@ -37,6 +37,7 @@
     'dataClean' => '',
     'withCheckbox' => false,
     'checkBoxes' => [],
+    'addBtnLink' => '',
 ])
 
 @if ($uppercased)
@@ -90,7 +91,14 @@
 
 <div class="form-group relative {{$parentGrow ? "grow" : ""}}">
     @if($label)
-        <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)] mb-2">{{ $label }}{{ !$required && !$required && !$readonly && !$disabled ? ' (optional)' : '' }}</label>
+        <span class="flex items-center justify-between mb-2">
+            <label for="{{ $name }}" class="block font-medium text-[var(--secondary-text)]">
+                {{ $label }}{{ !$required && !$required && !$readonly && !$disabled ? ' (optional)' : '' }}
+            </label>
+            @if ($addBtnLink !== '')
+                <a class='text-lg px-2 leading-none' href="{{ $addBtnLink }}">+</a>
+            @endif
+        </span>
     @endif
 
     <div class="relative flex gap-4">

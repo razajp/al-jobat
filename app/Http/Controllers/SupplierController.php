@@ -24,9 +24,6 @@ class SupplierController extends Controller
         $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
 
         foreach ($suppliers as $supplier) {
-            if ($supplier['balance'] != 0) {
-                return $supplier;
-            }
             $supplier['balance'] = 0;
 
             $supplier['balance'] = number_format($supplier['balance'], 1, '.', ',');
