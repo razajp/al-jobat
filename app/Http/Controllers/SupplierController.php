@@ -24,15 +24,6 @@ class SupplierController extends Controller
         $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
 
         foreach ($suppliers as $supplier) {
-            // foreach ($supplier['orders'] as $order) {
-            //     $supplier['totalAmount'] += $order->netAmount;
-            // }
-
-            // foreach ($supplier['payments'] as $payment) {
-            //     $supplier['totalPayment'] += $payment->amount;
-            // }
-
-            // $supplier['balance'] = $supplier['totalAmount'] - $supplier['totalPayment'];
             $supplier['balance'] = 0;
 
             $supplier['balance'] = number_format($supplier['balance'], 1, '.', ',');
@@ -45,22 +36,8 @@ class SupplierController extends Controller
             $categories_options[(int)$supplier_category->id] = ['text' => $supplier_category->title];
         }
 
-        // foreach ($suppliers as $supplier) {
-        //     // Decode JSON array of category IDs
-        //     $categoriesIdArray = json_decode($supplier->categories_array, true);
-
-        //     // Fetch categories from Setups model
-        //     $categories = Setup::whereIn('id', $categoriesIdArray)
-        //         ->where('type', 'supplier_category')
-        //         ->get();
-
-        //     // Attach the categories to the supplier
-        //     $supplier["categories"] = $categories;
-        // }
-
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
-        // return $suppliers;
         return view("suppliers.index", compact('suppliers', 'categories_options', 'authLayout'));
     }
 
