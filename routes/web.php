@@ -118,10 +118,6 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('cr', CRController::class);
 
-    Route::get('daily-ledger/deposit', [DailyLedgerController::class, 'deposit'])->name('daily-ledger.deposit');
-    Route::post('daily-ledger/deposit-store', [DailyLedgerController::class, 'depositStore'])->name('daily-ledger.deposit-store');
-    Route::get('daily-ledger/use', [DailyLedgerController::class, 'use'])->name('daily-ledger.use');
-    Route::post('daily-ledger/use-store', [DailyLedgerController::class, 'useStore'])->name('daily-ledger.use-store');
     Route::resource('daily-ledger', DailyLedgerController::class);
 
     Route::resource('sales-returns', SalesReturnController::class);
@@ -140,6 +136,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-voucher-details', [Controller::class, 'getVoucherDetails'])->name('get-voucher-details');
     Route::post('get-payments-by-method', [Controller::class, 'getPaymentsByMethod'])->name('get-payments-by-method');
     Route::post('get-employees-by-category', [Controller::class, 'getEmployeesByCategory'])->name('get-employees-by-category');
+    Route::post('set-daily-ledger-type', [Controller::class, 'setDailyLedgerType'])->name('set-daily-ledger-type');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');

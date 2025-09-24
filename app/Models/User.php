@@ -36,6 +36,7 @@ class User extends Authenticatable
         'invoice_type',
         'voucher_type',
         'production_type',
+        'daily_ledger_type',
         'menu_shortcuts',
     ];
 

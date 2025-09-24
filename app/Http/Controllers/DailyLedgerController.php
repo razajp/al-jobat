@@ -6,6 +6,7 @@ use App\Models\DailyLedgerDeposit;
 use App\Models\DailyLedgerUse;
 use App\Models\Setup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DailyLedgerController extends Controller
 {
@@ -47,57 +48,16 @@ class DailyLedgerController extends Controller
 
         return view('daily-ledger.index', compact('dailyLedgers'));
     }
-
-    public function deposit()
-    {
-        $totalDeposit = DailyLedgerDeposit::sum('amount');
-        $totalUse = DailyLedgerUse::sum('amount');
-        $balance = $totalDeposit - $totalUse;
-        return view('daily-ledger.deposit', compact('balance'));
-    }
-
-    public function depositStore(Request $request)
-    {
-        $request->validate([
-            'date' => 'required|date',
-            'method' => 'required|string',
-            'amount' => 'required|integer',
-            'reff_no' => 'required|string|unique:daily_ledger_deposits,reff_no',
-        ]);
-
-        DailyLedgerDeposit::create($request->all());
-
-        return redirect()->back()->with('success', 'Amount Deposit successfully.');
-    }
-
-    public function use()
-    {
-        $totalDeposit = DailyLedgerDeposit::sum('amount');
-        $totalUse = DailyLedgerUse::sum('amount');
-        $balance = $totalDeposit - $totalUse;
-        return view('daily-ledger.use', compact('balance'));
-    }
-
-    public function useStore(Request $request)
-    {
-        $request->validate([
-            'date' => 'required|date',
-            'case' => 'required|string',
-            'amount' => 'required|integer',
-            'remarks' => 'nullable|string',
-        ]);
-
-        DailyLedgerUse::create($request->all());
-
-        return redirect()->back()->with('success', 'Amount Use successfully.');
-    }
-
+    
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        //
+        $totalDeposit = DailyLedgerDeposit::sum('amount');
+        $totalUse = DailyLedgerUse::sum('amount');
+        $balance = $totalDeposit - $totalUse;
+        return view('daily-ledger.create', compact('balance'));
     }
 
     /**
@@ -105,7 +65,38 @@ class DailyLedgerController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $type = Auth::user()->daily_ledger_type;
+
+        $commonRules = [
+            'date'   => 'required|date',
+            'amount' => 'required|integer',
+        ];
+
+        if ($type === 'deposit') {
+            $rules = array_merge($commonRules, [
+                'method'  => 'required|string',
+                'reff_no' => 'required|string|unique:daily_ledger_deposits,reff_no',
+            ]);
+
+            $validated = $request->validate($rules);
+
+            DailyLedgerDeposit::create($request->only(['date', 'method', 'amount', 'reff_no']));
+
+            $message = 'Amount Deposit successfully.';
+        } else {
+            $rules = array_merge($commonRules, [
+                'case'    => 'required|string',
+                'remarks' => 'nullable|string',
+            ]);
+
+            $validated = $request->validate($rules);
+
+            DailyLedgerUse::create($request->only(['date', 'case', 'amount', 'remarks']));
+
+            $message = 'Amount Use successfully.';
+        }
+
+        return redirect()->back()->with('success', $message);
     }
 
     /**
