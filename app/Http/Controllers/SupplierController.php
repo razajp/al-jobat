@@ -79,7 +79,12 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $categories_options[(int)$supplier_category->id] = [ 'text' => $supplier_category->title,];
+            $excluded = ['CMT|S', 'Stitching', 'Cut to Pack', 'Print', 'Embroidery'];
+            if (!in_array($supplier_category->title, $excluded)) {
+                $categories_options[(int)$supplier_category->id] = [
+                    'text' => $supplier_category->title,
+                ];
+            }
         }
 
         $usernames = User::pluck('username')->toArray();

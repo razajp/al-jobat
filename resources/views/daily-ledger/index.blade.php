@@ -113,7 +113,7 @@
             @if (count($dailyLedgers) > 0)
                 <div class="absolute bottom-14 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
                     <x-section-navigation-button direction="right" id="info" icon="fa-info" />
-                    <x-section-navigation-button link="{{ route('daily-ledger.deposit') }}" title="New Deposit" icon="fa-plus" />
+                    <x-section-navigation-button link="{{ route('daily-ledger.create') }}" title="New Deposit | use" icon="fa-plus" />
                 </div>
 
                 <div class="details h-full z-40">
@@ -154,7 +154,7 @@
             @else
                 <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
                     <h1 class="text-sm text-[var(--secondary-text)] capitalize">No Records Found</h1>
-                    <a href="{{ route('daily-ledger.deposit') }}"
+                    <a href="{{ route('daily-ledger.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
                         New</a>
                 </div>

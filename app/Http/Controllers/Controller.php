@@ -485,4 +485,26 @@ class Controller extends BaseController
             'data' => $employees
         ]);
     }
+    
+    public function setDailyLedgerType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "daily_ledger_type" => "required|in:deposit,use",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $user = Auth::user();
+        $user->daily_ledger_type = $request->daily_ledger_type;
+        $user->save();
+
+        session()->flash('success', 'Daily ledger type updated.');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Daily ledger type set as default.',
+        ]);
+    }
 }
