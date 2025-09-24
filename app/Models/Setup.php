@@ -15,10 +15,16 @@ class Setup extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         'type',
         'title',
         'short_title'
     ];
+
+    public function scopeWorkerTypesNotE($query)
+    {
+        return $query->where('type', 'worker_type')
+                    ->where('short_title', 'not like', '%|E%');
+    }
 }

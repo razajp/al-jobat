@@ -68,25 +68,41 @@ class Supplier extends Model
     {
         return $this->morphMany(BankAccount::class, 'sub_category');
     }
+
     public function payments()
     {
         return $this->hasMany(SupplierPayment::class, 'supplier_id');
     }
+
     public function getCategoriesAttribute() {
         $ids = json_decode($this->categories_array, true);
         return is_array($ids) ? Setup::whereIn('id', $ids)->get() : [];
     }
+
     public function expenses()
     {
         return $this->hasMany(Expense::class);
     }
+
+    public function productions()
+    {
+        return $this->hasMany(Production::class, 'supplier_id');
+    }
+
     public function getBalanceAttribute()
     {
         return $this->calculateBalance();
     }
+
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
-        $expenseQuery = $this->expenses();
+       $expenseQuery = $this->expenses()->whereRaw('1=0'); // default empty query
+
+        foreach ($this->categories as $category) {
+            if (strtoupper($category->title) === 'CMT') {
+                return $formatted ? number_format(5000, 1, '.', ',') : 5000;
+            }
+        }
         $paymentsQuery = $this->payments()
             ->whereNotNull('voucher_id')
             ->whereIn('method', [

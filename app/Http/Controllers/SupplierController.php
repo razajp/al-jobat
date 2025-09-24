@@ -24,6 +24,9 @@ class SupplierController extends Controller
         $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
 
         foreach ($suppliers as $supplier) {
+            if ($supplier['balance'] != 0) {
+                return $supplier;
+            }
             $supplier['balance'] = 0;
 
             $supplier['balance'] = number_format($supplier['balance'], 1, '.', ',');
@@ -56,12 +59,9 @@ class SupplierController extends Controller
 
         $categories_options = [];
         foreach ($supplier_categories as $supplier_category) {
-            $excluded = ['CMT|S', 'Stitching', 'Cut to Pack', 'Print', 'Embroidery'];
-            if (!in_array($supplier_category->title, $excluded)) {
-                $categories_options[(int)$supplier_category->id] = [
-                    'text' => $supplier_category->title,
-                ];
-            }
+            $categories_options[(int)$supplier_category->id] = [
+                'text' => $supplier_category->title,
+            ];
         }
 
         $usernames = User::pluck('username')->toArray();

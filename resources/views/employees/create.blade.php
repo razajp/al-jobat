@@ -159,7 +159,7 @@
 
                 if (typeArray.length > 0) {
                     clutter = `
-                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] selected">
+                        <li data-for="type" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]">
                             -- Select Type --
                         </li>
                     `;
@@ -213,6 +213,7 @@
             }
 
             typeSelectDom.parentElement.parentElement.parentElement.querySelector('ul').innerHTML = clutter;
+            selectThisOption(typeSelectDom.parentElement.parentElement.parentElement.querySelector('ul li'));
         }
 
         function validateForNextStep() {

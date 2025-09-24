@@ -45,9 +45,9 @@ class SetupSeeder extends Seeder
         ];
 
         foreach ($setups as $setup) {
-            Setup::firstOrCreate(
-                ['title' => $setup['title'], 'type' => $setup['type']],
-                ['short_title' => $setup['short_title']]
+            Setup::updateOrCreate(
+                ['short_title' => $setup['short_title']], // unique column
+                ['title' => $setup['title'], 'type' => $setup['type']]
             );
         }
     }

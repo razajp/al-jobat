@@ -16,6 +16,7 @@ class Production extends Model
         'article_id',
         'work_id',
         'worker_id',
+        'supplier_id',
         'tags',
         'materials',
         'parts',
@@ -69,5 +70,10 @@ class Production extends Model
     public function worker()
     {
         return $this->belongsTo(Employee::class, 'worker_id', 'id');
+    }
+
+    public function supplier()
+    {
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 }

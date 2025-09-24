@@ -17,7 +17,8 @@ return new class extends Migration
             $table->date('receive_date')->nullable();
             $table->foreignId('article_id')->constrained('articles')->onDelete('cascade');
             $table->foreignId('work_id')->constrained('setups')->onDelete('cascade');
-            $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('worker_id')->nullable()->constrained('employees')->onDelete('cascade');
+            $table->foreignId('supplier_id')->nullable()->constrained('suppliers')->onDelete('cascade');
             $table->json('tags')->nullable();
             $table->json('materials')->nullable();
             $table->json('parts')->nullable();

@@ -52,7 +52,7 @@ class EmployeeController extends Controller
         $all_types = [];
 
         $staff_types = Setup::where('type', 'staff_type')->get();
-        $worker_types = Setup::where('type', 'worker_type')->get();
+        $worker_types = Setup::workerTypesNotE()->get();
 
         $all_types['staff_type'] = $staff_types;
         $all_types['worker_type'] = $worker_types;
