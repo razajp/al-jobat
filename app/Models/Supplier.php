@@ -84,9 +84,9 @@ class Supplier extends Model
         return $this->hasMany(Expense::class);
     }
 
-    public function productions()
+    public function worker()
     {
-        return $this->hasMany(Production::class, 'supplier_id');
+        return $this->belongsTo(Employee::class, 'worker_id');
     }
 
     public function getBalanceAttribute()
@@ -107,6 +107,7 @@ class Supplier extends Model
                 'Self Cheque',
                 'Program',
                 'Adjustment',
+                'worker_id',
             ]);
 
 

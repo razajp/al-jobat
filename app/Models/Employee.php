@@ -42,4 +42,8 @@ class Employee extends Model
     public function payments() {
         return $this->hasMany(EmployeePayment::class, 'employee_id');
     }
+
+    public function supplier() {
+        return $this->hasOne(Supplier::class, 'worker_id');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Employee;
 use App\Models\Setup;
 use App\Models\Supplier;
 use App\Models\User;
@@ -71,10 +72,9 @@ class SupplierController extends Controller
      */
     public function store(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
-        {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
+        }
 
         $validator = Validator::make($request->all(), [
             'supplier_name' => 'required|string|max:255|unique:suppliers,supplier_name',
@@ -88,16 +88,15 @@ class SupplierController extends Controller
             'categories_array' => 'required|json',
         ]);
 
-        // Check for validation errors
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $data = $request->all();
-        $data['password'] = Hash::make($data['password']); // Hash the password
+        $data['password'] = Hash::make($data['password']);
 
+        // Create user
         $user = User::where('username', $request->username)->first();
-
         if (!$user) {
             $data['image'] = "default_avatar.png";
 
@@ -112,16 +111,59 @@ class SupplierController extends Controller
             return redirect()->back()->with('error', 'This user already exists.')->withInput();
         }
 
-        // Create a new supplier
+        // Decode category IDs
+        $categoryIds = json_decode($data['categories_array'], true);
+
+        // Fetch Setup records
+        $setupRecords = Setup::whereIn('id', $categoryIds)->get();
+
+        // Filter relevant categories by title
+        $relevantCategories = $setupRecords->filter(function($setup) {
+            return in_array($setup->title, ['CMT', 'Cut to Pack', 'Stitching', 'Print', 'Embroidery']);
+        });
+
+        // Check if employee with this supplier_name already exists
+        if ($relevantCategories->isNotEmpty() && Employee::where('employee_name', $data['supplier_name'])->exists()) {
+            $user->delete(); // clean up
+            return redirect()->back()->withErrors([
+                'supplier_name' => 'An employee with this supplier name already exists.'
+            ])->withInput();
+        }
+
+        // Create supplier
         $supplier = Supplier::create([
             'user_id' => $user->id,
-            'supplier_name' => $user->name,
+            'supplier_name' => $data['supplier_name'],
             'urdu_title' => $data['urdu_title'],
             'person_name' => $data['person_name'],
             'phone_number' => $data['phone_number'],
             'date' => $data['date'],
             'categories_array' => $data['categories_array'],
         ]);
+
+        // Create employees for relevant categories
+        $firstWorkerId = null;
+        foreach ($relevantCategories as $category) {
+            $type = Setup::where('type', 'worker_type')->where('title', $category->title . ' | E')->first();
+
+            $worker = Employee::create([
+                'category' => 'worker',
+                'type_id' => $type->id,
+                'employee_name' => $supplier->supplier_name,
+                'urdu_title' => $supplier->urdu_title,
+                'phone_number' => $supplier->phone_number,
+                'joining_date' => $supplier->date,
+            ]);
+
+            if (!$firstWorkerId) {
+                $firstWorkerId = $worker->id;
+            }
+        }
+
+        if ($firstWorkerId) {
+            $supplier->worker_id = $firstWorkerId;
+            $supplier->save();
+        }
 
         return redirect()->route('suppliers.create')->with('success', 'Supplier created successfully.');
     }
@@ -193,6 +235,14 @@ class SupplierController extends Controller
         $supplier->update([
             'phone_number' => $data['phone_number'],
         ]);
+
+        // Update worker's phone if exists
+        $worker = $supplier->worker; // assuming hasOne relation
+        if ($worker) {
+            $worker->update([
+                'phone_number' => $data['phone_number'],
+            ]);
+        }
 
         return redirect()->route('suppliers.index')->with('success', 'Supplier updated successfully.');
     }

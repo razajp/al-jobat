@@ -18,7 +18,11 @@ class EmployeeController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $employees = Employee::with('type')->get();
+        $employees = Employee::with('type')
+            ->whereHas('type', function ($query) {
+                $query->where('title', 'not like', '% | E%');
+            })
+            ->get();
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 

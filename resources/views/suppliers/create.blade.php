@@ -161,7 +161,7 @@
                 chipsDom.innerHTML = '';
             }
 
-            let selectedCategoryId = categorySelectDom.value;  // Get category ID
+            let selectedCategoryId = categorySelectDom.closest('.selectParent').querySelector('ul li.selected').dataset.value;  // Get category ID
 
             let selectedCategoryName = categorySelectDom.parentElement.parentElement.parentElement.querySelector("ul li.selected").textContent.trim();  // Get category name
 
