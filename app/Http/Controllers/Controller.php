@@ -479,13 +479,18 @@ class Controller extends BaseController
 
     public function getEmployeesByCategory(Request $request)
     {
-        $employees = Employee::where('category', $request->category)->where('status', 'active')->with('type')->get();
+
+        $employees = Employee::where('category', $request->category)->where('status', 'active')->with('type')
+            ->whereHas('type', function ($query) {
+                $query->where('title', 'not like', '% | E%');
+            })
+            ->get();
         return response()->json([
             'status' => 'success',
             'data' => $employees
         ]);
     }
-    
+
     public function setDailyLedgerType(Request $request)
     {
         $validator = Validator::make($request->all(), [

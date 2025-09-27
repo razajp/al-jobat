@@ -3,7 +3,7 @@
 @section('content')
 @php
     $dailyLedgerType = Auth::user()->daily_ledger_type;
-    
+
     $case_options = [
         'adjustment' => ['text' => 'Adjustment'],
     ]
