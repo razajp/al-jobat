@@ -142,7 +142,7 @@
                     />
 
                     {{-- balance --}}
-                    <x-input label="Balance" id="balance" placeholder='Balance' disabled />
+                    <x-input label="Balance" id="balance" placeholder='Balance' disabled/>
                 </div>
             </div>
 
@@ -349,7 +349,7 @@
             function trackWorkerState(elem) {
                 const selectParent = elem.closest('.selectParent');
                 const selectedWorkerData = JSON.parse(selectParent.querySelector('li.selected').dataset.option || '{}');
-                document.getElementById('balance').value = selectedWorkerData?.balance || 0;
+                document.getElementById('balance').value = formatNumbersWithDigits(selectedWorkerData?.balance || 0, 1, );
                 tags = selectedWorkerData.taags || [];
                 elem.value !== '' && gotoStep(2);
                 selectedTagsArray = [];
@@ -1001,7 +1001,7 @@
             function trackWorkerState(elem) {
                 const selectParent = elem.closest('.selectParent');
                 const selectedWorkerData = JSON.parse(selectParent.querySelector('li.selected').dataset.option || '{}');
-                document.getElementById('balance').value = selectedWorkerData?.balance || 0;
+                document.getElementById('balance').value = formatNumbersWithDigits(selectedWorkerData?.balance || 0, 1, 1);
                 tags = selectedWorkerData.taags || [];
                 elem.value !== '' && gotoStep(2);
                 selectedTagsArray = [];
@@ -1201,7 +1201,7 @@
                 let partsClutter = '';
 
                 if (selectedTicket && Object.keys(selectedTicket).length > 0) {
-                    parts = selectedTicket.parts;
+                    parts = selectedTicket.parts.flatMap(p => p.id);
                 } else {
                     const partKey = selectedArticle.category + '_' + selectedArticle.season;
 
@@ -1242,7 +1242,7 @@
                                     data-checkbox="${part}"
                                     class="checkbox appearance-none bg-[var(--secondary-bg-color)] w-4 h-4 border border-gray-600 rounded-sm checked:bg-[var(--primary-color)] transition"
                                 />
-                                <span class="text-sm font-medium text-[var(--secondary-text)]">
+                                <span class="text-sm font-medium text-[var(--secondary-text)] capitalize">
                                     ${part}
                                 </span>
                             </label>
@@ -1291,8 +1291,8 @@
                 if (elem.value != '') {
                     let selectedTicket = JSON.parse(elem.parentElement.querySelector('li.selected').dataset.option);
                     selectThisArticle(selectedTicket.article);
-                    document.querySelector('li[data-value="' + selectedTicket.work_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
-                    document.querySelector('li[data-value="' + selectedTicket.worker_id + '"]').dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+                    selectThisOption(document.querySelector(`li[data-value="${selectedTicket.work_id}"]`));
+                    selectThisOption(document.querySelector(`li[data-value="${selectedTicket.worker_id}"]`));
                 }
             }
 

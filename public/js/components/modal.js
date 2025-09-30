@@ -541,6 +541,8 @@ function createModal(data, animate = 'animate') {
                     `;
                 }).join('')}
             `;
+        } else if (data.preview.type == "form") {
+
         } else {
             invoiceTableHeader = `
                 <div class="th text-sm font-medium ">S.No</div>
@@ -642,7 +644,7 @@ function createModal(data, animate = 'animate') {
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div id="header" class="header w-full flex justify-between px-5">
+                        ${data.preview.type != 'form' ? (`<div id="header" class="header w-full flex justify-between px-5">
                             <div class="left w-50 space-y-1">
                                 ${data.preview.type == "order" || data.preview.type == "invoice" ? `
                                     <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
@@ -682,7 +684,18 @@ function createModal(data, animate = 'animate') {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>`) : (`
+                            <div class="grow">
+                                <div class="fields flex flex-col px-4 gap-3 pt-1">
+                                    ${data.preview.formFields.map(fieldLabel =>(`
+                                        <div class="flex gap-3">
+                                            <label>${fieldLabel}:</label>
+                                            <div class="grow border-b border-black"></div>
+                                        </div>
+                                    `)).join('')}
+                                </div>
+                            </div>
+                        `)}
                         ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
                         <div class="grid ${data.preview.type == 'order' || (data.preview.type == 'voucher' && previewData.supplier) ? 'grid-cols-3' : data.preview.type == 'voucher' && !previewData.supplier ? 'flex' : 'grid-cols-2'} gap-2 px-5">
                             ${invoiceBottom}

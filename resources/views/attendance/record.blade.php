@@ -19,7 +19,7 @@
         <x-form-title-bar title="Record Attendance" />
 
         <div>
-            <x-file-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/xlsx_icon.png') }}"
+            <x-file-upload id="profile_picture" name="profile_picture" placeholder="{{ asset('images/xls_icon.png') }}"
                 uploadText="Upload Profile Picture" class="h-50" imageSize="20" />
         </div>
         <div class="w-full flex justify-end mt-4">

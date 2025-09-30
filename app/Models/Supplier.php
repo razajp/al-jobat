@@ -107,34 +107,57 @@ class Supplier extends Model
                 'Self Cheque',
                 'Program',
                 'Adjustment',
-                'worker_id',
             ]);
 
+        // Worker productions include karo agar worker set hai
+        $productionQuery = null;
+        if ($this->worker) {
+            $productionQuery = $this->worker->productions()->select([
+                'id',
+                'worker_id',
+                'date',
+                'amount', // yeh field apne table ka check kar lena (piece_rate * pcs etc.)
+            ]);
+        }
 
-        // Handle different date scenarios
+        // Date filtering handle karo
         if ($fromDate && $toDate) {
             if ($includeGivenDate) {
                 $expenseQuery->whereBetween('date', [$fromDate, $toDate]);
                 $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
+                if ($productionQuery) {
+                    $productionQuery->whereBetween('date', [$fromDate, $toDate]);
+                }
             } else {
                 $expenseQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                if ($productionQuery) {
+                    $productionQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                }
             }
         } elseif ($fromDate) {
             $operator = $includeGivenDate ? '>=' : '>';
             $expenseQuery->where('date', $operator, $fromDate);
             $paymentsQuery->where('date', $operator, $fromDate);
+            if ($productionQuery) {
+                $productionQuery->where('date', $operator, $fromDate);
+            }
         } elseif ($toDate) {
             $operator = $includeGivenDate ? '<=' : '<';
             $expenseQuery->where('date', $operator, $toDate);
             $paymentsQuery->where('date', $operator, $toDate);
+            if ($productionQuery) {
+                $productionQuery->where('date', $operator, $toDate);
+            }
         }
 
-        // Calculate totals
+        // Totals
         $totalExpense = $expenseQuery->sum('amount') ?? 0;
         $totalPayments = $paymentsQuery->sum('amount') ?? 0;
+        $totalProduction = $productionQuery ? $productionQuery->sum('amount') : 0;
 
-        $balance = $totalExpense - $totalPayments;
+        // Expense + Production dono mila ke
+        $balance = ($totalExpense + $totalProduction) - $totalPayments;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }

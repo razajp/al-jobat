@@ -111,7 +111,7 @@
                 <span class="text-left pl-5">${data.name}</span>
                 <span class="text-left pl-5">${data.details["Category"]}</span>
                 <span class="text-center capitalize">${data.details["Type"]}</span>
-                <span class="text-right">${Number(data.details["Balance"] || 0).toFixed(1)}</span>
+                <span class="text-right">${data.details["Balance"]}</span>
                 <span class="text-right pr-5 capitalize ${data.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
                     ${data.status}
                 </span>
@@ -120,16 +120,19 @@
 
         const fetchedData = @json($employees);
         let allDataArray = fetchedData.map(item => {
+            console.log(item);
+
             return {
                 id: item.id,
                 uId: item.id,
                 status: item.status,
                 image: item.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.profile_picture}`,
                 name: item.employee_name,
+                phone_number: item.phone_number,
                 details: {
                     'Category': item.category,
                     'Type': item.type.title,
-                    'Balance': formatNumbersWithDigits(item.balance || 0, 1, 1),
+                    'Balance': formatNumbersWithDigits(item.balance ?? 0, 1, 1),
                 },
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
@@ -174,16 +177,31 @@
                 image: data.image,
                 name: data.name,
                 details: {
-                    'Category': data.category,
-                    'Type': data.type,
+                    'Category': data.details.Category,
+                    'Type': data.details.Type,
                     'Phone Number': data.phone_number,
-                    'Joining Date': data.joining_date,
+                    'Joining Date': formatDate(data.joining_date),
                     'C.N.I.C No.': data.cnic_no,
-                    'Balance': data.Balance || 0,
+                    'Balance': data.details.Balance,
                 },
                 profile: true,
                 bottomActions: [
-                    {id: 'edit-in-modal', text: 'Edit Employee', dataId: data.id}
+                    {id: 'edit-in-modal', text: 'Edit Employee', dataId: data.id},
+                    {id: 'emp-form-in-modal', text: 'Show Form', dataId: data.id, onclick: 'showEmployeeForm()'}
+                ],
+            }
+
+            createModal(modalData);
+        }
+
+        let companyData = @json(app('company'));
+
+        function showEmployeeForm() {
+            let modalData = {
+                id: 'modalForm',
+                preview: {type: 'form', data: {}, formFields: ["Name", "Category", "Type", "Joining Date", "Phone Number", "C.N.I.C No."], document: 'Employee Form'},
+                bottomActions: [
+                    {id: 'print', text: 'Print Form', onclick: 'printForm(this)'}
                 ],
             }
 
