@@ -17,37 +17,39 @@
         <div id="step1" class="space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-1 gap-4">
                 <!-- type -->
-                <x-select 
-                    label="Type" 
-                    name="type" 
-                    id="type" 
+                <x-select
+                    label="Type"
+                    name="type"
+                    id="type"
                     :options="[
                         'supplier_category' => ['text' => 'Supplier Category'],
                         'bank_name' => ['text' => 'Bank Name'],
                         'city' => ['text' => 'City'],
                         'fabric' => ['text' => 'Fabric'],
                         'staff_type' => ['text' => 'Staff Type'],
+                        'utility_bill_type' => ['text' => 'Utility Bill Type'],
+                        'utility_bill_location' => ['text' => 'Utility Bill Location'],
                     ]"
                     showDefault
                 />
 
                 <!-- title -->
-                <x-input 
-                    label="Title" 
-                    name="title" 
-                    id="title" 
-                    type="text" 
-                    placeholder="Enter Title" 
+                <x-input
+                    label="Title"
+                    name="title"
+                    id="title"
+                    type="text"
+                    placeholder="Enter Title"
                     required
                     capitalized
                 />
 
                 <!-- title -->
-                <x-input 
-                    label="Short Title" 
-                    name="short_title"  
-                    id="short_title"  
-                    type="text" 
+                <x-input
+                    label="Short Title"
+                    name="short_title"
+                    id="short_title"
+                    type="text"
                     placeholder="Enter Short Title"
                     uppercased
                 />

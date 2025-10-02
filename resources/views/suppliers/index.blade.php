@@ -138,6 +138,7 @@
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 date: item.date,
+                data: item,
                 categories: item.categories?.map(cat => ({
                     ...cat,
                     short_title: cat.short_title?.toLowerCase() || ""

@@ -631,7 +631,9 @@ function createModal(data, animate = 'animate') {
                                 <div class="logo">
                                     <img src="images/${companyData.logo}" alt="aljobat"
                                         class="w-[12rem]" />
-                                    <div class='mt-1'>${ companyData.phone_number }</div>
+                                    ${data.preview.type != 'form' ? (`
+                                        <div class='mt-1'>${ companyData.phone_number }</div>
+                                    `) : ''}
                                 </div>
                             </div>
                             <div class="right">
@@ -640,6 +642,9 @@ function createModal(data, animate = 'animate') {
                                     <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
                                     ${previewData.shipment_no ? '<div class="mt-1 text-right">Shipment No.: ' + previewData.shipment_no + ' </div>' : ''}
                                     ${previewData.order_no ? '<div class="mt-1 text-right">Order No.: ' + previewData.order_no + ' </div>' : ''}
+                                    ${data.preview.type == 'form' ? (`
+                                        <div class='mt-1 text-sm'>${ companyData.phone_number }</div>
+                                    `) : ''}
                                 </div>
                             </div>
                         </div>
@@ -687,22 +692,22 @@ function createModal(data, animate = 'animate') {
                                 </div>
                             </div>
                         `) : (`
-                            <div class="grow flex flex-col px-4">
+                            <div class="grow flex flex-col px-5">
                                 <div class="fields grow flex flex-col gap-3 pt-1">
-                                    ${data.preview.data.formFields.map(fieldLabel =>(`
+                                    ${data.preview.data.formFields.map(field =>(`
                                         <div class="flex gap-3">
-                                            <label>${fieldLabel}:</label>
-                                            <div class="grow border-b border-black"></div>
+                                            <label>${field.label} :</label>
+                                            <div class="grow border-b border-black capitalize ps-1"> ${field.text}</div>
                                         </div>
                                     `)).join('')}
                                 </div>
                                 <div class="signatureFields flex gap-6 w-full">
                                     <div class="grow flex gap-3">
-                                        <label>Admin Signature:</label>
+                                        <label>Admin Sig. :</label>
                                         <div class="grow border-b border-black"></div>
                                     </div>
                                     <div class="grow flex gap-3">
-                                        <label>Employee Signature:</label>
+                                        <label>Emp. Sig. :</label>
                                         <div class="grow border-b border-black"></div>
                                     </div>
                                 </div>
@@ -713,7 +718,7 @@ function createModal(data, animate = 'animate') {
                             ${invoiceBottom}
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="tfooter flex w-full text-sm px-5 justify-between mb-4 text-black">
+                        <div class="footer flex w-full text-sm px-5 justify-between mb-4 text-black">
                             <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
                         </div>

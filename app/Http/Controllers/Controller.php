@@ -13,6 +13,7 @@ use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use App\Models\Supplier;
+use App\Models\UtilityAccount;
 use App\Models\Voucher;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -510,6 +511,25 @@ class Controller extends BaseController
         return response()->json([
             'status' => 'success',
             'message' => 'Daily ledger type set as default.',
+        ]);
+    }
+
+    public function getUtilityAccounts(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'bill_type_id' => 'required|integer|exists:setups,id',
+            'location_id' => 'required|integer|exists:setups,id',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $utilityAccounts = UtilityAccount::where('bill_type_id', $request->bill_type_id)->where('location_id', $request->location_id)->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $utilityAccounts,
         ]);
     }
 }

@@ -45,6 +45,10 @@ class Employee extends Model
         return $this->hasMany(Production::class, 'worker_id');
     }
 
+    public function attendance() {
+        return $this->hasMany(Attendance::class, 'employee_id');
+    }
+
     public function payments() {
         return $this->hasMany(EmployeePayment::class, 'employee_id');
     }
@@ -57,6 +61,7 @@ class Employee extends Model
     {
         return $this->calculateBalance();
     }
+
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $productionsQuery = $this->productions();

@@ -155,7 +155,8 @@
                 y: e.pageY,
                 action: "{{ route('update-employee-status') }}",
                 actions: [
-                    {id: 'edit', text: 'Edit Employee', dataId: data.id}
+                    {id: 'edit', text: 'Edit Employee', dataId: data.id},
+                    {id: 'emp-form-in-modal', text: 'Show Form', onclick: `showEmployeeForm(${JSON.stringify(data)})`}
                 ],
             };
 
@@ -187,7 +188,7 @@
                 profile: true,
                 bottomActions: [
                     {id: 'edit-in-modal', text: 'Edit Employee', dataId: data.id},
-                    {id: 'emp-form-in-modal', text: 'Show Form', dataId: data.id, onclick: 'showEmployeeForm()'}
+                    {id: 'emp-form-in-modal', text: 'Show Form', onclick: `showEmployeeForm(${JSON.stringify(data)})`}
                 ],
             }
 
@@ -196,10 +197,18 @@
 
         let companyData = @json(app('company'));
 
-        function showEmployeeForm() {
+        function showEmployeeForm(data) {
+            let formFieldsData = [
+                {"label": "Name", "text": data.name},
+                {"label": "Category", "text": data.details.Category},
+                {"label": "Type", "text": data.details.Type},
+                {"label": "Joining Date", "text": formatDate(data.joining_date),},
+                {"label": "Phone Number", "text": data.phone_number},
+                {"label": "C.N.I.C No.", "text": data.cnic_no},
+            ]
             let modalData = {
                 id: 'modalForm',
-                preview: {type: 'form', data: { formFields: ["Name", "Category", "Type", "Joining Date", "Phone Number", "C.N.I.C No."] }, document: 'Employee Form', size: "A5"},
+                preview: {type: 'form', data: { formFields: formFieldsData }, document: 'Employee Form', size: "A5"},
                 bottomActions: [
                     {id: 'print', text: 'Print Form', onclick: 'printForm(this)'}
                 ],
@@ -245,26 +254,32 @@
             printDocument.write(`
                 <html>
                     <head>
-                        <title>Print Order</title>
+                        <title>Print Employee Form</title>
                         ${headContent} <!-- Copy current styles -->
                         <style>
-                            @media print {
+                            @page {
+                                size: A5 portrait; /* ✅ Default A5 */
+                                margin: 0;
+                            }
 
-                                body {
-                                    margin: 0;
-                                    padding: 0;
-                                    width: 148mm; /* A5 width */
-                                    height: 210mm; /* A5 height */
-                                }
+                            body {
+                                padding: 0.08in 0.25in 0.08in 0.25in;
+                                margin: 0;
+                                width: 148mm; /* A5 width */
+                                height: 210mm; /* A5 height */
+                            }
 
-                                .preview-container, .preview-container * {
-                                    page-break-inside: avoid;
-                                }
+                            .preview-container .banner {
+                                margin-top: 0;
+                            }
+
+                            .preview-container .footer {
+                                margin-top: 0;
                             }
                         </style>
                     </head>
                     <body>
-                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        <div class="preview-container">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
                     </body>
                 </html>
             `);
@@ -273,11 +288,6 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
-                let orderCopy = printDocument.querySelector('#preview-container .preview-copy');
-                if (orderCopy) {
-                    orderCopy.textContent = "Order Copy: Office";
-                }
-
                 // Listen for after print in the iframe's window
                 printIframe.contentWindow.onafterprint = () => {
                     console.log("Print dialog closed");

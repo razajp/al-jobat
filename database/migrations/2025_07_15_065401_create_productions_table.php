@@ -24,6 +24,7 @@ return new class extends Migration
             $table->json('parts')->nullable();
             $table->string('title')->nullable();
             $table->decimal('rate', 10, 2)->nullable();
+            $table->decimal('amount', 10, 2)->nullable();
             $table->string('ticket');
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();

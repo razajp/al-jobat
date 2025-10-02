@@ -23,6 +23,7 @@ class Production extends Model
         'title',
         'rate',
         'ticket',
+        'amount',
         'creator_id',
     ];
 

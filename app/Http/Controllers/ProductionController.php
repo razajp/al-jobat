@@ -45,13 +45,15 @@ class ProductionController extends Controller
                 $query->where('title', 'Cutting');
             })->with('production.work')->get();
         } else {
-            $cmt_work_id = Setup::where('title', 'CMT')->value('id') ?? 0;
+            $cmt_work_id = Setup::where('title', 'CMT | E')->value('id') ?? 0;
             $allTickets = Production::whereNull('receive_date')->where('work_id', '!=', $cmt_work_id)->with('article.production.work')->get();
             foreach ($allTickets as $ticket) {
-                $ticket_options[$ticket->id] = [
-                    'text' => $ticket->ticket,
-                    'data_option' => $ticket,
-                ];
+                if ($ticket->id == 50) {
+                    $ticket_options[$ticket->id] = [
+                        'text' => $ticket->ticket,
+                        'data_option' => $ticket,
+                    ];
+                }
             }
             $articles = Article::whereNotNull('fabric_type')->whereNotNull('category')->with('production.work')->get();
         }
@@ -116,8 +118,6 @@ class ProductionController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        // return $request;
-
         $validator = Validator::make($request->all(), [
             'article_id' => 'required|integer|exists:articles,id',
             'work_id' => 'required|integer|exists:setups,id',
@@ -128,6 +128,7 @@ class ProductionController extends Controller
             'quantity' => 'nullable|integer|min:1',
             'title' => 'nullable|string',
             'rate' => 'nullable|decimal:0,2|min:1',
+            'amount' => 'nullable|decimal:0,2|min:1',
             'issue_date' => 'nullable|date',
             'receive_date' => 'nullable|date',
         ]);
@@ -162,7 +163,7 @@ class ProductionController extends Controller
             $data['ticket'] = 'TEMP';
             $production = Production::create($data);
 
-            $ticket = $work->short_title . str_pad($production->id, 3, '0', STR_PAD_LEFT);
+            $ticket = explode('|', $work->short_title)[0] . str_pad($production->id, 3, '0', STR_PAD_LEFT);
             $production->update(['ticket' => $ticket]);
         }
 

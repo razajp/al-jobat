@@ -162,7 +162,7 @@
             printDocument.write(`
                 <html>
                     <head>
-                        <title>Print Shipment</title>
+                        <title>Print Voucher</title>
                         ${headContent} <!-- Copy current styles -->
                         <style>
                             @media print {

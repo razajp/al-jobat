@@ -172,6 +172,7 @@ class Supplier extends Model
 
         $closingBalance = $openingBalance + $periodBalance;
 
+        // Expenses
         $expense = collect($this->expenses()
             ->whereBetween('date', [
                 Carbon::parse($fromDate)->startOfDay(),
@@ -187,6 +188,7 @@ class Supplier extends Model
                 'created_at' => $i->created_at ?? null,
             ]);
 
+        // Payments
         $payments = collect($this->payments()
             ->whereBetween('date', [$fromDate, $toDate])
             ->with('bankAccount.bank')
@@ -198,11 +200,33 @@ class Supplier extends Model
                 'method' => $p->method ?? null,
                 'payment' => $p->amount ?? 0,
                 'bill' =>  0,
-                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |') : null,
+                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title
+                    ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |')
+                    : null,
                 'created_at' => $p->created_at ?? null,
             ]);
 
-        $statement = $expense->merge($payments)
+        // Productions (agar worker hai to)
+        $productions = collect();
+        if ($this->worker) {
+            $productions = collect($this->worker->productions()
+                ->whereBetween('receive_date', [
+                    Carbon::parse($fromDate)->startOfDay(),
+                    Carbon::parse($toDate)->endOfDay()
+                ])
+                ->get())
+                ->map(fn($pr) => [
+                    'date' => $pr->receive_date ?? null,
+                    'reff_no' => $pr->ticket,
+                    'type' => 'invoice',
+                    'bill' => $pr->amount ?? 0,
+                    'payment' => 0,
+                    'created_at' => $pr->created_at ?? null,
+                ]);
+        }
+
+        // Merge sabko
+        $statement = $expense->merge($payments)->merge($productions)
             ->sort(function ($a, $b) {
                 $aDate = $a['date'] ?? '1970-01-01';
                 $bDate = $b['date'] ?? '1970-01-01';
@@ -221,9 +245,9 @@ class Supplier extends Model
 
         // Totals
         $totals = [
-            'bill' => $expense->sum('bill'),
+            'bill' => $expense->sum('bill') + $productions->sum('bill'),
             'payment' => $payments->sum('payment'),
-            'balance' => $expense->sum('bill') - $payments->sum('payment'),
+            'balance' => ($expense->sum('bill') + $productions->sum('bill')) - $payments->sum('payment'),
         ];
 
         return [

@@ -28,6 +28,8 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\SupplierPaymentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UtilityAccountController;
+use App\Http\Controllers\UtilityBillController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Route;
 
@@ -125,6 +127,10 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('attendances', AttendanceController::class);
 
+    Route::resource('utility-bills', UtilityBillController::class);
+
+    Route::resource('utility-accounts', UtilityAccountController::class);
+
     Route::post('get-order-details', [Controller::class, 'getOrderDetails'])->name('get-order-details');
     Route::post('get-category-data', [Controller::class, 'getCategoryData'])->name('get-category-data');
     Route::post('change-data-layout', [Controller::class, 'changeDataLayout'])->name('change-data-layout');
@@ -137,6 +143,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('get-payments-by-method', [Controller::class, 'getPaymentsByMethod'])->name('get-payments-by-method');
     Route::post('get-employees-by-category', [Controller::class, 'getEmployeesByCategory'])->name('get-employees-by-category');
     Route::post('set-daily-ledger-type', [Controller::class, 'setDailyLedgerType'])->name('set-daily-ledger-type');
+    Route::post('get-utility-accounts', [Controller::class, 'getUtilityAccounts'])->name('get-utility-accounts');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
