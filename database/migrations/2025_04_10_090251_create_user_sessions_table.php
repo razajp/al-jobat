@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('user_sessions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('session_token')->unique();
             $table->timestamp('last_activity')->nullable();

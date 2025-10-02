@@ -22,7 +22,7 @@ return new class extends Migration
             $table->json('categories_array');
             $table->timestamps();
 
-            $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
+            $table->foreignId('worker_id')->nullable()->constrained('employees')->onDelete('cascade');
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 
