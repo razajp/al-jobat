@@ -199,13 +199,97 @@
         function showEmployeeForm() {
             let modalData = {
                 id: 'modalForm',
-                preview: {type: 'form', data: {}, formFields: ["Name", "Category", "Type", "Joining Date", "Phone Number", "C.N.I.C No."], document: 'Employee Form'},
+                preview: {type: 'form', data: { formFields: ["Name", "Category", "Type", "Joining Date", "Phone Number", "C.N.I.C No."] }, document: 'Employee Form', size: "A5"},
                 bottomActions: [
                     {id: 'print', text: 'Print Form', onclick: 'printForm(this)'}
                 ],
             }
 
             createModal(modalData);
+        }
+
+        function printForm(elem) {
+            closeAllDropdowns();
+
+            if (elem.parentElement.tagName.toLowerCase() === 'li') {
+                elem.parentElement.parentElement.querySelector('#show-details').click();
+                document.getElementById('modalForm').parentElement.classList.add('hidden');
+            }
+
+            const preview = document.getElementById('preview-container'); // preview content
+
+            // Pehle se agar koi iframe hai to usko remove karein
+            let oldIframe = document.getElementById('printIframe');
+            if (oldIframe) {
+                oldIframe.remove();
+            }
+
+            // Naya iframe banayein
+            let printIframe = document.createElement('iframe');
+            printIframe.id = "printIframe";
+            printIframe.style.position = "absolute";
+            printIframe.style.width = "0px";
+            printIframe.style.height = "0px";
+            printIframe.style.border = "none";
+            printIframe.style.display = "none"; // ✅ Hide iframe
+
+            // Iframe ko body me add karein
+            document.body.appendChild(printIframe);
+
+            let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+            printDocument.open();
+
+            // ✅ Current page ke CSS styles bhi iframe me inject karenge
+            const headContent = document.head.innerHTML;
+
+            printDocument.write(`
+                <html>
+                    <head>
+                        <title>Print Order</title>
+                        ${headContent} <!-- Copy current styles -->
+                        <style>
+                            @media print {
+
+                                body {
+                                    margin: 0;
+                                    padding: 0;
+                                    width: 148mm; /* A5 width */
+                                    height: 210mm; /* A5 height */
+                                }
+
+                                .preview-container, .preview-container * {
+                                    page-break-inside: avoid;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    </body>
+                </html>
+            `);
+
+            printDocument.close();
+
+            // Wait for iframe to load and print
+            printIframe.onload = () => {
+                let orderCopy = printDocument.querySelector('#preview-container .preview-copy');
+                if (orderCopy) {
+                    orderCopy.textContent = "Order Copy: Office";
+                }
+
+                // Listen for after print in the iframe's window
+                printIframe.contentWindow.onafterprint = () => {
+                    console.log("Print dialog closed");
+                };
+
+                setTimeout(() => {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                }, 1000);
+
+                document.getElementById('modalForm').parentElement.remove();
+            };
         }
     </script>
 @endsection

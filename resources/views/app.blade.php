@@ -563,6 +563,21 @@
             }
         }
 
+        const previewFileName = (event) => {
+            const file = event.target.files[0];
+            const uploadText = document.querySelector(".upload_text");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    console.log(e);
+
+                    uploadText.textContent = `Selected: ${file.name}`;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
         document.addEventListener("contextmenu", e => e.preventDefault());
 
         // Function to send AJAX request to update last_activity

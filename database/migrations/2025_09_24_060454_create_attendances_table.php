@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('employee_id')->constrained('employees')->onDelete('cascade');
+            $table->dateTime('datetime');
+            $table->string('state');
             $table->timestamps();
+
+            $table->unique(['employee_id', 'datetime']);
         });
     }
 

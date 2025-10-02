@@ -22,7 +22,7 @@ function createModal(data, animate = 'animate') {
     let clutter = `
         <form id="${data.id}" method="${data.method ?? 'POST'}" action="${data.action}" enctype="multipart/form-data" class="w-full h-full flex flex-col space-y-4 relative items-center justify-center ${animate == 'animate' ? 'scale-in' : ''} ${data.class}">
             <input type="hidden" name="_token" value="${document.querySelector('meta[name=\'csrf-token\']')?.content}">
-            <div class="${data.class} ${data.preview ? 'bg-white text-black max-w-4xl h-[35rem] py-0' : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
+            <div class="${data.class} ${data.preview ? `bg-white text-black ${data.preview.size == "A5" ? "w-[148mm]" : "max-w-4xl"} h-[35rem] py-0` : 'bg-[var(--secondary-bg-color)]'} ${data.cards ? 'h-[40rem] max-w-6xl' : 'max-w-2xl'} rounded-2xl shadow-lg w-full p-6 flex relative">
                 <div id="modal-close" onclick="closeModal('${data.id}')"
                     class="absolute top-0 -right-4 translate-x-full bg-[var(--secondary-bg-color)] rounded-2xl shadow-lg w-auto p-3 text-sm transition-all duration-300 ease-in-out hover:scale-[0.95] cursor-pointer">
                     <button type="button"
@@ -623,7 +623,7 @@ function createModal(data, animate = 'animate') {
         }
 
         clutter += `
-            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto relative overflow-y-auto my-scrollbar-2">
+            <div id="preview-container" class="${data.preview.size == "A5" ? "w-[148mm] h-[210mm]" : "w-[210mm] h-[297mm]"} mx-auto relative overflow-y-auto my-scrollbar-2">
                 <div id="preview" class="preview flex flex-col h-full py-6">
                     <div class="flex flex-col h-full">
                         <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
@@ -644,55 +644,67 @@ function createModal(data, animate = 'animate') {
                             </div>
                         </div>
                         <hr class="w-full my-3 border-black">
-                        ${data.preview.type != 'form' ? (`<div id="header" class="header w-full flex justify-between px-5">
-                            <div class="left w-50 space-y-1">
-                                ${data.preview.type == "order" || data.preview.type == "invoice" ? `
-                                    <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
-                                    <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
-                                    <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
-                                    <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
-                                ` : `
-                                    <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                    <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
-                                `}
-                            </div>
-                            ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
-                                <div class="center my-auto ">
-                                    <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
+                        ${data.preview.type != 'form' ? (`
+                            <div id="header" class="header w-full flex justify-between px-5">
+                                <div class="left w-50 space-y-1">
+                                    ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                        <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
+                                        <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
+                                        <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
+                                        <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                    ` : `
+                                        <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                        <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
+                                    `}
                                 </div>
-                            ` : ''}
-                            <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
-                                ${data.preview.type == "order" || data.preview.type == "invoice" ? `
-                                    <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                    <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
-                                ` : '' }
-                                <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
-                                <div class="copy leading-none">Document: ${data.preview.document}</div>
+                                ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
+                                    <div class="center my-auto ">
+                                        <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
+                                    </div>
+                                ` : ''}
+                                <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
+                                    ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                        <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                        <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                    ` : '' }
+                                    <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
+                                    <div class="copy leading-none">Document: ${data.preview.document}</div>
+                                </div>
                             </div>
-                        </div>
-                        <hr class="w-full my-3 border-black">
-                        <div class="body w-full px-5 grow mx-auto">
-                            <div class="table w-full">
-                                <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
-                                    <div class="thead w-full">
-                                        <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                            ${invoiceTableHeader}
+                            <hr class="w-full my-3 border-black">
+                            <div class="body w-full px-5 grow mx-auto">
+                                <div class="table w-full">
+                                    <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                        <div class="thead w-full">
+                                            <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                ${invoiceTableHeader}
+                                            </div>
+                                        </div>
+                                        <div id="tbody" class="tbody w-full">
+                                            ${invoiceTableBody}
                                         </div>
                                     </div>
-                                    <div id="tbody" class="tbody w-full">
-                                        ${invoiceTableBody}
-                                    </div>
                                 </div>
                             </div>
-                        </div>`) : (`
-                            <div class="grow">
-                                <div class="fields flex flex-col px-4 gap-3 pt-1">
-                                    ${data.preview.formFields.map(fieldLabel =>(`
+                        `) : (`
+                            <div class="grow flex flex-col px-4">
+                                <div class="fields grow flex flex-col gap-3 pt-1">
+                                    ${data.preview.data.formFields.map(fieldLabel =>(`
                                         <div class="flex gap-3">
                                             <label>${fieldLabel}:</label>
                                             <div class="grow border-b border-black"></div>
                                         </div>
                                     `)).join('')}
+                                </div>
+                                <div class="signatureFields flex gap-6 w-full">
+                                    <div class="grow flex gap-3">
+                                        <label>Admin Signature:</label>
+                                        <div class="grow border-b border-black"></div>
+                                    </div>
+                                    <div class="grow flex gap-3">
+                                        <label>Employee Signature:</label>
+                                        <div class="grow border-b border-black"></div>
+                                    </div>
                                 </div>
                             </div>
                         `)}
