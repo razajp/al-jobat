@@ -43,13 +43,13 @@
 @endphp
 
 <style>
-    .optionsDropdown {
+    .dropDownParent {
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.3s ease-in-out, translate 0.3s ease-in-out;
         translate: 0 -10px;
     }
-    .selectParent:has(input:focus) .optionsDropdown {
+    .selectParent:has(input:focus) .dropDownParent {
         opacity: 1;
         pointer-events: all;
         translate: 0;
@@ -77,14 +77,14 @@
             id="{{ $id }}"
             name="{{ $id }}_name"
             parentGrow
-            oninput="searchSelect(this)"
-            onblur="validateSelectInput(this)"
+            {{-- oninput="searchSelect(this)" --}}
+            {{-- onblur="validateSelectInput(this)" --}}
             autocomplete="off"
             :disabled="$isDisabled"
             :value="$isDisabled ? '' : $selectedText"
             :placeholder="$placeholderText"
             onfocus="selectClicked(this)"
-            onkeydown="selectKeyDown(event, this)"
+            {{-- onkeydown="selectKeyDown(event, this)" --}}
             :dataClearable="$dataClearable"
         />
 
@@ -101,42 +101,56 @@
         >
 
         {{-- Dropdown List --}}
-        <ul
-            class="optionsDropdown fixed z-50 mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[14rem] overflow-auto my-scrollbar-2 space-y-0.5"
-            data-for="{{ $id }}"
-        >
-            @if ($showDefault === true && $haveOptions)
-                <li
-                    data-for="{{ $id }}"
-                    data-value=""
-                    onmousedown="selectThisOption(this)"
-                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] {{ $showDefaultSelected ? 'selected' : '' }}"
-                >
-                    -- Select {{ $label }} --
-                </li>
-            @endif
-
-            @foreach ($options as $optionValue => $option)
-                <li
-                    data-for="{{ $id }}"
-                    data-value="{{ $optionValue }}"
-                    onmousedown="selectThisOption(this)"
-                    @if (isset($option['data_option']))
-                        data-option="{{ $option['data_option'] }}"
-                    @endif
-                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 {{ !$isDisabled && $optionValue == $resolvedValue ? 'selected' : '' }}"
-                >
-                    {{ $option['text'] }}
-                </li>
-                @if (isset($option['selected']))
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            selectThisOption(document.querySelector('li[data-value="{{ $optionValue }}"]'));
-                        });
-                    </script>
+        <div class="dropDownParent flex flex-col fixed z-50 mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[14rem]">
+            <x-input
+                data-for="{{ $id }}"
+                oninput="searchSelect(this)"
+                onblur="validateSelectInput(this)"
+                autocomplete="off"
+                :disabled="$isDisabled"
+                :value="$isDisabled ? '' : $selectedText"
+                :placeholder="$placeholderText"
+                onkeydown="selectKeyDown(event, this)"
+                :dataClearable="$dataClearable"
+            />
+            <hr class="w-full my-1 border-gray-600">
+            <ul
+                class="optionsDropdown overflow-auto my-scrollbar-2 space-y-0.5 grow"
+                data-for="{{ $id }}"
+            >
+                @if ($showDefault === true && $haveOptions)
+                    <li
+                        data-for="{{ $id }}"
+                        data-value=""
+                        onmousedown="selectThisOption(this)"
+                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] {{ $showDefaultSelected ? 'selected' : '' }}"
+                    >
+                        -- Select {{ $label }} --
+                    </li>
                 @endif
-            @endforeach
-        </ul>
+
+                @foreach ($options as $optionValue => $option)
+                    <li
+                        data-for="{{ $id }}"
+                        data-value="{{ $optionValue }}"
+                        onmousedown="selectThisOption(this)"
+                        @if (isset($option['data_option']))
+                            data-option="{{ $option['data_option'] }}"
+                        @endif
+                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 {{ !$isDisabled && $optionValue == $resolvedValue ? 'selected' : '' }}"
+                    >
+                        {{ $option['text'] }}
+                    </li>
+                    @if (isset($option['selected']))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function () {
+                                selectThisOption(document.querySelector('li[data-value="{{ $optionValue }}"]'));
+                            });
+                        </script>
+                    @endif
+                @endforeach
+            </ul>
+        </div>
 
         {{-- Optional Button --}}
         @if ($withButton)

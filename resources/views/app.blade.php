@@ -1126,7 +1126,7 @@
 
     function searchSelect(selectSearchInput) {
         const inputValue = selectSearchInput.value.toLowerCase().trim();
-        const forId = selectSearchInput.id;
+        const forId = selectSearchInput.dataset.for;
 
         const allOptions = document.querySelectorAll(`.optionsDropdown li[data-for="${forId}"]`);
 
@@ -1200,10 +1200,11 @@
         .forEach(dbInput => selectFirstOption(dbInput.dataset.for));
 
     function selectClicked(input) {
-        input.select();
+        const searchInput = input.closest('.selectParent').querySelector('.dropDownParent input')
+        searchInput.select();
 
         const inputRect = input.getBoundingClientRect();
-        const dropdown = input.closest(".selectParent").querySelector(".optionsDropdown");
+        const dropdown = input.closest(".selectParent").querySelector(".dropDownParent");
 
         dropdown.style.width = inputRect.width + "px";
         dropdown.style.top = (inputRect.top + inputRect.height) + "px";
@@ -1351,7 +1352,6 @@
         input.type = 'number';
         input.step = '0.01';
     }
-
 
     function sortByThis(elem) {
         const tableHead = elem.parentElement;
