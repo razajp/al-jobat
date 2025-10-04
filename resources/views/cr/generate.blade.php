@@ -265,7 +265,7 @@
                             <div>${index+1}</div>
                             <div>${payment.method}</div>
                             <div class="col-span-2">${payment.payment}</div>
-                            <div>${payment.amount}</div>
+                            <div>${formatNumbersDigitLess(payment.amount)}</div>
                             <div class="text-center">
                                 <button onclick="deleteThis(this, ${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
                                     <i class="fas fa-trash"></i>
@@ -288,6 +288,7 @@
                 document.getElementById('payment').value = '';
                 amountDOM.disabled = true;
                 amountDOM.value = '';
+                document.getElementById('amount-error').classList.add('hidden');
             } else {
                 methodSelectDOM.disabled = false;
             }
@@ -364,6 +365,9 @@
         }
 
         function addPayment() {
+            formatAmountInput(amountDOM)
+            console.log(amountDOM.value);
+
             if (amountDOM.value > 0) {
                 addedPaymentsArray.push({
                     'bank_account_id': JSON.parse(document.querySelector('ul[data-for="payment"] li.selected').dataset.option || '{}').id,
@@ -386,8 +390,10 @@
         }
 
         function trackAmountState(elem) {
-            if (elem.value > (totalSelectedAmount - totalAddedAmount)) {
-                elem.value = totalSelectedAmount - totalAddedAmount;
+            let currentValue = elem.value.replace(/[^0-9.]/g, ''); // input ko format karke number return karega
+
+            if (currentValue > (totalSelectedAmount - totalAddedAmount)) {
+                elem.value = formatNumbersDigitLess(totalSelectedAmount - totalAddedAmount);
             }
         }
 

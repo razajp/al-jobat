@@ -8,6 +8,7 @@ use App\Models\CustomerPayment;
 use App\Models\SupplierPayment;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class CRController extends Controller
@@ -32,12 +33,35 @@ class CRController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
+        $voucher_options = [];
         $payment_options = [];
 
         $supplier_id = $request->supplier_id;
         $method = $request->method;
         $maxDate = $request->max_date;
         $payment_options = [];
+
+        if (Auth::user()->c_r_type == 'voucher') {
+            $vouchers = Voucher::all();
+
+            if ($vouchers) {
+                foreach($vouchers as $voucher) {
+                    $voucher_options[$voucher->voucher_no] = [
+                        'text' => $voucher->voucher_no
+                    ];
+                }
+            }
+        } else {
+            $CRs = CR::all();
+
+            if ($CRs) {
+                foreach($CRs as $CR) {
+                    $voucher_options[$CR->c_r_no] = [
+                        'text' => $CR->c_r_no
+                    ];
+                }
+            }
+        }
 
         if ($method === 'cheque') {
             $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->where('date', '<', $maxDate)->get()->makeHidden('creator');
@@ -80,7 +104,7 @@ class CRController extends Controller
             }
         }
 
-        return view('cr.generate', compact('payment_options'));
+        return view('cr.generate', compact('payment_options', 'voucher_options'));
     }
 
     /**
@@ -137,10 +161,12 @@ class CRController extends Controller
         }
 
         $cr = new CR($data);
+        $cr->save(); // 👈 pehle save karenge taake $cr->id mil jaye
 
         foreach ($data['new_payments'] as $payment) {
             if ($payment->method == 'Payment Program') {
-                SupplierPayment::find($payment->data_value)->update(['method' => $payment->method . ' | CR']);
+                SupplierPayment::find($payment->data_value)
+                    ->update(['method' => $payment->method . ' | CR']);
             } else {
                 $columnMap = [
                     'Self Cheque' => 'cheque_no',
@@ -160,7 +186,7 @@ class CRController extends Controller
                     'amount'           => $payment->amount,
                     'bank_account_id'  => $payment->bank_account_id,
                     'voucher_id'       => null,
-                    'c_r_id'           => $cr->id,
+                    'c_r_id'           => $cr->id, // 👈 ab yahan id set ho jaegi
                     $columnMap[$payment->method] => $payment->data_value,
                 ]);
 
@@ -169,7 +195,7 @@ class CRController extends Controller
         }
 
         $cr->new_payments = $data['new_payments'];
-        $cr->save();
+        $cr->save(); // 👈 dubara save karenge taake new_payments update ho jaye
 
         return redirect()->route('cr.create')->with('success', 'CR Generated successfully.');
     }

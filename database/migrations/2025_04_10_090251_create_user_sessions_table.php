@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('session_token')->unique();
             $table->timestamp('last_activity')->nullable();
             $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
 

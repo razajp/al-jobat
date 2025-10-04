@@ -1334,19 +1334,24 @@
         hideLoader();
 
         document.querySelectorAll('input[type="amount"]').forEach(input => {
-            let value = input.value.replace(/[^0-9.]/g, ''); // only digits & dot
-
-            if (value.includes('.')) {
-                let [intPart, decPart] = value.split('.');
-                decPart = decPart.slice(0, 2); // max 2 decimals
-                value = decPart ? `${intPart}.${decPart}` : intPart;
-            }
-
-            input.value = value;
-            input.type = 'number';
-            input.step = '0.01';
+            formatAmountInput(input);
         });
     });
+
+    function formatAmountInput(input) {
+        let value = input.value.replace(/[^0-9.]/g, ''); // sirf digits & dot allow karo
+
+        if (value.includes('.')) {
+            let [intPart, decPart] = value.split('.');
+            decPart = decPart.slice(0, 2); // max 2 decimals
+            value = decPart ? `${intPart}.${decPart}` : intPart;
+        }
+
+        input.value = value;
+        input.type = 'number';
+        input.step = '0.01';
+    }
+
 
     function sortByThis(elem) {
         const tableHead = elem.parentElement;
