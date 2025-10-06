@@ -27,7 +27,7 @@ class AttendanceController extends Controller
         $attendances
             ->filter(fn($item) => $item['state'] === "C/In")
             ->sortBy('datetime')
-            ->groupBy(fn($item) => \Carbon\Carbon::createFromFormat('d-M-y g:i A', $item['datetime'])->toDateString().'_'.$item['employee_name'])
+            ->groupBy(fn($item) => \Carbon\Carbon::createFromFormat('d-M-y g:i A', $item['datetime'])->toDateString() . '_' . $item['employee_name'])
             ->each(function ($group) use ($validAttendances, $invalidEmployeeNames) {
                 $item = $group->first(); // first record per employee per date
                 $employee = Employee::where('employee_name', $item['employee_name'])->first();
@@ -57,7 +57,23 @@ class AttendanceController extends Controller
         return redirect()->back()->with('invalid_employees', $invalidEmployeeNames);
     }
 
-    public function manageSalary() {
-        return view('attendances.manage-salary');
+    public function manageSalary()
+    {
+        $employee_options = [];
+        $employees = Employee::where('status', 'active')->whereNotNull('salary')->with('type')->get();
+
+        foreach($employees as $employee) {
+            $employee_options[(int)$employee->id] = [
+                'text' => ucfirst($employee->employee_name) . ' | ' . $employee->type->title,
+                'data_option' => $employee,
+            ];
+        }
+
+        return view('attendances.manage-salary', compact('employee_options'));
+    }
+
+    public function manageSalaryPost(Request $request)
+    {
+        return $request;
     }
 }

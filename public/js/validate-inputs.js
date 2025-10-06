@@ -119,14 +119,18 @@ function validateInput(input, listner) {
     const errorEl = document.getElementById(`${input.name}-error`);
     if (error) {
         input.classList.add("border-[var(--border-error)]");
-        errorEl?.classList.remove("hidden");
-        errorEl.textContent = error;
+        if (errorEl) {
+            errorEl.classList.remove("hidden");
+            errorEl.textContent = error;
+        }
         console.log(error);
         return false;
     } else {
         input.classList.remove("border-[var(--border-error)]");
-        errorEl?.classList.add("hidden");
-        errorEl.textContent = '';
+        if (errorEl) {
+            errorEl.classList.add("hidden");
+            errorEl.textContent = '';
+        }
         return true;
     }
 }

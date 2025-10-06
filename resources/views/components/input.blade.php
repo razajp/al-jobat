@@ -146,7 +146,7 @@
                         ($errors->has($name) ? 'border-[var(--border-error)]' : 'border-gray-600') .
                         ' text-[var(--text-color)] px-3 ' .
                         ($type == 'date' ? 'py-[7px]' : 'py-2') .
-                        ' border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent disabled:opacity-70 placeholder:capitalize'
+                        ' border focus:ring-1 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out disabled:bg-transparent disabled:opacity-70 placeholder:capitalize'
                 ]) }}
                 {{ $dataValidate ? 'data-validate='.$dataValidate : '' }}
                 {{ $dataClean ? 'data-clean='.$dataClean : '' }}
