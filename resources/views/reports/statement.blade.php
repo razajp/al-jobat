@@ -349,7 +349,7 @@
                             clutter += `
                                 <li data-for="nameSelect" data-value="${item.id}" data-reg-date="${item.date}"
                                     onmousedown="selectThisOption(this)"
-                                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                                    class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden">
                                     ${displayText}
                                 </li>
                             `;
@@ -412,7 +412,7 @@
                 let clutter = ranges.map(r => `
                     <li data-for="range" data-value="${r.value}"
                         onmousedown="selectThisOption(this)"
-                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden">
                         ${r.label}
                     </li>`).join("");
 

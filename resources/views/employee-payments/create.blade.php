@@ -59,10 +59,10 @@
                         id="method"
                         :options="$method_options"
                         required
-                        disabled 
+                        disabled
                         showDefault
                     />
-                    
+
                     {{-- amount --}}
                     <x-input label="Amount" name="amount" id="amount" type="amount" required disabled dataValidate="requied|amount" placeholder="Enter amount" />
                 </div>
@@ -97,15 +97,15 @@
                     success: function(response) {
                         if (response.status == 'success') {
                             let allEmployees = response.data;
-                            
+
                             let employeeUL = employeeSelectDom.closest('.selectParent').querySelector('ul');
                             employeeUL.innerHTML = `
-                                <li data-for="employee" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 capitalize">-- Select ${elem.value} --</li>
+                                <li data-for="employee" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden capitalize">-- Select ${elem.value} --</li>
                             `;
 
                             allEmployees.forEach(employee => {
                                 employeeUL.innerHTML += `
-                                    <li data-for="employee" data-value="${employee.id}" data-option='${JSON.stringify(employee)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 capitalize">${employee.employee_name} | ${formatNumbersWithDigits(employee.balance, 1, 1)} | ${employee.type.title}</li>
+                                    <li data-for="employee" data-value="${employee.id}" data-option='${JSON.stringify(employee)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden capitalize">${employee.employee_name} | ${formatNumbersWithDigits(employee.balance, 1, 1)} | ${employee.type.title}</li>
                                 `;
                             });
 

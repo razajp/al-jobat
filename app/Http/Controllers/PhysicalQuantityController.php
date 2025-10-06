@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\NewNotificationEvent;
 use App\Models\Article;
 use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
