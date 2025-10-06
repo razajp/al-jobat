@@ -15,10 +15,12 @@ class UtilityBill extends Model
         'units',
         'amount',
         'due_date',
+        'is_paid',
     ];
 
     protected $casts = [
         'due_date' => 'date',
+        'is_paid' => 'boolean',
     ];
 
     public function account() {

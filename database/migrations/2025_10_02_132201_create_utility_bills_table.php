@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('units')->nullable();
             $table->decimal('amount', 10, 2);
             $table->date('due_date');
+            $table->boolean('is_paid')->default(false);
             $table->timestamps();
         });
     }

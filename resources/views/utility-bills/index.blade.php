@@ -105,9 +105,50 @@
                 units: item.units || '-' ,
                 amount: formatNumbersWithDigits(item.amount, 1, 1),
                 due_date: formatDate(item.due_date),
-                status: formatDate(item.due_date, false, true) < today ? 'Overdue' : formatDate(item.due_date, false, true) == today ? 'Due Today' : formatDate(item.due_date, false, true) > today ? 'Upcoming' : '-',
+                is_paid: item.is_paid,
+                status: item.is_paid ? 'Paid' : formatDate(item.due_date, false, true) < today ? 'Overdue' : formatDate(item.due_date, false, true) == today ? 'Due Today' : formatDate(item.due_date, false, true) > today ? 'Upcoming' : '-',
+                oncontextmenu: "generateContextMenu(event)",
                 visible: true,
             };
         });
+
+        function generateContextMenu(e) {
+            e.preventDefault();
+            let item = e.target.closest('.item');
+            let data = JSON.parse(item.dataset.json);
+
+            let contextMenuData = {
+                item: item,
+                data: data,
+                x: e.pageX,
+                y: e.pageY,
+                actions: [],
+                onlyThisActions: true,
+            };
+
+            console.log(data);
+            
+            if (!data.is_paid) {
+                contextMenuData.actions.push({id: 'mark-paid', text: 'Mark Paid', onclick: `markThisPaid(${data.id})`})
+                createContextMenu(contextMenuData);
+            }
+        }
+
+        function markThisPaid(id) {
+            $.ajax({
+                url: `/utility-bills/${id}/mark-paid`,
+                type: "PUT",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    _method: "put",
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to mark paid.");
+                }
+            });
+        }
     </script>
 @endsection

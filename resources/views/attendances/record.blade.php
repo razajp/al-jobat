@@ -3,8 +3,8 @@
 @section('content')
     <!-- Main Content -->
     <div class="max-w-2xl mx-auto">
-        <x-search-header heading="Record Attendance" link linkText="Show Attendance"
-            linkHref="{{ route('attendances.index') }}" />
+        <x-search-header heading="Record Attendance" link linkText="Generate Slip"
+            linkHref="{{ route('attendances.generate-slip') }}" />
     </div>
 
     <!-- Form -->

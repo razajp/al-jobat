@@ -1006,7 +1006,8 @@
                     active: false,
                 },
                 subMenu: [
-                    {name: 'Show Attendances', href: "/attendances"},
+                    {name: 'Generate Slips', href: "/attendances/generate-slips"},
+                    {name: 'Manage Salary', href: "/attendances/manage-salary"},
                     {name: 'Record Attendance', href: "/attendances/create"},
                 ]
             },

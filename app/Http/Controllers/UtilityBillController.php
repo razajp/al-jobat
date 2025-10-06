@@ -110,4 +110,17 @@ class UtilityBillController extends Controller
     {
         //
     }
+
+    public function markPaid(Request $request, UtilityBill $utilityBill)
+    {
+        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
+        {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+        
+        $utilityBill->is_paid = true;
+        $utilityBill->save();
+
+        return response()->json(['success', 'message' => 'Bill marked as paid successfully.']);
+    }
 }

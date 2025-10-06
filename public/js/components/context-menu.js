@@ -24,13 +24,18 @@ function createContextMenu(data) {
     let clutter = `
         <div class="border border-gray-600 w-48 bg-[var(--secondary-bg-color)] text-[var(--text-color)] shadow-lg rounded-xl transition-all duration-300 ease-in-out">
             <ul class="p-2">
-                <li>
-                    <button id="show-details" type="button"
-                        class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
-                        Show Details
-                    </button>
-                </li>
     `;
+
+    if (!data.onlyThisActions) {
+        clutter += `
+            <li>
+                <button id="show-details" type="button"
+                    class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
+                    Show Details
+                </button>
+            </li>
+        `;
+    }
 
     if (Array.isArray(data.actions)) {
         data.actions.forEach(action => {
@@ -38,6 +43,15 @@ function createContextMenu(data) {
                 clutter += `
                     <li>
                         <a id="${action.id}-in-context" href="${window.location.pathname}/${data.item.id}/edit"
+                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
+                            ${action.text}
+                        </a>
+                    </li>
+                `;
+            } else if (action.link) {
+                clutter += `
+                    <li>
+                        <a id="${action.id}-in-context" href="${action.link}"
                             class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-md transition-all duration-300 ease-in-out cursor-pointer">
                             ${action.text}
                         </a>
@@ -85,7 +99,7 @@ function createContextMenu(data) {
     contextMenu.innerHTML = clutter;
     document.body.appendChild(contextMenu);
 
-    contextMenu.querySelector('#show-details').addEventListener('click', function () {
+    contextMenu.querySelector('#show-details')?.addEventListener('click', function () {
         generateModal(data.item);
     });
 

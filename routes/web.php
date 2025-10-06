@@ -125,9 +125,15 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('sales-returns', SalesReturnController::class);
     Route::post('sales-returns/get-details', [SalesReturnController::class, 'getDetails'])->name('sales-returns.get-details');
 
-    Route::resource('attendances', AttendanceController::class);
+    Route::get('attendances/create', [AttendanceController::class, 'create'])->name('attendances.create');
+    Route::post('attendances/store', [AttendanceController::class, 'store'])->name('attendances.store');
+    Route::get('attendances/manage-salary', [AttendanceController::class, 'manageSalary'])->name('attendances.manage-salary');
+    Route::post('attendances/manage-salary', [AttendanceController::class, 'manageSalaryPost'])->name('attendances.manage-salary-post');
+    Route::get('attendances/generate-slip', [AttendanceController::class, 'generateSlip'])->name('attendances.generate-slip');
+    Route::post('attendances/generate-slip', [AttendanceController::class, 'generateSlipPost'])->name('attendances.generate-slip-post');
 
     Route::resource('utility-bills', UtilityBillController::class);
+    Route::put('utility-bills/{utilityBill}/mark-paid', [UtilityBillController::class, 'markPaid']);
 
     Route::resource('utility-accounts', UtilityAccountController::class);
 
