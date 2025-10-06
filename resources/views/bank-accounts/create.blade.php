@@ -21,7 +21,7 @@
         <div class="step space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {{-- category --}}
-                <x-select 
+                <x-select
                     label="Category"
                     name="category"
                     id="category"
@@ -34,23 +34,23 @@
                 <!-- account_no  -->
                 <x-input
                     label="Account No."
-                    name="account_no" 
+                    name="account_no"
                     id="account_no"
                     type="number"
-                    placeholder="Enter account no." 
+                    placeholder="Enter account no."
                 />
-                
+
                 {{-- sub_category --}}
-                <x-select 
+                <x-select
                     label="Disabled"
                     name="sub_category"
                     id="subCategory"
                     disabled
                     showDefault
                 />
-                
+
                 {{-- bank --}}
-                <x-select 
+                <x-select
                     label="Bank"
                     name="bank_id"
                     id="bank"
@@ -62,28 +62,28 @@
                 <!-- account_title -->
                 <x-input
                     label="Account Title"
-                    name="account_title" 
-                    id="account_title" 
-                    placeholder="Enter account title" 
+                    name="account_title"
+                    id="account_title"
+                    placeholder="Enter account title"
                     capitalized
-                    required 
+                    required
                 />
 
                 <!-- date -->
                 <x-input
                     label="Date"
-                    name="date" 
+                    name="date"
                     id="date"
                     type="date"
-                    required 
+                    required
                 />
 
                 <!-- remarks -->
                 <x-input
                     label="Remarks"
-                    name="remarks" 
+                    name="remarks"
                     id="remarks"
-                    placeholder="Enter remerks" 
+                    placeholder="Enter remerks"
                 />
 
                 <!-- Cheque Book Serial Input -->
@@ -91,33 +91,33 @@
                     <label for="cheque_book_serial_start" class="block font-medium text-[var(--secondary-text)] mb-2">
                         Cheque Book Serial (Start - End)
                     </label>
-                
+
                     <div class="flex gap-4">
                         <!-- Start Serial Input -->
-                        <input 
-                            type="number" 
-                            id="cheque_book_serial_start" 
-                            name="cheque_book_serial[start]" 
-                            placeholder="Start" 
+                        <input
+                            type="number"
+                            id="cheque_book_serial_start"
+                            name="cheque_book_serial[start]"
+                            placeholder="Start"
                             class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                         />
-                
+
                         <!-- End Serial Input -->
-                        <input 
-                            type="number" 
-                            id="cheque_book_serial_end" 
-                            name="cheque_book_serial[end]" 
-                            placeholder="End" 
+                        <input
+                            type="number"
+                            id="cheque_book_serial_end"
+                            name="cheque_book_serial[end]"
+                            placeholder="End"
                             class="w-full rounded-lg bg-[var(--h-bg-color)] border-gray-600 text-[var(--text-color)] px-3 py-2 border focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300 ease-in-out"
                         />
                     </div>
-                
+
                     <!-- Error Message -->
                     <div id="cheque_book_serial_error" class="text-[var(--border-error)] text-xs mt-1 hidden"></div>
                 </div>
             </div>
         </div>
-        
+
         <div class="w-full flex justify-end mt-4">
             <button type="submit"
                 class="px-6 py-1 bg-[var(--bg-success)] border border-[var(--bg-success)] text-[var(--text-success)] font-medium text-nowrap rounded-lg hover:bg-[var(--h-bg-success)] transition-all duration-300 ease-in-out cursor-pointer">
@@ -126,7 +126,7 @@
         </div>
     </form>
 
-    
+
     <script>
         document.getElementById('cheque_book_serial_end').addEventListener('input', () => {
             const start = parseInt(document.getElementById('cheque_book_serial_start').value);
@@ -149,7 +149,7 @@
         let subCategorySelectDom = document.getElementById('subCategory');
         let subCategorySelectOptionsDom = subCategorySelectDom.parentElement.parentElement.parentElement.querySelector('.optionsDropdown');
         let subCategoryFirstOptDom = subCategorySelectDom.children[0];
-        accountNoLabelDom.parentElement.classList.add('hidden');
+        accountNoLabelDom.closest('.form-group').classList.add('hidden');
         chequeBookSerialDom.classList.add('hidden');
         function getCategoryData(value) {
             if (value != "waiting") {
@@ -164,43 +164,43 @@
                         let clutter = '';
                         switch (value) {
                             case 'supplier':
-                                subCategoryLabelDom.parentElement.classList.remove('hidden');
-                                remarksLabelDom.parentElement.classList.remove('hidden');
-                                accountNoLabelDom.parentElement.classList.add('hidden');
+                                subCategoryLabelDom.closest('.form-group').classList.remove('hidden');
+                                remarksLabelDom.closest('.form-group').classList.remove('hidden');
+                                accountNoLabelDom.closest('.form-group').classList.add('hidden');
                                 chequeBookSerialDom.classList.add('hidden');
                                 clutter += `
                                     <li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]">
                                         -- Select Supplier --
                                     </li>
                                 `;
-                        
+
                                 response.forEach(subCat => {
                                     clutter += `
-                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden">
                                             ${subCat.supplier_name}
                                         </li>
                                     `;
                                 });
-                                
+
                                 subCategoryLabelDom.textContent = 'Supplier';
                                 // subCategoryFirstOptDom.textContent = '-- Select Supplier --';
                                 subCategorySelectDom.disabled = false;
                                 break;
 
                             case 'customer':
-                                subCategoryLabelDom.parentElement.classList.remove('hidden');
-                                remarksLabelDom.parentElement.classList.remove('hidden');
-                                accountNoLabelDom.parentElement.classList.add('hidden');
+                                subCategoryLabelDom.closest('.form-group').classList.remove('hidden');
+                                remarksLabelDom.closest('.form-group').classList.remove('hidden');
+                                accountNoLabelDom.closest('.form-group').classList.add('hidden');
                                 chequeBookSerialDom.classList.add('hidden');
                                 clutter += `
                                     <li data-for="subCategory" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]">
                                         -- Select Customer --
                                     </li>
                                 `;
-                        
+
                                 response.forEach(subCat => {
                                     clutter += `
-                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2">
+                                        <li data-for="subCategory" data-value="${subCat.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden">
                                             ${subCat.customer_name}
                                         </li>
                                     `;
@@ -210,18 +210,18 @@
                                 // subCategoryFirstOptDom.textContent = '-- Select Customer --';
                                 subCategorySelectDom.disabled = false;
                                 break;
-                                
+
                             case 'self':
-                                subCategoryLabelDom.parentElement.classList.add('hidden');
-                                remarksLabelDom.parentElement.classList.add('hidden');
-                                accountNoLabelDom.parentElement.classList.remove('hidden');
+                                subCategoryLabelDom.closest('.form-group').classList.add('hidden');
+                                remarksLabelDom.closest('.form-group').classList.add('hidden');
+                                accountNoLabelDom.closest('.form-group').classList.remove('hidden');
                                 chequeBookSerialDom.classList.remove('hidden');
                                 break;
-                                
+
                             default:
-                                subCategoryLabelDom.parentElement.classList.remove('hidden');
-                                remarksLabelDom.parentElement.classList.remove('hidden');
-                                accountNoLabelDom.parentElement.classList.add('hidden');
+                                subCategoryLabelDom.closest('.form-group').classList.remove('hidden');
+                                remarksLabelDom.closest('.form-group').classList.remove('hidden');
+                                accountNoLabelDom.closest('.form-group').classList.add('hidden');
                                 chequeBookSerialDom.classList.add('hidden');
                                 clutter += `
                                     <option value=''>

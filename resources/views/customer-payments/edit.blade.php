@@ -145,7 +145,7 @@
             detailsInputsContainer.classList.remove('mb-4');
             if (elem.value == 'payment_program') {
                 methodSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
-                    <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
+                    <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">Program</li>
                 `;
                 detailsInputsContainer.innerHTML = "";
 
@@ -170,17 +170,17 @@
                     programSelectDom.disabled = false;
                     programSelectDom.value = '-- Select payment program --';
                     programSelectDom.closest(".selectParent").querySelector('ul').innerHTML = `
-                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- Select payment program --</li>
+                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">-- Select payment program --</li>
                     `;
                     allProgramsArray.forEach(program => {
                         programSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
-                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 capitalize">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)} | ${program.category}</li>
+                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden capitalize">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)} | ${program.category}</li>
                         `;
                     });
                 } else {
                     programSelectDom.disabled = false;
                     programSelectDom.closest(".selectParent").querySelector('ul').innerHTML = `
-                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">-- No options avalaible --</li>
+                        <li data-for="payment_programs" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">-- No options avalaible --</li>
                     `;
                 }
                 selectThisOption(document.querySelector(`li[data-for="payment_programs"][data-value="${customerPayment.program_id}"]`))
@@ -307,12 +307,12 @@
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {
                                 bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML += `
-                                    <li data-for="bank_accounts" data-value="${account.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${account.account_title} | ${account.bank.short_title}</li>
+                                    <li data-for="bank_accounts" data-value="${account.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">${account.account_title} | ${account.bank.short_title}</li>
                                 `;
                             });
                         } else {
                             bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML += `
-                                <li data-for="bank_accounts" data-value="${bankAccountData.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</li>
+                                <li data-for="bank_accounts" data-value="${bankAccountData.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">${bankAccountData.account_title} | ${bankAccountData.bank.short_title}</li>
                             `;
                         }
                     }
@@ -332,7 +332,7 @@
                 const desiredMethod = methodSelectDom.closest(".selectParent").querySelector('ul li[data-value="program"]');
                 if (!desiredMethod) {
                     methodSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
-                        <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 ">Program</li>
+                        <li data-for="method" data-value="program" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">Program</li>
                     `;
                 }
                 desiredMethod.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));

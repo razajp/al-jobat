@@ -89,8 +89,49 @@
             fill: #e2e8f0 !important;
         }
 
+        .my-scrollbar-2 {
+            overflow: auto; /* ensure it's scrollable itself */
+        }
+
+        /* Now target ONLY this element's own scrollbar */
+        .my-scrollbar-2::-webkit-scrollbar,
+        .my-scrollbar-2::-webkit-scrollbar-track,
+        .my-scrollbar-2::-webkit-scrollbar-thumb,
+        .my-scrollbar-2::-webkit-scrollbar-corner {
+            all: unset;
+        }
+
         .my-scrollbar-2::-webkit-scrollbar {
-            display: none;
+            width: 10px;
+            height: 10px;
+        }
+
+        .my-scrollbar-2::-webkit-scrollbar-track {
+            background: var(--secondary-bg-color);
+            border-radius: 8px;
+        }
+
+        .my-scrollbar-2::-webkit-scrollbar-thumb {
+            background: linear-gradient(
+                180deg,
+                var(--primary-color),
+                var(--h-primary-color)
+            );
+            border-radius: 8px;
+            border: 2px solid var(--secondary-bg-color);
+            transition: background 0.3s ease;
+        }
+
+        .my-scrollbar-2::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(
+                180deg,
+                var(--h-primary-color),
+                var(--primary-color)
+            );
+        }
+
+        .scrollbar-hidden::-webkit-scrollbar {
+            display: none !important;
         }
 
         .fade-in {
@@ -639,6 +680,11 @@
 
             const dataObject = data.data;
 
+            if (dataObject.type === "utility_bill_reminder") {
+                showNotification(dataObject.title, dataObject.message);
+                // optionally refresh your bill list, highlight the due one, etc.
+            }
+
             @if(!request()->is('login'))
                 if ((dataObject.type === "user_inactivated" || dataObject.type === "password_reset")
                     && dataObject.id == {{Auth::user()->id}}) {
@@ -1119,9 +1165,6 @@
         // Trigger change event manually on the hidden input
         const changeEvent = new Event('change', { bubbles: true });
         dbInput.dispatchEvent(changeEvent);
-
-        // Optional: hide dropdown if needed
-        searchSelect(selectSearch);
     }
 
     function searchSelect(selectSearchInput) {
@@ -1185,7 +1228,6 @@
         if (!isValid) {
             // Clear both fields if no exact match
             selectFirstOption(forId);
-            searchSelect(selectSearchInput);
         }
     }
 
@@ -1201,7 +1243,9 @@
 
     function selectClicked(input) {
         const searchInput = input.closest('.selectParent').querySelector('.dropDownParent input')
-        searchInput.select();
+        searchInput.focus();
+        searchInput.value = '';
+        searchSelect(searchInput);
 
         const inputRect = input.getBoundingClientRect();
         const dropdown = input.closest(".selectParent").querySelector(".dropDownParent");

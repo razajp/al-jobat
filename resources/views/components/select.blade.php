@@ -101,7 +101,7 @@
         >
 
         {{-- Dropdown List --}}
-        <div class="dropDownParent flex flex-col fixed z-50 mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[14rem]">
+        <div class="dropDownParent flex flex-col gap-2 fixed z-50 mt-2 w-full rounded-xl bg-[var(--secondary-bg-color)] border-gray-600 text-[var(--text-color)] p-1.5 border appearance-none focus:ring-2 focus:ring-primary focus:border-transparent max-h-[13rem]">
             <x-input
                 data-for="{{ $id }}"
                 oninput="searchSelect(this)"
@@ -113,7 +113,6 @@
                 onkeydown="selectKeyDown(event, this)"
                 :dataClearable="$dataClearable"
             />
-            <hr class="w-full my-1 border-gray-600">
             <ul
                 class="optionsDropdown overflow-auto my-scrollbar-2 space-y-0.5 grow"
                 data-for="{{ $id }}"
@@ -137,7 +136,7 @@
                         @if (isset($option['data_option']))
                             data-option="{{ $option['data_option'] }}"
                         @endif
-                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 {{ !$isDisabled && $optionValue == $resolvedValue ? 'selected' : '' }}"
+                        class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden {{ !$isDisabled && $optionValue == $resolvedValue ? 'selected' : '' }}"
                     >
                         {{ $option['text'] }}
                     </li>

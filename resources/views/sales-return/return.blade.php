@@ -69,7 +69,7 @@
                         articleSelectDropdown.innerHTML = '';
                         let clutter = '<li data-for="article" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Article --</li>';
                         response.forEach(article => {
-                            clutter += `<li data-for="article" data-value="${article.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${article.article_no}</li>`;
+                            clutter += `<li data-for="article" data-value="${article.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden hidden">${article.article_no}</li>`;
                         });
                         articleSelectDropdown.innerHTML = clutter;
 
@@ -112,7 +112,7 @@
                         invoiceSelectDropdown.innerHTML = '';
                         let clutter = '<li data-for="invoice" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)]" >-- Select Invoice --</li>';
                         response.forEach(invoice => {
-                            clutter += `<li data-for="invoice" data-invoice-data='${JSON.stringify(invoice)}' data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-scroll my-scrollbar-2 hidden">${invoice.invoice_no} | ${invoice.articles_in_invoice[0].invoice_quantity} - PCs | ${invoice.discount}% | Rs. ${invoice.sales_rate}</li>`;
+                            clutter += `<li data-for="invoice" data-invoice-data='${JSON.stringify(invoice)}' data-value="${invoice.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden hidden">${invoice.invoice_no} | ${invoice.articles_in_invoice[0].invoice_quantity} - PCs | ${invoice.discount}% | Rs. ${invoice.sales_rate}</li>`;
                         });
                         invoiceSelectDropdown.innerHTML = clutter;
 
