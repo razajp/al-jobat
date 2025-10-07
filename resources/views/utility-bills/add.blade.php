@@ -48,7 +48,7 @@
             />
 
             {{-- month --}}
-            <x-input label="Month" name="month" id="month" type="month" validateMax max="{{ now()->subMonth()->format('Y-m') }}" required disabled />
+            <x-input label="Month" name="month" id="month" type="month" required disabled />
 
             {{-- units --}}
             <x-input label="Units" name="units" id="units" type="number" placeholder="Enter Units" disabled dataValidate="numeric" />
@@ -58,7 +58,7 @@
 
             <div class="col-span-full">
                 {{-- due_date --}}
-                <x-input label="Due Date" name="due_date" id="due_date" type="date" validateMax max="{{ now()->toDateString() }}" required disabled />
+                <x-input label="Due Date" name="due_date" id="due_date" type="date" required disabled />
             </div>
         </div>
         <div class="w-full flex justify-end mt-4">

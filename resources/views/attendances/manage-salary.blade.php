@@ -4,9 +4,6 @@
 @php
     $type_options = [
         'absent' => ['text' => 'Absent'],
-        'half_day' => ['text' => 'Half Day'],
-        'quarter_day' => ['text' => 'Quarter Day'],
-        'leave' => ['text' => 'Leave'],
         'late' => ['text' => 'Late'],
     ];
 @endphp

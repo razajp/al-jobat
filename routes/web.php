@@ -52,9 +52,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
         return redirect(route('home'));
     });
 
-    Route::get('home', function () {
-        return view('home');
-    })->name('home');
+    Route::get('home', [Controller::class, 'home'])->name('home');
 
     Route::resource('users', UserController::class);
     Route::post('update-user-status', [UserController::class, 'updateStatus'])->name('update-user-status');

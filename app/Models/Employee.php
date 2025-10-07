@@ -45,6 +45,10 @@ class Employee extends Model
         return $this->hasMany(Production::class, 'worker_id');
     }
 
+    public function salaries() {
+        return $this->hasMany(Salary::class, 'employee_id');
+    }
+
     public function attendance() {
         return $this->hasMany(Attendance::class, 'employee_id');
     }
@@ -66,31 +70,38 @@ class Employee extends Model
     {
         $productionsQuery = $this->productions();
         $paymentsQuery = $this->payments();
+        $salariesQuery = $this->salaries(); // 👈 new line
 
         // Handle different date scenarios
         if ($fromDate && $toDate) {
             if ($includeGivenDate) {
                 $productionsQuery->whereBetween('date', [$fromDate, $toDate]);
                 $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
+                $salariesQuery->whereBetween('date', [$fromDate, $toDate]); // 👈 added
             } else {
                 $productionsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
                 $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $salariesQuery->where('date', '>', $fromDate)->where('date', '<', $toDate); // 👈 added
             }
         } elseif ($fromDate) {
             $operator = $includeGivenDate ? '>=' : '>';
             $productionsQuery->where('date', $operator, $fromDate);
             $paymentsQuery->where('date', $operator, $fromDate);
+            $salariesQuery->where('date', $operator, $fromDate); // 👈 added
         } elseif ($toDate) {
             $operator = $includeGivenDate ? '<=' : '<';
             $productionsQuery->where('date', $operator, $toDate);
             $paymentsQuery->where('date', $operator, $toDate);
+            $salariesQuery->where('date', $operator, $toDate); // 👈 added
         }
 
         // Calculate totals
-        $totalInvoices = $productionsQuery->sum('netAmount') ?? 0;
+        $totalProductions = $productionsQuery->sum('netAmount') ?? 0;
         $totalPayments = $paymentsQuery->sum('amount') ?? 0;
+        $totalSalaries = $salariesQuery->sum('amount') ?? 0; // 👈 added
 
-        $balance = $totalInvoices - $totalPayments;
+        // Final balance (production - payments - salary)
+        $balance = ($totalProductions + $totalSalaries) - $totalPayments;
 
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }

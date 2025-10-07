@@ -134,10 +134,11 @@
                     'Type': item.type.title,
                     'Balance': formatNumbersWithDigits(item.balance ?? 0, 1, 1),
                 },
-                oncontextmenu: "generateContextMenu(event)",
-                onclick: "generateModal(this)",
                 joining_date: item.joining_date,
                 cnic_no: item.cnic_no,
+                salary: item.salary,
+                oncontextmenu: "generateContextMenu(event)",
+                onclick: "generateModal(this)",
                 profile: true,
                 visible: true,
             };
@@ -184,6 +185,7 @@
                     'Joining Date': formatDate(data.joining_date),
                     'C.N.I.C No.': data.cnic_no,
                     'Balance': data.details.Balance,
+                    ...(data.salary > 0 && { 'Salary': formatNumbersWithDigits(data.salary, 1, 1) }),
                 },
                 profile: true,
                 bottomActions: [

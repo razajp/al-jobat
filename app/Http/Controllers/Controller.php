@@ -14,7 +14,9 @@ use App\Models\PhysicalQuantity;
 use App\Models\Shipment;
 use App\Models\Supplier;
 use App\Models\UtilityAccount;
+use App\Models\UtilityBill;
 use App\Models\Voucher;
+use Carbon\Carbon;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
@@ -25,6 +27,26 @@ use Illuminate\Support\Facades\Validator;
 class Controller extends BaseController
 {
     use AuthorizesRequests, ValidatesRequests;
+
+    public function home() {
+        $today = Carbon::today();
+        $fiveDaysLater = Carbon::today()->addDays(5);
+
+        // Get the count of unpaid bills that are due or due within 5 days
+        $count = UtilityBill::where('is_paid', false)
+            ->where(function ($query) use ($today, $fiveDaysLater) {
+                $query->whereBetween('due_date', [$today, $fiveDaysLater])
+                    ->orWhereDate('due_date', '<', $today);
+            })
+            ->count();
+
+        $notification = [
+            'title' => 'Utility Bill Reminder',
+            'message' => "{$count} Utility Bill" . ($count === 1 ? '' : 's') . " Unpaid or Due Soon",
+        ];
+
+        return view('home', compact('notification'));
+    }
 
     public function getCategoryData(Request $request)
     {

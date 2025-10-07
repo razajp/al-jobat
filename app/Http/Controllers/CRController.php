@@ -139,7 +139,6 @@ class CRController extends Controller
             $data['c_r_no'] = 'CR' . $data['c_r_no'];
         }
 
-
         $returnEmpty = empty($data['return_payments']);
         $newEmpty = empty($data['new_payments']);
 

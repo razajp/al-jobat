@@ -680,11 +680,6 @@
 
             const dataObject = data.data;
 
-            if (dataObject.type === "utility_bill_reminder") {
-                showNotification(dataObject.title, dataObject.message);
-                // optionally refresh your bill list, highlight the due one, etc.
-            }
-
             @if(!request()->is('login'))
                 if ((dataObject.type === "user_inactivated" || dataObject.type === "password_reset")
                     && dataObject.id == {{Auth::user()->id}}) {
