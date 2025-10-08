@@ -86,6 +86,7 @@
             onfocus="selectClicked(this)"
             {{-- onkeydown="selectKeyDown(event, this)" --}}
             :dataClearable="$dataClearable"
+            isSelect
         />
 
         {{-- Hidden Input --}}
@@ -107,7 +108,6 @@
                 oninput="searchSelect(this)"
                 onblur="validateSelectInput(this)"
                 autocomplete="off"
-                :disabled="$isDisabled"
                 :value="$isDisabled ? '' : $selectedText"
                 :placeholder="$placeholderText"
                 onkeydown="selectKeyDown(event, this)"

@@ -331,6 +331,10 @@
         .switchBtn.active .circle {
             background-color: var(--secondary-text);
         }
+
+        .selectParent:has(input:focus) .selectDropdownIcon {
+            scale: 1 -1;
+        }
     </style>
 
     @vite('resources/css/app.css')

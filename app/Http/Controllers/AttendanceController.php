@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use App\Models\Employee;
 use App\Models\Salary;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -47,7 +48,7 @@ class AttendanceController extends Controller
                 if ($employee) {
                     $validAttendances->push([
                         'employee_id' => $employee->id,
-                        'datetime'    => $item['datetime'],
+                        'datetime'    => Carbon::createFromFormat('d-M-y g:i A', $item['datetime'])->format('Y-m-d H:i:s'),
                         'state'       => $item['state'],
                     ]);
                 } else {
@@ -111,5 +112,52 @@ class AttendanceController extends Controller
         Salary::create($data);
 
         return redirect()->back()->with('success', 'Salary added successfuly.');
+    }
+
+    public function generateSlip()
+    {
+        return view('attendances.generate-slip');
+    }
+
+    public function generateSlipPost(Request $request)
+    {
+        $month = Carbon::parse($request->month . '-01');
+        $currentMonth = $month->month;
+        $currentYear = $month->year;
+
+        $attendances = Attendance::whereMonth('datetime', $currentMonth)
+            ->whereYear('datetime', $currentYear)
+            ->get()
+            ->groupBy('employee_id');
+
+        $employees = Employee::whereIn('id', $attendances->keys())->get()->keyBy('id');
+
+        // Generate full month dates
+        $start = Carbon::create($currentYear, $currentMonth, 1);
+        $end = $start->copy()->endOfMonth();
+        $dates = collect();
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
+            $dates->push($date->format('Y-m-d'));
+        }
+
+        $data = [];
+        foreach ($attendances as $empId => $records) {
+            $emp = $employees[$empId];
+            $data[] = [
+                'employee_name' => $emp->employee_name,
+                'month' => $month->format('F - Y'),
+                'records' => $dates->map(function ($d) use ($records) {
+                    $record = $records->first(function ($r) use ($d) {
+                        return Carbon::parse($r->datetime)->format('Y-m-d') === $d;
+                    });
+                    return [
+                        'date' => $d,
+                        'time' => $record ? Carbon::parse($record->datetime)->format('H:i A') : '-'
+                    ];
+                }),
+            ];
+        }
+
+        return response()->json($data);
     }
 }
