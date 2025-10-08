@@ -5,11 +5,13 @@
         <h1 class="text-3xl font-bold text-[var(--primary-color)] mb-4">Welcome to {{app('company')->name}}!</h1>
         <p class="text-[var(--secondary-text)] mb-6">Track your progress and manage your tasks efficiently.</p>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                setTimeout(() => {
-                    showNotification('{{ $notification["title"] }}', '{{ $notification["message"] }}');
-                }, 1000);
-            })
-        </script>
+        @if ($notification)
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    setTimeout(() => {
+                        showNotification('{{ $notification["title"] }}', '{{ $notification["message"] }}');
+                    }, 1000);
+                })
+            </script>
+        @endif
 @endsection

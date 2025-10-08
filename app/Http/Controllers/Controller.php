@@ -40,10 +40,14 @@ class Controller extends BaseController
             })
             ->count();
 
-        $notification = [
-            'title' => 'Utility Bill Reminder',
-            'message' => "{$count} Utility Bill" . ($count === 1 ? '' : 's') . " Unpaid or Due Soon",
-        ];
+        $notification = [];
+
+        if ($count > 0) {
+            $notification = [
+                'title' => 'Utility Bill Reminder',
+                'message' => "{$count} Utility Bill" . ($count === 1 ? '' : 's') . " Unpaid or Due Soon",
+            ];
+        }
 
         return view('home', compact('notification'));
     }

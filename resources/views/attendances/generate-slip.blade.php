@@ -84,12 +84,34 @@
                                                 const dateObj = new Date(r.date);
                                                 const isSunday = dateObj.getDay() === 0;
                                                 const noTime = r.time === '-';
-
                                                 let rowBg = '';
+
+                                                // ✅ Late after 9:15 AM
+                                                if (!noTime && !isSunday) {
+                                                    const timeStr = r.time.trim().toUpperCase();
+                                                    const [time, modifier] = timeStr.split(' ');
+                                                    const [hours, minutes] = time.split(':').map(Number);
+
+                                                    let h = hours;
+                                                    if (modifier === 'PM' && h !== 12) h += 12;
+                                                    if (modifier === 'AM' && h === 12) h = 0;
+
+                                                    const totalMinutes = h * 60 + minutes;
+                                                    const lateThreshold = 9 * 60 + 15; // 9:15 AM
+
+                                                    if (totalMinutes > lateThreshold) {
+                                                        rowBg = 'bg-[#f8d7da] text-[#58151c] font-semibold'; // 🔴 late
+                                                    }
+                                                }
+
+                                                // 🟡 Missing time
+                                                if (noTime) {
+                                                    rowBg = 'bg-[#fff3cd] text-[#5f4400] font-semibold';
+                                                }
+
+                                                // 🔵 Sunday (blur look)
                                                 if (isSunday) {
-                                                    rowBg = 'bg-blue-100 text-blue-800 font-semibold'; // Always Sunday color
-                                                } else if (noTime) {
-                                                    rowBg = 'bg-red-200 text-red-800 font-semibold'; // Only non-Sunday missing time = red
+                                                    rowBg = 'bg-[#cfe2ff] text-[#002b5c] font-semibold';
                                                 }
 
                                                 return `
