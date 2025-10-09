@@ -98,7 +98,7 @@
                         </div>
                     </div>
                 @else
-                    <div class="no-article-message w-full h-full flex flex-col items-center justify-center gap-2">
+                    <div class="no-records-message w-full h-full flex flex-col items-center justify-center gap-2">
                         <h1 class="text-md text-[var(--secondary-text)] capitalize">No Bank Account yet</h1>
                         <a href="{{ route('bank-accounts.create') }}"
                         class="text-sm bg-[var(--primary-color)] text-[var(--text-color)] px-4 py-2 rounded-md hover:bg-[var(--h-primary-color)] hover:scale-105 hover:mb-2 transition-all duration-300 ease-in-out font-semibold">Add
