@@ -408,7 +408,7 @@
 
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
-            let cardData = [];
+            let tableBody = [];
 
             const sourceArray = Array.isArray(data.data.payments)
                 ? data.data.payments
@@ -416,21 +416,32 @@
                 ? data.data.payment_programs
                 : [];
 
-            cardData.push(...sourceArray.map(item => {
-                return {
-                    id: item.id,
-                    name: formatDate(item.date),
-                    details: {
-                        'Amount': formatNumbersWithDigits(item.amount, 1, 1),
-                        'Account': (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'),
-                        'Method': item.method,
-                    },
-                };
-            }));
+            tableBody = sourceArray.map((item, index) => {
+                return [
+                    {data: index+1, class: 'w-1/9'},
+                    {data: formatDate(item.date), class: 'w-1/6'},
+                    {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
+                    {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
+                    {data: item.method, class: 'w-1/6 capitalize'},
+                ];
+            });
 
             let modalData = {
                 id: 'modalForm',
-                cards: {name: 'Payment Details', count: 3, data: cardData},
+                class: 'max-w-4xl h-[37rem]',
+                name: 'Payment Details',
+                table: {
+                    name: 'Details',
+                    headers: [
+                        { label: "#", class: "w-1/9" },
+                        { label: "Data", class: "w-1/6" },
+                        { label: "Amount", class: "w-1/6" },
+                        { label: "Acc. Title", class: "w-1/3" },
+                        { label: "Method", class: "w-1/6" },
+                    ],
+                    body: tableBody,
+                    scrollable: true,
+                },
             }
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {

@@ -11,7 +11,8 @@ class ReportController extends Controller
 {
     public function statement(Request $request)
     {
-        // if (!empty($request)) {
+        if (!empty($request)) {
+            $type = $request->type;
             $category = $request->category;
             $id = $request->id;
             $dateFrom = $request->date_from;
@@ -26,7 +27,7 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Customer not found'], 404);
                     }
 
-                    $data = $customer->getStatement($dateFrom, $dateTo);
+                    $data = $customer->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
@@ -37,7 +38,7 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Supplier not found'], 404);
                     }
 
-                    $data = $supplier->getStatement($dateFrom, $dateTo);
+                    $data = $supplier->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
@@ -48,12 +49,12 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Bank account not found'], 404);
                     }
 
-                    $data = $bank_account->getStatement($dateFrom, $dateTo);
+                    $data = $bank_account->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
             }
-        // }
+        }
 
         return view("reports.statement");
     }

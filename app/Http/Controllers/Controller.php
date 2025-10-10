@@ -540,6 +540,28 @@ class Controller extends BaseController
         ]);
     }
 
+    public function setStatementType(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            "statement_type" => "required|in:summarized,detailed",
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(["error" => $validator->errors()->first()]);
+        }
+
+        $user = Auth::user();
+        $user->statement_type = $request->statement_type;
+        $user->save();
+
+        session()->flash('success', 'Statement type updated.');
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Statement type set as default.',
+        ]);
+    }
+
     public function getUtilityAccounts(Request $request)
     {
         $validator = Validator::make($request->all(), [

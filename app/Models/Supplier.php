@@ -162,102 +162,167 @@ class Supplier extends Model
         return $formatted ? number_format($balance, 1, '.', ',') : $balance;
     }
 
-    public function getStatement($fromDate, $toDate)
+    public function getStatement($fromDate, $toDate, $type = 'summarized')
     {
-        // Opening balance (before fromDate)
+        // 🧮 Opening & Closing Balances
         $openingBalance = $this->calculateBalance(null, $fromDate, false, false);
-
-        // Period balance (fromDate → toDate)
-        $periodBalance = $this->calculateBalance($fromDate, $toDate);
-
+        $periodBalance  = $this->calculateBalance($fromDate, $toDate);
         $closingBalance = $openingBalance + $periodBalance;
 
-        // Expenses
-        $expense = collect($this->expenses()
-            ->whereBetween('date', [
-                Carbon::parse($fromDate)->startOfDay(),
-                Carbon::parse($toDate)->endOfDay()
-            ])
-            ->get())
-            ->map(fn($i) => [
-                'date' => $i->date ?? null,
-                'reff_no' => $i->reff_no ?? null,
-                'type' => 'invoice',
-                'bill' => $i->amount ?? 0,
-                'payment' =>  0,
-                'created_at' => $i->created_at ?? null,
+        // 🕒 Date Range
+        $start = Carbon::parse($fromDate)->startOfDay();
+        $end   = Carbon::parse($toDate)->endOfDay();
+
+        // --- BASE QUERIES ---
+        $expenseQuery    = $this->expenses()->whereBetween('date', [$start, $end]);
+        $paymentQuery    = $this->payments()->whereBetween('date', [$fromDate, $toDate]);
+        $productionQuery = $this->worker
+            ? $this->worker->productions()->whereBetween('receive_date', [$start, $end])
+            : null;
+
+        // 🔑 Stable sort helper (date asc + created_at asc)
+        $makeSortKey = fn($item) =>
+            Carbon::parse($item['date'])->format('Ymd') . '_' .
+            (isset($item['created_at']) && $item['created_at']
+                ? Carbon::parse($item['created_at'])->format('YmdHis')
+                : '00000000');
+
+        // Helper to safely map query results (avoids repetition)
+        $mapQuery = function ($query, callable $mapper) {
+            return $query && $query->exists() ? $query->get()->map($mapper) : collect();
+        };
+
+        // --- SUMMARIZED MODE ---
+        if ($type === 'summarized') {
+            $expenses = $mapQuery($expenseQuery, fn($i) => [
+                'type'       => 'invoice',
+                'date'       => Carbon::parse($i->date)->toDateString(),
+                'bill'       => (float) ($i->amount ?? 0),
+                'payment'    => 0,
+                'created_at' => $i->created_at,
             ]);
 
-        // Payments
-        $payments = collect($this->payments()
-            ->whereBetween('date', [$fromDate, $toDate])
-            ->with('bankAccount.bank')
-            ->get())
-            ->map(fn($p) => [
-                'date' => $p->date ?? null,
-                'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no ?? null,
-                'type' => 'payment',
-                'method' => $p->method ?? null,
-                'payment' => $p->amount ?? 0,
-                'bill' =>  0,
-                'account' => $p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title
-                    ? trim(($p->bankAccount?->account_title ?? '') . ' | ' . ($p->bankAccount?->bank?->short_title ?? ''), ' |')
-                    : null,
-                'created_at' => $p->created_at ?? null,
+            $payments = $mapQuery($paymentQuery, fn($p) => [
+                'type'       => 'payment',
+                'date'       => Carbon::parse($p->date)->toDateString(),
+                'bill'       => 0,
+                'payment'    => (float) ($p->amount ?? 0),
+                'created_at' => $p->created_at,
             ]);
 
-        // Productions (agar worker hai to)
-        $productions = collect();
-        if ($this->worker) {
-            $productions = collect($this->worker->productions()
-                ->whereBetween('receive_date', [
-                    Carbon::parse($fromDate)->startOfDay(),
-                    Carbon::parse($toDate)->endOfDay()
-                ])
-                ->get())
-                ->map(fn($pr) => [
-                    'date' => $pr->receive_date ?? null,
-                    'reff_no' => $pr->ticket,
-                    'type' => 'invoice',
-                    'bill' => $pr->amount ?? 0,
-                    'payment' => 0,
-                    'created_at' => $pr->created_at ?? null,
-                ]);
+            $productions = $mapQuery($productionQuery, fn($pr) => [
+                'type'       => 'invoice',
+                'date'       => Carbon::parse($pr->receive_date)->toDateString(),
+                'bill'       => (float) ($pr->amount ?? 0),
+                'payment'    => 0,
+                'created_at' => $pr->created_at,
+            ]);
+
+            // 📅 Merge all & summarize per date
+            $statement = $expenses
+                ->merge($productions)
+                ->merge($payments)
+                ->groupBy('date')
+                ->flatMap(function ($rows, $date) {
+                    $rows = $rows->sortBy('created_at');
+                    $billSum = $rows->sum('bill');
+                    $paymentSum = $rows->sum('payment');
+                    $result = collect();
+
+                    if ($paymentSum > 0) {
+                        $result->push([
+                            'type'       => 'payment',
+                            'date'       => Carbon::parse($date),
+                            'bill'       => 0,
+                            'payment'    => $paymentSum,
+                            'created_at' => $rows->where('type', 'payment')->min('created_at'),
+                        ]);
+                    }
+
+                    if ($billSum > 0) {
+                        $result->push([
+                            'type'       => 'invoice',
+                            'date'       => Carbon::parse($date),
+                            'bill'       => $billSum,
+                            'payment'    => 0,
+                            'created_at' => $rows->where('type', 'invoice')->min('created_at'),
+                        ]);
+                    }
+
+                    return $result->sortBy('created_at')->values();
+                })
+                ->sortBy($makeSortKey)
+                ->values();
         }
 
-        // Merge sabko
-        $statement = $expense->merge($payments)->merge($productions)
-            ->sort(function ($a, $b) {
-                $aDate = $a['date'] ?? '1970-01-01';
-                $bDate = $b['date'] ?? '1970-01-01';
+        // --- DETAILED MODE ---
+        else {
+            $expenses = $mapQuery($expenseQuery, fn($i) => [
+                'date'       => $i->date,
+                'reff_no'    => $i->reff_no,
+                'type'       => 'invoice',
+                'bill'       => (float) ($i->amount ?? 0),
+                'payment'    => 0,
+                'created_at' => $i->created_at,
+            ]);
 
-                // Compare by actual timestamps
-                $dateCompare = strtotime($aDate) <=> strtotime($bDate);
+            $payments = $mapQuery($paymentQuery->with('bankAccount.bank'), fn($p) => [
+                'date'       => $p->date,
+                'reff_no'    => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no,
+                'type'       => 'payment',
+                'method'     => $p->method,
+                'payment'    => (float) ($p->amount ?? 0),
+                'bill'       => 0,
+                'description' =>
+                    $p->cheque_date?->format('d-M-Y, D')
+                    ?? $p->slip_date?->format('d-M-Y, D')
+                    ?? (($p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title)
+                        ? trim(
+                            ($p->bankAccount?->account_title ?? '') .
+                            ($p->bankAccount?->bank?->short_title
+                                ? ' | ' . $p->bankAccount->bank->short_title
+                                : ''),
+                            ' |'
+                        )
+                        : null),
+                'created_at' => $p->created_at,
+            ]);
 
-                if ($dateCompare === 0) {
-                    $aCreated = $a['created_at'] ?? $aDate . ' 00:00:00';
-                    $bCreated = $b['created_at'] ?? $bDate . ' 00:00:00';
-                    return strtotime($aCreated) <=> strtotime($bCreated);
-                }
+            $productions = $mapQuery($productionQuery, fn($pr) => [
+                'date'       => $pr->receive_date,
+                'reff_no'    => $pr->ticket,
+                'type'       => 'invoice',
+                'bill'       => (float) ($pr->amount ?? 0),
+                'payment'    => 0,
+                'created_at' => $pr->created_at,
+            ]);
 
-                return $dateCompare;
-            })->values();
+            $statement = $expenses
+                ->merge($payments)
+                ->merge($productions)
+                ->sortBy($makeSortKey)
+                ->values();
+        }
 
-        // Totals
+        // 📊 Totals
+        $billTotal    = $statement->sum('bill');
+        $paymentTotal = $statement->sum('payment');
         $totals = [
-            'bill' => $expense->sum('bill') + $productions->sum('bill'),
-            'payment' => $payments->sum('payment'),
-            'balance' => ($expense->sum('bill') + $productions->sum('bill')) - $payments->sum('payment'),
+            'bill'    => $billTotal,
+            'payment' => $paymentTotal,
+            'balance' => $billTotal - $paymentTotal,
         ];
 
+        // 🧩 Final Response
         return [
-            'date' => $fromDate . ' - ' . $toDate,
-            'name' => $this->supplier_name,
+            'date'            => Carbon::parse($fromDate)->format('d-M-Y') . ' - ' . Carbon::parse($toDate)->format('d-M-Y'),
+            'name'            => $this->supplier_name,
             'opening_balance' => $openingBalance,
             'closing_balance' => $closingBalance,
-            'statements' => $statement,
-            'totals' => $totals,
-            'category' => 'supplier',
+            'statements'      => $statement,
+            'totals'          => $totals,
+            'category'        => 'supplier',
+            'mode'            => $type,
         ];
     }
 }

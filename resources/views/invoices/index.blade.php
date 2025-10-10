@@ -6,30 +6,30 @@
             "Invoice No" => [
                 "id" => "invoice_no",
                 "type" => "text",
-                "placeholder" => "Enter invoice no",
+                "placeholder" => "Enter invoice no.",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "invoice_no",
+                "dataFilterPath" => "name",
             ],
-            "Order No" => [
-                "id" => "order_no",
+            "Reff. No." => [
+                "id" => "reff_no",
                 "type" => "text",
-                "placeholder" => "Enter order no",
+                "placeholder" => "Enter reff. no.",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "order_no",
-            ],
-            "Shipment No" => [
-                "id" => "shipment_no",
-                "type" => "text",
-                "placeholder" => "Enter shipment no",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "shipment_no",
+                "dataFilterPath" => "reff_no",
             ],
             "Customer Name" => [
                 "id" => "customer_name",
                 "type" => "text",
                 "placeholder" => "Enter customer name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "customer.customer_name",
+                "dataFilterPath" => "data.customer.customer_name",
+            ],
+            "City" => [
+                "id" => "city",
+                "type" => "text",
+                "placeholder" => "Enter city",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "data.customer.city.title",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -37,7 +37,7 @@
                 "id2" => "date_range_end",
                 "type2" => "date",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "data.date",
             ]
         ];
     @endphp
@@ -59,11 +59,12 @@
                 <div class="details h-full z-40">
                     <div class="container-parent h-full my-scrollbar-2">
                         <div class="card_container px-3 h-full flex flex-col">
-                            <div id="table-head" class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                            <div id="table-head" class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-center cursor-pointer" onclick="sortByThis(this)">Invoice No.</div>
-                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Order No.</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Reff. No.</div>
                                 <div class="text-center cursor-pointer" onclick="sortByThis(this)">Customer</div>
                                 <div class="text-center cursor-pointer" onclick="sortByThis(this)">Date</div>
+                                <div class="text-center cursor-pointer" onclick="sortByThis(this)">Amount</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -91,14 +92,14 @@
         function createRow(data) {
             return `
                 <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                    class="item row relative group grid text- grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                    class="item row relative group grid grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
                     <span class="text-center">${data.name}</span>
-                    ${data.details['Order No'] ? `<span class="text-center">${data.details["Order No"]}</span>` : ''}
-                    ${data.details['Shipment No'] ? `<span class="text-center">${data.details["Shipment No"]}</span>` : ''}
+                    <span class="text-center">${data.reff_no}</span>
                     <span class="text-center">${data.details["Customer"]}</span>
                     <span class="text-center">${data.details['Date']}</span>
+                    <span class="text-center">${data.details['Amount']}</span>
                 </div>`;
         }
 
@@ -108,10 +109,12 @@
                 id: item.id,
                 name: item.invoice_no,
                 details: {
-                    'Customer': item.customer.customer_name,
+                    'Customer': item.customer.customer_name + ' | ' + item.customer.city.title,
                     'Date': formatDate(item.date),
-                    ...(item.order_no ? { 'Order No': item.order_no } : item.shipment_no ? { 'Shipment No': item.shipment_no } : {})
+                    'Amount': formatNumbersWithDigits(item.netAmount, 1, 1),
+                    'Reff. No.': item.order_no ?? item.shipment_no
                 },
+                reff_no: item.order_no ?? item.shipment_no,
                 data: item,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
