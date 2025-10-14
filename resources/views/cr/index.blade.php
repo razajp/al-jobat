@@ -77,7 +77,7 @@
                 <span>${formatDate(data.date)}</span>
                 <span>${data.c_r_no}</span>
                 <span>${data.voucher_no}</span>
-                <span>${data.supplier_name}</span>
+                <span>${data.supplier_name ?? 'Al Jobat'}</span>
             </div>`;
         }
 
