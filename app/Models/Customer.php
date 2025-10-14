@@ -94,7 +94,7 @@ class Customer extends Model
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $invoicesQuery = $this->invoices()->whereNotNull('shipment_no');
-        $paymentsQuery = $this->payments();
+        $paymentsQuery = $this->payments()->where('type', '!==', 'DR');
 
         // Handle different date scenarios
         if ($fromDate && $toDate) {
@@ -132,7 +132,7 @@ class Customer extends Model
 
         // --- SHARED QUERIES ---
         $invoiceQuery = $this->invoices()->whereBetween('date', [$fromDate, $toDate]);
-        $paymentQuery = $this->payments()->whereBetween('date', [$fromDate, $toDate]);
+        $paymentQuery = $this->payments()->where('type', '!==', 'DR')->whereBetween('date', [$fromDate, $toDate]);
 
         if ($type === 'summarized') {
             // 🧾 Fetch all invoices — ensure normalized date
@@ -205,7 +205,7 @@ class Customer extends Model
                 ])
                 ->values();
         }
-        
+
         else {
             // 🧾 Detailed invoices
             $invoices = $invoiceQuery->get()->map(fn($i) => [

@@ -30,6 +30,7 @@ return new class extends Migration
             $table->foreignId('program_id')->nullable()->constrained('payment_programs')->onDelete('cascade');
             $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->boolean('is_return')->default(false);
+            $table->foreignId('d_r_id')->nullable()->constrained('d_r_s')->onDelete('cascade');
 
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
 

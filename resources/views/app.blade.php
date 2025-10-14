@@ -920,6 +920,7 @@
         }
 
         let newlyFilteredData = [];
+        let visibleData  = [];
         function runDynamicFilter() {
             newlyFilteredData = [];
             const filters = document.querySelectorAll('[data-filter-path]');
@@ -997,11 +998,13 @@
                 tempItem.visible = visible;
 
                 newlyFilteredData.push(tempItem);
-
-                if (typeof onFilter === "function") {
-                    onFilter();
-                }
+                visibleData = newlyFilteredData.filter(i => i.visible == true);
             });
+
+            if (typeof onFilter === "function") {
+                onFilter();
+            }
+
             renderFilteredData();
 
             noItemsError.style.display = allDataArray.every(i => i.visible == false) ? "block" : "none";

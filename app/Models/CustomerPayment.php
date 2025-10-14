@@ -34,6 +34,7 @@ class CustomerPayment extends Model
         "program_id",
         "bank_account_id",
         "is_return",
+        "d_r_id",
     ];
 
     protected $casts = [
@@ -97,5 +98,10 @@ class CustomerPayment extends Model
     public function paymentClearRecord()
     {
         return $this->hasMany(PaymentClear::class, "payment_id");
+    }
+
+    public function dr()
+    {
+        return $this->belongsTo(DR::class, "d_r_id");
     }
 }

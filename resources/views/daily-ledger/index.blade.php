@@ -200,9 +200,9 @@
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
-            totalDepositAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.deposit, 0);
-            totalUseAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.use, 0);
-            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
+            totalDepositAmount = visibleData.reduce((sum, d) => sum + d.deposit, 0);
+            totalUseAmount = visibleData.reduce((sum, d) => sum + d.use, 0);
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
 
             totalDepositDom.innerText = formatNumbersWithDigits(totalDepositAmount, 1, 1);
             totalUseDom.innerText = formatNumbersWithDigits(totalUseAmount, 1, 1);

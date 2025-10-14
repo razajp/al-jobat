@@ -122,8 +122,7 @@
         infoDom.textContent = `Total Records: ${allDataArray.length}`;
 
         function onFilter() {
-            let visibleCount = newlyFilteredData.filter(item => item.visible).length;
-            infoDom.textContent = `Total Records: ${visibleCount}`;
+            infoDom.textContent = `Total Records: ${visibleData.length}`;
         }
     </script>
 @endsection

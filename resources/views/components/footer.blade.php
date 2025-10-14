@@ -146,8 +146,38 @@
 
             document.getElementById('nextBtn')?.addEventListener('click', () => nextStep(currentStep));
             document.getElementById('prevBtn').addEventListener('click', () => prevStep(currentStep));
-            document.getElementById('saveBtn')?.addEventListener('click', () => {
-                document.getElementById('form').submit();
+            document.getElementById('saveBtn')?.addEventListener('click', (e) => {
+                const form = document.getElementById('form');
+
+                if (!form) return;
+
+                // ✅ Step 1: If onSubmitFunction exists, call it
+                if (typeof onSubmitFunction === "function") {
+                    const result = onSubmitFunction();
+
+                    // ✅ Handle async version (Promise)
+                    if (result instanceof Promise) {
+                        e.preventDefault();
+                        result.then(res => {
+                            if (res === false) {
+                                console.log("Form submission stopped by onSubmitFunction()");
+                                return;
+                            }
+                            form.submit(); // manually submit if allowed
+                        });
+                        return;
+                    }
+
+                    // ✅ Handle sync version
+                    if (result === false) {
+                        e.preventDefault();
+                        console.log("Form submission stopped by onSubmitFunction()");
+                        return;
+                    }
+                }
+
+                // ✅ Step 2: If no onSubmitFunction or it didn’t block, submit form
+                form.submit();
             });
 
             let saveBtn = document.getElementById('saveBtn');

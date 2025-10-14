@@ -3,58 +3,37 @@
 @section('content')
 @php
     $searchFields = [
-        "Beneficiary" => [
-            "id" => "beneficiary",
+        "Date" => [
+            "id" => "date",
             "type" => "text",
-            "placeholder" => "Enter beneficiary",
+            "placeholder" => "Enter date",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "beneficiary",
-        ],
-        "Voucher No." => [
-            "id" => "voucher_no",
-            "type" => "text",
-            "placeholder" => "Enter voucher no.",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "voucher_no",
+            "dataFilterPath" => "details.Date",
         ],
         "Customer Name" => [
-            "id" => "customer_name",
             "type" => "text",
+            "id" => "customer_name",
             "placeholder" => "Enter customer name",
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "name",
         ],
         "City" => [
-            "id" => "city",
             "type" => "text",
+            "id" => "city",
             "placeholder" => "Enter city",
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "data.customer.city.title",
         ],
-        "Category" => [
-            "id" => "category",
-            "type" => "select",
-            "options" => [
-                        'cash' => ['text' => 'Cash'],
-                        'non-cash' => ['text' => 'Non Cash'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "category",
-        ],
-        "Type" => [
-            "id" => "type",
-            "type" => "select",
-            "options" => [
-                        'normal' => ['text' => 'Normal'],
-                        'payment program' => ['text' => 'Payment Program'],
-                        'recovery' => ['text' => 'Recovery'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Type",
+        "Beneficiary" => [
+            "type" => "text",
+            "id" => "beneficiary",
+            "placeholder" => "Enter beneficiary",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "beneficiary",
         ],
         "Method" => [
-            "id" => "method",
             "type" => "select",
+            "id" => "method",
             "options" => [
                         'cash' => ['text' => 'Cash'],
                         'cheque' => ['text' => 'Cheque'],
@@ -65,23 +44,30 @@
             "onchange" => "runDynamicFilter()",
             "dataFilterPath" => "details.Method",
         ],
-        "Date" => [
-            "id" => "date",
-            "type" => "text",
-            "placeholder" => "Enter date",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Date",
+        "Category" => [
+            "type" => "select",
+            "id" => "category",
+            "options" => [
+                        'cash' => ['text' => 'Cash'],
+                        'non-cash' => ['text' => 'Non Cash'],
+                    ],
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "category",
         ],
-        "Reff. No." => [
-            "id" => "reff_no",
-            "type" => "text",
-            "placeholder" => "Enter reff. no.",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "reff_no",
+        "Type" => [
+            "type" => "select",
+            "id" => "type",
+            "options" => [
+                        'normal' => ['text' => 'Normal'],
+                        'payment program' => ['text' => 'Payment Program'],
+                        'recovery' => ['text' => 'Recovery'],
+                    ],
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "details.Type",
         ],
         "Issued" => [
-            "id" => "issued",
             "type" => "select",
+            "id" => "issued",
             "options" => [
                         'Issued' => ['text' => 'Issued'],
                         'Return' => ['text' => 'Return'],
@@ -91,8 +77,8 @@
             "dataFilterPath" => "issued",
         ],
         "Status" => [
-            "id" => "status",
             "type" => "select",
+            "id" => "status",
             "options" => [
                         'Cleared' => ['text' => 'Cleared'],
                         'Pending' => ['text' => 'Pending'],
@@ -100,14 +86,20 @@
             "onchange" => "runDynamicFilter()",
             "dataFilterPath" => "clearStatus",
         ],
-        // "Date Range" => [
-        //     "id" => "date_range_start",
-        //     "type" => "date",
-        //     "id2" => "date_range_end",
-        //     "type2" => "date",
-        //     "oninput" => "runDynamicFilter()",
-        //     "dataFilterPath" => "details.Date",
-        // ]
+        "Reff. No." => [
+            "id" => "reff_no",
+            "type" => "text",
+            "placeholder" => "Enter reff. no.",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "reff_no",
+        ],
+        "Voucher No." => [
+            "type" => "text",
+            "id" => "voucher_no",
+            "placeholder" => "Enter voucher no.",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "voucher_no",
+        ],
     ];
 @endphp
     <div class="w-[80%] mx-auto">
@@ -534,9 +526,11 @@
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
-            totalAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.amount, 0);
-            totalPayment = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.data.clear_amount, 0);
-            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
+            // ✅ Assuming visibleData already includes only visible items
+            totalAmount = visibleData.reduce((sum, d) => sum + d.data.amount, 0);
+            totalPayment = visibleData.reduce((sum, d) => sum + d.data.clear_amount, 0);
+
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
 
             totalAmountDom.innerText = formatNumbersWithDigits(totalAmount, 1, 1);
             totalPaymentDom.innerText = formatNumbersWithDigits(totalPayment, 1, 1);

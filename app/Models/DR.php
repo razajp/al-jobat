@@ -10,8 +10,8 @@ class DR extends Model
     use HasFactory;
 
     protected $fillable = [
+        'customer_id',
         'date',
-        'd_r_no',
         'return_payments',
         'new_payments',
     ];
@@ -22,7 +22,7 @@ class DR extends Model
         'new_payments' => 'array',
     ];
 
-    public function payments() {
-        return $this->hasMany(SupplierPayment::class, 'c_r_id');
+    public function customer() {
+        return $this->belongsTo(Customer::class, 'customer_id');
     }
 }

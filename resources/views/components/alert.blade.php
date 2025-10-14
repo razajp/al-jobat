@@ -29,7 +29,7 @@
 @endphp
 
 @foreach ((array) $messages as $message)
-    <div class="alert-message {{ $config[$type]['bg'] }} {{ $config[$type]['text'] }} px-5 py-2 rounded-2xl flex items-center gap-2 fade-in">
+    <div class="alert-message {{ $config[$type]['bg'] }} {{ $config[$type]['text'] }} ps-2 pe-5 py-2 rounded-2xl flex items-center gap-2 fade-in leading-none tracking-wide">
         <i class='fas {{ $config[$type]['icon'] }} text-lg mr-1'></i>
         <p>{{ $message }}</p>
     </div>

@@ -164,7 +164,12 @@
         const activeCustomers = allDataArray.filter(customer => customer.user.status === 'active');
 
         let infoDom = document.getElementById('info').querySelector('span');
-        infoDom.textContent = `Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
+        infoDom.textContent = `Total Records: ${allDataArray.length} | Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
+
+        function onFilter() {
+            const filteredActiveCustomers = visibleData.filter(customer => customer.user.status === 'active');
+            infoDom.textContent = `Total Records: ${visibleData.length} | Total Customers: ${visibleData.length} | Active: ${filteredActiveCustomers.length}`;
+        }
 
         function generateContextMenu(e) {
             e.preventDefault();

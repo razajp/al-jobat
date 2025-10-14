@@ -215,7 +215,7 @@
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
-            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
         }
     </script>
 @endsection

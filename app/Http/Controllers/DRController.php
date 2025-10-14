@@ -6,6 +6,7 @@ use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
 use App\Models\DR;
+use App\Models\Setup;
 use App\Models\SupplierPayment;
 use App\Models\Voucher;
 use Illuminate\Http\Request;
@@ -22,7 +23,7 @@ class DRController extends Controller
      */
     public function index()
     {
-    //     $crs = CR::with('voucher.supplier')->orderBy('id', 'desc')->get()->makeHidden('creator');
+    //     $drs = CR::with('voucher.supplier')->orderBy('id', 'desc')->get()->makeHidden('creator');
 
     //     return view('cr.index', compact('crs'));
     }
@@ -52,7 +53,19 @@ class DRController extends Controller
                 ];
             });
 
-        return view('dr.generate', compact('customer_options'));
+        $bank_options = Setup::where('type', 'bank_name')
+            ->distinct()
+            ->orderBy('title')
+            ->get()
+            ->mapWithKeys(function ($bank) {
+                return [
+                    (int)$bank->id => [
+                        'text' => ucfirst($bank->title),
+                    ]
+                ];
+            });
+
+        return view('dr.generate', compact('customer_options', 'bank_options'));
     }
 
     /**
@@ -66,10 +79,8 @@ class DRController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
+            'customer_id' => 'required|integer|exists:customers,id',
             'date' => 'required|date',
-            'voucher_no' => 'required|string',
-            'voucher_id' => 'required|integer|exists:vouchers,id',
-            'c_r_no' => 'required|string',
             'returnPayments' => 'required|string',
             'newPayments' => 'required|string',
         ]);
@@ -81,14 +92,10 @@ class DRController extends Controller
 
         $data = $request->all();
         $data['return_payments'] = json_decode($data['returnPayments'] ?? '[]');
-        $data['new_payments'] = json_decode($data['newPayments'] ?? '[]');
-
-        if (!str_starts_with($data['c_r_no'], 'CR')) {
-            $data['c_r_no'] = 'CR' . $data['c_r_no'];
-        }
+        $data['new_payments_data'] = json_decode($data['newPayments'] ?? '[]');
 
         $returnEmpty = empty($data['return_payments']);
-        $newEmpty = empty($data['new_payments']);
+        $newEmpty = empty($data['new_payments_data']);
 
         if ($returnEmpty && $newEmpty) {
             return redirect()->back()->with('error', 'Payments not selected and Payments not added.');
@@ -102,49 +109,38 @@ class DRController extends Controller
             return redirect()->back()->with('error', 'Payments not added.');
         }
 
-        foreach($data['return_payments'] as $payment) {
-            SupplierPayment::find($payment->id)->update(['is_return' => true]);
-            CustomerPayment::find($payment->payment_id)->update(['is_return' => true]);
+        $data['new_payments'] = [];
+
+        $dr = new DR($data);
+        $dr->save(); // 👈 pehle save karenge taake $dr->id mil jaye
+
+        foreach($data['return_payments'] as $paymentId) {
+            CustomerPayment::find($paymentId)->update(['clear_date' => $data['date'], 'd_r_id' => $dr->id]);
         }
 
-        $cr = new DR($data);
-        $cr->save(); // 👈 pehle save karenge taake $cr->id mil jaye
+        foreach ($data['new_payments_data'] as $payment) {
+            $newPayment = CustomerPayment::create([
+                'customer_id'     => $data['customer_id'],
+                'date'            => $payment->date ?? $data['date'],
+                'type'            => 'DR',
+                'method'          => strtolower($payment->method),
+                'amount'          => $payment->amount,
+                'cheque_no'          => $payment->cheque_no ?? null,
+                'slip_no'          => $payment->slip_no ?? null,
+                'transaction_id'          => $payment->transaction_id ?? null,
+                'cheque_date'          => $payment->cheque_date ?? null,
+                'slip_date'          => $payment->slip_date ?? null,
+                'bank_id'          => $payment->bank_id ?? null,
+                'remarks'          => $payment->remarks ?? null,
+            ]);
 
-        foreach ($data['new_payments'] as $payment) {
-            if ($payment->method == 'Payment Program') {
-                SupplierPayment::find($payment->data_value)
-                    ->update(['method' => $payment->method . ' | CR']);
-            } else {
-                $columnMap = [
-                    'Self Cheque' => 'cheque_no',
-                    'Cheque'      => 'cheque_id',
-                    'Slip'        => 'slip_id',
-                ];
-
-                // Skip unknown methods
-                if (!isset($columnMap[$payment->method])) {
-                    continue;
-                }
-
-                $newSupplierPayment = SupplierPayment::create([
-                    'supplier_id'      => Voucher::find($data['voucher_id'])->supplier_id,
-                    'date'             => $data['date'],
-                    'method'           => $payment->method . ' | CR',
-                    'amount'           => $payment->amount,
-                    'bank_account_id'  => $payment->bank_account_id,
-                    'voucher_id'       => null,
-                    'c_r_id'           => $cr->id, // 👈 ab yahan id set ho jaegi
-                    $columnMap[$payment->method] => $payment->data_value,
-                ]);
-
-                $payment->payment_id = $newSupplierPayment->id;
-            }
+            $data['new_payments'][] = $newPayment->id;
         }
 
-        $cr->new_payments = $data['new_payments'];
-        $cr->save(); // 👈 dubara save karenge taake new_payments update ho jaye
+        $dr->new_payments = $data['new_payments'];
+        $dr->save(); // 👈 dubara save karenge taake new_payments update ho jaye
 
-        return redirect()->route('cr.create')->with('success', 'CR Generated successfully.');
+        return redirect()->route('dr.create')->with('success', 'DR Generated successfully.');
     }
 
     /**
@@ -181,7 +177,7 @@ class DRController extends Controller
 
     public function getPayments(Request $request)
     {
-        $payments = CustomerPayment::where('customer_id', $request->customer_id)->where(function ($q) {
+        $payments = CustomerPayment::where('customer_id', $request->customer_id)->whereIn('method', ['cheque', 'slip'])->whereNull('d_r_id')->where(function ($q) {
             $q->whereDoesntHave('cheque')
             ->orWhere('is_return', true);
         })->get();
