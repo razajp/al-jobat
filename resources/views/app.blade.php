@@ -1537,7 +1537,6 @@
 
     function printPage() {
         const preview = document.querySelector('.container-parent');
-        console.log(preview.innerHTML);
 
         let clone = preview.cloneNode(true);
 
@@ -1563,6 +1562,29 @@
         const headContent = document.head.innerHTML;
 
         clone.querySelector('#calc-bottom')?.remove();
+
+        function repeatHeader(clone) {
+            const header = clone.querySelector('#table-head');
+            const body = clone.querySelector('.search_container'); // ✅ Your main rows container
+            if (!header || !body) return clone.innerHTML;
+
+            const rows = Array.from(body.children);
+            const headerHTML = header.outerHTML;
+            let html = headerHTML;
+            let height = 0;
+
+            rows.forEach(r => {
+                html += r.outerHTML;
+                height += r.scrollHeight || 40; // ✅ use scrollHeight for cloned divs
+                if (height >= 750) { // approx 1 page in px
+                html += '<div style="page-break-after:always"></div>' + headerHTML;
+                height = 0;
+                }
+            });
+
+            return html;
+            }
+
         printDocument.write(`
             <html>
                 <head>
@@ -1625,10 +1647,25 @@
                             color: black !important;
                             font-size: 10px !important;
                         }
+                        @media print {
+                            #table-head {
+                                position: fixed;
+                                top: 0;
+                                left: 0;
+                                right: 0;
+                                background: var(--primary-color);
+                                color: white;
+                            }
+                            body::before {
+                                content: "";
+                                display: block;
+                                height: 40px; /* adjust = header height */
+                            }
+                        }
                     </style>
                 </head>
                 <body>
-                    ${clone.innerHTML.replaceAll('fade-in', '').replaceAll('my-scrollbar-2', 'scrollbar-hidden')}
+                    ${repeatHeader(clone)}
                 </body>
             </html>
         `);
