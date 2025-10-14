@@ -1051,7 +1051,7 @@
                         authLayout = response.updatedLayout;
                         console.log(authLayout);
 
-                        clearAllSearchFields();
+                        // clearAllSearchFields();
                         renderData();
 
                         const changeLayoutBtn = document.getElementById('changeLayoutBtn');
@@ -1521,6 +1521,82 @@
         document.querySelectorAll('#table-head > div').forEach(header => {
             delete header.dataset.sort;
         });
+    }
+
+    // function printPage() {
+    //     // get card_container and print
+    //     const printContent = document.querySelector('.container-parent').innerHTML;
+    //     const originalContent = document.body.innerHTML;
+    //     document.body.innerHTML = printContent;
+    //     window.print();
+    //     document.body.innerHTML = originalContent;
+    // }
+
+    function printPage() {
+        const preview = document.querySelector('.container-parent'); // preview content
+        console.log(preview.innerHTML);
+
+        // ✅ Clone so that original DOM safe rahe
+        let clone = preview.cloneNode(true);
+
+        // ✅ Sirf direct child <hr> (pages ke beech) remove karo
+        // clone.querySelectorAll(":scope > hr").forEach(hr => hr.remove());
+
+        // Agar pehle se iframe hai to usko hatao
+        let oldIframe = document.getElementById('printIframe');
+        if (oldIframe) {
+            oldIframe.remove();
+        }
+
+        // Naya iframe banao
+        let printIframe = document.createElement('iframe');
+        printIframe.id = "printIframe";
+        printIframe.style.position = "absolute";
+        printIframe.style.width = "0px";
+        printIframe.style.height = "0px";
+        printIframe.style.border = "none";
+        printIframe.style.display = "none";
+
+        document.body.appendChild(printIframe);
+
+        let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+        printDocument.open();
+
+        // ✅ Copy styles from current page
+        const headContent = document.head.innerHTML;
+
+        printDocument.write(`
+            <html>
+                <head>
+                    <title>Print Statement</title>
+                    ${headContent}
+                    <style>
+                        @page {
+                            size: A4 landscape;
+                            margin: 0;
+                        }
+
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            background: #fff;
+                            color: black !important;
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${clone.innerHTML} <!-- ✅ only outside <hr> removed -->
+                </body>
+            </html>
+        `);
+
+        printDocument.close();
+
+        // Print jab iframe load ho jaye
+        // printIframe.onload = () => {
+        //     printIframe.contentWindow.focus();
+        //     printIframe.contentWindow.print();
+        // };
     }
 </script>
 

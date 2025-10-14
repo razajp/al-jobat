@@ -20,7 +20,7 @@ class ArticleController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest', 'store_keeper']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
         $articles = Article::with('creator')->get();
@@ -34,9 +34,9 @@ class ArticleController extends Controller
                 }
             }
 
-            $article['category'] = ucfirst(str_replace('_', ' ', $article['category']));
-            $article['season'] = ucfirst(str_replace('_', ' ', $article['season']));
-            $article['size'] = ucfirst(str_replace('_', '-', $article['size']));
+            // $article['category'] = ucfirst(str_replace('_', ' ', $article['category']));
+            // $article['season'] = ucfirst(str_replace('_', ' ', $article['season']));
+            // $article['size'] = ucfirst(str_replace('_', '-', $article['size']));
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -60,7 +60,7 @@ class ArticleController extends Controller
             $lastRecord->total_rate = 0;
         } else {
             $lastRecord = '';
-        } 
+        }
 
         $articles = Article::all();
 
@@ -97,7 +97,7 @@ class ArticleController extends Controller
         $data = $request->all();
 
         $data['rates_array'] = json_decode($data['rates_array']);
-        
+
         $year = date('y');
         $seasonLetter = strtoupper(substr($data['season'], 0, 1));
 
@@ -127,13 +127,13 @@ class ArticleController extends Controller
         }
 
         $article = Article::create($data);
-        
+
         if ($article->sales_rate > 0 && $article->category != null && $article->fabric_type != null) {
             try {
                 event(new NewNotificationEvent(['title' => 'New Article Added.', 'message' => 'Your articles feed has been updated. Please check.']));
             } catch (\Exception $e) {
-                // 
-            }   
+                //
+            }
         }
 
         return redirect()->route('articles.create')->with('success', 'Article added successfully');
@@ -156,7 +156,7 @@ class ArticleController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         if ($article->ordered_quantity != 0) {
             return redirect(route('articles.index'))->with("error", "This article can't be edited.");
         }
@@ -229,9 +229,9 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        // 
+        //
     }
-    
+
     public function updateImage(Request $request)
     {
         $article = Article::where('id', $request->article_id)->first();
@@ -240,20 +240,20 @@ class ArticleController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // Validate input first
         $validator = Validator::make($request->all(), [
             'article_id' => 'integer|required|exists:articles,id',
             'image_upload' => 'nullable|image|mimes:jpg,jpeg,png,gif|max:2048',
         ]);
-    
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-    
+
         // Prepare data for saving
         $data = [];
-    
+
         // Handle the image upload if present
         if ($request->hasFile('image_upload')) {
             if ($article->image && Storage::disk('public')->exists('uploads/images/' . $article->image)) {
@@ -266,7 +266,7 @@ class ArticleController extends Controller
 
             $data['image'] = $fileName; // Save the file path in the database
         }
-    
+
         // Update only if image is set
         if (!empty($data['image'])) {
             $article->update(['image' => $data['image']]);
@@ -275,28 +275,28 @@ class ArticleController extends Controller
             return redirect()->back()->with('error', 'Please upload an image');
         }
     }
-    
+
     public function addRate(Request $request)
     {
         if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // Validate input first
         $validator = Validator::make($request->all(), [
             'article_id' => 'required|integer|exists:articles,id',
             "sales_rate" => 'required|numeric|min:0',
             "pcs_per_packet" => 'required|numeric|min:0',
         ]);
-    
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-    
+
         $data = $request->all();
         $data['rates_array'] = json_decode($data['rates_array']);
-    
+
         Article::where('id', $request->article_id)->update(['sales_rate' => $data['sales_rate'], 'rates_array' => $data['rates_array'], 'pcs_per_packet' => $data['pcs_per_packet']]);
 
         return redirect()->route('articles.index')->with('success', 'Rate added successfully');

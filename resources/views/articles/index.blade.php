@@ -22,21 +22,21 @@
                 "type" => "select",
                 "options" => app('article')->categories,
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "details[Category]",
+                "dataFilterPath" => "category",
             ],
             "Season" => [
                 "id" => "season",
                 "type" => "select",
                 "options" => app('article')->seasons,
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "details.Season",
+                "dataFilterPath" => "season",
             ],
             "Size" => [
                 "id" => "size",
                 "type" => "select",
                 "options" => app('article')->sizes,
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "details.Size",
+                "dataFilterPath" => "size",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -58,7 +58,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+            <x-form-title-bar title="Show Articles" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn printBtn />
 
             @if (count($articles) > 0)
                 <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -122,10 +122,13 @@
                 image: item.image == 'no_image_icon.png' ? '/images/no_image_icon.png' : `/storage/uploads/images/${item.image}`,
                 name: item.article_no,
                 status: item.sales_rate == 0.00 ? 'no_rate' : 'transparent',
+                category: item.category,
+                season: item.season,
+                size: item.size,
                 details: {
-                    'Category': item.category,
-                    'Season': item.season,
-                    'Size': item.size,
+                    'Category': item.category.replaceAll('_', ' ').replace(/\b\w/g, item => item.toUpperCase()),
+                    'Season': item.season.replace(/\b\w/g, item => item.toUpperCase()),
+                    'Size': item.size.replaceAll('_', '-').replace(/\b\w/g, item => item.toUpperCase()),
                 },
                 sales_rate: item.sales_rate,
                 processed_by: item.processed_by,

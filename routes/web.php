@@ -11,6 +11,7 @@ use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\DailyLedgerController;
+use App\Http\Controllers\DRController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeePaymentController;
 use App\Http\Controllers\ExpenseController;
@@ -117,6 +118,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('employee-payments', EmployeePaymentController::class);
 
     Route::resource('cr', CRController::class);
+
+    Route::get('dr/get-payments', [DRController::class, 'getPayments']);
+    Route::resource('dr', DRController::class);
 
     Route::resource('daily-ledger', DailyLedgerController::class);
 
