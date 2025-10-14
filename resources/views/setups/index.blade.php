@@ -41,7 +41,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Setups" resetSortBtn />
+            <x-form-title-bar printBtn title="Show Setups" resetSortBtn />
 
             @if (count($setups) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">

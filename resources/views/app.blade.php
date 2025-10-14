@@ -1533,16 +1533,11 @@
     // }
 
     function printPage() {
-        const preview = document.querySelector('.container-parent'); // preview content
+        const preview = document.querySelector('.container-parent');
         console.log(preview.innerHTML);
 
-        // ✅ Clone so that original DOM safe rahe
         let clone = preview.cloneNode(true);
 
-        // ✅ Sirf direct child <hr> (pages ke beech) remove karo
-        // clone.querySelectorAll(":scope > hr").forEach(hr => hr.remove());
-
-        // Agar pehle se iframe hai to usko hatao
         let oldIframe = document.getElementById('printIframe');
         if (oldIframe) {
             oldIframe.remove();
@@ -1562,9 +1557,9 @@
         let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
         printDocument.open();
 
-        // ✅ Copy styles from current page
         const headContent = document.head.innerHTML;
 
+        clone.querySelector('#calc-bottom')?.remove();
         printDocument.write(`
             <html>
                 <head>
@@ -1573,19 +1568,64 @@
                     <style>
                         @page {
                             size: A4 landscape;
-                            margin: 0;
+                            margin: 16px;
                         }
 
                         body {
                             margin: 0;
                             padding: 0;
                             background: #fff;
+                            -webkit-print-color-adjust: exact;
+                            print-color-adjust: exact;
+                        }
+
+                        /* ✅ Make all major containers flow naturally in print */
+                        .container-parent,
+                        .card_container {
+                            display: block !important;
+                            overflow: visible !important;
+                            height: auto !important;
+                        }
+
+                        /* ✅ Allow automatic page breaks */
+                        * {
+                            page-break-inside: auto;
+                        }
+
+                        /* ✅ Prevent rows, headers, etc. from splitting mid-page */
+                        .row,
+                        .record,
+                        tr,
+                        .card {
+                            page-break-inside: avoid;
+                            break-inside: avoid;
+                        }
+
+                        /* ✅ Repeat header section if you have it in a table */
+                        thead {
+                            display: table-header-group;
+                        }
+
+                        /* ✅ Hide scrollbars for printed view */
+                        .scrollbar-hidden {
+                            overflow: visible !important;
+                        }
+
+                        /* ✅ Header styling */
+                        body #table-head {
+                            color: white !important;
+                            background: var(--primary-color) !important;
+                            font-size: 10px !important;
+                        }
+
+                        body span {
                             color: black !important;
+                            font-size: 10px !important;
                         }
                     </style>
                 </head>
                 <body>
-                    ${clone.innerHTML} <!-- ✅ only outside <hr> removed -->
+                    ${clone.innerHTML.replaceAll('fade-in', '').replaceAll('my-scrollbar-2', 'scrollbar-hidden')}
                 </body>
             </html>
         `);
@@ -1593,10 +1633,10 @@
         printDocument.close();
 
         // Print jab iframe load ho jaye
-        // printIframe.onload = () => {
-        //     printIframe.contentWindow.focus();
-        //     printIframe.contentWindow.print();
-        // };
+        printIframe.onload = () => {
+            printIframe.contentWindow.focus();
+            printIframe.contentWindow.print();
+        };
     }
 </script>
 

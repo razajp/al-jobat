@@ -59,7 +59,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow pt-8.5 pr-2 relative">
-                <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+                <x-form-title-bar printBtn title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
                 @if (count($employees) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
