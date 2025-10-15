@@ -279,7 +279,7 @@
                                 {{-- Footer --}}
                                 <hr class="w-full my-3 border-gray-700">
                                 <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
-                                    <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                    <p>Powered by SparkPair &copy; 2025 SparkPair | +92 316 5825495</p>
                                     <p>Page 1 of {{ 1 + $otherPages->count() }}</p>
                                 </div>
 
@@ -372,7 +372,7 @@
                                     {{-- Footer --}}
                                     <hr class="w-full my-3 border-gray-700">
                                     <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
-                                        <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                        <p>Powered by SparkPair &copy; 2025 SparkPair | +92 316 5825495</p>
                                         <p>Page {{ $pageIndex + 2 }} of {{ 1 + $otherPages->count() }}</p>
                                     </div>
 

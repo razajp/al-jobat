@@ -8,7 +8,7 @@
         @endif
         <div class="flex justify-between items-center mx-auto px-8 py-3">
             <div class="md:flex hidden justify-between items-center mx-auto">
-                <span class="text-center text-sm mx-3">Copyright  &copy; 2024-<span class="opacity-100" id="year">2025</span> Spark Pair All rights reserved.</span>
+                <span class="text-center text-sm mx-3">Copyright  &copy; 2024-<span class="opacity-100" id="year">2025</span> SparkPair All rights reserved.</span>
                 <div class="flex justify-center mx-3 ">
                     <a href="https://wa.me/+923165825495" target="_blank" class="text-[var(--primary-color)] hover:underline">+92 316 5825495</a>
                     <span class="mx-2">|</span>
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="md:hidden flex justify-between items-center mx-auto">
-                <span class="text-center text-xs mx-3">Copyright  &copy; <span class="opacity-100" id="year">2025</span> Spark Pair</span>
+                <span class="text-center text-xs mx-3">Copyright  &copy; <span class="opacity-100" id="year">2025</span> SparkPair</span>
             </div>
             @if (request()->is('login'))
                 <div class="flex justify-center mx-5 fixed right-0">

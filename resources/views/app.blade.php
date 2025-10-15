@@ -1563,27 +1563,72 @@
 
         clone.querySelector('#calc-bottom')?.remove();
 
-        function repeatHeader(clone) {
+        function generatePrintBody(clone) {
             const header = clone.querySelector('#table-head');
-            const body = clone.querySelector('.search_container'); // ✅ Your main rows container
+            const body = clone.querySelector('.search_container'); // ✅ main rows container
             if (!header || !body) return clone.innerHTML;
 
-            const rows = Array.from(body.children);
-            const headerHTML = header.outerHTML;
-            let html = headerHTML;
-            let height = 0;
+            // Clean unnecessary classes
+            body.innerHTML = body.innerHTML
+                .replaceAll('fade-in', '')
+                .replaceAll('my-scrollbar-2', 'scrollbar-hidden');
 
-            rows.forEach(r => {
-                html += r.outerHTML;
-                height += r.scrollHeight || 40; // ✅ use scrollHeight for cloned divs
-                if (height >= 750) { // approx 1 page in px
-                html += '<div style="page-break-after:always"></div>' + headerHTML;
-                height = 0;
+            // Get all rows and remove `data-json` attribute
+            const rows = Array.from(body.children).map(r => {
+                const rowClone = r.cloneNode(true);
+                rowClone.removeAttribute('data-json'); // ✅ remove if exists
+                return rowClone;
+            });
+
+            const headerHTML = header.outerHTML.replace('mt-4', 'text-center');
+
+            let html = '';
+            let currentRows = [];
+            let height = 0;
+            const maxHeight = 840; // ~A4 landscape height
+
+            rows.forEach((r, i) => {
+                currentRows.push(r.outerHTML);
+                height += r.scrollHeight || 40;
+
+                // If height exceeds limit or last row reached
+                if (height >= maxHeight || i === rows.length - 1) {
+                    html += `
+                        <div class="print-page flex flex-col min-h-[750px]">
+                            <div class="px-4 w-full flex justify-between text-[12px] font-medium tracking-wide leading-none mb-2">
+                                <div class="capitalize">${ document.getElementById('page-name').textContent } | Al Jobat</div>
+                                <div>Printed on: ${formatDate(new Date())}</div>
+                            </div>
+                            ${headerHTML}
+                            <div class="rows px-4 text-center">
+                                ${currentRows.join('')}
+                            </div>
+                            <div class="grow">
+                            </div>
+                            <div class="px-4 w-full grid grid-cols-3 text-[12px] tracking-wide leading-none mt-3">
+                                <div class="text-left">
+                                    Showing ${i + 1} of ${rows.length} Records
+                                </div>
+                                <div class="text-center">
+                                    Powered by: <strong>SparkPair</strong>
+                                </div>
+                                <div class="text-right">
+                                    Page ${Math.ceil((i + 1) / (maxHeight / 40))} of ${Math.ceil(rows.length / (maxHeight / 40))}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    if (i !== rows.length - 1)
+                        html += `<div style="page-break-after:always"></div>`;
+
+                    // Reset for next batch
+                    currentRows = [];
+                    height = 0;
                 }
             });
 
             return html;
-            }
+        }
 
         printDocument.write(`
             <html>
@@ -1647,25 +1692,10 @@
                             color: black !important;
                             font-size: 10px !important;
                         }
-                        @media print {
-                            #table-head {
-                                position: fixed;
-                                top: 0;
-                                left: 0;
-                                right: 0;
-                                background: var(--primary-color);
-                                color: white;
-                            }
-                            body::before {
-                                content: "";
-                                display: block;
-                                height: 40px; /* adjust = header height */
-                            }
-                        }
                     </style>
                 </head>
                 <body>
-                    ${repeatHeader(clone)}
+                    ${generatePrintBody(clone)}
                 </body>
             </html>
         `);

@@ -29,7 +29,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar printBtn title="Show CRs" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show CRs" resetSortBtn />
 
             @if (count($crs) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -39,7 +39,7 @@
 
                 <div class="details h-full z-40">
                     <div class="container-parent h-full">
-                        <div class="card_container px-3 h-full flex flex-col">
+                        <div class="card_container px-3 h-full flex flex-col text-center">
                             <div id="table-head" class="grid grid-cols-4 items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">CR No.</div>

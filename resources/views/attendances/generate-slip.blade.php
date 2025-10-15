@@ -128,7 +128,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-[10px] text-gray-600 flex justify-between mt-1 leading-none tracking-wide px-2.5 pt-1 border-t border-gray-600"><p>Al-Jobat</p><p>SpakrPair</p></div>
+                                <div class="text-[10px] text-gray-600 flex justify-between mt-1 leading-none tracking-wide px-2.5 pt-1 border-t border-gray-600"><p>Al-Jobat</p><p>SparkPair</p></div>
                             </div>
                         `;
 
