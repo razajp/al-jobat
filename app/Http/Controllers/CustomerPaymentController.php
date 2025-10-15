@@ -35,6 +35,7 @@ class CustomerPaymentController extends Controller
             "paymentClearRecord"
         )
             ->whereNotNull("customer_id")
+            ->whereNot("type", 'DR')
             ->orderBy("id", "desc")
             ->get();
 

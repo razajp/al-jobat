@@ -2,15 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\BankAccount;
 use App\Models\Customer;
 use App\Models\CustomerPayment;
 use App\Models\DR;
 use App\Models\Setup;
-use App\Models\SupplierPayment;
-use App\Models\Voucher;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class DRController extends Controller
@@ -23,9 +19,9 @@ class DRController extends Controller
      */
     public function index()
     {
-    //     $drs = CR::with('voucher.supplier')->orderBy('id', 'desc')->get()->makeHidden('creator');
+        $drs = DR::with('customer')->orderBy('id', 'desc')->get();
 
-    //     return view('cr.index', compact('crs'));
+        return view('dr.index', compact('drs'));
     }
 
     /**

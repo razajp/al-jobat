@@ -175,10 +175,20 @@ class Supplier extends Model
 
         // --- BASE QUERIES ---
         $expenseQuery    = $this->expenses()->whereBetween('date', [$start, $end]);
-        $paymentQuery    = $this->payments()->whereBetween('date', [$fromDate, $toDate]);
         $productionQuery = $this->worker
             ? $this->worker->productions()->whereBetween('receive_date', [$start, $end])
             : null;
+        $paymentQuery    = $this->payments()
+            ->whereBetween('date', [$fromDate, $toDate])
+            ->whereIn('method', [
+                'Cheque',
+                'Cash',
+                'Slip',
+                'ATM',
+                'Self Cheque',
+                'Program',
+                'Adjustment',
+            ]);
 
         // 🔑 Stable sort helper (date asc + created_at asc)
         $makeSortKey = fn($item) =>

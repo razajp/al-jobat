@@ -21,9 +21,9 @@ class PaymentProgramController extends Controller
     {
         if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
         {
-            return redirect(route('home'))->with('error', 'You do not have permission to access this page.'); 
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         // Fetch and sort orders by date and created_at
         $orders = Order::with(['customer.city', 'paymentPrograms.subCategory'])
             ->orderBy('date', 'asc')
@@ -111,7 +111,7 @@ class PaymentProgramController extends Controller
         {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
-        
+
         $validator = Validator::make($request->all(), [
             'program_no'=> 'required|integer',
             'date'=> 'required|date',
@@ -129,26 +129,26 @@ class PaymentProgramController extends Controller
         $data = $request->all();
 
         $subCategoryModel = null;
-    
+
         // Dynamically associate sub_category based on category
         switch ($data['category']) {
             case 'supplier':
                 $subCategoryModel = Supplier::find($data['sub_category']);
                 break;
-            
+
             case 'self_account':
                 $subCategoryModel = BankAccount::find($data['sub_category']);
                 break;
-            
+
             case 'customer':
                 $subCategoryModel = Customer::find($data['sub_category']);
                 break;
-    
+
             case 'waiting':
                 $subCategoryModel = null; // No association for 'waiting'
                 break;
         }
-    
+
         // Create payment Program with morph relationship
         $program = new PaymentProgram([
             'program_no' => $data['program_no'],
@@ -158,13 +158,13 @@ class PaymentProgramController extends Controller
             'amount' => $data['amount'],
             'remarks' => $data['remarks'],
         ]);
-    
+
         if ($subCategoryModel) {
             $subCategoryModel->paymentPrograms()->save($program);
         } else {
             $program->save();
         }
-    
+
         return redirect()->route('payment-programs.create')->with('success', 'Payment program added successfully!');
     }
 
@@ -227,21 +227,21 @@ class PaymentProgramController extends Controller
             case 'supplier':
                 $subCategoryModel = Supplier::find($data['sub_category']);
                 break;
-            
+
             case 'self_account':
                 $subCategoryModel = BankAccount::find($data['sub_category']);
                 break;
-            
+
             case 'customer':
                 $subCategoryModel = Customer::find($data['sub_category']);
                 break;
-    
+
             case 'waiting':
                 $subCategoryModel = null; // No association for 'waiting'
                 break;
         }
 
-        
+
         if ($subCategoryModel) {
             $subCategoryModel->paymentPrograms()->save($program);
         } else {
@@ -259,7 +259,7 @@ class PaymentProgramController extends Controller
         };
 
         $program = PaymentProgram::find($id);
-        
+
         $program->status = 'Paid';
         $program->save();
 
