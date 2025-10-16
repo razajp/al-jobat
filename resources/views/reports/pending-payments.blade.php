@@ -38,13 +38,13 @@
             @if (isset($data))
                 {{-- First Page (26 rows) --}}
                 <div id="preview-container" class="h-full relative overflow-y-auto my-scrollbar-2">
-                    <div id="preview-page" class="w-[210mm] mx-auto overflow-hidden relative bg-white rounded-md">
-                        <div id="preview" class="preview flex flex-col h-full py-[0.19in]">
+                    <div id="preview-page" class="w-[210mm] mx-auto overflow-hidden relative bg-white rounded-md pt-6 pb-0">
+                        <div id="preview" class="preview flex flex-col h-full">
                             <div id="preview-document" class="preview-document flex flex-col h-full px-2">
                                 {{-- Table --}}
                                 <div id="preview-body" class="preview-body w-[95%] grow mx-auto">
                                     {{-- Multiple Slips --}}
-                                    @foreach ($data as $index => $item)
+                                    @foreach ($data as $item)
                                         <div class="slip w-full border border-gray-700 rounded-lg p-1 overflow-hidden text-xs tracking-wide">
                                             {{-- Header --}}
                                             <div class="head w-full px-4 py-1.5 border border-gray-700 text-center rounded-md mb-1">
@@ -95,10 +95,7 @@
                                             </div>
                                         </div>
 
-                                        {{-- Divider line after each slip except the last one --}}
-                                        @if($index + 1 < count($data))
-                                            <hr class="w-[85%] mx-auto my-3 border-gray-700/60">
-                                        @endif
+                                        <hr class="w-[85%] mx-auto my-3 border-gray-700/60">
                                     @endforeach
                                 </div>
                             </div>
@@ -180,25 +177,43 @@
 
             printDocument.write(`
                 <html>
-                    <head>
-                        <title>Print Pending Payments</title>
-                        ${headContent}
-                        <style>
-                            @page {
-                                size: A4;
-                                margin: 0;
-                            }
+                <head>
+                    <title>Print Pending Payments</title>
+                    ${headContent}
+                    <style>
+                    @page {
+                        size: A4;
+                        margin: 0.19in;
+                    }
 
-                            body {
-                                margin: 0;
-                                padding: 0;
-                                background: #fff;
-                            }
-                        </style>
-                    </head>
-                    <body>
-                        ${clone.innerHTML} <!-- ✅ only outside <hr> removed -->
-                    </body>
+                    body {
+                        margin: 0;
+                        padding: 0;
+                        background: #fff;
+                    }
+
+                    /* ✅ Prevent half-slip breaking */
+                    @media print {
+                        .slip {
+                            page-break-inside: avoid;
+                            break-inside: avoid;
+                        }
+
+                        /* ✅ Allow multiple slips per page */
+                        .slip + hr {
+                            page-break-after: auto; /* only break if needed */
+                        }
+
+                        /* Remove weird overflow issues */
+                        #preview-page {
+                            overflow: visible !important;
+                        }
+                    }
+                    </style>
+                </head>
+                <body>
+                    ${clone.innerHTML}
+                </body>
                 </html>
             `);
 

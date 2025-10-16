@@ -104,40 +104,36 @@ class ReportController extends Controller
                     ->whereIn('method', ['cheque', 'slip'])
                     ->get()
                     ->filter(function ($payment) use ($date) {
-                        // Get payment date according to method
                         $paymentDate = $payment->method === 'cheque'
                             ? $payment->cheque_date
                             : $payment->slip_date;
 
-                        // Skip if date not before given date
-                        if (!$paymentDate || $paymentDate >= $date) {
+                        if (!$paymentDate) return false;
+
+                        // Include only if paymentDate <= given $date
+                        if (\Carbon\Carbon::parse($paymentDate)->gt(\Carbon\Carbon::parse($date))) {
                             return false;
                         }
 
-                        // Calculate received/cleared amount
-                        $receivedAmount = 0;
                         $totalAmount = floatval($payment->amount);
+                        $receivedAmount = 0;
 
                         if ($payment->paymentClearRecord && count($payment->paymentClearRecord) > 0) {
                             $receivedAmount = collect($payment->paymentClearRecord)->sum('amount');
                         } elseif ($payment->clear_date !== null) {
-                            // If clear_date is set but no clear records, treat full amount as received
                             $receivedAmount = $totalAmount;
                         }
 
-                        // Determine if payment is pending
-                        $isFullyCleared = $receivedAmount >= $totalAmount;
+                        $balance = $totalAmount - $receivedAmount;
 
-                        // Pending condition:
-                        // (clear_date null or not fully cleared)
-                        if ($payment->clear_date === null || !$isFullyCleared) {
-                            // Add computed values for clarity
-                            $payment->received_amount = $receivedAmount;
-                            $payment->balance = $totalAmount - $receivedAmount;
-                            return true;
-                        }
+                        // ✅ Only include if balance > 0
+                        if ($balance <= 0) return false;
 
-                        return false;
+                        // Add computed values for clarity
+                        $payment->received_amount = $receivedAmount;
+                        $payment->balance = $balance;
+
+                        return true;
                     })
                     ->values();
 
@@ -185,5 +181,4 @@ class ReportController extends Controller
 
         return view("reports.pending-payments");
     }
-
 }
