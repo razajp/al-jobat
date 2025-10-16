@@ -265,4 +265,58 @@ class PaymentProgramController extends Controller
 
         return redirect()->route('payment-programs.index')->with('success', 'Program marked as paid successfully.');
     }
+
+    public function summary()
+    {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        // --- SUPPLIER DATA ---
+        $suppliers = Supplier::with('paymentPrograms')->get();
+
+        $supplierData = $suppliers->map(function ($supplier) {
+            $totalAmount = $supplier->paymentPrograms->sum('amount');
+            $totalPayment = $supplier->paymentPrograms->sum('payment');
+            $balance = $totalAmount - $totalPayment;
+
+            return [
+                'name' => $supplier->supplier_name ?? $supplier->name ?? 'Unnamed Supplier',
+                'total_amount' => $totalAmount,
+                'total_payment' => $totalPayment,
+                'balance' => $balance,
+                'category' => 'Supplier',
+            ];
+        })->filter(fn($item) => $item['balance'] != 0)->values();
+
+
+        // --- CUSTOMER DATA ---
+        $paymentPrograms = PaymentProgram::with('customer:id,customer_name,city_id', 'customer.city:id,title')
+            ->whereNotNull('customer_id')
+            ->get();
+
+        $grouped = $paymentPrograms->groupBy('customer_id');
+
+        $customerData = $grouped->map(function ($items, $customerId) {
+            $customer = $items->first()->customer;
+            $totalAmount = $items->sum('amount');
+            $totalPayment = $items->sum('payment');
+            $balance = $totalAmount - $totalPayment;
+
+            return [
+                'name' => ($customer->customer_name ?? 'Unnamed Customer') .
+                        (!empty($customer->city?->title) ? ' | ' . $customer->city->title : ''),
+                'total_amount' => $totalAmount,
+                'total_payment' => $totalPayment,
+                'balance' => $balance,
+                'category' => 'Customer',
+            ];
+        })->filter(fn($item) => $item['balance'] != 0)->values();
+
+
+        // --- COMBINE BOTH ---
+        $data = $supplierData->merge($customerData)->values();
+
+        return view('payment-programs.summary', compact('data'));
+    }
 }

@@ -860,7 +860,7 @@
     //     return path.split('.').reduce((acc, part) => acc?.[part], obj);
     // }
 
-    @if(request()->route()->getActionMethod() === 'index' || request()->is('invoices/create'))
+    @if(request()->route()->getActionMethod() === 'index' ||request()->route()->getActionMethod() === 'summary' || request()->is('invoices/create'))
         let search_container = document.querySelector('.search_container');
         let tableHead = document.getElementById('table-head');
 
@@ -878,7 +878,7 @@
 
             search_container.innerHTML = "";
 
-            @if(request()->route()->getActionMethod() === 'index')
+            @if(request()->route()->getActionMethod() === 'index' ||request()->route()->getActionMethod() === 'summary')
                 const html = newlyFilteredData
                     .filter(item => item.visible === true)
                     .map(item => isGrid ? createCard(item) : createRow(item))
@@ -1036,7 +1036,7 @@
         }
     @endif
 
-    @if(request()->route()->getActionMethod() === 'index')
+    @if(request()->route()->getActionMethod() === 'index' ||request()->route()->getActionMethod() === 'summary')
         // change layout
         function changeLayout() {
             $.ajax({

@@ -54,13 +54,6 @@ class CustomerPaymentController extends Controller
         });
 
         foreach ($payments as $payment) {
-            // Clear date pending check
-            if ($payment->clear_date === null) {
-                if ($payment->type == "cheque" || $payment->type == "slip") {
-                    $payment->clear_date = "Pending";
-                }
-            }
-
             // Load supplier if cheque has supplier_id
             if ($payment->cheque && $payment->cheque->supplier_id) {
                 $payment->cheque->supplier = Supplier::with("bankAccounts")->find($payment->cheque->supplier_id);
@@ -80,6 +73,13 @@ class CustomerPaymentController extends Controller
                             $payment->clear_date = $lastPartial["clear_date"];
                         }
                     }
+                }
+            }
+
+            // Clear date pending check
+            if ($payment->clear_date === null) {
+                if ($payment->type == "cheque" || $payment->type == "slip") {
+                    $payment->clear_date = "Pending";
                 }
             }
 

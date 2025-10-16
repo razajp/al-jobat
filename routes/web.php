@@ -88,7 +88,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
 
+    Route::get('payment-programs/summary', [PaymentProgramController::class, 'summary'])->name('payment-programs.summary');
     Route::resource('payment-programs', PaymentProgramController::class);
+    Route::post('payment-programs.get-summary', [PaymentProgramController::class, 'getSummary'])->name('payment-programs.get-summary');
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
     Route::get('payment-programs/{id}/mark-paid', [PaymentProgramController::class, 'markPaid'])->name('payment-programs.mark-paid');
 
@@ -157,6 +159,7 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
+    Route::get('reports/pending-payments', [ReportController::class, 'pendingPayments'])->name('reports.pending-payments');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');

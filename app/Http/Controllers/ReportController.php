@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -89,4 +90,100 @@ class ReportController extends Controller
 
         return response()->json(['error' => 'Invalid category'], 400);
     }
+    public function pendingPayments(Request $request)
+    {
+        if (!empty($request)) {
+            $date = $request->input('date'); // e.g. 2025-10-10
+            if ($date) {
+                // Base payments query
+                $payments = CustomerPayment::with([
+                        'customer.city',
+                        'paymentClearRecord',
+                    ])
+                    ->whereNotNull('customer_id')
+                    ->whereIn('method', ['cheque', 'slip'])
+                    ->get()
+                    ->filter(function ($payment) use ($date) {
+                        // Get payment date according to method
+                        $paymentDate = $payment->method === 'cheque'
+                            ? $payment->cheque_date
+                            : $payment->slip_date;
+
+                        // Skip if date not before given date
+                        if (!$paymentDate || $paymentDate >= $date) {
+                            return false;
+                        }
+
+                        // Calculate received/cleared amount
+                        $receivedAmount = 0;
+                        $totalAmount = floatval($payment->amount);
+
+                        if ($payment->paymentClearRecord && count($payment->paymentClearRecord) > 0) {
+                            $receivedAmount = collect($payment->paymentClearRecord)->sum('amount');
+                        } elseif ($payment->clear_date !== null) {
+                            // If clear_date is set but no clear records, treat full amount as received
+                            $receivedAmount = $totalAmount;
+                        }
+
+                        // Determine if payment is pending
+                        $isFullyCleared = $receivedAmount >= $totalAmount;
+
+                        // Pending condition:
+                        // (clear_date null or not fully cleared)
+                        if ($payment->clear_date === null || !$isFullyCleared) {
+                            // Add computed values for clarity
+                            $payment->received_amount = $receivedAmount;
+                            $payment->balance = $totalAmount - $receivedAmount;
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    ->values();
+
+                // ✅ Group payments by customer
+                $grouped = $payments->groupBy(function ($p) {
+                    $cityTitle = $p->customer?->city?->title ?? '';
+                    return ($p->customer?->customer_name ?? 'Unknown') . ' | ' . $cityTitle;
+                })
+                ->map(function ($group, $customerKey) {
+                    // Prepare totals
+                    $totalAmount = $group->sum('amount');
+                    $totalReceived = $group->sum('received_amount');
+                    $totalBalance = $totalAmount - $totalReceived;
+
+                    // Prepare simplified payment list
+                    $paymentsArray = $group->map(function ($p) {
+                        return [
+                            'id' => $p->id,
+                            'method' => $p->method,
+                            'date' => $p->method === 'cheque' ? $p->cheque_date : $p->slip_date,
+                            'amount' => $p->amount,
+                            'received_amount' => $p->received_amount,
+                            'balance' => $p->balance,
+                        ];
+                    })->values();
+
+                    return [
+                        'customer' => $customerKey,
+                        'payments' => $paymentsArray,
+                        'totals' => [
+                            'amount' => $totalAmount,
+                            'received_amount' => $totalReceived,
+                            'balance' => $totalBalance,
+                        ],
+                    ];
+                })
+                ->values();
+
+                $data = $grouped;
+
+                // return response()->json($data);
+                return view("reports.pending-payments", compact('data'));
+            }
+        }
+
+        return view("reports.pending-payments");
+    }
+
 }
