@@ -8,14 +8,14 @@
                 "type" => "text",
                 "placeholder" => "Enter cargo no",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "cargo_no",
+                "dataFilterPath" => "name",
             ],
             "Cargo Name" => [
                 "id" => "cargo_name",
                 "type" => "text",
                 "placeholder" => "Enter cargo name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "cargo_name",
+                "dataFilterPath" => "data.cargo_name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -23,7 +23,7 @@
                 "id2" => "date_range_end",
                 "type2" => "date",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "data.date",
             ]
         ];
     @endphp
@@ -52,7 +52,7 @@
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
-
+                                <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 grow">
                                 </div>
                             </div>
                         </div>

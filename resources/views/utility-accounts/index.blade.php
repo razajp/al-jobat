@@ -3,21 +3,34 @@
 @section('content')
     @php
         $searchFields = [
-            "Article No" => [
-                "id" => "article_no",
+            "Bill Type" => [
+                "id" => "bill_type",
                 "type" => "text",
-                "placeholder" => "Enter article no",
+                "placeholder" => "Enter bill type",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "name",
+                "dataFilterPath" => "bill_type",
             ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
+            "Location" => [
+                "id" => "location",
+                "type" => "text",
+                "placeholder" => "Enter location",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
-            ]
+                "dataFilterPath" => "location",
+            ],
+            "Account Title" => [
+                "id" => "account_title",
+                "type" => "text",
+                "placeholder" => "Enter account title",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_title",
+            ],
+            "Account No." => [
+                "id" => "account_mo",
+                "type" => "text",
+                "placeholder" => "Enter account no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_no",
+            ],
         ];
     @endphp
 

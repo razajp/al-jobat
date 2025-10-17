@@ -19,7 +19,7 @@ class DRController extends Controller
      */
     public function index()
     {
-        $drs = DR::with('customer')->orderBy('id', 'desc')->get();
+        $drs = DR::with('customer.city')->orderBy('id', 'desc')->get();
 
         return view('dr.index', compact('drs'));
     }

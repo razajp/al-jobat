@@ -117,7 +117,7 @@ class UtilityBillController extends Controller
         {
             return response()->json(['error' => 'Unauthorized'], 403);
         }
-        
+
         $utilityBill->is_paid = true;
         $utilityBill->save();
 

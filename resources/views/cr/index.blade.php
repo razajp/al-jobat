@@ -3,12 +3,26 @@
 @section('content')
     @php
         $searchFields = [
-            "Article No" => [
-                "id" => "article_no",
+            "Supplier Name" => [
+                "id" => "supplier_name",
                 "type" => "text",
-                "placeholder" => "Enter article no",
+                "placeholder" => "Enter supplier name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "name",
+                "dataFilterPath" => "supplier_name",
+            ],
+            "CR No." => [
+                "id" => "c_r_no",
+                "type" => "text",
+                "placeholder" => "Enter cr no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "c_r_no",
+            ],
+            "Voucher No." => [
+                "id" => "voucher_no",
+                "type" => "text",
+                "placeholder" => "Enter voucher no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "voucher_no",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -77,7 +91,7 @@
                 <span>${formatDate(data.date)}</span>
                 <span>${data.c_r_no}</span>
                 <span>${data.voucher_no}</span>
-                <span>${data.supplier_name ?? 'Al Jobat'}</span>
+                <span>${data.supplier_name}</span>
             </div>`;
         }
 
@@ -90,7 +104,7 @@
                 date: item.date,
                 c_r_no: item.c_r_no,
                 voucher_no: item.voucher?.voucher_no,
-                supplier_name: item.voucher?.supplier?.supplier_name,
+                supplier_name: item.voucher?.supplier?.supplier_name ?? 'Al Jobat',
                 visible: true,
             };
         });

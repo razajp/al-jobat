@@ -86,7 +86,7 @@
                                     <div class="cursor-pointer text-right pr-5" onclick="sortByThis(this)">Status</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                            <div class="overflow-y-auto grow my-scrollbar-2">
+                                <div class="overflow-y-auto grow my-scrollbar-2">
                                     <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 grow">
                                     </div>
                                 </div>

@@ -3,12 +3,12 @@
 @section('content')
     @php
         $searchFields = [
-            "Article No" => [
-                "id" => "article_no",
+            "Customer Name" => [
+                "id" => "customer_name",
                 "type" => "text",
-                "placeholder" => "Enter article no",
+                "placeholder" => "Enter customer name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "name",
+                "dataFilterPath" => "customer_name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -29,7 +29,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar printBtn title="Show DRs" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show DRs" resetSortBtn />
 
             @if (count($drs) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -84,7 +84,7 @@
             return {
                 id: item.id,
                 date: item.date,
-                customer_name: item.customer.customer_name,
+                customer_name: item.customer.customer_name + ' | ' + item.customer.city.title,
                 visible: true,
             };
         });

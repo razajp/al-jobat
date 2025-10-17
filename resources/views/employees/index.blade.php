@@ -8,14 +8,7 @@
                 "type" => "text",
                 "placeholder" => "Enter employee name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "employee_name",
-            ],
-            "Urdu Title" => [
-                "id" => "urdu_title",
-                "type" => "text",
-                "placeholder" => "Enter urdu title",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "urdu_title",
+                "dataFilterPath" => "name",
             ],
             "Phone" => [
                 "id" => "phone",
@@ -32,22 +25,14 @@
                             'worker' => ['text' => 'Worker'],
                         ],
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "category",
+                "dataFilterPath" => "details.Category",
             ],
             "Type" => [
                 "id" => "type",
-                "type" => "select",
-                "options" => $all_types,
-                "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "type.title",
-            ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
+                "type" => "text",
+                "placeholder" => "Enter type",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "type",
             ]
         ];
     @endphp
@@ -130,9 +115,10 @@
                 phone_number: item.phone_number,
                 details: {
                     'Category': item.category,
-                    'Type': item.type.title,
+                    'Type': item.type.title.split('|')[0].trim(),
                     'Balance': formatNumbersWithDigits(item.balance ?? 0, 1, 1),
                 },
+                type: item.type.title,
                 joining_date: item.joining_date,
                 cnic_no: item.cnic_no,
                 salary: item.salary,

@@ -97,7 +97,7 @@
                 class="item row relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span>${data.date}</span>
+                <span>${formatDate(data.date)}</span>
                 <span class="col-span-2">${data.customer_name}</span>
                 <span>${data.invoice_no}</span>
                 <span>${data.cargo_name}</span>
@@ -109,7 +109,7 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                date: formatDate(item.date),
+                date: item.date,
                 customer_name: item.invoice.customer.customer_name + ' | ' + item.invoice.customer.city.title,
                 invoice_no: item.invoice.invoice_no,
                 cargo_name: item.invoice.cargo_name,
