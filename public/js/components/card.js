@@ -6,6 +6,7 @@ function createCard(data) {
         no_Image: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
         pending: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
         inactive: ['bg-[var(--border-error)]', 'text-[var(--border-error)]'],
+        partially_invoiced: ['bg-[var(--border-success)]', 'text-[var(--border-success)]'],
     };
 
     let clutter = `

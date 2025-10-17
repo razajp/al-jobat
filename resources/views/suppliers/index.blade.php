@@ -41,13 +41,6 @@
                     'in_active' => ['text' => 'In Active'],
                 ],
                 'dataFilterPath' => 'user.status',
-            ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
-                "dataFilterPath" => "date",
             ]
         ];
     @endphp

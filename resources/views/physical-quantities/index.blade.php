@@ -10,6 +10,23 @@
                 "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "name",
             ],
+            "Processed By" => [
+                "id" => "processed_by",
+                "type" => "text",
+                "placeholder" => "Enter processed by",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "processed_by",
+            ],
+            'Shipment' => [
+                'id' => 'shipment',
+                'type' => 'select',
+                'options' => [
+                    'all' => ['text' => 'All'],
+                    'karachi' => ['text' => 'Karachi'],
+                    'lahore' => ['text' => 'Lahore'],
+                ],
+                'dataFilterPath' => 'shipment',
+            ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",

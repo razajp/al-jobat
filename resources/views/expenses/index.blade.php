@@ -8,7 +8,7 @@
                 "type" => "text",
                 "placeholder" => "Enter supplier name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "supplier.supplier_name",
+                "dataFilterPath" => "supplier_name",
             ],
             "Reff. No" => [
                 "id" => "reff_no",
@@ -22,7 +22,7 @@
                 "type" => "select",
                 "options" => $expenseOptions,
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "expense_setups.title",
+                "dataFilterPath" => "expense",
             ],
             "Remarks" => [
                 "id" => "remarks",
@@ -96,7 +96,7 @@
                 class="item row relative group grid grid-cols-8 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span>${data.date}</span>
+                <span>${formatDate(data.date)}</span>
                 <span class="col-span-2">${data.supplier_name}</span>
                 <span>${data.reff_no}</span>
                 <span>${data.expense}</span>
@@ -111,7 +111,7 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                date: formatDate(item.date),
+                date: item.date,
                 supplier_name: item.supplier.supplier_name,
                 reff_no: item.reff_no || '-',
                 expense: item.expense_setups.title,

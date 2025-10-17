@@ -5,17 +5,10 @@
         $searchFields = [
             "Shipment No" => [
                 "id" => "shipment_no",
-                "type" => "number",
+                "type" => "text",
                 "placeholder" => "Enter shipment no",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "shipment_no",
-            ],
-            "Customer Name" => [
-                "id" => "customer_name",
-                "type" => "text",
-                "placeholder" => "Enter customer name",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "customer.customer_name",
+                "dataFilterPath" => "name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -23,7 +16,7 @@
                 "id2" => "date_range_end",
                 "type2" => "date",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "data.date",
             ]
         ];
     @endphp

@@ -5,7 +5,6 @@
         $categories_options = [
             'self_account' => ['text' => 'Self Account'],
             'supplier' => ['text' => 'Supplier'],
-            // 'customer' => ['text' => 'Customer'],
             'waiting' => ['text' => 'Waiting'],
         ];
 
@@ -23,11 +22,17 @@
                 'options' => [
                     'supplier' => ['text' => 'Supplier'],
                     'self_account' => ['text' => 'Self Account'],
-                    'customer' => ['text' => 'Customer'],
                     'waiting' => ['text' => 'Waiting'],
                 ],
                 'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'Category',
+                'dataFilterPath' => 'category',
+            ],
+            'Beneficiary' => [
+                'id' => 'beneficiary',
+                'type' => 'text',
+                'placeholder' => 'Enter beneficiary',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'beneficiary',
             ],
             'Status' => [
                 'id' => 'status',
