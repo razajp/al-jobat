@@ -67,9 +67,6 @@ function createCard(data) {
         `;
     }
 
-    console.log(data);
-
-
     clutter += `
         <div class="${data.checkbox ? 'flex justify-between items-center w-full' : 'text-start'} ${data.image ? 'pt-1' : ''}">
             <div>
