@@ -153,6 +153,7 @@ class ReportController extends Controller
                         return [
                             'id' => $p->id,
                             'method' => $p->method,
+                            'reff_no' => $p->cheque_no ?? $p->slip_no,
                             'date' => $p->method === 'cheque' ? $p->cheque_date : $p->slip_date,
                             'amount' => $p->amount,
                             'received_amount' => $p->received_amount,

@@ -173,10 +173,7 @@ class DRController extends Controller
 
     public function getPayments(Request $request)
     {
-        $payments = CustomerPayment::where('customer_id', $request->customer_id)->whereIn('method', ['cheque', 'slip'])->whereNull('d_r_id')->where(function ($q) {
-            $q->whereDoesntHave('cheque')
-            ->orWhere('is_return', true);
-        })->get();
+        $payments = CustomerPayment::where('customer_id', $request->customer_id)->whereIn('method', ['cheque', 'slip'])->whereNull('d_r_id')->where('is_return', true)->get();
 
         return response()->json(['status' => 'success', 'data' => $payments]);
     }

@@ -365,21 +365,21 @@
         }
 
         function addPayment() {
-            formatAmountInput(amountDOM)
-            console.log(amountDOM.value);
+            let currentValue = amountDOM.value.replace(/[^0-9.]/g, ''); // input ko format karke number return karega
+            console.log(currentValue);
 
-            if (amountDOM.value > 0) {
+            if (currentValue > 0) {
                 addedPaymentsArray.push({
                     'bank_account_id': JSON.parse(document.querySelector('ul[data-for="payment"] li.selected').dataset.option || '{}').id,
                     'data_value': document.querySelector('ul[data-for="payment"] li.selected').getAttribute('data-value'),
                     'method': methodSelectDOM.value,
                     'payment': document.getElementById('payment').value,
-                    'amount': amountDOM.value,
+                    'amount': currentValue,
                 })
 
                 methodSelectDOM.value = '';
                 document.getElementById('payment').value = '';
-                amountDOM.value = '';
+                currentValue = '';
                 renderAddPaymentList();
             }
         }

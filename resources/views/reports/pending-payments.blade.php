@@ -54,13 +54,14 @@
                                             <div class="table w-full">
                                                 {{-- Table Header --}}
                                                 <div class="thead w-full">
-                                                    <div class="tr grid grid-cols-6 w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center rounded-md">
-                                                        <div class="th font-medium">S.No</div>
-                                                        <div class="th font-medium">Date</div>
-                                                        <div class="th font-medium">Method</div>
-                                                        <div class="th font-medium">Amount</div>
-                                                        <div class="th font-medium">Received Amount</div>
-                                                        <div class="th font-medium">Balance</div>
+                                                    <div class="tr flex items-center w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center rounded-md">
+                                                        <div class="th w-[10%] font-medium">S.No</div>
+                                                        <div class="th w-1/6 font-medium">Date</div>
+                                                        <div class="th w-1/6 font-medium">Method</div>
+                                                        <div class="th w-1/6 font-medium">Reff. No.</div>
+                                                        <div class="th w-1/6 font-medium">Amount</div>
+                                                        <div class="th w-1/6 font-medium">Received</div>
+                                                        <div class="th w-1/6 font-medium">Balance</div>
                                                     </div>
                                                 </div>
 
@@ -68,13 +69,14 @@
                                                 <div id="tbody" class="tbody w-full">
                                                     @foreach ($item['payments'] as $payment)
                                                         <div class="w-full px-4 py-1.5 text-center border-b border-gray-700 last:border-0">
-                                                            <div class="tr grid grid-cols-6">
-                                                                <div class="td">{{ $loop->iteration }}</div>
-                                                                <div class="td">{{ \Carbon\Carbon::parse($payment['date'])->format('d-M-Y, D') }}</div>
-                                                                <div class="td">{{ $payment['method'] }}</div>
-                                                                <div class="td">{{ number_format($payment['amount']) }}</div>
-                                                                <div class="td">{{ number_format($payment['received_amount']) }}</div>
-                                                                <div class="td">{{ number_format($payment['balance']) }}</div>
+                                                            <div class="tr flex items-center">
+                                                                <div class="td w-[10%]">{{ $loop->iteration }}</div>
+                                                                <div class="td w-1/6">{{ \Carbon\Carbon::parse($payment['date'])->format('d-M-Y, D') }}</div>
+                                                                <div class="td w-1/6">{{ $payment['method'] }}</div>
+                                                                <div class="td w-1/6">{{ $payment['reff_no'] }}</div>
+                                                                <div class="td w-1/6">{{ number_format($payment['amount']) }}</div>
+                                                                <div class="td w-1/6">{{ number_format($payment['received_amount']) }}</div>
+                                                                <div class="td w-1/6">{{ number_format($payment['balance']) }}</div>
                                                             </div>
                                                         </div>
                                                     @endforeach
