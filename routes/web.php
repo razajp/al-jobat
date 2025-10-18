@@ -11,6 +11,7 @@ use App\Http\Controllers\CRController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerPaymentController;
 use App\Http\Controllers\DailyLedgerController;
+use App\Http\Controllers\DRController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\EmployeePaymentController;
 use App\Http\Controllers\ExpenseController;
@@ -87,7 +88,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::resource('supplier-payments', SupplierPaymentController::class);
 
+    Route::get('payment-programs/summary', [PaymentProgramController::class, 'summary'])->name('payment-programs.summary');
     Route::resource('payment-programs', PaymentProgramController::class);
+    Route::post('payment-programs.get-summary', [PaymentProgramController::class, 'getSummary'])->name('payment-programs.get-summary');
     Route::post('payment-programs.update-program', [PaymentProgramController::class, 'updateProgram'])->name('payment-programs.update-program');
     Route::get('payment-programs/{id}/mark-paid', [PaymentProgramController::class, 'markPaid'])->name('payment-programs.mark-paid');
 
@@ -117,6 +120,9 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::resource('employee-payments', EmployeePaymentController::class);
 
     Route::resource('cr', CRController::class);
+
+    Route::get('dr/get-payments', [DRController::class, 'getPayments']);
+    Route::resource('dr', DRController::class);
 
     Route::resource('daily-ledger', DailyLedgerController::class);
 
@@ -149,9 +155,11 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::post('set-daily-ledger-type', [Controller::class, 'setDailyLedgerType'])->name('set-daily-ledger-type');
     Route::post('get-utility-accounts', [Controller::class, 'getUtilityAccounts'])->name('get-utility-accounts');
     Route::post('set-cr-type', [Controller::class, 'setCRType'])->name('set-cr-type');
+    Route::post('set-statement-type', [Controller::class, 'setStatementType'])->name('set-statement-type');
 
     Route::get('reports/statement', [ReportController::class, 'statement'])->name('reports.statement');
     Route::post('reports/statement/get-names', [ReportController::class, 'getNames'])->name('reports.statement.get-names');
+    Route::get('reports/pending-payments', [ReportController::class, 'pendingPayments'])->name('reports.pending-payments');
 
     Route::post('logout', [AuthController::class, 'logout'])->name('logout');
     Route::post('update-last-activity', [AuthController::class, 'updateLastActivity'])->name('update-last-activity');

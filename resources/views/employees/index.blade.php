@@ -8,14 +8,7 @@
                 "type" => "text",
                 "placeholder" => "Enter employee name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "employee_name",
-            ],
-            "Urdu Title" => [
-                "id" => "urdu_title",
-                "type" => "text",
-                "placeholder" => "Enter urdu title",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "urdu_title",
+                "dataFilterPath" => "name",
             ],
             "Phone" => [
                 "id" => "phone",
@@ -32,22 +25,14 @@
                             'worker' => ['text' => 'Worker'],
                         ],
                 "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "category",
+                "dataFilterPath" => "details.Category",
             ],
             "Type" => [
                 "id" => "type",
-                "type" => "select",
-                "options" => $all_types,
-                "onchange" => "runDynamicFilter()",
-                "dataFilterPath" => "type.title",
-            ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
+                "type" => "text",
+                "placeholder" => "Enter type",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "type",
             ]
         ];
     @endphp
@@ -59,7 +44,7 @@
         <!-- Main Content -->
         <section class="text-center mx-auto">
             <div class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] rounded-xl shadow pt-8.5 pr-2 relative">
-                <x-form-title-bar title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+                <x-form-title-bar printBtn title="Show Employees" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
                 @if (count($employees) > 0)
                     <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -130,9 +115,10 @@
                 phone_number: item.phone_number,
                 details: {
                     'Category': item.category,
-                    'Type': item.type.title,
+                    'Type': item.type.title.split('|')[0].trim(),
                     'Balance': formatNumbersWithDigits(item.balance ?? 0, 1, 1),
                 },
+                type: item.type.title,
                 joining_date: item.joining_date,
                 cnic_no: item.cnic_no,
                 salary: item.salary,

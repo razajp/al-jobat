@@ -720,7 +720,7 @@ function createModal(data, animate = 'animate') {
                         <hr class="w-full my-3 border-black">
                         <div class="footer flex w-full text-sm px-5 justify-between mb-4 text-black">
                             <P class="leading-none">Powered by SparkPair</P>
-                            <p class="leading-none text-sm">&copy; 2025 Spark Pair | +92 316 5825495</p>
+                            <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                         </div>
                     </div>
                 </div>

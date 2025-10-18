@@ -406,5 +406,25 @@
         function validateForNextStep() {
             return true;
         }
+
+        function onSubmitFunction() {
+            if (totalSelectedAmount <= 0) {
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'Please select at least one payment before submitting.'" />
+                `;
+                messageBoxAnimation();
+                return false;
+            }
+
+            if (totalAddedAmount !== totalSelectedAmount) {
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'The total added amount must be equal to the total selected amount.'" />
+                `;
+                messageBoxAnimation();
+                return false;
+            }
+
+            return true;
+        }
     </script>
 @endsection

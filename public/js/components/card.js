@@ -6,6 +6,7 @@ function createCard(data) {
         no_Image: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
         pending: ['bg-[var(--border-warning)]', 'text-[var(--border-warning)]'],
         inactive: ['bg-[var(--border-error)]', 'text-[var(--border-error)]'],
+        partially_invoiced: ['bg-[var(--border-success)]', 'text-[var(--border-success)]'],
     };
 
     let clutter = `
@@ -65,9 +66,6 @@ function createCard(data) {
                 class="row-checkbox mr-2 shrink-0 w-3.5 h-3.5 appearance-none border border-gray-400 rounded-sm checked:bg-[var(--primary-color)] checked:border-transparent focus:outline-none transition duration-150 pointer-events-none cursor-pointer" />
         `;
     }
-
-    console.log(data);
-
 
     clutter += `
         <div class="${data.checkbox ? 'flex justify-between items-center w-full' : 'text-start'} ${data.image ? 'pt-1' : ''}">

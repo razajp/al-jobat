@@ -3,101 +3,31 @@
 @section('content')
 @php
     $searchFields = [
-        "Beneficiary" => [
-            "id" => "beneficiary",
+        "Description" => [
+            "id" => "description",
             "type" => "text",
-            "placeholder" => "Enter beneficiary",
+            "placeholder" => "Enter description",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "beneficiary",
-        ],
-        "Voucher No." => [
-            "id" => "voucher_no",
-            "type" => "text",
-            "placeholder" => "Enter voucher no.",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "voucher_no",
-        ],
-        "Daily Ledger" => [
-            "id" => "daily_ledger",
-            "type" => "text",
-            "placeholder" => "Enter daily ldger name",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "name",
-        ],
-        "City" => [
-            "id" => "city",
-            "type" => "text",
-            "placeholder" => "Enter city",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "data.daily ldger.city.title",
+            "dataFilterPath" => "description",
         ],
         "Type" => [
             "id" => "type",
             "type" => "select",
             "options" => [
-                        'normal' => ['text' => 'Normal'],
-                        'payment program' => ['text' => 'Payment Program'],
-                        'recovery' => ['text' => 'Recovery'],
+                        'deposit' => ['text' => 'Deposit'],
+                        'use' => ['text' => 'Use'],
                     ],
             "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Type",
+            "dataFilterPath" => "type",
         ],
-        "Method" => [
-            "id" => "method",
-            "type" => "select",
-            "options" => [
-                        'cash' => ['text' => 'Cash'],
-                        'cheque' => ['text' => 'Cheque'],
-                        'slip' => ['text' => 'Slip'],
-                        'program' => ['text' => 'Program'],
-                        'adjustment' => ['text' => 'Adjustment'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Method",
-        ],
-        "Date" => [
-            "id" => "date",
-            "type" => "text",
-            "placeholder" => "Enter date",
+        "Date Range" => [
+            "id" => "date_range_start",
+            "type" => "date",
+            "id2" => "date_range_end",
+            "type2" => "date",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Date",
-        ],
-        "Reff. No." => [
-            "id" => "reff_no",
-            "type" => "text",
-            "placeholder" => "Enter reff. no.",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "reff_no",
-        ],
-        "Issued" => [
-            "id" => "issued",
-            "type" => "select",
-            "options" => [
-                        'Issued' => ['text' => 'Issued'],
-                        'Return' => ['text' => 'Return'],
-                        'Not Issued' => ['text' => 'Not Issued'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "issued",
-        ],
-        "Status" => [
-            "id" => "status",
-            "type" => "select",
-            "options" => [
-                        'Cleared' => ['text' => 'Cleared'],
-                        'Pending' => ['text' => 'Pending'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "clearStatus",
-        ],
-        // "Date Range" => [
-        //     "id" => "date_range_start",
-        //     "type" => "date",
-        //     "id2" => "date_range_end",
-        //     "type2" => "date",
-        //     "oninput" => "runDynamicFilter()",
-        //     "dataFilterPath" => "details.Date",
-        // ]
+            "dataFilterPath" => "date",
+        ]
     ];
 @endphp
     <div class="w-[80%] mx-auto">
@@ -108,7 +38,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Daily Ledger" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Daily Ledger" resetSortBtn />
 
             @if (count($dailyLedgers) > 0)
                 <div class="absolute bottom-14 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -172,7 +102,7 @@
                     class="item row relative group grid grid-cols-4 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
-                    <span>${data.date}</span>
+                    <span>${formatDate(data.date)}</span>
                     <span>${data.description}</span>
                     <span>${formatNumbersWithDigits(data.deposit, 1, 1)}</span>
                     <span>${formatNumbersWithDigits(data.use, 1, 1)}</span>
@@ -186,10 +116,11 @@
             totalUseAmount += parseFloat(item.use ?? 0);
             return {
                 id: item.id,
-                date: formatDate(item.date),
+                date: item.date,
                 description: item.description ?? '-',
                 deposit: item.deposit,
                 use: item.use,
+                type: item.deposit > 0 ? 'deposit' : 'use',
                 visible: true,
             };
         });
@@ -200,9 +131,9 @@
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
-            totalDepositAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.deposit, 0);
-            totalUseAmount = newlyFilteredData.filter(d => d.visible).reduce((sum, d) => sum + d.use, 0);
-            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
+            totalDepositAmount = visibleData.reduce((sum, d) => sum + d.deposit, 0);
+            totalUseAmount = visibleData.reduce((sum, d) => sum + d.use, 0);
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
 
             totalDepositDom.innerText = formatNumbersWithDigits(totalDepositAmount, 1, 1);
             totalUseDom.innerText = formatNumbersWithDigits(totalUseAmount, 1, 1);

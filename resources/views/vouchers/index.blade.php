@@ -8,14 +8,14 @@
                 "type" => "text",
                 "placeholder" => "Enter supplier name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "supplier.supplier_name",
+                "dataFilterPath" => "details.Supplier",
             ],
             "Voucher No" => [
                 "id" => "voucher_no",
                 "type" => "text",
                 "placeholder" => "Enter voucher number",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "voucher_no",
+                "dataFilterPath" => "name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -23,7 +23,7 @@
                 "id2" => "date_range_end",
                 "type2" => "date",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "data.date",
             ]
         ];
     @endphp
@@ -36,10 +36,11 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Vouchers" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+            <x-form-title-bar printBtn title="Show Vouchers" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
             @if (count($vouchers) > 0)
-                <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
+                <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
+                    <x-section-navigation-button direction="right" id="info" icon="fa-info" />
                     <x-section-navigation-button link="{{ route('vouchers.create') }}" title="Add New Payment" icon="fa-plus" />
                 </div>
 
@@ -240,6 +241,13 @@
             }
 
             createModal(modalData);
+        }
+
+        let infoDom = document.getElementById('info').querySelector('span');
+        infoDom.textContent = `Showing ${allDataArray.length} of ${allDataArray.length} Records.`;
+
+        function onFilter() {
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} Records.`;
         }
     </script>
 @endsection

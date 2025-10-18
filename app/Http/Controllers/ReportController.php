@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BankAccount;
 use App\Models\Customer;
+use App\Models\CustomerPayment;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -11,7 +12,8 @@ class ReportController extends Controller
 {
     public function statement(Request $request)
     {
-        // if (!empty($request)) {
+        if (!empty($request)) {
+            $type = $request->type;
             $category = $request->category;
             $id = $request->id;
             $dateFrom = $request->date_from;
@@ -26,7 +28,7 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Customer not found'], 404);
                     }
 
-                    $data = $customer->getStatement($dateFrom, $dateTo);
+                    $data = $customer->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
@@ -37,7 +39,7 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Supplier not found'], 404);
                     }
 
-                    $data = $supplier->getStatement($dateFrom, $dateTo);
+                    $data = $supplier->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
@@ -48,12 +50,12 @@ class ReportController extends Controller
                         return response()->json(['error' => 'Bank account not found'], 404);
                     }
 
-                    $data = $bank_account->getStatement($dateFrom, $dateTo);
+                    $data = $bank_account->getStatement($dateFrom, $dateTo, $type);
 
                     return view("reports.statement", compact('data'));
                 }
             }
-        // }
+        }
 
         return view("reports.statement");
     }
@@ -87,5 +89,96 @@ class ReportController extends Controller
         }
 
         return response()->json(['error' => 'Invalid category'], 400);
+    }
+    public function pendingPayments(Request $request)
+    {
+        if (!empty($request)) {
+            $date = $request->input('date'); // e.g. 2025-10-10
+            if ($date) {
+                // Base payments query
+                $payments = CustomerPayment::with([
+                        'customer.city',
+                        'paymentClearRecord',
+                    ])
+                    ->whereNotNull('customer_id')
+                    ->whereIn('method', ['cheque', 'slip'])
+                    ->get()
+                    ->filter(function ($payment) use ($date) {
+                        $paymentDate = $payment->method === 'cheque'
+                            ? $payment->cheque_date
+                            : $payment->slip_date;
+
+                        if (!$paymentDate) return false;
+
+                        // Include only if paymentDate <= given $date
+                        if (\Carbon\Carbon::parse($paymentDate)->gt(\Carbon\Carbon::parse($date))) {
+                            return false;
+                        }
+
+                        $totalAmount = floatval($payment->amount);
+                        $receivedAmount = 0;
+
+                        if ($payment->paymentClearRecord && count($payment->paymentClearRecord) > 0) {
+                            $receivedAmount = collect($payment->paymentClearRecord)->sum('amount');
+                        } elseif ($payment->clear_date !== null) {
+                            $receivedAmount = $totalAmount;
+                        }
+
+                        $balance = $totalAmount - $receivedAmount;
+
+                        // ✅ Only include if balance > 0
+                        if ($balance <= 0) return false;
+
+                        // Add computed values for clarity
+                        $payment->received_amount = $receivedAmount;
+                        $payment->balance = $balance;
+
+                        return true;
+                    })
+                    ->values();
+
+                // ✅ Group payments by customer
+                $grouped = $payments->groupBy(function ($p) {
+                    $cityTitle = $p->customer?->city?->title ?? '';
+                    return ($p->customer?->customer_name ?? 'Unknown') . ' | ' . $cityTitle;
+                })
+                ->map(function ($group, $customerKey) {
+                    // Prepare totals
+                    $totalAmount = $group->sum('amount');
+                    $totalReceived = $group->sum('received_amount');
+                    $totalBalance = $totalAmount - $totalReceived;
+
+                    // Prepare simplified payment list
+                    $paymentsArray = $group->map(function ($p) {
+                        return [
+                            'id' => $p->id,
+                            'method' => $p->method,
+                            'date' => $p->method === 'cheque' ? $p->cheque_date : $p->slip_date,
+                            'amount' => $p->amount,
+                            'received_amount' => $p->received_amount,
+                            'balance' => $p->balance,
+                        ];
+                    })->values();
+
+                    return [
+                        'customer' => $customerKey,
+                        'payments' => $paymentsArray,
+                        'totals' => [
+                            'amount' => $totalAmount,
+                            'received_amount' => $totalReceived,
+                            'balance' => $totalBalance,
+                        ],
+                    ];
+                })
+                ->values();
+
+                $data = $grouped;
+
+                // return response()->json($data);
+                return view("reports.pending-payments", compact('data'));
+            }
+        }
+
+        return view("reports.pending-payments");
     }
 }

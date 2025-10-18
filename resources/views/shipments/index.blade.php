@@ -5,17 +5,10 @@
         $searchFields = [
             "Shipment No" => [
                 "id" => "shipment_no",
-                "type" => "number",
+                "type" => "text",
                 "placeholder" => "Enter shipment no",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "shipment_no",
-            ],
-            "Customer Name" => [
-                "id" => "customer_name",
-                "type" => "text",
-                "placeholder" => "Enter customer name",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "customer.customer_name",
+                "dataFilterPath" => "name",
             ],
             "Date Range" => [
                 "id" => "date_range_start",
@@ -23,7 +16,7 @@
                 "id2" => "date_range_end",
                 "type2" => "date",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "data.date",
             ]
         ];
     @endphp
@@ -35,7 +28,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-                <x-form-title-bar title="Show Shipments" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+                <x-form-title-bar printBtn title="Show Shipments" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
             @if (count($shipments) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">

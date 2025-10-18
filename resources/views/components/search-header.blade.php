@@ -12,7 +12,7 @@
 
 <div class="header w-full flex items-center justify-between">
     @if (!$hide)
-        <h5 id="name" class="text-3xl text-[var(--text-color)] uppercase font-semibold leading-none ml-1">
+        <h5 id="page-name" class="text-3xl text-[var(--text-color)] uppercase font-semibold leading-none ml-1">
             {{ str_replace('_', ' ', $heading) }}</h5>
     @endif
 

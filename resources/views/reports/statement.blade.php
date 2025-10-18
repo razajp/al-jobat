@@ -1,9 +1,81 @@
 @extends('app')
 @section('title', 'Statement | ' . app('company')->name)
+@section('content')
 @php
     $companyData = app('company');
+    $statementType = Auth::user()->statement_type;
 @endphp
-@section('content')
+    <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-4">
+        <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
+            <!-- Highlight rectangle -->
+            <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
+
+            <!-- Buttons -->
+            <button id="summarizedBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'summarized')">
+                <div class="hidden md:block">Summarized</div>
+                <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
+            </button>
+            <button id="detailedBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'detailed')">
+                <div class="hidden md:block">Detailed</div>
+                <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let btnTypeGlobal = "summarized";
+
+        function setVoucherType(btn, btnType) {
+            doHide = true;
+            // check if its already selected
+            if (btnTypeGlobal == btnType) {
+                return;
+            }
+
+            $.ajax({
+                url: "/set-statement-type",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    statement_type: btnType
+                },
+                success: function () {
+                    location.reload();
+                },
+                error: function () {
+                    alert("Failed to update statement type.");
+                    $(btn).prop("disabled", false);
+                }
+            });
+
+            moveHighlight(btn, btnType);
+        }
+
+        function moveHighlight(btn, btnType) {
+            const highlight = document.getElementById("highlight");
+            const rect = btn.getBoundingClientRect();
+
+            const parentRect = btn.parentElement.getBoundingClientRect();
+
+            // Move and resize the highlight
+            highlight.style.width = `${rect.width}px`;
+            highlight.style.left = `${rect.left - parentRect.left - 3}px`;
+
+            btnTypeGlobal = btnType;
+        }
+
+        // Initialize highlight on load
+        window.onload = () => {
+            @if($statementType == 'summarized')
+                const activeBtn = document.querySelector("#summarizedBtn");
+                moveHighlight(activeBtn, "summarized");
+            @else
+                const activeBtn = document.querySelector("#detailedBtn");
+                moveHighlight(activeBtn, "detailed");
+            @endif
+        };
+    </script>
+
     <!-- Main Content -->
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
@@ -156,9 +228,11 @@
                                                 <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
                                                     <div class="th font-medium w-[4%]">S.No</div>
                                                     <div class="th font-medium w-[12%]">Date</div>
-                                                    <div class="th font-medium w-[12%]">Reff. No.</div>
-                                                    <div class="th font-medium w-[10%]">Method</div>
-                                                    <div class="th font-medium w-[31%]">Description</div>
+                                                    @if($statementType == 'detailed')
+                                                        <div class="th font-medium w-[12%]">Reff. No.</div>
+                                                        <div class="th font-medium w-[10%]">Method</div>
+                                                        <div class="th font-medium w-[31%]">Description</div>
+                                                    @endif
                                                     <div class="th font-medium w-[9%]">Bill</div>
                                                     <div class="th font-medium w-[9%]">Payment</div>
                                                     <div class="th font-medium w-[9%]">Balance</div>
@@ -186,9 +260,11 @@
                                                         <div class="tr flex justify-between w-full px-4 text-center">
                                                             <div class="td font-semibold w-[4%]">{{ $loop->iteration }}.</div>
                                                             <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
-                                                            <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
-                                                            <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
-                                                            <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
+                                                            @if($statementType == 'detailed')
+                                                                <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
+                                                                <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
+                                                                <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
+                                                            @endif
                                                             <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
                                                             <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
                                                             <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
@@ -203,7 +279,7 @@
                                 {{-- Footer --}}
                                 <hr class="w-full my-3 border-gray-700">
                                 <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
-                                    <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                    <p>Powered by SparkPair &copy; 2025 SparkPair | +92 316 5825495</p>
                                     <p>Page 1 of {{ 1 + $otherPages->count() }}</p>
                                 </div>
 
@@ -245,9 +321,11 @@
                                                     <div class="tr flex justify-between w-full px-4 py-1.5 bg-[var(--primary-color)] text-white text-center">
                                                         <div class="th font-medium w-[4%]">S.No</div>
                                                         <div class="th font-medium w-[12%]">Date</div>
-                                                        <div class="th font-medium w-[12%]">Reff. No.</div>
-                                                        <div class="th font-medium w-[10%]">Method</div>
-                                                        <div class="th font-medium w-[31%]">Description</div>
+                                                        @if($statementType == 'detailed')
+                                                            <div class="th font-medium w-[12%]">Reff. No.</div>
+                                                            <div class="th font-medium w-[10%]">Method</div>
+                                                            <div class="th font-medium w-[31%]">Description</div>
+                                                        @endif
                                                         <div class="th font-medium w-[9%]">Bill</div>
                                                         <div class="th font-medium w-[9%]">Payment</div>
                                                         <div class="th font-medium w-[9%]">Balance</div>
@@ -275,9 +353,11 @@
                                                             <div class="tr flex justify-between w-full px-4 text-center">
                                                                 <div class="td font-semibold w-[4%]">{{ $loop->iteration + 26 + ($pageIndex * 29) }}.</div>
                                                                 <div class="td font-medium w-[12%]">{{ $statement['date']->format('d-M-Y') }}</div>
-                                                                <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
-                                                                <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
-                                                                <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
+                                                                @if($statementType == 'detailed')
+                                                                    <div class="td font-medium w-[12%]">{{ $statement['reff_no'] }}</div>
+                                                                    <div class="td font-medium w-[10%] capitalize">{{ $statement['method'] ?? "-" }}</div>
+                                                                    <div class="td font-medium w-[31%] text-nowrap overflow-hidden">{{ $statement['description'] ?? "-" }}</div>
+                                                                @endif
                                                                 <div class="td font-medium w-[9%]">{{ number_format($statement['bill']) ?? "-" }}</div>
                                                                 <div class="td font-medium w-[9%]">{{ number_format($statement['payment']) ?? "-" }}</div>
                                                                 <div class="td font-medium w-[9%]">{{ number_format($balance) }}</div>
@@ -292,7 +372,7 @@
                                     {{-- Footer --}}
                                     <hr class="w-full my-3 border-gray-700">
                                     <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-800 leading-none text-xs">
-                                        <p>Powered by SparkPair &copy; 2025 Spark Pair | +92 316 5825495</p>
+                                        <p>Powered by SparkPair &copy; 2025 SparkPair | +92 316 5825495</p>
                                         <p>Page {{ $pageIndex + 2 }} of {{ 1 + $otherPages->count() }}</p>
                                     </div>
 
@@ -516,6 +596,7 @@
                 data: {
                     _token: "{{ csrf_token() }}",
                     withData: false,
+                    type: '{{ $statementType }}',
                     category: category,
                     id: id,
                     date_from: dateFrom !== '' ? dateFrom : regDate,

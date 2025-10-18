@@ -3,20 +3,6 @@
 @section('content')
 @php
     $searchFields = [
-        "Beneficiary" => [
-            "id" => "beneficiary",
-            "type" => "text",
-            "placeholder" => "Enter beneficiary",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "beneficiary",
-        ],
-        "Voucher No." => [
-            "id" => "voucher_no",
-            "type" => "text",
-            "placeholder" => "Enter voucher no.",
-            "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "voucher_no",
-        ],
         "Employee Name" => [
             "id" => "employee_name",
             "type" => "text",
@@ -24,72 +10,38 @@
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "name",
         ],
-        "City" => [
-            "id" => "city",
+        "Method" => [
+            "id" => "method",
             "type" => "text",
-            "placeholder" => "Enter city",
+            "placeholder" => "Enter method",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "data.employee.city.title",
+            "dataFilterPath" => "details.Method",
+        ],
+        "Category" => [
+            "id" => "category",
+            "type" => "select",
+            "options" => [
+                        'staff' => ['text' => 'Staff'],
+                        'worker' => ['text' => 'Worker'],
+                    ],
+            "onchange" => "runDynamicFilter()",
+            "dataFilterPath" => "details.Category",
         ],
         "Type" => [
             "id" => "type",
-            "type" => "select",
-            "options" => [
-                        'normal' => ['text' => 'Normal'],
-                        'payment program' => ['text' => 'Payment Program'],
-                        'recovery' => ['text' => 'Recovery'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Type",
-        ],
-        "Method" => [
-            "id" => "method",
-            "type" => "select",
-            "options" => [
-                        'cash' => ['text' => 'Cash'],
-                        'cheque' => ['text' => 'Cheque'],
-                        'slip' => ['text' => 'Slip'],
-                        'program' => ['text' => 'Program'],
-                        'adjustment' => ['text' => 'Adjustment'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Method",
-        ],
-        "Date" => [
-            "id" => "date",
             "type" => "text",
-            "placeholder" => "Enter date",
+            "placeholder" => "Enter type",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Date",
+            "dataFilterPath" => "type",
         ],
-        "Reff. No." => [
-            "id" => "reff_no",
-            "type" => "text",
-            "placeholder" => "Enter reff. no.",
+        "Date Range" => [
+            "id" => "date_range_start",
+            "type" => "date",
+            "id2" => "date_range_end",
+            "type2" => "date",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "reff_no",
-        ],
-        "Issued" => [
-            "id" => "issued",
-            "type" => "select",
-            "options" => [
-                        'Issued' => ['text' => 'Issued'],
-                        'Return' => ['text' => 'Return'],
-                        'Not Issued' => ['text' => 'Not Issued'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "issued",
-        ],
-        "Status" => [
-            "id" => "status",
-            "type" => "select",
-            "options" => [
-                        'Cleared' => ['text' => 'Cleared'],
-                        'Pending' => ['text' => 'Pending'],
-                    ],
-            "onchange" => "runDynamicFilter()",
-            "dataFilterPath" => "clearStatus",
-        ],
+            "dataFilterPath" => "date",
+        ]
     ];
 @endphp
     <div class="w-[80%] mx-auto">
@@ -100,7 +52,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Employee Payments" changeLayoutBtn layout="{{ $authLayout }}" />
+            <x-form-title-bar printBtn title="Show Employee Payments" changeLayoutBtn layout="{{ $authLayout }}" />
 
             @if (count($payments) > 0)
                 <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -160,13 +112,15 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                name: item.employee.employee_name + ' | ' + item.employee.type.title,
+                name: item.employee.employee_name + ' | ' + item.employee.type.title.split('|')[0].trim(),
                 details: {
                     'Category': item.employee.category,
                     'Method': item.method,
                     'Date': formatDate(item.date),
                     'Amount': formatNumbersWithDigits(item.amount, 1, 1),
                 },
+                date: item.date,
+                type: item.employee.type.title,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 visible: true,
@@ -215,7 +169,7 @@
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
-            infoDom.textContent = `Showing ${newlyFilteredData.filter(d => d.visible).length} of ${allDataArray.length} payments.`;
+            infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
         }
     </script>
 @endsection

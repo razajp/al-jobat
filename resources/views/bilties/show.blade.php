@@ -51,7 +51,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Bilties" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Bilties" resetSortBtn />
 
             @if (count($bilties) > 0)
                 <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -97,7 +97,7 @@
                 class="item row relative group grid grid-cols-6 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span>${data.date}</span>
+                <span>${formatDate(data.date)}</span>
                 <span class="col-span-2">${data.customer_name}</span>
                 <span>${data.invoice_no}</span>
                 <span>${data.cargo_name}</span>
@@ -109,7 +109,7 @@
         let allDataArray = fetchedData.map(item => {
             return {
                 id: item.id,
-                date: formatDate(item.date),
+                date: item.date,
                 customer_name: item.invoice.customer.customer_name + ' | ' + item.invoice.customer.city.title,
                 invoice_no: item.invoice.invoice_no,
                 cargo_name: item.invoice.cargo_name,
@@ -122,8 +122,7 @@
         infoDom.textContent = `Total Records: ${allDataArray.length}`;
 
         function onFilter() {
-            let visibleCount = newlyFilteredData.filter(item => item.visible).length;
-            infoDom.textContent = `Total Records: ${visibleCount}`;
+            infoDom.textContent = `Total Records: ${visibleData.length}`;
         }
     </script>
 @endsection

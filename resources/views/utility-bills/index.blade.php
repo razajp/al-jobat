@@ -3,20 +3,51 @@
 @section('content')
     @php
         $searchFields = [
-            "Article No" => [
-                "id" => "article_no",
+            "Bill Type" => [
+                "id" => "bill_type",
                 "type" => "text",
-                "placeholder" => "Enter article no",
+                "placeholder" => "Enter bill type",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "name",
+                "dataFilterPath" => "bill_type",
             ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
+            "Location" => [
+                "id" => "location",
+                "type" => "text",
+                "placeholder" => "Enter location",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
+                "dataFilterPath" => "location",
+            ],
+            "Account Title" => [
+                "id" => "account_title",
+                "type" => "text",
+                "placeholder" => "Enter account title",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_title",
+            ],
+            "Account No." => [
+                "id" => "account_mo",
+                "type" => "text",
+                "placeholder" => "Enter account no.",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "account_no",
+            ],
+            "Month" => [
+                "id" => "month",
+                "type" => "text",
+                "placeholder" => "Enter month",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "month",
+            ],
+            'Status' => [
+                'id' => 'status',
+                'type' => 'select',
+                'options' => [
+                    'paid' => ['text' => 'Paid'],
+                    'due today' => ['text' => 'Due Today'],
+                    'overdue' => ['text' => 'Overdue'],
+                    'upcoming' => ['text' => 'Upcoming'],
+                ],
+                'dataFilterPath' => 'status',
             ]
         ];
     @endphp
@@ -29,7 +60,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Utility Bills" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Utility Bills" resetSortBtn />
 
             @if (count($utilityBills) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -39,7 +70,7 @@
 
                 <div class="details h-full z-40">
                     <div class="container-parent h-full">
-                        <div class="card_container px-3 h-full flex flex-col">
+                        <div class="card_container px-3 h-full flex flex-col text-center">
                             <div id="table-head" class="grid grid-cols-9 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Bill Type</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Location</div>
@@ -100,7 +131,7 @@
                 location: item.account.location.title,
                 account_title: item.account.account_title,
                 account_no: item.account.account_no,
-                month: item.month,
+                month: new Date(item.month + '-01').toLocaleString('en-US', {month: 'short', year: 'numeric',}).replace(' ', '-'),
                 units: item.units || '-' ,
                 amount: formatNumbersWithDigits(item.amount, 1, 1),
                 due_date: formatDate(item.due_date),

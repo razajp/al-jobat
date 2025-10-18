@@ -3,35 +3,27 @@
 @section('content')
     @php
         $searchFields = [
-            "Supplier Name" => [
-                "id" => "supplier_name",
+            "Article No." => [
+                "id" => "article_no",
                 "type" => "text",
-                "placeholder" => "Enter supplier name",
+                "placeholder" => "Enter article no.",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "supplier.supplier_name",
+                "dataFilterPath" => "supplier.article_no",
             ],
-            "Reff. No" => [
-                "id" => "reff_no",
+            "Worker Name" => [
+                "id" => "worker_name",
                 "type" => "text",
-                "placeholder" => "Enter reff. no",
+                "placeholder" => "Enter worker name",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "reff_no",
+                "dataFilterPath" => "worker_name",
             ],
-            "Remarks" => [
-                "id" => "remarks",
+            "Ticket" => [
+                "id" => "ticket",
                 "type" => "text",
-                "placeholder" => "Enter remarks",
+                "placeholder" => "Enter ticket",
                 "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "remarks",
+                "dataFilterPath" => "ticket",
             ],
-            "Date Range" => [
-                "id" => "date_range_start",
-                "type" => "date",
-                "id2" => "date_range_end",
-                "type2" => "date",
-                "oninput" => "runDynamicFilter()",
-                "dataFilterPath" => "date",
-            ]
         ];
     @endphp
     <div class="w-[80%] mx-auto">
@@ -42,7 +34,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Productions" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Productions" resetSortBtn />
 
             @if (count($productions) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">

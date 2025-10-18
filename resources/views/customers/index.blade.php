@@ -52,14 +52,7 @@
                     'in_active' => ['text' => 'In Active'],
                 ],
                 'dataFilterPath' => 'user.status',
-            ],
-            'Date Range' => [
-                'id' => 'date_range_start',
-                'type' => 'date',
-                'id2' => 'date_range_end',
-                'type2' => 'date',
-                'dataFilterPath' => 'date',
-            ],
+            ]
         ];
     @endphp
     <div>
@@ -71,7 +64,7 @@
         <section class="text-center mx-auto">
             <div
                 class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-                <x-form-title-bar title="Show Customers" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
+                <x-form-title-bar printBtn title="Show Customers" changeLayoutBtn layout="{{ $authLayout }}" resetSortBtn />
 
                 @if (count($customers) > 0)
                     <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
@@ -93,7 +86,7 @@
                                     <div class="cursor-pointer text-right pr-5" onclick="sortByThis(this)">Status</div>
                                 </div>
                                 <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                            <div class="overflow-y-auto grow my-scrollbar-2">
+                                <div class="overflow-y-auto grow my-scrollbar-2">
                                     <div class="search_container grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 grow">
                                     </div>
                                 </div>
@@ -164,7 +157,12 @@
         const activeCustomers = allDataArray.filter(customer => customer.user.status === 'active');
 
         let infoDom = document.getElementById('info').querySelector('span');
-        infoDom.textContent = `Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
+        infoDom.textContent = `Total Records: ${allDataArray.length} | Total Customers: ${allDataArray.length} | Active: ${activeCustomers.length}`;
+
+        function onFilter() {
+            const filteredActiveCustomers = visibleData.filter(customer => customer.user.status === 'active');
+            infoDom.textContent = `Total Records: ${visibleData.length} | Total Customers: ${visibleData.length} | Active: ${filteredActiveCustomers.length}`;
+        }
 
         function generateContextMenu(e) {
             e.preventDefault();

@@ -10,6 +10,23 @@
                 "oninput" => "runDynamicFilter()",
                 "dataFilterPath" => "name",
             ],
+            "Processed By" => [
+                "id" => "processed_by",
+                "type" => "text",
+                "placeholder" => "Enter processed by",
+                "oninput" => "runDynamicFilter()",
+                "dataFilterPath" => "processed_by",
+            ],
+            'Shipment' => [
+                'id' => 'shipment',
+                'type' => 'select',
+                'options' => [
+                    'all' => ['text' => 'All'],
+                    'karachi' => ['text' => 'Karachi'],
+                    'lahore' => ['text' => 'Lahore'],
+                ],
+                'dataFilterPath' => 'shipment',
+            ],
             "Date Range" => [
                 "id" => "date_range_start",
                 "type" => "date",
@@ -29,7 +46,7 @@
     <section class="text-center mx-auto ">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Physical Quantities" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Physical Quantities" resetSortBtn />
 
             @if (count($physicalQuantities) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">

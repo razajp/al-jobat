@@ -667,7 +667,7 @@
                 details: {
                     '': 'Manage your programs',
                 },
-                bottomChip: '2 actions',
+                bottomChip: '3 actions',
                 svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M24 48C10.7 48 0 58.7 0 72C0 85.3 10.7 96 24 96L69.3 96C73.2 96 76.5 98.8 77.2 102.6L129.3 388.9C135.5 423.1 165.3 448 200.1 448L456 448C469.3 448 480 437.3 480 424C480 410.7 469.3 400 456 400L200.1 400C188.5 400 178.6 391.7 176.5 380.3L171.4 352L475 352C505.8 352 532.2 330.1 537.9 299.8L568.9 133.9C572.6 114.2 557.5 96 537.4 96L124.7 96L124.3 94C119.5 67.4 96.3 48 69.2 48L24 48zM208 576C234.5 576 256 554.5 256 528C256 501.5 234.5 480 208 480C181.5 480 160 501.5 160 528C160 554.5 181.5 576 208 576zM432 576C458.5 576 480 554.5 480 528C480 501.5 458.5 480 432 480C405.5 480 384 501.5 384 528C384 554.5 405.5 576 432 576z"/></svg>',
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
@@ -676,6 +676,7 @@
                     active: false,
                 },
                 subMenu: [
+                    {name: 'Program Summary', href: "/payment-programs/summary"},
                     {name: 'Show Programs', href: "/payment-programs"},
                     {name: 'Add Program', href: "/payment-programs/create"},
                 ]
@@ -908,7 +909,7 @@
                 id: "cr",
                 name: "CR",
                 details: {
-                    '': 'Manage your cheque returns',
+                    '': 'Manage your CR',
                 },
                 bottomChip: '2 actions',
                 svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 80C377.4 80 424 126.6 424 184C424 241.4 377.4 288 320 288C262.6 288 216 241.4 216 184C216 126.6 262.6 80 320 80zM96 152C135.8 152 168 184.2 168 224C168 263.8 135.8 296 96 296C56.2 296 24 263.8 24 224C24 184.2 56.2 152 96 152zM0 480C0 409.3 57.3 352 128 352C140.8 352 153.2 353.9 164.9 357.4C132 394.2 112 442.8 112 496L112 512C112 523.4 114.4 534.2 118.7 544L32 544C14.3 544 0 529.7 0 512L0 480zM521.3 544C525.6 534.2 528 523.4 528 512L528 496C528 442.8 508 394.2 475.1 357.4C486.8 353.9 499.2 352 512 352C582.7 352 640 409.3 640 480L640 512C640 529.7 625.7 544 608 544L521.3 544zM472 224C472 184.2 504.2 152 544 152C583.8 152 616 184.2 616 224C616 263.8 583.8 296 544 296C504.2 296 472 263.8 472 224zM160 496C160 407.6 231.6 336 320 336C408.4 336 480 407.6 480 496L480 512C480 529.7 465.7 544 448 544L192 544C174.3 544 160 529.7 160 512L160 496z"/></svg>',
@@ -927,12 +928,34 @@
 
         @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
+                id: "dr",
+                name: "DR",
+                details: {
+                    '': 'Manage your DR',
+                },
+                bottomChip: '2 actions',
+                svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M320 80C377.4 80 424 126.6 424 184C424 241.4 377.4 288 320 288C262.6 288 216 241.4 216 184C216 126.6 262.6 80 320 80zM96 152C135.8 152 168 184.2 168 224C168 263.8 135.8 296 96 296C56.2 296 24 263.8 24 224C24 184.2 56.2 152 96 152zM0 480C0 409.3 57.3 352 128 352C140.8 352 153.2 353.9 164.9 357.4C132 394.2 112 442.8 112 496L112 512C112 523.4 114.4 534.2 118.7 544L32 544C14.3 544 0 529.7 0 512L0 480zM521.3 544C525.6 534.2 528 523.4 528 512L528 496C528 442.8 508 394.2 475.1 357.4C486.8 353.9 499.2 352 512 352C582.7 352 640 409.3 640 480L640 512C640 529.7 625.7 544 608 544L521.3 544zM472 224C472 184.2 504.2 152 544 152C583.8 152 616 184.2 616 224C616 263.8 583.8 296 544 296C504.2 296 472 263.8 472 224zM160 496C160 407.6 231.6 336 320 336C408.4 336 480 407.6 480 496L480 512C480 529.7 465.7 544 448 544L192 544C174.3 544 160 529.7 160 512L160 496z"/></svg>',
+                noMargin: true,
+                onclick: 'openSubMenu(event, this)',
+                oncontextmenu: 'openSubMenu(event, this)',
+                switchBtn: {
+                    active: false,
+                },
+                subMenu: [
+                    {name: 'Show DRs', href: "/dr"},
+                    {name: 'Generate DR', href: "/dr/create"},
+                ]
+            },
+        @endif
+
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+            {
                 id: "reports",
                 name: "Reports",
                 details: {
                     '': 'Manage your reports',
                 },
-                bottomChip: '1 action',
+                bottomChip: '2 actions',
                 svgIcon:'<svg class="size-5 fill-[var(--text-color)] group-hover:fill-[var(--primary-color)]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M192 64C156.7 64 128 92.7 128 128L128 512C128 547.3 156.7 576 192 576L448 576C483.3 576 512 547.3 512 512L512 234.5C512 217.5 505.3 201.2 493.3 189.2L386.7 82.7C374.7 70.7 358.5 64 341.5 64L192 64zM453.5 240L360 240C346.7 240 336 229.3 336 216L336 122.5L453.5 240z"/></svg>',
                 noMargin: true,
                 onclick: 'openSubMenu(event, this)',
@@ -942,6 +965,7 @@
                 },
                 subMenu: [
                     {name: 'Statement', href: "/reports/statement"},
+                    {name: 'Pending Payments', href: "/reports/pending-payments"},
                 ]
             },
         @endif

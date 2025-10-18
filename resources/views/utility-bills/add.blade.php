@@ -51,7 +51,7 @@
             <x-input label="Month" name="month" id="month" type="month" required disabled />
 
             {{-- units --}}
-            <x-input label="Units" name="units" id="units" type="number" placeholder="Enter Units" disabled dataValidate="numeric" />
+            <x-input label="Units" name="units" id="units" type="number" placeholder="Enter Units" disabled />
 
             {{-- amount --}}
             <x-input label="Amount" name="amount" id="amount" type="amount" required dataValidate="required|amount" placeholder="Enter Amount" disabled />

@@ -5,7 +5,6 @@
         $categories_options = [
             'self_account' => ['text' => 'Self Account'],
             'supplier' => ['text' => 'Supplier'],
-            // 'customer' => ['text' => 'Customer'],
             'waiting' => ['text' => 'Waiting'],
         ];
 
@@ -23,11 +22,17 @@
                 'options' => [
                     'supplier' => ['text' => 'Supplier'],
                     'self_account' => ['text' => 'Self Account'],
-                    'customer' => ['text' => 'Customer'],
                     'waiting' => ['text' => 'Waiting'],
                 ],
                 'onchange' => 'runDynamicFilter()',
-                'dataFilterPath' => 'Category',
+                'dataFilterPath' => 'category',
+            ],
+            'Beneficiary' => [
+                'id' => 'beneficiary',
+                'type' => 'text',
+                'placeholder' => 'Enter beneficiary',
+                'oninput' => 'runDynamicFilter()',
+                'dataFilterPath' => 'beneficiary',
             ],
             'Status' => [
                 'id' => 'status',
@@ -58,7 +63,7 @@
     <section class="text-center mx-auto">
         <div
             class="show-box mx-auto w-[80%] h-[70vh] bg-[var(--secondary-bg-color)] border border-[var(--glass-border-color)]/20 rounded-xl shadow pt-8.5 relative">
-            <x-form-title-bar title="Show Payment Programs" resetSortBtn />
+            <x-form-title-bar printBtn layout="table" title="Show Payment Programs" resetSortBtn />
 
             @if (count($finalData) > 0)
                 <div class="absolute bottom-3 right-3 flex items-center gap-2 w-fll z-50">
@@ -408,7 +413,7 @@
 
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
-            let cardData = [];
+            let tableBody = [];
 
             const sourceArray = Array.isArray(data.data.payments)
                 ? data.data.payments
@@ -416,21 +421,32 @@
                 ? data.data.payment_programs
                 : [];
 
-            cardData.push(...sourceArray.map(item => {
-                return {
-                    id: item.id,
-                    name: formatDate(item.date),
-                    details: {
-                        'Amount': formatNumbersWithDigits(item.amount, 1, 1),
-                        'Account': (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'),
-                        'Method': item.method,
-                    },
-                };
-            }));
+            tableBody = sourceArray.map((item, index) => {
+                return [
+                    {data: index+1, class: 'w-1/9'},
+                    {data: formatDate(item.date), class: 'w-1/6'},
+                    {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
+                    {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
+                    {data: item.method, class: 'w-1/6 capitalize'},
+                ];
+            });
 
             let modalData = {
                 id: 'modalForm',
-                cards: {name: 'Payment Details', count: 3, data: cardData},
+                class: 'max-w-4xl h-[37rem]',
+                name: 'Payment Details',
+                table: {
+                    name: 'Details',
+                    headers: [
+                        { label: "#", class: "w-1/9" },
+                        { label: "Data", class: "w-1/6" },
+                        { label: "Amount", class: "w-1/6" },
+                        { label: "Acc. Title", class: "w-1/3" },
+                        { label: "Method", class: "w-1/6" },
+                    ],
+                    body: tableBody,
+                    scrollable: true,
+                },
             }
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {
