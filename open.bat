@@ -1,3 +1,3 @@
 @echo off
 call npm run build
-start http://192.168.100.10:8000
+start http://127.0.0.1:8000
