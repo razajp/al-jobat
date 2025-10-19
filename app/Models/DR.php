@@ -10,6 +10,7 @@ class DR extends Model
     use HasFactory;
 
     protected $fillable = [
+        'd_r_no',
         'customer_id',
         'date',
         'return_payments',
