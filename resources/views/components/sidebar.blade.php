@@ -392,12 +392,22 @@
                                 <i class="fas fa-cog text-[var(--secondary-color)] mr-3"></i>
                                 Rates
                             </a>
-                    </li>
+                        </li>
+                    @endif
+                    @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+                        <!-- rates -->
+                        <li>
+                            <button id="backupDB" onclick="backupDB()"
+                                class="block w-full text-left px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
+                                <i class="fas fa-database text-[var(--secondary-color)] mr-3"></i>
+                                Backup DB
+                            </button>
+                        </li>
                     @endif
                     <!-- Theme Toggle -->
                     <li>
                         <button id="themeToggle"
-                            class="flex items-center w-full px-4 py-2 text-left hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
+                            class="block w-full text-left px-4 py-2 hover:bg-[var(--h-bg-color)] rounded-lg transition-all duration-200 ease-in-out cursor-pointer">
                             <i class="fas fa-moon text-[var(--secondary-color)] mr-3"></i>
                             Theme
                         </button>

@@ -1784,6 +1784,10 @@
             printIframe.contentWindow.print();
         };
     }
+
+    function backupDB() {
+        window.location.href = '/backup-db';
+    }
 </script>
 
 </html>

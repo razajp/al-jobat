@@ -32,6 +32,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UtilityAccountController;
 use App\Http\Controllers\UtilityBillController;
 use App\Http\Controllers\VoucherController;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -49,6 +50,12 @@ Route::get('login', [AuthController::class, 'login'])->name('login');
 Route::post('login', [AuthController::class, 'loginPost'])->name('loginPost');
 
 Route::group(['middleware' => ['auth', 'activeSession']], function () {
+    Route::get('/backup-db', function () {
+        $path = database_path('database.sqlite');
+        $backupName = 'database_backup_' . now()->format('Y-m-d_H-i-s') . '.sqlite';
+        return Response::download($path, $backupName);
+    });
+
     Route::get('', function () {
         return redirect(route('home'));
     });
