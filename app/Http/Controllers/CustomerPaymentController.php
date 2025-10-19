@@ -32,7 +32,8 @@ class CustomerPaymentController extends Controller
             "cheque.voucher.supplier.bankAccounts",
             "slip.voucher.supplier.bankAccounts",
             "bankAccount",
-            "paymentClearRecord"
+            "paymentClearRecord",
+            "dr"
         )
             ->whereNotNull("customer_id")
             ->whereNot("type", 'DR')
@@ -46,10 +47,14 @@ class CustomerPaymentController extends Controller
                 !$payment->is_return
             ) {
                 $payment->issued = "Issued";
-            } elseif ($payment->is_return) {
+            } else if ($payment->is_return && $payment->d_r_id === null) {
                 $payment->issued = "Return";
             } else {
                 $payment->issued = "Not Issued";
+            }
+
+            if ($payment->d_r_id !== null) {
+                $payment->issued = 'DR';
             }
         });
 

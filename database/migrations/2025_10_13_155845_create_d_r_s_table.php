@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('d_r_s', function (Blueprint $table) {
             $table->id();
+            $table->string('d_r_no');
             $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->date('date');
             $table->json('return_payments');

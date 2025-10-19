@@ -71,6 +71,7 @@
             "options" => [
                         'Issued' => ['text' => 'Issued'],
                         'Return' => ['text' => 'Return'],
+                        'DR' => ['text' => 'DR'],
                         'Not Issued' => ['text' => 'Not Issued'],
                     ],
             "onchange" => "runDynamicFilter()",
@@ -131,6 +132,7 @@
                                 <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Clear Date</div>
                                 <div class="text-center w-1/9 cursor-pointer" onclick="sortByThis(this)">Cleared Amount</div>
                                 <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Voucher No.</div>
+                                <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">DR No.</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -189,6 +191,7 @@
                     <span class="text-center w-1/10">${data.clear_date}</span>
                     <span class="text-center w-1/9">${data.cleared_amount}</span>
                     <span class="text-center w-1/10">${data.voucher_no}</span>
+                    <span class="text-center w-1/10">${data.d_r_no}</span>
                 </div>
             `;
         }
@@ -215,6 +218,7 @@
                 cleared_amount: item.clear_amount ? formatNumbersWithDigits(item.clear_amount, 1, 1) : (item.method == 'cheque' || item.method == 'slip') ? '0' : '-',
                 ...((item.method == 'cheque' || item.method == 'slip') && { issued: item.issued }),
                 ...((item.method == 'cheque' || item.method == 'slip') && (item.clear_date ? { clearStatus: 'Cleared'} : { clearStatus: 'Pending'} )),
+                d_r_no: item.dr?.d_r_no || '-',
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
                 visible: true,
