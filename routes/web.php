@@ -34,6 +34,7 @@ use App\Http\Controllers\UtilityBillController;
 use App\Http\Controllers\VoucherController;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\File;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,9 +52,20 @@ Route::post('login', [AuthController::class, 'loginPost'])->name('loginPost');
 
 Route::group(['middleware' => ['auth', 'activeSession']], function () {
     Route::get('/backup-db', function () {
-        $path = database_path('database.sqlite');
+        $sourcePath = database_path('database.sqlite');
+        $backupDir  = "C:\Users\Hasan_Raza\OneDrive\Desktop\db_backups";
         $backupName = 'database_backup_' . now()->format('Y-m-d_H-i-s') . '.sqlite';
-        return Response::download($path, $backupName);
+        $backupPath = $backupDir . DIRECTORY_SEPARATOR . $backupName;
+
+        // Ensure backup folder exists
+        if (!File::exists($backupDir)) {
+            File::makeDirectory($backupDir, 0755, true);
+        }
+
+        // Copy the database file
+        File::copy($sourcePath, $backupPath);
+
+        return redirect()->back()->with('success', 'Backed up successfully!');
     });
 
     Route::get('', function () {
