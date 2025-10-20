@@ -1785,8 +1785,33 @@
         };
     }
 
-    function backupDB() {
-        window.location.href = '/backup-db';
+    // function backupDB() {
+    //     window.location.href = '/backup-db';
+    // }
+
+    async function backupDB() {
+        try {
+            // Ask user to select a folder
+            const handle = await window.showDirectoryPicker();
+
+            // Create a file inside that folder (client-side only)
+            const fileName = 'database_backup_' + new Date().toISOString().replace(/[:.]/g, '-') + '.sqlite';
+
+            // Download the backup from Laravel route
+            const response = await fetch('/backup-db');
+            const blob = await response.blob();
+
+            // Save the downloaded file inside selected folder
+            const fileHandle = await handle.getFileHandle(fileName, { create: true });
+            const writable = await fileHandle.createWritable();
+            await writable.write(blob);
+            await writable.close();
+
+            alert('✅ Backup saved to selected folder: ' + handle.name);
+        } catch (err) {
+            console.error(err);
+            alert('❌ Backup cancelled or failed.');
+        }
     }
 </script>
 
