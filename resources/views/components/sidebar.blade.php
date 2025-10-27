@@ -642,8 +642,8 @@
                     active: false,
                 },
                 subMenu: [
-                    {name: 'Show Physical Quantities', href: "/physical-quantities"},
-                    {name: 'Add Physical Quantity', href: "/physical-quantities/create"},
+                    {name: 'Show Physical Qty.', href: "/physical-quantities"},
+                    {name: 'Add Physical Qty.', href: "/physical-quantities/create"},
                 ]
             },
         @endif
@@ -825,7 +825,7 @@
             },
         @endif
 
-        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant', 'store_keeper']))
             {
                 id: "fabrics",
                 name: "Fabrics",
