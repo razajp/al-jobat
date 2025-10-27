@@ -126,9 +126,9 @@
                 season: item.season,
                 size: item.size,
                 details: {
-                    'Category': item.category.replaceAll('_', ' ').replace(/\b\w/g, item => item.toUpperCase()),
-                    'Season': item.season.replace(/\b\w/g, item => item.toUpperCase()),
-                    'Size': item.size.replaceAll('_', '-').replace(/\b\w/g, item => item.toUpperCase()),
+                    'Category': item.category?.replaceAll('_', ' ')?.replace(/\b\w/g, item => item.toUpperCase()),
+                    'Season': item.season?.replace(/\b\w/g, item => item.toUpperCase()),
+                    'Size': item.size?.replaceAll('_', '-')?.replace(/\b\w/g, item => item.toUpperCase()),
                 },
                 sales_rate: item.sales_rate,
                 processed_by: item.processed_by,
