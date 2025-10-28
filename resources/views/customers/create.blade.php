@@ -64,7 +64,7 @@
                     label="Date"
                     name="date"
                     id="date"
-                    min="{{ now()->subMonth()->toDateString() }}"
+                    min="2024-01-01"
                     validateMin
                     max="{{ now()->toDateString() }}"
                     validateMax

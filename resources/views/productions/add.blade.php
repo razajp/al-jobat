@@ -631,7 +631,7 @@
                         ` : `` }
 
                         {{-- issue_date --}}
-                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" />
                     `;
                 } else if (work == 'Print' || work == 'Embroidery' || work == 'Dhaap' || work == 'Wash' || work == 'O/F Look' || work == 'Bartake' || work == 'Press') {
                     secondStepHTML += `
@@ -653,7 +653,7 @@
                         ` : `` }
 
                         {{-- issue_date --}}
-                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+                        <x-input label="Issue Date" name="issue_date" id="issue_date" required type="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" />
                     `;
                 }
                 document.getElementById('secondStep').innerHTML = secondStepHTML;
@@ -1163,7 +1163,7 @@
                         <x-input label="Amount" name="amount" id="amount" readonly placeholder="Amount" dataValidate="required|amount" oninput="validateInput(this)" />
 
                         {{-- receive_date --}}
-                        <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="{{ now()->subDays(14)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" />
+                        <x-input label="Receving Date" name="receive_date" id="receive_date" required type="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" />
 
                         {{-- parts --}}
                         <x-input label="Parts" id="parts" withCheckbox :checkBoxes="[]" required />

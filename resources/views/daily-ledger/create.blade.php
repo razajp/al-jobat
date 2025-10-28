@@ -101,7 +101,7 @@
                     </div>
 
                     <!-- date -->
-                    <x-input label="Date" name="date" id="date" type="date" validateMin min="{{ now()->subDay(7)->toDateString() }}" validateMax max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" value="{{ now()->toDateString() }}" required />
 
                     @if ($dailyLedgerType === 'deposit')
                         {{-- method --}}

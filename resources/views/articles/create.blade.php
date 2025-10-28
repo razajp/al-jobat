@@ -43,7 +43,7 @@
                         name="date"
                         id="date"
                         validateMin
-                        min="{{ now()->subDays('14')->toDateString() }}"
+                        min="2024-01-01"
                         validateMax
                         max="{{ now()->toDateString() }}"
                         type="date"

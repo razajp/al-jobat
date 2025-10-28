@@ -19,7 +19,7 @@
             <div class="flex justify-between gap-4">
                 {{-- order date --}}
                 <div class="w-1/3">
-                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="{{ now()->subDays(4)->toDateString() }}" required />
+                    <x-input label="Date" name="date" id="date" type="date" onchange="getDataByDate(this)" validateMax max='{{ now()->toDateString() }}' validateMin min="2024-01-01" required />
                 </div>
 
                 <input type="hidden" name="generateInvoiceAfterSave" id="generateInvoiceAfterSave" value="0">

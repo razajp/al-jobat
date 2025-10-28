@@ -18,7 +18,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- date -->
                     <x-input label="Date" name="date" id="date" validateMin
-                        min="{{ now()->startOfYear()->toDateString() }}" validateMax max="{{ now()->toDateString() }}"
+                        min="2024-01-01" validateMax max="{{ now()->toDateString() }}"
                         type="date" required />
 
                     {{-- supplier --}}

@@ -23,7 +23,7 @@
 
                 <!-- effective_date -->
                 <x-input label="Effective Date" name="effective_date" id="effective_date" type="date" validateMin
-                    min="{{ now()->toDateString() }}" required onchange="trackEffectiveDateState(this)" disabled />
+                    min="2024-01-01" required onchange="trackEffectiveDateState(this)" disabled />
             </div>
         </div>
 
@@ -46,9 +46,9 @@
                 if (elem.closest('.selectParent').querySelector('ul[data-for="type"] li.selected').textContent.trim() == 'Cutting') {
                     step2.innerHTML = `
                         <!-- select_categories -->
-                        <x-input 
-                            label="Selet Categories" 
-                            id="select_categories" 
+                        <x-input
+                            label="Selet Categories"
+                            id="select_categories"
                             required
                             placeholder="Select Categories"
                             readonly
@@ -56,9 +56,9 @@
                         />
 
                         <!-- select_seasons -->
-                        <x-input 
-                            label="Selet Seasons" 
-                            id="select_seasons" 
+                        <x-input
+                            label="Selet Seasons"
+                            id="select_seasons"
                             required
                             placeholder="Select Seasons"
                             readonly
@@ -66,9 +66,9 @@
                         />
 
                         <!-- select_sizes -->
-                        <x-input 
-                            label="Selet Sizes" 
-                            id="select_sizes" 
+                        <x-input
+                            label="Selet Sizes"
+                            id="select_sizes"
                             required
                             placeholder="Select Sizes"
                             readonly
@@ -78,7 +78,7 @@
                         <input type="hidden" name="categories" />
                         <input type="hidden" name="seasons" />
                         <input type="hidden" name="sizes" />
-                    
+
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <!-- title -->
                             <x-input label="Title" name="title" id="title"
@@ -141,7 +141,7 @@
             let selectedtypeInDetails = articleDetails[type][selectedtypeId];
             let checkbox = elem.querySelector("input[type='checkbox']")
             checkbox.checked = !checkbox.checked;
-            
+
             if (checkbox.checked) {
                 selectedtypeInDetails.selected = true;
             } else {
@@ -150,7 +150,7 @@
 
             // let selectedTypes = Object.values(articleDetails[type]).filter(t => t.selected === true);
             let selectedTypes = Object.entries(articleDetails[type]).filter(([key, value]) => value.selected === true);
-            
+
             let selectedTexts = selectedTypes.map(([key, value]) => value.text).join(' | ');
 
             selecttypeInp.value = selectedTexts;

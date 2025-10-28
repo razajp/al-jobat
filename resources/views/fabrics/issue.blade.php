@@ -17,7 +17,7 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- date -->
-                    <x-input label="Date" name="date" id="date" validateMin min="{{ now()->subDays('14')->toDateString() }}" validateMax max="{{ now()->toDateString() }}" type="date" required />
+                    <x-input label="Date" name="date" id="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" type="date" required />
 
                     {{-- tag --}}
                     <x-select label="Tag" name="tag" id="tag" :options="$tags_options" required showDefault onchange="trackTagSelect(this)" />

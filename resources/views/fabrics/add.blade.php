@@ -34,7 +34,7 @@
             <div class="step1 space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- date -->
-                    <x-input label="Date" name="date" id="date" validateMin min="{{ now()->subDays('14')->toDateString() }}" validateMax max="{{ now()->toDateString() }}" type="date" required />
+                    <x-input label="Date" name="date" id="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" type="date" required />
 
                     {{-- supplier --}}
                     <x-select label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault onchange="generateTagNo()" />
@@ -142,7 +142,7 @@
             const selectedSupplier = JSON.parse(supplierSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
             const selectedFabric = JSON.parse(fabricSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
             const selectedColor = colorSelect.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '';
-            
+
             // Generate supplier code
             const supplierName = selectedSupplier.supplier_name ?? '';
             const supplierCode = supplierName

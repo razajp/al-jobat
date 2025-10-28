@@ -74,7 +74,7 @@
                     label="Joining Date"
                     name="joining_date"
                     id="joining_date"
-                    min="{{ now()->subMonth()->toDateString() }}"
+                    min="2024-01-01"
                     validateMin
                     max="{{ now()->toDateString() }}"
                     validateMax

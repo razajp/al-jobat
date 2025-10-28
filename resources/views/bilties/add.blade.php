@@ -19,7 +19,7 @@
                 <div class="grow">
                     <x-input label="Date" name="date" id="date" type="date" onchange="trackStateOfgenerateBtn(this)"
                         validateMax max='{{ now()->toDateString() }}' validateMin
-                        min="{{ now()->subDays(4)->toDateString() }}" required />
+                        min="2024-01-01" required />
                 </div>
 
                 <button id="generateListBtn" type="button"

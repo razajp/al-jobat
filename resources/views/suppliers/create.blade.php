@@ -88,7 +88,7 @@
                     label="Date"
                     name="date"
                     id="date"
-                    min="{{ now()->startOfYear()->toDateString() }}"
+                    min="2024-01-01"
                     validateMin
                     max="{{ now()->toDateString() }}"
                     validateMax
