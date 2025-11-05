@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('category');
             $table->foreignId('type_id')->constrained('setups')->onDelete('cascade');
             $table->string('employee_name');
-            $table->string('urdu_title');
+            $table->string('urdu_title')->nullable();
             $table->string('phone_number');
             $table->date('joining_date');
             $table->string('cnic_no')->nullable();
