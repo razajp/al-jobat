@@ -286,7 +286,7 @@
 
         input[readonly] {
             background-color: transparent !important;
-            pointer-events: none !important;
+            pointer-events: none;
         }
 
         select[disabled] {

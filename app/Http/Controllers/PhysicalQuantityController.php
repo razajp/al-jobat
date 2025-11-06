@@ -31,7 +31,8 @@ class PhysicalQuantityController extends Controller
             // Initialize packet sums
             $categoryA = $group->where('category', 'a')->sum('packets');
             $categoryB = $group->where('category', 'b')->sum('packets');
-            $total = $categoryA + $categoryB;
+            $categoryC = $group->where('category', 'c')->sum('packets');
+            $total = $categoryA + $categoryB + $categoryC;
 
             // Get the latest date across both categories
             $latestDate = $group->max('date');
@@ -43,6 +44,7 @@ class PhysicalQuantityController extends Controller
                 'current_stock' => $total - ($article->sold_quantity / $article->pcs_per_packet),
                 'a_category' => $categoryA,
                 'b_category' => $categoryB,
+                'c_category' => $categoryC,
                 'latest_date' => $latestDate,
                 'date' => date('d-M-y, D', strtotime($latestDate)),
             ];

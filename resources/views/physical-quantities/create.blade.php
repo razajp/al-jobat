@@ -5,6 +5,7 @@
     $category_options = [
         'a' => ['text'  => 'A'],
         'b' => ['text'  => 'B'],
+        'c' => ['text'  => 'C'],
 ];
 @endphp
     <!-- Main Content -->
@@ -22,7 +23,7 @@
             <div class="flex justify-between gap-4">
                 {{-- article --}}
                 <div class="grow">
-                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" withImg imgUrl="" readonly required />
+                    <x-input label="Article" id="article" placeholder='Select Article' class="cursor-pointer" style="pointer-events: auto !important" withImg imgUrl="" readonly required />
                     <input type="hidden" name="article_id" id="article_id" value="" />
                 </div>
 

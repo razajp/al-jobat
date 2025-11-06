@@ -62,10 +62,11 @@
                                 <div class="w-[7%] cursor-pointer" onclick="sortByThis(this)">Proc. By</div>
                                 <div class="w-[8%] cursor-pointer" onclick="sortByThis(this)">Unit</div>
                                 <div class="w-[18%] cursor-pointer" onclick="sortByThis(this)">Total Qty.</div>
-                                <div class="w-[18%] cursor-pointer" onclick="sortByThis(this)">Received Qty.</div>
+                                <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">Received Qty.</div>
                                 <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">Current Stock Qty.</div>
                                 <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">A</div>
                                 <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">B</div>
+                                <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">C</div>
                                 <div class="w-[12%] cursor-pointer" onclick="sortByThis(this)">Remaining Qty.</div>
                                 <div class="w-[10%] cursor-pointer" onclick="sortByThis(this)">Shipment</div>
                             </div>
@@ -101,10 +102,11 @@
                 <span class="capitalize w-[7%]">${data.processed_by}</span>
                 <span class="w-[8%]">${data.unit}</span>
                 <span class="w-[18%]">${data.total_quantity}</span>
-                <span class="w-[18%]">${data.received_quantity}</span>
+                <span class="w-[12%]">${data.received_quantity}</span>
                 <span class="w-[12%]">${data.current_stock}</span>
                 <span class="w-[12%]">${data.a_category}</span>
                 <span class="w-[12%]">${data.b_category}</span>
+                <span class="w-[12%]">${data.c_category}</span>
                 <span class="w-[12%]">${data.remaining_quantity}</span>
                 <span class="w-[10%]">${data.shipment}</span>
             </div>`;
@@ -121,10 +123,11 @@
                 phone_number: item.phone_number,
                 unit: item.article.pcs_per_packet,
                 total_quantity: `${formatNumbersWithDigits(item.article.quantity / 12, 1, 1)} - Dz. | ${item.article.quantity / item.article.pcs_per_packet}  - Pkts.`,
-                received_quantity: `${formatNumbersWithDigits((item.total_packets * item.article.pcs_per_packet) / 12, 1, 1)} - Dz. | ${item.total_packets} - Pkts.`,
+                received_quantity: `${item.total_packets} - Pkts.`,
                 current_stock: `${item.current_stock} - Pkts.`,
                 a_category: `${item.a_category} - Pkts.`,
                 b_category: `${item.b_category} - Pkts.`,
+                c_category: `${item.c_category} - Pkts.`,
                 remaining_quantity: `${formatNumbersWithDigits((item.article.quantity / item.total_packets) - item.total_packets, 1, 1)} - Pkts.`,
                 shipment: item.shipment || '-',
                 visible: true,
