@@ -128,7 +128,7 @@
                 a_category: `${item.a_category} - Pkts.`,
                 b_category: `${item.b_category} - Pkts.`,
                 c_category: `${item.c_category} - Pkts.`,
-                remaining_quantity: `${formatNumbersWithDigits((item.article.quantity / item.total_packets) - item.total_packets, 1, 1)} - Pkts.`,
+                remaining_quantity: `${formatNumbersWithDigits((item.article.quantity / item.article.pcs_per_packet) - item.total_packets, 1, 1)} - Pkts.`,
                 shipment: item.shipment || '-',
                 visible: true,
             };

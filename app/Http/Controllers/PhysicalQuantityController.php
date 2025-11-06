@@ -23,43 +23,40 @@ class PhysicalQuantityController extends Controller
         $allQuantities = PhysicalQuantity::with('article')->get();
         $allShipments = Shipment::with('invoices.customer')->get();
 
-        // Group all records by id
-        $grouped = $allQuantities->groupBy('id')->map(function ($group) {
+        // 🔹 Group by article_id (not id)
+        $grouped = $allQuantities->groupBy('article_id')->map(function ($group) {
             $first = $group->first();
             $article = $first->article;
 
-            // Initialize packet sums
+            // Category-wise packets
             $categoryA = $group->where('category', 'a')->sum('packets');
             $categoryB = $group->where('category', 'b')->sum('packets');
             $categoryC = $group->where('category', 'c')->sum('packets');
             $total = $categoryA + $categoryB + $categoryC;
 
-            // Get the latest date across both categories
             $latestDate = $group->max('date');
 
             return (object)[
-                'id' => $article->id,
+                'article_id' => $article->id,
                 'article' => $article,
-                'total_packets' => $total,
-                'current_stock' => $total - ($article->sold_quantity / $article->pcs_per_packet),
                 'a_category' => $categoryA,
                 'b_category' => $categoryB,
                 'c_category' => $categoryC,
+                'total_packets' => $total,
+                'current_stock' => $total - ($article->sold_quantity / $article->pcs_per_packet),
                 'latest_date' => $latestDate,
                 'date' => date('d-M-y, D', strtotime($latestDate)),
             ];
         })->values();
 
-        $shipment = '';
-
+        // 🔹 Attach shipment info
         foreach ($allShipments as $shipment) {
             $shipment['articles'] = $shipment->getArticles();
 
             foreach ($shipment['articles'] as $article) {
                 foreach ($grouped as $group) {
-                    if ($article['article']['id'] == $group->article->id) {
-                        // Append city title to group->city
-                        $cityTitle = $shipment->city;
+                    if ($article['article']['id'] == $group->article_id) {
+                        $cityTitle = strtolower($shipment->city);
 
                         if (!isset($group->city)) {
                             $group->city = [];
@@ -73,7 +70,7 @@ class PhysicalQuantityController extends Controller
             }
         }
 
-        // After collecting city titles, decide shipment type
+        // 🔹 Determine shipment type per article
         foreach ($grouped as $group) {
             $cities = $group->city ?? [];
 
@@ -88,7 +85,7 @@ class PhysicalQuantityController extends Controller
             } elseif ($hasOther) {
                 $group->shipment = 'Other';
             } else {
-                $group->shipment = null; // Or any default
+                $group->shipment = null;
             }
         }
 
