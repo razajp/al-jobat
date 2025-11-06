@@ -54,8 +54,9 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full">
                             <div class="card_container px-3 h-full flex flex-col">
-                                <div id="table-head"class="grid grid-cols-5 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 mt-4">
+                                <div id="table-head"class="grid grid-cols-6 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 mt-4">
                                     <div onclick="sortByThis(this)" class="cursor-pointer text-left pl-5">Employee Name</div>
+                                    <div onclick="sortByThis(this)" class="cursor-pointer text-left pl-5">Urdu Title</div>
                                     <div onclick="sortByThis(this)" class="cursor-pointer text-left pl-5">Category</div>
                                     <div onclick="sortByThis(this)" class="cursor-pointer text-center">Type</div>
                                     <div onclick="sortByThis(this)" class="cursor-pointer text-center">Balance</div>
@@ -89,11 +90,12 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid text- grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid text- grid-cols-6 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
-                <span class="text-left pl-5">${data.name}</span>
-                <span class="text-left pl-5">${data.details["Category"]}</span>
+                <span class="text-left pl-5 capitalize">${data.name}</span>
+                <span class="text-left pl-5">${data.urdu_title}</span>
+                <span class="text-left pl-5 capitalize">${data.details["Category"]}</span>
                 <span class="text-center capitalize">${data.details["Type"]}</span>
                 <span class="text-right">${data.details["Balance"]}</span>
                 <span class="text-right pr-5 capitalize ${data.status === 'active' ? 'text-[var(--border-success)]' : 'text-[var(--border-error)]'}">
@@ -112,6 +114,7 @@
                 status: item.status,
                 image: item.profile_picture == 'default_avatar.png' ? '/images/default_avatar.png' : `/storage/uploads/images/${item.profile_picture}`,
                 name: item.employee_name,
+                urdu_title: item.urdu_title,
                 phone_number: item.phone_number,
                 details: {
                     'Category': item.category,

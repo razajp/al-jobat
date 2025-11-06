@@ -32,7 +32,7 @@
                     <x-input label="Avalaible Stock" name="avalaible_stock" id="avalaible_stock" type="number" placeholder="Avalaible Stock" disabled />
 
                     <!-- quantity -->
-                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required oninput="trackQuantity(this)" />
+                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required step="0.01" oninput="trackQuantity(this)" />
 
                     <div class="col-span-full">
                         {{-- remarks --}}

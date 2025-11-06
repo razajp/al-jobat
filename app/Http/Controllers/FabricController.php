@@ -127,8 +127,8 @@ class FabricController extends Controller
             'fabric_id' => 'required|exists:setups,id',
             'color' => 'required|string',
             'unit' => 'required|string|max:255',
-            'quantity' => 'required|integer|min:1',
-            'reff_no' => 'nullable|integer',
+            'quantity' => 'required|numeric|min:1',
+            'reff_no' => 'nullable|string',
             'remarks' => 'nullable|string|max:255',
             'tag' => 'required|string|max:255',
         ]);
@@ -220,7 +220,7 @@ class FabricController extends Controller
             'date' => 'required|date',
             'tag' => 'required|string|max:255',
             'worker_id' => 'required|exists:employees,id',
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:1',
             'remarks' => 'nullable|string|max:255',
         ]);
 

@@ -5,7 +5,7 @@
     $colors_options = [
         'black' => ['text' => 'Black', 'data_option' => 'blk'],
         'blue' => ['text' => 'Blue', 'data_option' => 'blu'],
-        'goldern' => ['text' => 'Goldern', 'data_option' => 'gld'],
+        'golden' => ['text' => 'Golden', 'data_option' => 'gld'],
         'green' => ['text' => 'Green', 'data_option' => 'grn'],
         'grey' => ['text' => 'Grey', 'data_option' => 'gry'],
         'meroon' => ['text' => 'Meroon', 'data_option' => 'mrn'],
@@ -16,6 +16,10 @@
         'red' => ['text' => 'Red', 'data_option' => 'red'],
         'skin' => ['text' => 'Skin', 'data_option' => 'skn'],
         'white' => ['text' => 'White', 'data_option' => 'wht'],
+        'yellow' => ['text' => 'Yellow', 'data_option' => 'ylw'],
+        'orange' => ['text' => 'Orange', 'data_option' => 'org'],
+        'hazel_grey' => ['text' => 'Hazel Grey', 'data_option' => 'hzg'],
+        'pink' => ['text' => 'Pink', 'data_option' => 'pnk'],
     ]
 @endphp
     <!-- Main Content -->
@@ -53,10 +57,10 @@
                     ]" required showDefault onchange="generateTagNo()" />
 
                     <!-- quantity -->
-                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required />
+                    <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required step="0.01" />
 
                     <!-- reff_no -->
-                    <x-input label="Reff. No." name="reff_no" id="reff_no" type="number" placeholder="Enter reff no" />
+                    <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff no" />
 
                     {{-- remarks --}}
                     <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />

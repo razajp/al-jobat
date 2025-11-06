@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignId('fabric_id')->constrained('setups')->onDelete('cascade');
             $table->string('color');
             $table->string('unit');
-            $table->integer('quantity');
-            $table->integer('reff_no')->nullable();
+            $table->decimal('quantity', 8, 2);
+            $table->string('reff_no')->nullable();
             $table->string('remarks')->nullable();
             $table->string('tag');
             $table->timestamps();

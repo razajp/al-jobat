@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('tag');
             $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
-            $table->integer('quantity');
+            $table->decimal('quantity', 8, 2);
             $table->string('remarks')->nullable();
             $table->timestamps();
         });
