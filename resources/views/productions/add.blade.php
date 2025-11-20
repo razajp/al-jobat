@@ -154,6 +154,8 @@
         </form>
 
         <script>
+            let cardData = [];
+            let ArticleModalData = {};
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
             let allParts = Object.entries(@json(app('article')->parts));
@@ -179,7 +181,6 @@
 
             function generateArticlesModal() {
                 const data = @json($articles);
-                let cardData = [];
 
                 const articlesIssuedOnCMT = data.filter(a => a.production.some(p => p.work.title === 'CMT'));
                 const articles = data.filter(a => !articlesIssuedOnCMT.includes(a));
@@ -202,12 +203,19 @@
                     }));
                 }
 
-                let modalData = {
+                ArticleModalData = {
                     id: 'modalForm',
+                    basicSearch: true,
+                    onBasicSearch: 'basicSearch(this.value)',
                     cards: {name: 'Articles', count: 3, data: cardData},
                 }
 
-                createModal(modalData);
+                createModal(ArticleModalData);
+            }
+
+            function basicSearch(searchValue) {
+                ArticleModalData.cards.data = cardData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
+                renderCardsInModal(ArticleModalData);
             }
 
             let selectedArticle = null;
@@ -789,6 +797,8 @@
         </form>
 
         <script>
+            let cardData = [];
+            let ArticleModalData = {};
             let allWorks = Object.entries(@json($work_options));
             let allWorkers = Object.values(@json($worker_options));
             let allParts = Object.entries(@json(app('article')->parts));
@@ -811,7 +821,6 @@
 
             function generateArticlesModal() {
                 const data = @json($articles);
-                let cardData = [];
 
                 const articles = data.filter(a => {
                     // saare parts (category + season se)
@@ -846,13 +855,20 @@
                     }));
                 }
 
-                let modalData = {
+                ArticleModalData = {
                     id: 'modalForm',
+                    basicSearch: true,
+                    onBasicSearch: 'basicSearch(this.value)',
                     cards: {name: 'Articles', count: 3, data: cardData},
                 }
 
-                createModal(modalData);
+                createModal(ArticleModalData);
                 trackWorkState(document.getElementById('work'));
+            }
+
+            function basicSearch(searchValue) {
+                ArticleModalData.cards.data = cardData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
+                renderCardsInModal(ArticleModalData);
             }
 
             let selectedArticle = null;
