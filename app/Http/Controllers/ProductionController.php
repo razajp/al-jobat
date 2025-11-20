@@ -7,6 +7,7 @@ use App\Models\Employee;
 use App\Models\Fabric;
 use App\Models\Production;
 use App\Models\Rate;
+use App\Models\ReturnFabric;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -71,6 +72,7 @@ class ProductionController extends Controller
                 ->groupBy('tag')
                 ->map(function ($items, $tag) use ($articles) {
                     $fabric = Fabric::where('tag', $tag)->first();
+                    $total_return_fabric = ReturnFabric::where('tag', $tag)->sum('quantity');
 
                     $supplier = null;
                     if ($fabric && $fabric->supplier_id) {
@@ -82,7 +84,7 @@ class ProductionController extends Controller
                         ->filter(fn($tagObj) => $tagObj['tag'] === $tag)
                         ->sum('quantity');
 
-                    $availableQuantity = $items->sum('quantity') - $sum;
+                    $availableQuantity = ($items->sum('quantity') - $sum) - $total_return_fabric;
 
                     if ($availableQuantity > 0) {
                         return [

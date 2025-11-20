@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('returned_fabrics', function (Blueprint $table) {
+        Schema::create('return_fabrics', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
             $table->date('date');
             $table->string('tag');
-            $table->foreignId('worker_id')->constrained('employees')->onDelete('cascade');
             $table->decimal('quantity', 8, 2);
             $table->string('remarks')->nullable();
             $table->timestamps();
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('returned_fabrics');
+        Schema::dropIfExists('return_fabrics');
     }
 };

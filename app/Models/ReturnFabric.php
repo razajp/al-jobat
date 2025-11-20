@@ -5,20 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class ReturnedFabric extends Model
+class ReturnFabric extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'worker_id',
         'date',
         'tag',
-        'worker_id',
         'quantity',
         'remarks',
     ];
 
     protected $hidden = [
-        'worker_id',
         'created_at',
         'updated_at',
     ];

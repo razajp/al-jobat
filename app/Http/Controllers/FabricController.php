@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Employee;
 use App\Models\Fabric;
 use App\Models\IssuedFabric;
+use App\Models\Production;
+use App\Models\ReturnFabric;
 use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
@@ -51,8 +53,22 @@ class FabricController extends Controller
             ];
         })->toArray();
 
-        // Combine both arrays manually
-        $finalData = array_merge($issuedFabrics, $addedFabrics);
+        // Return fabric entries
+        $ReturnFabrics = ReturnFabric::with('worker')->get()->map(function ($return) {
+            return [
+                'id' => $return->id,
+                'type' => 'Return',
+                'tag' => $return->tag,
+                'quantity' => $return->quantity,
+                'date' => $return->date, // Logical fabric return date
+                'employee_name' => $return->worker->employee_name,
+                'remarks' => $return->remarks,
+                'created_at' => $return->created_at,
+            ];
+        })->toArray();
+
+        // Combine arrays manually
+        $finalData = array_merge($issuedFabrics, $ReturnFabrics, $addedFabrics);
 
         // Sort the final combined array by date and then by created_at time (both descending)
         usort($finalData, function ($a, $b) {
@@ -240,6 +256,7 @@ class FabricController extends Controller
         $date = $request->date;
 
         if ($worker_id && $date) {
+            // 1️⃣ Get all fabrics issued to the worker until the given date
             $all_fabrics = IssuedFabric::where('worker_id', $worker_id)
                 ->where('date', '<=', $date)
                 ->get()
@@ -247,20 +264,91 @@ class FabricController extends Controller
                 ->map(function ($items) {
                     return [
                         'tag' => $items->first()->tag,
-                        'unit' => $items->first()->unit,
                         'quantity' => $items->sum('quantity'),
                     ];
                 })
-                ->values();
+                ->values()
+                ->toArray();
 
-            foreach($all_fabrics as $fabric) {
-                $total_returned = IssuedFabric::where('tag', $fabric['tag'])
-                    ->where('worker_id', $worker_id)
-                    ->where('date', '<=', $date)
-                    ->sum('quantity') ?? 0;
-                $fabric['avalaible_sock'] = $fabric['quantity'] - $total_returned;
-                if ($fabric['avalaible_sock'] > 0) {
-                    $tags_options[$fabric['tag']] = ['text' => $fabric['tag'], "data_option" => json_encode($fabric)];
+            // 2️⃣ Get cutting work id
+            $cutting_id = Setup::where('type', 'worker_type')
+                ->where('title', 'Cutting')
+                ->value('id');
+
+            // 3️⃣ Get all production tags for the worker & cutting work
+            $allTags = Production::where('worker_id', $worker_id)
+                ->where('work_id', $cutting_id)
+                ->pluck('tags');
+
+            $mergedTags = [];
+            foreach ($allTags as $tags) {
+                $decoded = is_string($tags) ? json_decode($tags, true) : $tags;
+                if (is_array($decoded)) {
+                    $mergedTags = array_merge($mergedTags, $decoded);
+                }
+            }
+
+            // 4️⃣ Sum production quantity by tag
+            $productionQuantities = [];
+            foreach ($mergedTags as $item) {
+                $tag = $item['tag'];
+                $qty = $item['quantity'] ?? 0;
+
+                if (!isset($productionQuantities[$tag])) {
+                    $productionQuantities[$tag] = 0;
+                }
+
+                $productionQuantities[$tag] += $qty;
+            }
+
+            // 5️⃣ Get returned fabrics for the worker until date
+            $returnedFabrics = ReturnFabric::where('worker_id', $worker_id)
+                ->get()
+                ->groupBy('tag')
+                ->map(function ($items) {
+                    return [
+                        'tag' => $items->first()->tag,
+                        'quantity' => $items->sum('quantity'),
+                    ];
+                })
+                ->values()
+                ->toArray();
+
+            // 6️⃣ Sum returned quantity by tag
+            $returnQuantities = [];
+            foreach ($returnedFabrics as $fabric) {
+                $tag = $fabric['tag'];
+                $qty = $fabric['quantity'] ?? 0;
+
+                if (!isset($returnQuantities[$tag])) {
+                    $returnQuantities[$tag] = 0;
+                }
+
+                $returnQuantities[$tag] += $qty;
+            }
+
+            // 7️⃣ Prepare tag options with remaining quantity
+            $tags_options = [];
+
+            foreach ($all_fabrics as $fabric) {
+                $tag = $fabric['tag'];
+                $issuedQty = $fabric['quantity'];
+
+                $prodQty = $productionQuantities[$tag] ?? 0;
+                $returnQty = $returnQuantities[$tag] ?? 0;
+
+                $remaining = $issuedQty - $prodQty - $returnQty;
+
+                $fabric['remaining'] = $remaining;
+                $fabric['issued_quantity'] = $issuedQty;
+                $fabric['produced_quantity'] = $prodQty;
+                $fabric['returned_quantity'] = $returnQty;
+
+                if ($remaining > 0) {
+                    $tags_options[$tag] = [
+                        'text' => $tag,
+                        'data_option' => json_encode($fabric),
+                    ];
                 }
             }
         }
@@ -285,19 +373,15 @@ class FabricController extends Controller
         }
 
         $request->validate([
+            'worker_id' => 'required|exists:employees,id',
             'date' => 'required|date',
             'tag' => 'required|string|max:255',
-            'worker_id' => 'required|exists:employees,id',
             'quantity' => 'required|numeric|min:1',
             'remarks' => 'nullable|string|max:255',
         ]);
 
-        IssuedFabric::create($request->all());
+        ReturnFabric::create($request->all());
 
         return redirect()->route('fabrics.return')->with('success', 'Fabric added successfully.');
-    }
-
-    public function summary() {
-        return view('fabrics.summary');
     }
 }

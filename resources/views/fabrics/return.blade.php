@@ -23,21 +23,16 @@
                     <x-input label="Date" name="date" id="date" validateMin min="2024-01-01" validateMax max="{{ now()->toDateString() }}" type="date" required disabled onchange="trackDateState(this)" />
 
                     {{-- tag --}}
-                    <x-select label="Tag" name="tag" id="tag" disabled :options="$tags_options" required showDefault onchange="trackTagSelect(this)" />
+                    <x-select label="Tag" name="tag" id="tag" :options="$tags_options" required showDefault onchange="trackTagSelect(this)" />
 
-                    <!-- unit -->
-                    <x-input label="Unit" name="unit" id="unit" placeholder="Unit" capitalized disabled />
-
-                    <!-- avalaible_stock -->
-                    <x-input label="Avalaible Stock" name="avalaible_stock" id="avalaible_stock" type="number" placeholder="Avalaible Stock" disabled />
+                    <!-- remaining_stock -->
+                    <x-input label="Remaining Stock" name="remaining_stock" id="remaining_stock" type="number" placeholder="Remaining Stock" disabled />
 
                     <!-- quantity -->
                     <x-input label="Quantity" name="quantity" id="quantity" type="number" placeholder="Enter quantity" required step="0.01" oninput="trackQuantity(this)" />
 
-                    <div class="col-span-full">
-                        {{-- remarks --}}
-                        <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />
-                    </div>
+                    {{-- remarks --}}
+                    <x-input label="Remarks" name="remarks" id="remarks" type="text" placeholder="Enter remarks" />
                 </div>
             </div>
 
@@ -53,8 +48,7 @@
     <script>
         const workerSelectDom = document.getElementById('worker');
         const dateDom = document.getElementById('date');
-        const unitInoDom = document.getElementById('unit');
-        const avalaibleStockInpDom = document.getElementById('avalaible_stock');
+        const remainingStockInpDom = document.getElementById('remaining_stock');
         const quantityErrorDom = document.getElementById('quantity-error');
 
         function trackWorkerState(elem) {
@@ -67,25 +61,19 @@
         }
 
         function trackDateState(elem) {
+            let selectedWorkerId = workerSelectDom.closest('.selectParent').querySelector('.dbInput').value;
+
             $.ajax({
                 url: '{{ route("fabrics.return") }}',
                 method: 'GET',
                 data: {
-                    worker_id: workerSelectDom.value,
+                    worker_id: selectedWorkerId,
                     date: dateDom.value,
                 },
                 success: function(response) {
-                    let dom = $(response);
+                    $('#tag').closest('.selectParent').html($(response).find('#tag').closest('.selectParent').html());
 
-                    let newTag = dom.find('#tag');
-
-                    console.log(newTag);
-                    console.log(newTag.html());
-
-                    if (newTag.length) {
-                        $('#tag').html(newTag.html());
-                    }
-                }
+                },
                 error: function(xhr) {
                     console.error(xhr.responseText);
                 }
@@ -93,13 +81,14 @@
         }
 
         function trackTagSelect(elem) {
-            const selectedTag = JSON.parse(elem.parentElement.parentElement.parentElement.querySelector('li.selected').getAttribute('data-option') ?? '{}');
-            unitInoDom.value = selectedTag.unit;
-            avalaibleStockInpDom.value = selectedTag.avalaible_sock;
+            const selectedTag = JSON.parse(elem.closest('.selectParent').querySelector('li.selected').getAttribute('data-option') ?? '{}');
+            console.log(selectedTag);
+
+            remainingStockInpDom.value = selectedTag.remaining;
         }
 
         function trackQuantity(elem) {
-            const maxStock = parseInt(avalaibleStockInpDom.value || '0');
+            const maxStock = parseInt(remainingStockInpDom.value || '0');
             const currentVal = parseInt(elem.value || '0');
 
             if (currentVal > maxStock) {

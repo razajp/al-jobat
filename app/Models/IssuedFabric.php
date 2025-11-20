@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class IssuedFabric extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'date',
         'tag',
@@ -18,7 +18,6 @@ class IssuedFabric extends Model
     ];
 
     protected $hidden = [
-        'worker_id',
         'created_at',
         'updated_at',
     ];
