@@ -980,7 +980,7 @@
             },
         @endif
 
-        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin']))
+        @if (in_array(Auth::user()->role, ['developer', 'owner', 'admin', 'accountant']))
             {
                 id: "productions",
                 name: "Productions",
