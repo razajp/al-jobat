@@ -121,6 +121,8 @@ Route::group(['middleware' => ['auth', 'activeSession']], function () {
 
     Route::get('fabrics/issue', [FabricController::class, 'issue'])->name('fabrics.issue');
     Route::post('fabrics/issuePost', [FabricController::class, 'issuePost'])->name('fabrics.issuePost');
+    Route::get('fabrics/return', [FabricController::class, 'return'])->name('fabrics.return');
+    Route::post('fabrics/returnPost', [FabricController::class, 'returnPost'])->name('fabrics.returnPost');
     Route::resource('fabrics', FabricController::class);
 
     Route::resource('rates', RateController::class);

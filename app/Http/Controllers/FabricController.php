@@ -229,6 +229,74 @@ class FabricController extends Controller
         return redirect()->route('fabrics.issue')->with('success', 'Fabric added successfully.');
     }
 
+    public function return(Request $request)
+    {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $tags_options = [];
+        $worker_id = $request->worker_id;
+        $date = $request->date;
+
+        if ($worker_id && $date) {
+            $all_fabrics = IssuedFabric::where('worker_id', $worker_id)
+                ->where('date', '<=', $date)
+                ->get()
+                ->groupBy('tag')
+                ->map(function ($items) {
+                    return [
+                        'tag' => $items->first()->tag,
+                        'unit' => $items->first()->unit,
+                        'quantity' => $items->sum('quantity'),
+                    ];
+                })
+                ->values();
+
+            foreach($all_fabrics as $fabric) {
+                $total_returned = IssuedFabric::where('tag', $fabric['tag'])
+                    ->where('worker_id', $worker_id)
+                    ->where('date', '<=', $date)
+                    ->sum('quantity') ?? 0;
+                $fabric['avalaible_sock'] = $fabric['quantity'] - $total_returned;
+                if ($fabric['avalaible_sock'] > 0) {
+                    $tags_options[$fabric['tag']] = ['text' => $fabric['tag'], "data_option" => json_encode($fabric)];
+                }
+            }
+        }
+
+        $workers_options = [];
+
+        $all_workers = Employee::whereHas('type', function ($query) {
+                $query->whereIn('title', ['Cutting', 'Cut to Pack']);
+            })
+            ->get();
+
+        foreach ($all_workers as $worker) {
+            $workers_options[$worker->id] = ['text' => $worker->employee_name];
+        }
+
+        return view('fabrics.return', compact('tags_options', 'workers_options'));
+    }
+
+    public function returnPost(Request $request) {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant', 'store_keeper'])) {
+            return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
+        }
+
+        $request->validate([
+            'date' => 'required|date',
+            'tag' => 'required|string|max:255',
+            'worker_id' => 'required|exists:employees,id',
+            'quantity' => 'required|numeric|min:1',
+            'remarks' => 'nullable|string|max:255',
+        ]);
+
+        IssuedFabric::create($request->all());
+
+        return redirect()->route('fabrics.return')->with('success', 'Fabric added successfully.');
+    }
+
     public function summary() {
         return view('fabrics.summary');
     }
