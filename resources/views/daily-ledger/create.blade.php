@@ -5,8 +5,34 @@
     $dailyLedgerType = Auth::user()->daily_ledger_type;
 
     $case_options = [
+        'Add Copy A/c' => ['text' => 'Add Copy A/c'],
+        'Big Box (Bara Dbba)' => ['text' => 'Big Box (Bara Dbba)'],
+        'Zakat' => ['text' => 'Zakat'],
+        'Sadqa' => ['text' => 'Sadqa'],
+        'Charity' => ['text' => 'Charity'],
+        'Daily Expenses' => ['text' => 'Daily Expenses'],
+        'Exp 25# Plot' => ['text' => 'Exp 25# Plot'],
+        'Home Expenses' => ['text' => 'Home Expenses'],
+        'P.A Zubair bhai' => ['text' => 'P.A Zubair bhai'],
+        'P.A Ali bhai' => ['text' => 'P.A Ali bhai'],
+        'P.A Abdullah' => ['text' => 'P.A Abdullah'],
+        'P.A Basit' => ['text' => 'P.A Basit'],
+        'M.R Zubair Bhai' => ['text' => 'M.R Zubair Bhai'],
+        'M.R Ali Bhai' => ['text' => 'M.R Ali Bhai'],
+        'Return Amount' => ['text' => 'Return Amount'],
+        'Staff Salary' => ['text' => 'Staff Salary'],
+        'Utility Bill' => ['text' => 'Utility Bill'],
+        'Weekly Payment' => ['text' => 'Weekly Payment'],
         'adjustment' => ['text' => 'Adjustment'],
-    ]
+    ];
+
+    $method_options = [
+        'cash' => ['text' => 'Cash'],
+        'cheque' => ['text' => 'Cheque'],
+        'less_copy_a_c' => ['text' => 'Less Copy A/c'],
+        'online' => ['text' => 'Online'],
+        'adjustment' => ['text' => 'Adjustment']
+    ];
 @endphp
 
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-4">
@@ -105,10 +131,7 @@
 
                     @if ($dailyLedgerType === 'deposit')
                         {{-- method --}}
-                        <x-select label="Method" name="method" id="method" :options="[
-                            'cash' => ['text' => 'Cash'],
-                            'online' => ['text' => 'Online']
-                            ]" required showDefault/>
+                        <x-select label="Method" name="method" id="method" :options="$method_options" required showDefault/>
 
                         <!-- reff_no -->
                         <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff no" dataValidate="friendly" />
