@@ -74,7 +74,7 @@ class Customer extends Model
 
     public function paymentPrograms()
     {
-        return $this->morphMany(PaymentProgram::class, 'sub_category');
+        return $this->hasMany(PaymentProgram::class, 'customer_id');
     }
 
     public function bankAccounts()

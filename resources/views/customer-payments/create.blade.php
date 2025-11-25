@@ -467,7 +467,7 @@
 
                 typeSelectDom.closest(".selectParent").querySelector('ul li[data-value="payment_program"]').dataset.option = JSON.stringify(filteredPrograms);
             } else {
-                let programData = JSON.parse(programSelectDom.closest(".selectParent")?.querySelector('ul li.selected').dataset.option);
+                let programData = JSON.parse(programSelectDom?.closest(".selectParent")?.querySelector('ul li.selected').dataset.option || '{}');
                 if (date.value < programData?.date) {
                     dateDom.value = '';
                 }

@@ -256,7 +256,7 @@ class CustomerPaymentController extends Controller
         $cheque_nos = CustomerPayment::pluck('cheque_no')->toArray();
         $slip_nos = CustomerPayment::pluck('slip_no')->toArray();
 
-        return view("customer-payments.create", compact("customers", "customers_options", 'banks_options', 'lastRecord', 'cheque_nos', 'slip_nos'));
+        return view("customer-payments.create", compact( "customers_options", 'banks_options', 'lastRecord', 'cheque_nos', 'slip_nos'));
     }
 
     /**
@@ -287,7 +287,7 @@ class CustomerPaymentController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator);
+            return redirect()->back()->withErrors($validator)->with('error', $validator->errors()->first());
         }
 
         $data = $request->all();
