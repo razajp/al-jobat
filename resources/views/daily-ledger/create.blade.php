@@ -133,18 +133,21 @@
                         {{-- method --}}
                         <x-select label="Method" name="method" id="method" :options="$method_options" required showDefault/>
 
+                        <!-- amount -->
+                        <x-input label="Amount" id="amount" name="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" />
+                        
                         <!-- reff_no -->
                         <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff no" dataValidate="friendly" />
                     @else
                         {{-- case --}}
                         <x-select label="Case" name="case" id="case" :options="$case_options" required showDefault/>
 
+                        <!-- amount -->
+                        <x-input label="Amount" id="amount" name="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" />
+                        
                         <!-- remarks -->
                         <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter remarks" dataValidate="friendly" />
                     @endif
-
-                    <!-- amount -->
-                    <x-input label="Amount" id="amount" name="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" />
                 </div>
             </div>
 
