@@ -63,7 +63,7 @@ class BankAccountController extends Controller
             'category' => 'required|in:self,supplier,customer',
             'sub_category' => 'nullable|integer',
             'bank_id' => 'required|string',
-            'account_title' => 'required|string',
+            'account_title' => 'required|string|unique:bank_accounts,account_title',
             'date' => 'required|date',
             'remarks' => 'nullable|string',
             'account_no' => 'nullable|string|unique:bank_accounts,account_no',

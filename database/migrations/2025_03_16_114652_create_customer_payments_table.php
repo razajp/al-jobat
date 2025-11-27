@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('cheque_no')->nullable()->unique();
             $table->string('slip_no')->nullable()->unique();
             $table->string('reff_no')->nullable()->unique();
-            $table->string('transaction_id')->nullable()->unique();
+            $table->string('transaction_id')->nullable();
             $table->date('cheque_date')->nullable();
             $table->date('slip_date')->nullable();
             $table->date('clear_date')->nullable();

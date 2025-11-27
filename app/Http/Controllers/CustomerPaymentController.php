@@ -281,7 +281,17 @@ class CustomerPaymentController extends Controller
             "slip_no" => "nullable|string|unique:customer_payments,slip_no",
             "clear_date" => "nullable|date",
             "bank_account_id" => "nullable|integer|exists:bank_accounts,id",
-            "transaction_id" => "nullable|string|unique:customer_payments,transaction_id",
+            "transaction_id" => [
+                "nullable",
+                "string",
+                Rule::unique("customer_payments", "transaction_id")
+                    ->where(function ($query) use ($request) {
+                        // 👇 Only apply unique check WHEN value is not "0"
+                        if ($request->transaction_id != "0") {
+                            return $query;
+                        }
+                    }),
+            ],
             "program_id" => "nullable|exists:payment_programs,id",
             "remarks" => "nullable|string",
         ]);
