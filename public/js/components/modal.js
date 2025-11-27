@@ -56,7 +56,7 @@ function createModal(data, animate = 'animate') {
                 </div>` : ''}
 
                 <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full">
-                    <div class="w-full h-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
+                    <div class="w-full h-full relative ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
 
     if (data.user?.status || data.status) {
@@ -289,27 +289,6 @@ function createModal(data, animate = 'animate') {
     }
 
     if (data.cards) {
-        // let cardsHTML = '';
-        // if (data.cards.data.length > 0) {
-        //     data.cards.data.forEach(item => {
-        //         cardsHTML += createCard(item)
-        //     });
-        // } else {
-        //     cardsHTML= `
-        //         <div class="col-span-full text-center text-[var(--border-error)] text-md mt-4">No ${data.cards.name} yet</div>
-        //     `;
-        // }
-
-        // clutter += `
-        //     <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full overflow-y-auto my-scrollbar-2">
-        //         <h5 id="name" class="text-2xl text-[var(--text-color)] capitalize font-semibold">${data.cards.name}</h5>
-        //         <hr class="w-full my-3 border-gray-600">
-        //         <div class="grid grid-cols-${data.cards.count} w-full gap-3 text-sm">
-        //             ${cardsHTML}
-        //         </div>
-        //     </div>
-        // `;
-
         clutter += `
             <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-auto w-full overflow-y-auto my-scrollbar-2">
                 <div class="flex justify-between">
@@ -357,14 +336,29 @@ function createModal(data, animate = 'animate') {
 
         clutter += `
             <hr class="w-full my-3 border-gray-600">
-            <div class="w-full ${data.table.scrollable ? 'h-[80.5%] overflow-hidden' : 'h-auto'} text-left text-sm">
-                <div id='table-head' class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
+
+            <!-- TABLE WRAPPER -->
+            <div class="w-full flex-1 flex flex-col text-left text-sm relative overflow-hidden">
+
+                <!-- Header -->
+                <div id="table-head"
+                    class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-3">
                     ${headerHTML}
                 </div>
-                <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
-                <div id="table-body" class="search_container overflow-y-auto my-scrollbar-2 h-full">
+
+                <!-- No Items Error -->
+                <p id="noItemsError"
+                    style="display: none"
+                    class="text-sm text-[var(--border-error)] mt-2 mb-1">
+                    No items found
+                </p>
+
+                <!-- BODY (auto height takes remaining space) -->
+                <div id="table-body"
+                    class="search_container flex-1 overflow-y-auto my-scrollbar-2">
                     ${bodyHTML}
                 </div>
+
             </div>
         `;
     }
