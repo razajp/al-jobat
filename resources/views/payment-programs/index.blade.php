@@ -429,7 +429,6 @@
                     {data: formatDate(item.date), class: 'w-1/6'},
                     {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
                     {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
-                    {data: item.method, class: 'w-1/6 capitalize'},
                     {data: item.transaction_id, class: 'w-1/6 capitalize'},
                 ];
             });
@@ -445,7 +444,6 @@
                         { label: "Data", class: "w-1/6" },
                         { label: "Amount", class: "w-1/6" },
                         { label: "Acc. Title", class: "w-1/3" },
-                        { label: "Method", class: "w-1/6" },
                         { label: "Reff. No.", class: "w-1/6" },
                     ],
                     body: tableBody,
