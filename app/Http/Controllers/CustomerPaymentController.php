@@ -284,13 +284,9 @@ class CustomerPaymentController extends Controller
             "transaction_id" => [
                 "nullable",
                 "string",
-                Rule::unique("customer_payments", "transaction_id")
-                    ->where(function ($query) use ($request) {
-                        // 👇 Only apply unique check WHEN value is not "0"
-                        if ($request->transaction_id != "0") {
-                            return $query;
-                        }
-                    }),
+                $request->transaction_id === "0"
+                    ? null
+                    : Rule::unique("customer_payments", "transaction_id"),
             ],
             "program_id" => "nullable|exists:payment_programs,id",
             "remarks" => "nullable|string",
