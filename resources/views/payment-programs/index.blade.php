@@ -414,6 +414,7 @@
         function generateModal(item) {
             let data = JSON.parse(item.dataset.json);
             let tableBody = [];
+            let totalAmount = 0;
 
             const sourceArray = Array.isArray(data.data.payments)
                 ? data.data.payments
@@ -422,31 +423,35 @@
                 : [];
 
             tableBody = sourceArray.map((item, index) => {
+                totalAmount += item.amount;
                 return [
-                    {data: index+1, class: 'w-1/9'},
+                    {data: index+1, class: 'w-[3%]'},
                     {data: formatDate(item.date), class: 'w-1/6'},
                     {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
                     {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
-                    {data: item.method, class: 'w-1/6 capitalize'},
+                    {data: item.transaction_id, class: 'w-1/6 capitalize'},
                 ];
             });
 
             let modalData = {
                 id: 'modalForm',
                 class: 'max-w-4xl h-[37rem]',
-                name: 'Payment Details',
+                name: `Payment Details - ${data.customer_name}`,
                 table: {
                     name: 'Details',
                     headers: [
-                        { label: "#", class: "w-1/9" },
+                        { label: "#", class: "w-[3%]" },
                         { label: "Data", class: "w-1/6" },
                         { label: "Amount", class: "w-1/6" },
                         { label: "Acc. Title", class: "w-1/3" },
-                        { label: "Method", class: "w-1/6" },
+                        { label: "Reff. No.", class: "w-1/6" },
                     ],
                     body: tableBody,
                     scrollable: true,
                 },
+                calcBottom: [
+                    {label: 'Total Amount - Rs.', name: 'total', value: formatNumbersWithDigits(totalAmount, 1, 1), disabled: true},
+                ],
             }
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {
