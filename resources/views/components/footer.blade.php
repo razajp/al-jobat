@@ -12,7 +12,7 @@
                 <div class="flex justify-center mx-3 ">
                     <a href="https://wa.me/+923165825495" target="_blank" class="text-[var(--primary-color)] hover:underline">+92 316 5825495</a>
                     <span class="mx-2">|</span>
-                    <a href="https://sparkpair.vercel.app" target="_blank" class="text-[var(--primary-color)] hover:underline">sparkpair.vercel.app</a>
+                    <a href="https://sparkpair.dev" target="_blank" class="text-[var(--primary-color)] hover:underline">sparkpair.dev</a>
                 </div>
             </div>
             <div class="md:hidden flex justify-between items-center mx-auto">
