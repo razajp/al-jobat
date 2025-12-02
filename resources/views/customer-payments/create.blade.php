@@ -138,9 +138,6 @@
     </div>
 
     <script>
-        window.chequeNos = @json($cheque_nos ?? '');
-        window.slipNos = @json($slip_nos ?? '');
-
         let customerSelectDom = document.getElementById('customer_id');
         let methodSelectDom = document.getElementById('method');
         let typeSelectDom = document.getElementById('type');
@@ -324,7 +321,7 @@
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" required/>
 
                     {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
+                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" required dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -344,7 +341,7 @@
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" required/>
 
                     {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
+                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" required dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -412,6 +409,12 @@
                         let bankAccountsSelect = document.getElementById('bank_accounts');
                         bankAccountsSelect.disabled = false;
                         bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML = '';
+                        if (bankAccountData.length > 1) {
+                            bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML += `
+                                <li data-for="bank_accounts" data-value="" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden ">-- Select Bank Account --</li>
+                            `;
+                        }
+
                         if (bankAccountData.length > 0) {
                             bankAccountData.forEach(account => {
                                 bankAccountsSelect.closest(".selectParent").querySelector('ul').innerHTML += `

@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('type');
             $table->string('method');
             $table->integer('amount');
-            $table->string('cheque_no')->nullable()->unique();
-            $table->string('slip_no')->nullable()->unique();
+            $table->string('cheque_no')->nullable();
+            $table->string('slip_no')->nullable();
             $table->string('reff_no')->nullable()->unique();
             $table->string('transaction_id')->nullable();
             $table->date('cheque_date')->nullable();

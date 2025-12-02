@@ -14,7 +14,7 @@ class PaymentProgram extends Model
     protected $hidden = [
         'updated_at',
     ];
-    
+
     protected $fillable = ['program_no', 'order_no', 'date', 'customer_id', 'category', 'sub_category', 'amount', 'remarks'];
 
     protected $appends = ['payments', 'balance', 'payment'];
@@ -82,6 +82,7 @@ class PaymentProgram extends Model
     {
         return $query->with([
             'customerPayments.bankAccount.bank',
+            'customerPayments.bankAccount.subCategory',
         ]);
     }
 }

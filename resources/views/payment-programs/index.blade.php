@@ -416,6 +416,8 @@
             let tableBody = [];
             let totalAmount = 0;
 
+            console.log(data);
+
             const sourceArray = Array.isArray(data.data.payments)
                 ? data.data.payments
                 : Array.isArray(data.data.payment_programs)
@@ -426,10 +428,11 @@
                 totalAmount += item.amount;
                 return [
                     {data: index+1, class: 'w-[3%]'},
-                    {data: formatDate(item.date), class: 'w-1/6'},
-                    {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
+                    {data: formatDate(item.date), class: 'w-1/4'},
+                    {data: (item.bank_account?.sub_category?.supplier_name ?? item.bank_account?.sub_category?.customer_name ?? 'Self Account'), class: 'w-1/3 capitalize'},
                     {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
-                    {data: item.transaction_id, class: 'w-1/6 capitalize'},
+                    {data: formatNumbersWithDigits(item.amount, 1, 1), class: 'w-1/6'},
+                    {data: item.transaction_id, class: 'w-[10%] capitalize'},
                 ];
             });
 
@@ -441,10 +444,11 @@
                     name: 'Details',
                     headers: [
                         { label: "#", class: "w-[3%]" },
-                        { label: "Data", class: "w-1/6" },
-                        { label: "Amount", class: "w-1/6" },
+                        { label: "Data", class: "w-1/4" },
+                        { label: "Beneficiary", class: "w-1/3" },
                         { label: "Acc. Title", class: "w-1/3" },
-                        { label: "Reff. No.", class: "w-1/6" },
+                        { label: "Amount", class: "w-1/6" },
+                        { label: "Reff. No.", class: "w-[10%]" },
                     ],
                     body: tableBody,
                     scrollable: true,

@@ -53,10 +53,13 @@ function validateInput(input, listner) {
             }
         }
 
-        // urdu = only Urdu letters, Urdu punctuation, and spaces
+        // urdu = only Urdu letters, Urdu & English numbers, Urdu punctuation, and spaces
         if (rule === 'urdu') {
-            value = value.replace(/[^\u0600-\u06FF\s،۔!?؟]/g, '');
-            if (!/[\u0600-\u06FF]/.test(value)) {
+            // Allow: Urdu letters (\u0600-\u06FF), Urdu digits (\u06F0-\u06F9), English digits (0-9), spaces, and Urdu punctuation
+            value = value.replace(/[^\u0600-\u06FF\u06F0-\u06F90-9\s،۔!?؟]/g, '');
+
+            // Check if at least one Urdu letter or number exists
+            if (!/[\u0600-\u06FF\u06F0-\u06F90-9]/.test(value)) {
                 error = 'Please enter in Urdu only.';
             }
         }
