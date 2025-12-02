@@ -107,7 +107,7 @@ function createModal(data, animate = 'animate') {
 
     if (data.name) {
         clutter += `
-            <div class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
+            <div id="modelInner" class="flex-1 flex flex-col ${data.image ? 'ml-8' : ''} h-full w-full ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
                 <div class="flex justify-between">
                     <h5 id="name" class="text-2xl my-1 text-[var(--text-color)] capitalize font-semibold">${data.name}</h5>
                     ${data.searchFilter ? renderSearchFilter() : ''}

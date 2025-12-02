@@ -126,7 +126,7 @@
         }
 
         const fetchedData = @json($finalData);
-        console.log(fetchedData);
+
         let allDataArray = fetchedData.map(item => {
             const category = item.category || item.payment_programs?.category;
             let beneficiary = null;
@@ -154,8 +154,6 @@
                     beneficiary = sub.account_title;
                 }
             }
-
-            console.log(item);
 
             return {
                 id: item.id,
@@ -376,6 +374,79 @@
             createModal(modalData);
         }
 
+        function printDetails(elem) {
+            closeAllDropdowns();
+
+            if (elem.parentElement.tagName.toLowerCase() === 'li') {
+                elem.parentElement.parentElement.querySelector('#show-details').click();
+                document.getElementById('modalForm').parentElement.classList.add('hidden');
+            }
+
+            const preview = document.getElementById('modelInner');
+
+            // Remove existing iframe
+            let oldIframe = document.getElementById('printIframe');
+            if (oldIframe) oldIframe.remove();
+
+            // Create iframe
+            let printIframe = document.createElement('iframe');
+            printIframe.id = "printIframe";
+            printIframe.style.position = "absolute";
+            printIframe.style.width = "0px";
+            printIframe.style.height = "0px";
+            printIframe.style.border = "none";
+            printIframe.style.display = "none";
+            document.body.appendChild(printIframe);
+
+            let printDocument = printIframe.contentDocument || printIframe.contentWindow.document;
+            printDocument.open();
+
+            const headContent = document.head.innerHTML;
+
+            printDocument.write(`
+                <html>
+                    <head>
+                        <title>Print Program Details</title>
+                        ${headContent}
+                        <style>
+                            @media print {
+                                /* All text black */
+                                body, body * {
+                                    color: #000000 !important;
+                                }
+
+                                #table-head, #calc-bottom .final {
+                                    background-color: transparent !important;
+                                    border: 1px solid #6b7280 !important;
+                                    page-break-inside: avoid;
+                                }
+
+                                /* Table row breaks */
+                                #table-body > div {
+                                    page-break-inside: avoid;
+                                    page-break-after: auto;
+                                }
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        ${preview.innerHTML}
+                    </body>
+                </html>
+            `);
+
+            printDocument.close();
+
+            printIframe.onload = () => {
+                setTimeout(() => {
+                    printIframe.contentWindow.focus();
+                    printIframe.contentWindow.print();
+                }, 500);
+
+                document.getElementById('modalForm').parentElement.remove();
+            };
+        }
+
         function goToAddPayment(program) {
             const url = new URL("{{ route('customer-payments.create') }}", window.location.origin);
             url.searchParams.set("program_id", program.payment_programs?.id ?? program.id);
@@ -398,14 +469,17 @@
                 data: data,
                 x: e.pageX,
                 y: e.pageY,
+                actions: [
+                    {id: 'print', text: 'Print Details', onclick: 'printDetails(this)'}
+                ]
             };
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {
-                contextMenuData.actions = [
+                contextMenuData.actions.push(
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
                     {id: 'mark-paid', text: 'Mark as Paid', onclick: `goToMarkPaid(${JSON.stringify(data)})`},
-                ];
+                );
             }
 
             createContextMenu(contextMenuData);
@@ -416,8 +490,6 @@
             let tableBody = [];
             let totalAmount = 0;
 
-            console.log(data);
-
             const sourceArray = Array.isArray(data.data.payments)
                 ? data.data.payments
                 : Array.isArray(data.data.payment_programs)
@@ -427,7 +499,7 @@
             tableBody = sourceArray.map((item, index) => {
                 totalAmount += item.amount;
                 return [
-                    {data: index+1, class: 'w-[3%]'},
+                    {data: index+1, class: 'w-[5%]'},
                     {data: formatDate(item.date), class: 'w-1/4'},
                     {data: (item.bank_account?.sub_category?.supplier_name ?? item.bank_account?.sub_category?.customer_name ?? 'Self Account'), class: 'w-1/3 capitalize'},
                     {data: (item.bank_account?.account_title ?? '-') + ' | ' + (item.bank_account?.bank?.short_title ?? '-'), class: 'w-1/3 capitalize'},
@@ -443,7 +515,7 @@
                 table: {
                     name: 'Details',
                     headers: [
-                        { label: "#", class: "w-[3%]" },
+                        { label: "#", class: "w-[5%]" },
                         { label: "Data", class: "w-1/4" },
                         { label: "Beneficiary", class: "w-1/3" },
                         { label: "Acc. Title", class: "w-1/3" },
@@ -456,6 +528,9 @@
                 calcBottom: [
                     {label: 'Total Amount - Rs.', name: 'total', value: formatNumbersWithDigits(totalAmount, 1, 1), disabled: true},
                 ],
+                bottomActions: [
+                    {id: 'print', text: 'Print Details', onclick: 'printDetails(this)'}
+                ]
             }
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {
