@@ -85,9 +85,6 @@
     </div>
 
     <script>
-        window.chequeNos = @json($cheque_nos ?? '');
-        window.slipNos = @json($slip_nos ?? '');
-
         let customerPayment = @json($customerPayment);
         customerPayment.remarks = customerPayment.remarks || '';
         let methodSelectDom = document.getElementById('method');
@@ -214,7 +211,7 @@
                     <x-input label="Cheque Date" type="date" name="cheque_date" id="cheque_date" value="${formatDate(customerPayment.cheque_date, false, true)}" required/>
 
                     {{-- cheque_no --}}
-                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" value="${customerPayment.cheque_no}" required dataValidate="required|friendly|unique:chequeNo" oninput="validateInput(this)"/>
+                    <x-input label="Cheque No" placeholder="Enter cheque no" name="cheque_no" id="cheque_no" value="${customerPayment.cheque_no}" required dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" value="${customerPayment.remarks}" dataValidate="friendly" oninput="validateInput(this)"/>
@@ -235,7 +232,7 @@
                     <x-input label="Slip Date" type="date" name="slip_date" id="slip_date" value="${formatDate(customerPayment.slip_date, false, true)}" required/>
 
                     {{-- slip_no --}}
-                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" value="${customerPayment.slip_no}" required dataValidate="required|friendly|unique:slipNo" oninput="validateInput(this)"/>
+                    <x-input label="Slip No" placeholder="Enter slip no" name="slip_no" id="slip_no" value="${customerPayment.slip_no}" required dataValidate="required|friendly" oninput="validateInput(this)"/>
 
                     {{-- remarks --}}
                     <x-input label="Remarks" placeholder="Remarks" name="remarks" id="remarks" dataValidate="friendly" value="${customerPayment.remarks}" oninput="validateInput(this)"/>
