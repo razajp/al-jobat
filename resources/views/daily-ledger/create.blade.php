@@ -135,7 +135,7 @@
 
                         <!-- amount -->
                         <x-input label="Amount" id="amount" name="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" />
-                        
+
                         <!-- reff_no -->
                         <x-input label="Reff. No." name="reff_no" id="reff_no" placeholder="Enter reff no" dataValidate="friendly" />
                     @else
@@ -144,7 +144,7 @@
 
                         <!-- amount -->
                         <x-input label="Amount" id="amount" name="amount" type="amount" placeholder="Enter amount" required dataValidate="required|amount" />
-                        
+
                         <!-- remarks -->
                         <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter remarks" dataValidate="friendly" />
                     @endif

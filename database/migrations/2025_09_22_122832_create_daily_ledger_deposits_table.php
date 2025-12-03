@@ -16,7 +16,7 @@ return new class extends Migration
             $table->date('date');
             $table->string('method');
             $table->integer('amount');
-            $table->string('reff_no')->unique();
+            $table->string('reff_no')->nullable();
             $table->timestamps();
         });
     }

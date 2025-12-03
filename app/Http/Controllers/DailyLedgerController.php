@@ -48,7 +48,7 @@ class DailyLedgerController extends Controller
 
         return view('daily-ledger.index', compact('dailyLedgers'));
     }
-    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -75,7 +75,7 @@ class DailyLedgerController extends Controller
         if ($type === 'deposit') {
             $rules = array_merge($commonRules, [
                 'method'  => 'required|string',
-                'reff_no' => 'required|string|unique:daily_ledger_deposits,reff_no',
+                'reff_no' => 'nullable|string',
             ]);
 
             $validated = $request->validate($rules);

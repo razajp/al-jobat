@@ -49,11 +49,12 @@
                 <div class="details h-full z-40">
                     <div class="container-parent h-full">
                         <div class="card_container px-3 pb-3 h-full flex flex-col">
-                            <div id="table-head" class="grid grid-cols-4 text-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                            <div id="table-head" class="grid grid-cols-5 text-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Description</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Deposit</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Use</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Balance</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -73,7 +74,7 @@
                                 </div>
                                 <div
                                     class="balance flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
-                                    <div>Balance - Rs.</div>
+                                    <div>Total Balance - Rs.</div>
                                     <div class="text-right">0.00</div>
                                 </div>
                             </div>
@@ -95,23 +96,27 @@
         let totalDepositAmount = 0;
         let totalUseAmount = 0;
         let authLayout = 'table';
+        let balance = 0;
 
         function createRow(data) {
             return `
                 <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                    class="item row relative group grid grid-cols-4 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                    class="item row relative group grid grid-cols-5 text-center border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                     data-json='${JSON.stringify(data)}'>
 
                     <span>${formatDate(data.date)}</span>
                     <span>${data.description}</span>
                     <span>${formatNumbersWithDigits(data.deposit, 1, 1)}</span>
                     <span>${formatNumbersWithDigits(data.use, 1, 1)}</span>
+                    <span>${formatNumbersWithDigits(data.balance, 1, 1)}</span>
                 </div>
             `;
         }
 
         const fetchedData = @json($dailyLedgers);
         let allDataArray = fetchedData.map(item => {
+            balance += item.deposit;
+            balance -= item.use;
             totalDepositAmount += parseFloat(item.deposit ?? 0);
             totalUseAmount += parseFloat(item.use ?? 0);
             return {
@@ -121,6 +126,7 @@
                 deposit: item.deposit,
                 use: item.use,
                 type: item.deposit > 0 ? 'deposit' : 'use',
+                balance: balance,
                 visible: true,
             };
         });
