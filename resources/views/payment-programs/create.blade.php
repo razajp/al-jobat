@@ -23,7 +23,7 @@
 
         <div class="grid grid-cols-2 gap-4">
             {{-- date --}}
-            <x-input label="Date" name="date" id="date" type="date" onchange="trackDateState(this)" required />
+            <x-input label="Date" name="date" id="date" type="date" onchange="trackDateState(this)" validateMax max="{{ now()->toDateString() }}" required />
 
             {{-- cusomer --}}
             <x-select
