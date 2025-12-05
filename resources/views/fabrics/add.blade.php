@@ -6,6 +6,7 @@
         'black' => ['text' => 'Black', 'data_option' => 'blk'],
         'blue' => ['text' => 'Blue', 'data_option' => 'blu'],
         'golden' => ['text' => 'Golden', 'data_option' => 'gld'],
+        'purple' => ['text' => 'Purple', 'data_option' => 'gld'],
         'green' => ['text' => 'Green', 'data_option' => 'grn'],
         'grey' => ['text' => 'Grey', 'data_option' => 'gry'],
         'meroon' => ['text' => 'Meroon', 'data_option' => 'mrn'],
