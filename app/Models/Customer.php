@@ -94,25 +94,33 @@ class Customer extends Model
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
         $invoicesQuery = $this->invoices()->whereNotNull('shipment_no');
-        $paymentsQuery = $this->payments()->where('type', '!==', 'DR');
+        $paymentsQuery = $this->payments()->where('type', '!=', 'DR');
+
+        // Normalize dates to start/end of day
+        if ($fromDate) {
+            $from = Carbon::parse($fromDate)->startOfDay();
+        }
+        if ($toDate) {
+            $to = Carbon::parse($toDate)->endOfDay();
+        }
 
         // Handle different date scenarios
-        if ($fromDate && $toDate) {
+        if (isset($from, $to)) {
             if ($includeGivenDate) {
-                $invoicesQuery->whereBetween('date', [$fromDate, $toDate]);
-                $paymentsQuery->whereBetween('date', [$fromDate, $toDate]);
+                $invoicesQuery->whereBetween('date', [$from, $to]);
+                $paymentsQuery->whereBetween('date', [$from, $to]);
             } else {
-                $invoicesQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
-                $paymentsQuery->where('date', '>', $fromDate)->where('date', '<', $toDate);
+                $invoicesQuery->where('date', '>', $from)->where('date', '<', $to);
+                $paymentsQuery->where('date', '>', $from)->where('date', '<', $to);
             }
-        } elseif ($fromDate) {
+        } elseif (isset($from)) {
             $operator = $includeGivenDate ? '>=' : '>';
-            $invoicesQuery->where('date', $operator, $fromDate);
-            $paymentsQuery->where('date', $operator, $fromDate);
-        } elseif ($toDate) {
+            $invoicesQuery->where('date', $operator, $from);
+            $paymentsQuery->where('date', $operator, $from);
+        } elseif (isset($to)) {
             $operator = $includeGivenDate ? '<=' : '<';
-            $invoicesQuery->where('date', $operator, $toDate);
-            $paymentsQuery->where('date', $operator, $toDate);
+            $invoicesQuery->where('date', $operator, $to);
+            $paymentsQuery->where('date', $operator, $to);
         }
 
         // Calculate totals
@@ -130,141 +138,117 @@ class Customer extends Model
         $periodBalance  = $this->calculateBalance($fromDate, $toDate);
         $closingBalance = $openingBalance + $periodBalance;
 
-        // --- SHARED QUERIES ---
-        $invoiceQuery = $this->invoices()->whereBetween('date', [$fromDate, $toDate]);
-        $paymentQuery = $this->payments()->where('type', '!==', 'DR')->whereBetween('date', [$fromDate, $toDate]);
+        // --- Normalize dates ---
+        $from = Carbon::parse($fromDate)->startOfDay();
+        $to   = Carbon::parse($toDate)->endOfDay();
+
+        // --- Fetch invoices & payments ---
+        $invoices = $this->invoices()
+            ->whereBetween('date', [$from, $to])
+            ->get();
+
+        $payments = $this->payments()
+            ->where('type', '!=', 'DR')
+            ->whereBetween('date', [$from, $to])
+            ->get();
+
+        $statement = collect();
 
         if ($type === 'summarized') {
-            // 🧾 Fetch all invoices — ensure normalized date
-            $invoices = $invoiceQuery->get()->map(fn($i) => [
-                'type' => 'invoice',
-                'date' => Carbon::parse($i->date)->toDateString(),
-                'bill' => (float) ($i->netAmount ?? 0),
-                'payment' => 0,
-                'created_at' => $i->created_at,
-            ]);
+            // 🔹 Group invoices by date
+            $invoiceGrouped = $invoices->groupBy(fn($i) => Carbon::parse($i->date)->toDateString());
+            // 🔹 Group payments by date
+            $paymentGrouped = $payments->groupBy(fn($p) => Carbon::parse($p->date)->toDateString());
 
-            // 💵 Fetch all payments — ensure normalized date
-            $payments = $paymentQuery->get()->map(fn($p) => [
-                'type' => 'payment',
-                'date' => Carbon::parse($p->date)->toDateString(),
-                'bill' => 0,
-                'payment' => (float) ($p->amount ?? 0),
-                'created_at' => $p->created_at,
-            ]);
+            // 🔹 Get all unique dates
+            $allDates = $invoiceGrouped->keys()->merge($paymentGrouped->keys())->unique()->sort();
 
-            // 📅 Merge and group by date (grouped correctly)
-            $statement = $invoices
-                ->merge($payments)
-                ->groupBy('date')
-                ->flatMap(function ($rows, $date) {
-                    // 🔹 Sort each date’s records by created_at (earliest first)
-                    $rows = $rows->sortBy('created_at');
+            foreach ($allDates as $date) {
+                $bill = isset($invoiceGrouped[$date]) ? $invoiceGrouped[$date]->sum(fn($i) => (float) $i->netAmount) : 0;
+                $payment = isset($paymentGrouped[$date]) ? $paymentGrouped[$date]->sum(fn($p) => (float) $p->amount) : 0;
 
-                    $billSum = (float) $rows->sum('bill');
-                    $paymentSum = (float) $rows->sum('payment');
+                // Add payment first if exists
+                if ($payment > 0) {
+                    $firstPayment = $paymentGrouped[$date]->sortBy('created_at')->first();
+                    $statement->push([
+                        'type' => 'payment',
+                        'date' => Carbon::parse($date),
+                        'bill' => 0,
+                        'payment' => $payment,
+                        'created_at' => $firstPayment->created_at,
+                    ]);
+                }
 
-                    $results = [];
+                // Add invoice
+                if ($bill > 0) {
+                    $firstInvoice = $invoiceGrouped[$date]->sortBy('created_at')->first();
+                    $statement->push([
+                        'type' => 'invoice',
+                        'date' => Carbon::parse($date),
+                        'bill' => $bill,
+                        'payment' => 0,
+                        'created_at' => $firstInvoice->created_at,
+                    ]);
+                }
+            }
 
-                    // 💵 If that date has payments
-                    if ($paymentSum > 0) {
-                        $firstPaymentCreatedAt = $rows
-                            ->where('type', 'payment')
-                            ->min('created_at');
+            // Sort by date then created_at
+            $statement = $statement->sortBy([
+                ['date', 'asc'],
+                ['created_at', 'asc'],
+            ])->values();
+        } else {
+            // 🔹 Detailed mode
+            foreach ($invoices as $i) {
+                $statement->push([
+                    'date' => $i->date,
+                    'reff_no' => $i->invoice_no,
+                    'type' => 'invoice',
+                    'bill' => (float) $i->netAmount,
+                    'payment' => 0,
+                    'created_at' => $i->created_at,
+                ]);
+            }
 
-                        $results[] = [
-                            'type' => 'payment',
-                            'date' => Carbon::parse($date),
-                            'bill' => 0,
-                            'payment' => $paymentSum,
-                            'created_at' => $firstPaymentCreatedAt,
-                        ];
-                    }
-
-                    // 🧾 If that date has invoices
-                    if ($billSum > 0) {
-                        $firstInvoiceCreatedAt = $rows
-                            ->where('type', 'invoice')
-                            ->min('created_at');
-
-                        $results[] = [
-                            'type' => 'invoice',
-                            'date' => Carbon::parse($date),
-                            'bill' => $billSum,
-                            'payment' => 0,
-                            'created_at' => $firstInvoiceCreatedAt,
-                        ];
-                    }
-
-                    // 🔸 Sort by created_at so whichever was entered first comes first
-                    return collect($results)->sortBy('created_at')->values();
-                })
-                ->sortBy([
-                    ['date', 'asc'],
-                    ['created_at', 'asc'],
-                ])
-                ->values();
-        }
-
-        else {
-            // 🧾 Detailed invoices
-            $invoices = $invoiceQuery->get()->map(fn($i) => [
-                'date' => $i->date,
-                'reff_no' => $i->invoice_no,
-                'type' => 'invoice',
-                'bill' => (float) ($i->netAmount ?? 0),
-                'payment' => 0,
-                'created_at' => $i->created_at,
-            ]);
-
-            // 💵 Detailed payments
-            $payments = $paymentQuery
-                ->with('bankAccount.bank')
-                ->get()
-                ->map(fn($p) => [
+            foreach ($payments as $p) {
+                $statement->push([
                     'date' => $p->date,
                     'reff_no' => $p->cheque_no ?? $p->slip_no ?? $p->transaction_id ?? $p->reff_no,
                     'type' => 'payment',
                     'method' => $p->method,
-                    'payment' => (float) ($p->amount ?? 0),
+                    'payment' => (float) $p->amount,
                     'bill' => 0,
-                    'description' =>
-                        $p->cheque_date?->format('d-M-Y, D')
-                        ?? $p->slip_date?->format('d-M-Y, D')
-                        ?? (($p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title)
-                            ? trim(
-                                ($p->bankAccount?->account_title ?? '') .
-                                ($p->bankAccount?->bank?->short_title
-                                    ? ' | ' . $p->bankAccount->bank->short_title
-                                    : ''),
-                                ' |'
-                            )
-                            : null),
+                    'description' => $p->cheque_date?->format('d-M-Y, D')
+                                    ?? $p->slip_date?->format('d-M-Y, D')
+                                    ?? (($p->bankAccount?->account_title || $p->bankAccount?->bank?->short_title)
+                                        ? trim(
+                                            ($p->bankAccount?->account_title ?? '') .
+                                            ($p->bankAccount?->bank?->short_title
+                                                ? ' | ' . $p->bankAccount->bank->short_title
+                                                : ''),
+                                            ' |'
+                                        )
+                                        : null),
                     'created_at' => $p->created_at,
                 ]);
+            }
 
-            // 📅 Merge & sort (by date, then created_at)
-            $statement = $invoices
-                ->merge($payments)
-                ->sortBy([
-                    ['date', 'asc'],
-                    ['created_at', 'asc'],
-                ])
-                ->values();
+            // Sort by date then created_at
+            $statement = $statement->sortBy([
+                ['date', 'asc'],
+                ['created_at', 'asc'],
+            ])->values();
         }
 
         // 📊 Totals
-        $billTotal = $statement->sum('bill');
-        $paymentTotal = $statement->sum('payment');
         $totals = [
-            'bill' => $billTotal,
-            'payment' => $paymentTotal,
-            'balance' => $billTotal - $paymentTotal,
+            'bill' => $statement->sum('bill'),
+            'payment' => $statement->sum('payment'),
+            'balance' => $statement->sum('bill') - $statement->sum('payment'),
         ];
 
-        // 🧩 Final Response
         return [
-            'date' => Carbon::parse($fromDate)->format('d-M-Y') . ' - ' . Carbon::parse($toDate)->format('d-M-Y'),
+            'date' => $from->format('d-M-Y') . ' - ' . $to->format('d-M-Y'),
             'name' => "{$this->customer_name} | {$this->city->title}",
             'opening_balance' => $openingBalance,
             'closing_balance' => $closingBalance,
