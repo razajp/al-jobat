@@ -122,10 +122,10 @@ class VoucherController extends Controller
         $last_voucher = Voucher::orderBy('id', 'desc')->first();
 
         if (!$last_voucher) {
-            $last_voucher['voucher_no'] = '00/101';
+            $last_voucher['voucher_no'] = '00/149';
         }
 
-        return view("vouchers.create", compact("suppliers", "suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'self_accounts_options', 'last_voucher'));
+        return view("vouchers.create", compact("suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'self_accounts_options', 'last_voucher'));
     }
 
     /**
