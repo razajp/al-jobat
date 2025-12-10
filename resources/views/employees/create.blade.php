@@ -97,7 +97,7 @@
                     name="salary"
                     id="salary"
                     placeholder="Enter salary"
-                    type="amount"
+                    type="number"
                     dataValidate="required|amount" 
                     disabled
                     capitalized
