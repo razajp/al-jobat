@@ -23,6 +23,7 @@
         "Date Range" => [
             "id" => "date_range_start",
             "type" => "date",
+            "value" => \Carbon\Carbon::now()->startOfWeek()->toDateString(),
             "id2" => "date_range_end",
             "type2" => "date",
             "oninput" => "runDynamicFilter()",
@@ -63,6 +64,11 @@
                             </div>
                             <div id="calc-bottom" class="flex w-full gap-4 text-sm bg-[var(--secondary-bg-color)] py-2 rounded-lg">
                                 <div
+                                    class="opening-balance flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Opening Balance - Rs.</div>
+                                    <div class="text-right">0.00</div>
+                                </div>
+                                <div
                                     class="total-Deposit flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
                                     <div>Total Deposit - Rs.</div>
                                     <div class="text-right">0.00</div>
@@ -75,6 +81,11 @@
                                 <div
                                     class="balance flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
                                     <div>Total Balance - Rs.</div>
+                                    <div class="text-right">0.00</div>
+                                </div>
+                                <div
+                                    class="closing-balance flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
+                                    <div>Closing Balance - Rs.</div>
                                     <div class="text-right">0.00</div>
                                 </div>
                             </div>
@@ -114,6 +125,8 @@
         }
 
         const fetchedData = @json($dailyLedgers);
+        console.log(fetchedData);
+
         let allDataArray = fetchedData.map(item => {
             balance += item.deposit;
             balance -= item.use;
@@ -121,7 +134,7 @@
             totalUseAmount += parseFloat(item.use ?? 0);
             return {
                 id: item.id,
-                date: item.date,
+                date: item.date = new Date(item.date).toLocaleDateString('sv'),
                 description: item.description ?? '-',
                 deposit: item.deposit,
                 use: item.use,
@@ -131,19 +144,74 @@
             };
         });
 
+        let openingBalanceDom = document.querySelector('#calc-bottom >.opening-balance .text-right');
         let totalDepositDom = document.querySelector('#calc-bottom >.total-Deposit .text-right');
         let totalUseDom = document.querySelector('#calc-bottom >.total-Payment .text-right');
         let balanceDom = document.querySelector('#calc-bottom >.balance .text-right');
+        let closingBalanceDom = document.querySelector('#calc-bottom >.closing-balance .text-right');
         let infoDom = document.getElementById('info').querySelector('span');
 
         function onFilter() {
+            // =========== CASE 1: NO VISIBLE RECORDS ===========
+            if (visibleData.length === 0) {
+
+                infoDom.textContent = `Showing 0 of ${allDataArray.length} payments.`;
+
+                // --- CASE 1A: allDataArray > 0 → use full history balance as opening ---
+                if (allDataArray.length > 0) {
+                    let fullDeposit = allDataArray.reduce((sum, d) => sum + d.deposit, 0);
+                    let fullUse = allDataArray.reduce((sum, d) => sum + d.use, 0);
+                    let openingBalance = fullDeposit - fullUse;
+
+                    openingBalanceDom.innerText = formatNumbersWithDigits(openingBalance, 1, 1);
+                    totalDepositDom.innerText = "0";
+                    totalUseDom.innerText = "0";
+                    balanceDom.innerText = "0";
+                    closingBalanceDom.innerText = formatNumbersWithDigits(openingBalance, 1, 1);
+                }
+
+                // --- CASE 1B: allDataArray = 0 → everything zero ---
+                else {
+                    openingBalanceDom.innerText = "0";
+                    totalDepositDom.innerText = "0";
+                    totalUseDom.innerText = "0";
+                    balanceDom.innerText = "0";
+                    closingBalanceDom.innerText = "0";
+                }
+
+                return; // stop
+            }
+
+            // =========== CASE 2: VISIBLE RECORDS EXIST ===========
+            // 1: totals for visible records
             totalDepositAmount = visibleData.reduce((sum, d) => sum + d.deposit, 0);
             totalUseAmount = visibleData.reduce((sum, d) => sum + d.use, 0);
+
             infoDom.textContent = `Showing ${visibleData.length} of ${allDataArray.length} payments.`;
 
+            // 2: find oldest visible date
+            let oldestVisibleRecord = [...visibleData]
+                .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
+
+            // 3: find records BEFORE that date
+            let openingRelatedData = allDataArray.filter(
+                d => new Date(d.date) < new Date(oldestVisibleRecord.date)
+            );
+
+            // 4: opening balance calc
+            let openingDeposit = openingRelatedData.reduce((sum, d) => sum + d.deposit, 0);
+            let openingUse = openingRelatedData.reduce((sum, d) => sum + d.use, 0);
+            let openingBalance = openingDeposit - openingUse;
+
+            // 5: closing balance
+            let closingBalance = openingBalance + (totalDepositAmount - totalUseAmount);
+
+            // =========== RENDER ===========
+            openingBalanceDom.innerText = formatNumbersWithDigits(openingBalance, 1, 1);
             totalDepositDom.innerText = formatNumbersWithDigits(totalDepositAmount, 1, 1);
             totalUseDom.innerText = formatNumbersWithDigits(totalUseAmount, 1, 1);
             balanceDom.innerText = formatNumbersWithDigits(totalDepositAmount - totalUseAmount, 1, 1);
+            closingBalanceDom.innerText = formatNumbersWithDigits(closingBalance, 1, 1);
         }
     </script>
 @endsection
