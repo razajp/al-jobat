@@ -204,7 +204,13 @@
                 modalData.details['Cheque Book Serial'] = data.chqbkSerialStart + ' - ' + data.chqbkSerialEnd;
             }
 
-            if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
+            // if (data.available_cheques.length == 0 && (currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
+            //     modalData.bottomActions = [
+            //         {id: 'update-cheque-book-serial', text: 'Update Serial', onclick: `generateUpdateChequeBookSerialModel(${JSON.stringify(data)})`},
+            //     ];
+            // }
+
+            if ((currentUserRole == 'admin' || currentUserRole == 'developer' || currentUserRole == 'owner')) {
                 modalData.bottomActions = [
                     {id: 'update-cheque-book-serial', text: 'Update Serial', onclick: `generateUpdateChequeBookSerialModel(${JSON.stringify(data)})`},
                 ];
