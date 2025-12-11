@@ -56,8 +56,8 @@
                             <div id="table-head" class="grid grid-cols-4 bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Bill Type</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Location</div>
-                                <div class="cursor-pointer" onclick="sortByThis(this)">Account Title</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Account No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Account Title</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No Record found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -89,8 +89,8 @@
 
                 <span class="capitalize">${data.bill_type}</span>
                 <span class="capitalize">${data.location}</span>
-                <span class="capitalize">${data.account_title}</span>
                 <span class="capitalize">${data.account_no}</span>
+                <span class="capitalize">${data.account_title}</span>
             </div>`;
         }
 
