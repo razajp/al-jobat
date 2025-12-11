@@ -426,54 +426,57 @@ class CustomerPaymentController extends Controller
             "cheque_date" => "nullable|date",
             "slip_date" => "nullable|date",
 
-            // ---------------------------------------------------
-            // CHEQUE UNIQUE RULE (customer_id + bank_id + cheque_date + cheque_no)
-            // ---------------------------------------------------
+            // -----------------------------------------
+            // CHEQUE UNIQUE RULE (IGNORE CURRENT ROW)
+            // -----------------------------------------
             "cheque_no" => [
                 "nullable",
                 "string",
-                function ($attribute, $value, $fail) use ($request) {
+                function ($attribute, $value, $fail) use ($request, $customerPayment) {
                     if ($value && $value !== "0") {
                         $exists = CustomerPayment::where('customer_id', (int)$request->customer_id)
                             ->where('bank_id', (int)$request->bank_id)
-                            ->whereDate('cheque_date', $request->cheque_date) // use whereDate for proper date comparison
+                            ->whereDate('cheque_date', $request->cheque_date)
                             ->where('cheque_no', $value)
+                            ->where('id', '!=', $customerPayment->id) // IGNORE CURRENT RECORD
                             ->exists();
 
                         if ($exists) {
-                            $fail('The cheque number has already been taken for this customer, bank and date.');
+                            $fail('This cheque number already exists for this customer, bank and date.');
                         }
                     }
                 },
             ],
 
-            // ---------------------------------------------------
-            // SLIP UNIQUE RULE (customer_id + slip_date + slip_no) — NO bank check
-            // ---------------------------------------------------
+            // -----------------------------------------
+            // SLIP UNIQUE RULE (IGNORE CURRENT ROW)
+            // -----------------------------------------
             "slip_no" => [
                 "nullable",
                 "string",
-                function ($attribute, $value, $fail) use ($request) {
+                function ($attribute, $value, $fail) use ($request, $customerPayment) {
                     if ($value && $value !== "0") {
                         $exists = CustomerPayment::where('customer_id', (int)$request->customer_id)
-                            ->whereDate('slip_date', $request->slip_date) // proper date comparison
+                            ->whereDate('slip_date', $request->slip_date)
                             ->where('slip_no', $value)
+                            ->where('id', '!=', $customerPayment->id) // IGNORE CURRENT RECORD
                             ->exists();
 
                         if ($exists) {
-                            $fail('The slip number has already been taken for this customer and slip date.');
+                            $fail('This slip number already exists for this customer and slip date.');
                         }
                     }
                 },
             ],
 
-            // ---------------------------------------------------
-            // TRANSACTION ID UNIQUE (skip when = "0")
-            // ---------------------------------------------------
+            // -----------------------------------------
+            // TRANSACTION ID UNIQUE (IGNORE CURRENT ROW)
+            // -----------------------------------------
             "transaction_id" => [
                 "nullable",
                 "string",
                 Rule::unique("customer_payments", "transaction_id")
+                    ->ignore($customerPayment->id)
                     ->whereNot("transaction_id", "0"),
             ],
 

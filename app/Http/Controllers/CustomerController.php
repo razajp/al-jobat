@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class CustomerController extends Controller
 {
@@ -66,7 +67,15 @@ class CustomerController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
-            'customer_name' => 'required|string|max:255|unique:customers,customer_name',
+            'customer_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('customers', 'customer_name')
+                    ->where(function ($query) use ($request) {
+                        return $query->where('city_id', $request->city);
+                    }),
+            ],
             'person_name' => 'required|string|max:255',
             'urdu_title' => 'nullable|string|max:255',
             'username' => 'required|string|min:6|max:255|regex:/^[a-z0-9]+$/|unique:users,username',

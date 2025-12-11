@@ -8,6 +8,7 @@ use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class BankAccountController extends Controller
 {
@@ -59,11 +60,28 @@ class BankAccountController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
+        $categoryTypeMap = [
+            'supplier' => 'App\Models\Supplier',
+            'customer' => 'App\Models\Customer',
+            'self'     => null,
+        ];
+
+        $categoryType = $categoryTypeMap[$request->category] ?? null;
+
         $validator = Validator::make($request->all(), [
             'category' => 'required|in:self,supplier,customer',
             'sub_category' => 'nullable|integer',
             'bank_id' => 'required|string',
-            'account_title' => 'required|string|unique:bank_accounts,account_title',
+            'account_title' => [
+                'required',
+                'string',
+                Rule::unique('bank_accounts', 'account_title')
+                    ->where(function ($query) use ($request, $categoryType) {
+                        return $query->where('sub_category_type', $categoryType)
+                                    ->where('sub_category_id', $request->sub_category)
+                                    ->where('bank_id', $request->bank_id);
+                    }),
+            ],
             'date' => 'required|date',
             'remarks' => 'nullable|string',
             'account_no' => 'nullable|string|unique:bank_accounts,account_no',
