@@ -202,13 +202,6 @@
                 }
                 trackCustomerState();
 
-                // set date today
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                dateDom.value = `${yyyy}-${mm}-${dd}`;
-
                 let typeInp = typeSelectDom.closest(".selectParent")?.querySelector('input[type="hidden"]');
                 // select type
                 for (const option of typeSelectDom.closest(".selectParent")?.querySelectorAll('ul li')) {
