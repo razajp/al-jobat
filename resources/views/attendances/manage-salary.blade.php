@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Manage Salary | ' . app('client_company')->name)
+@section('title', 'Manage Salary | ' . $client_company->name)
 @section('content')
 @php
     $type_options = [

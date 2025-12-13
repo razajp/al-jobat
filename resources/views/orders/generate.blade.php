@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Order | ' . app('client_company')->name)
+@section('title', 'Generate Order | ' . $client_company->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -429,7 +429,7 @@
             inputOrderedArticles.value = JSON.stringify(finalArticlesArray);
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         let orderNo;
         let orderDate;
         const previewDom = document.getElementById('preview');

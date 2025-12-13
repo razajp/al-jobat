@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Shipments | ' . app('client_company')->name)
+@section('title', 'Show Shipments | ' . $client_company->name)
 @section('content')
     @php
         $searchFields = [
@@ -63,7 +63,7 @@
     </section>
 
     <script>
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         let authLayout = '{{ $authLayout }}';
 
         function createRow(data) {

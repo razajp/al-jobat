@@ -1,11 +1,11 @@
 @extends('app')
-@section('title', 'Generate Invoice | ' . app('client_company')->name)
+@section('title', 'Generate Invoice | ' . $client_company->name)
 @section('content')
     <div id="invoice-container" class="hidden"></div>
 
     <script>
         let invoices = @json($invoices);
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         console.log(invoices);
 
         let invoiceContainer = document.getElementById("invoice-container");

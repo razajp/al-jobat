@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Voucher | ' . app('client_company')->name)
+@section('title', 'Generate Voucher | ' . $client_company->name)
 @section('content')
 
 @php
@@ -127,7 +127,7 @@
         let voucher = @json($voucher);
         console.log(voucher);
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         const previewDom = document.getElementById('preview');
 
         selectedSupplierData = null;

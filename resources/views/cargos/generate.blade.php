@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Cargo List | ' . app('client_company')->name)
+@section('title', 'Generate Cargo List | ' . $client_company->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -182,7 +182,7 @@
             inputinvoices.value = JSON.stringify(finalArticlesArray);
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         const previewDom = document.getElementById('preview');
 
         function generateCargoListPreview() {

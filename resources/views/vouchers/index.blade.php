@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Vouchers | ' . app('client_company')->name)
+@section('title', 'Show Vouchers | ' . $client_company->name)
 @section('content')
     @php
         $searchFields = [
@@ -91,7 +91,7 @@
     </section>
 
     <script>
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         let authLayout = '{{ $authLayout }}';
 
         function createRow(data) {
@@ -114,7 +114,7 @@
                 id: item.id,
                 name: item.voucher_no,
                 details: {
-                    'Supplier': item.supplier ? item.supplier.supplier_name : "{{ app('client_company')->name }}",
+                    'Supplier': item.supplier ? item.supplier.supplier_name : "{{ $client_company->name }}",
                     'Date': formatDate(item.date),
                     'Amount': formatNumbersWithDigits(item.total_payment, 1, 1),
                 },

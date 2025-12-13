@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Voucher | ' . app('client_company')->name)
+@section('title', 'Generate Voucher | ' . $client_company->name)
 @section('content')
 
 @php
@@ -855,7 +855,7 @@
             return `${newLeft}/${newRight}`;
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         const previewDom = document.getElementById('preview');
         function generateVoucherPreview() {
             let voucherNo = generateVoucherNo();

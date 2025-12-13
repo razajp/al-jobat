@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Payment Programs | ' . app('client_company')->name)
+@section('title', 'Show Payment Programs | ' . $client_company->name)
 @section('content')
     @php
         $categories_options = [

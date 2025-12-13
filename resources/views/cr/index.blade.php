@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show CRs | ' . app('client_company')->name)
+@section('title', 'Show CRs | ' . $client_company->name)
 @section('content')
     @php
         $searchFields = [
@@ -104,7 +104,7 @@
                 date: item.date,
                 c_r_no: item.c_r_no,
                 voucher_no: item.voucher?.voucher_no,
-                supplier_name: item.voucher?.supplier?.supplier_name ?? "{{ app('client_company')->name }}",
+                supplier_name: item.voucher?.supplier?.supplier_name ?? "{{ $client_company->name }}",
                 visible: true,
             };
         });

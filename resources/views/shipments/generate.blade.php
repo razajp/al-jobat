@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Shipment | ' . app('client_company')->name)
+@section('title', 'Generate Shipment | ' . $client_company->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -422,7 +422,7 @@
             inputShipmentedArticles.value = JSON.stringify(finalArticlesArray);
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         let shipmentNo;
         let shipmentDate;
         const previewDom = document.getElementById('preview');

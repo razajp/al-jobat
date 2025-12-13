@@ -12,24 +12,14 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $pusherEnabled = env('PUSHER_ENABLED', false);
-
-        // Blade ke liye share kar do
-        View::share('pusherEnabled', $pusherEnabled);
-
-        // Optional: singleton for app()
-        app()->singleton('pusher.enabled', function () use ($pusherEnabled) {
-            return $pusherEnabled;
+        // Singleton for client_company
+        app()->singleton('client_company', function () {
+            return (object) config('client_company');
         });
 
-        app()->singleton('client_company', function () {
-            return (object) [
-                'name' => env('COMPANY_NAME'),
-                'owner_name' => env('COMPANY_OWNER'),
-                'logo' => env('COMPANY_LOGO'),
-                'logo_svg' => file_get_contents(public_path(env('COMPANY_LOGO_SVG_PATH'))),
-                'phone_number' => env('COMPANY_PHONE'),
-            ];
+        // Singleton for Pusher flag
+        app()->singleton('pusher.enabled', function () {
+            return config('client_company.pusher_enabled');
         });
 
         app()->singleton('article', function () {
@@ -98,6 +88,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // View::share('authLayout', 'table');
+        // Share client company with all views
+        View::share('client_company', app('client_company'));
+
+        // Share Pusher enabled flag
+        View::share('pusherEnabled', app('pusher.enabled'));
     }
 }

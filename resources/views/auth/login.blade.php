@@ -1,8 +1,8 @@
 @extends('app')
-@section('title', 'Login | ' . app('client_company')->name)
+@section('title', 'Login | ' . $client_company->name)
 @section('content')
     <div class="bg-[var(--secondary-bg-color)] p-10 rounded-xl shadow-md max-w-md w-full fade-in mx-auto">
-        <h4 class="text-xl font-semibold text-center text-[var(--primary-color)]">{{ app('client_company')->name }}</h4>
+        <h4 class="text-xl font-semibold text-center text-[var(--primary-color)]">{{ $client_company->name }}</h4>
         <h1 class="text-3xl font-bold text-center mt-2 text-[var(--primary-color)]">Login</h1>
 
         <form id="login-form" method="POST" action="{{ route('login') }}" class="space-y-4">

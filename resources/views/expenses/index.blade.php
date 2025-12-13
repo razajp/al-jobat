@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Expenses | ' . app('client_company')->name)
+@section('title', 'Show Expenses | ' . $client_company->name)
 @section('content')
     @php
         $searchFields = [

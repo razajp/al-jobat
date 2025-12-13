@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Employees | ' . app('client_company')->name)
+@section('title', 'Show Employees | ' . $client_company->name)
 @section('content')
     @php
         $searchFields = [
@@ -185,7 +185,7 @@
             createModal(modalData);
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
 
         function showEmployeeForm(data) {
             let formFieldsData = [

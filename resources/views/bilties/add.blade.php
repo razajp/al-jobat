@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Bilty | ' . app('client_company')->name)
+@section('title', 'Add Bilty | ' . $client_company->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -179,7 +179,7 @@
             inputinvoices.value = JSON.stringify(finalInovicesArray);
         }
 
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         const previewDom = document.getElementById('preview');
 
         function generateCargoListPreview() {

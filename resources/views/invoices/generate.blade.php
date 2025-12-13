@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Invoice | ' . app('client_company')->name)
+@section('title', 'Generate Invoice | ' . $client_company->name)
 @section('content')
 
 @php
@@ -282,7 +282,7 @@
         let discount = 0;
         let isModalOpened = false;
         const lastInvoice = @json($last_Invoice);
-        let companyData = @json(app('client_company'));
+        let companyData = @json($client_company);
         let allDataArray = [];
     </script>
 

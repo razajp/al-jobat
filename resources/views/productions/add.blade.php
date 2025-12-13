@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Production | ' . app('client_company')->name)
+@section('title', 'Add Production | ' . $client_company->name)
 @section('content')
 @php
     $productionType = Auth::user()->production_type;

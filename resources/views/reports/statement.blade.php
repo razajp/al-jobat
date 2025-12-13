@@ -1,8 +1,8 @@
 @extends('app')
-@section('title', 'Statement | ' . app('client_company')->name)
+@section('title', 'Statement | ' . $client_company->name)
 @section('content')
 @php
-    $companyData = app('client_company');
+    $companyData = $client_company;
     $statementType = Auth::user()->statement_type;
 @endphp
     <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-4">

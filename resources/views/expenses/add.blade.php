@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Article | ' . app('client_company')->name)
+@section('title', 'Add Article | ' . $client_company->name)
 @section('content')
     <!-- Main Content -->
     <!-- header -->

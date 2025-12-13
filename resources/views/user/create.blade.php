@@ -18,7 +18,7 @@
 @endphp
 
 @extends('app')
-@section('title', 'Add User | ' . app('client_company')->name)
+@section('title', 'Add User | ' . $client_company->name)
 @section('content')
     <div class="mb-5 max-w-3xl mx-auto fade-in">
         <x-search-header heading="Add User" link linkText="Show Users" linkHref="{{ route('users.index') }}"/>

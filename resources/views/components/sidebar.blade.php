@@ -1,3 +1,12 @@
+@php
+    $svgPath = public_path($client_company->logo_svg_path);
+    $logoSvg = '';
+
+    if (file_exists($svgPath) && is_readable($svgPath)) {
+        $logoSvg = file_get_contents($svgPath);
+    }
+@endphp
+
 <!-- Logout Modal -->
 <div id="logoutModal"
     class="hidden fixed inset-0 z-[99] flex items-center justify-center bg-[var(--overlay-color)] text-xs md:text-sm fade-in">
@@ -44,7 +53,7 @@
         <!-- Logo -->
         <a href="/"
             class="text-[var(--text-color)] p-3 w-14 h-14 flex items-center justify-center group cursor-normal relative">
-            {!! app('client_company')->logo_svg !!}
+            {!! $logoSvg !!}
         </a>
 
         <!-- Mobile Menu Toggle Button -->
