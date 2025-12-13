@@ -882,6 +882,17 @@
         createModal(modalData)
     }
 
+    // pressing ctrl + space to open menu modal, also don't if already opened
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.key === ' ') {
+            event.preventDefault();
+            const existingModal = document.getElementById(modalData.id);
+            if (!existingModal) {
+                generateMenuModal();
+            }
+        }
+    });
+
     function basicSearch(searchValue) {
         modalData.cards.data = menuData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
         renderCardsInModal(modalData);
