@@ -35,77 +35,6 @@
     ];
 @endphp
 
-    <div class="switch-btn-container flex absolute top-3 md:top-17 left-3 md:left-5 z-4">
-        <div class="switch-btn relative flex border-3 border-[var(--secondary-bg-color)] bg-[var(--secondary-bg-color)] rounded-2xl overflow-hidden">
-            <!-- Highlight rectangle -->
-            <div id="highlight" class="absolute h-full rounded-xl bg-[var(--bg-color)] transition-all duration-300 ease-in-out z-0"></div>
-
-            <!-- Buttons -->
-            <button id="supplierBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'supplier')">
-                <div class="hidden md:block">Supplier</div>
-                <div class="block md:hidden"><i class="fas fa-cart-shopping text-xs"></i></div>
-            </button>
-            <button id="selfAccountBtn" type="button" class="relative z-10 px-3.5 md:px-5 py-1.5 md:py-2 cursor-pointer rounded-xl transition-colors duration-300" onclick="setVoucherType(this, 'self_account')">
-                <div class="hidden md:block">Self Account</div>
-                <div class="block md:hidden"><i class="fas fa-box-open text-xs"></i></div>
-            </button>
-        </div>
-    </div>
-
-    <script>
-        let btnTypeGlobal = "supplier";
-
-        function setVoucherType(btn, btnType) {
-            doHide = true;
-            // check if its already selected
-            if (btnTypeGlobal == btnType) {
-                return;
-            }
-
-            $.ajax({
-                url: "/set-voucher-type",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    voucher_type: btnType
-                },
-                success: function () {
-                    location.reload();
-                },
-                error: function () {
-                    alert("Failed to update vaoucher type.");
-                    $(btn).prop("disabled", false);
-                }
-            });
-
-            moveHighlight(btn, btnType);
-        }
-
-        function moveHighlight(btn, btnType) {
-            const highlight = document.getElementById("highlight");
-            const rect = btn.getBoundingClientRect();
-
-            const parentRect = btn.parentElement.getBoundingClientRect();
-
-            // Move and resize the highlight
-            highlight.style.width = `${rect.width}px`;
-            highlight.style.left = `${rect.left - parentRect.left - 3}px`;
-
-            btnTypeGlobal = btnType;
-        }
-
-        // Initialize highlight on load
-        window.onload = () => {
-            @if($voucherType == 'supplier')
-                const activeBtn = document.querySelector("#supplierBtn");
-                moveHighlight(activeBtn, "supplier");
-            @else
-                const activeBtn = document.querySelector("#selfAccountBtn");
-                moveHighlight(activeBtn, "self_account");
-            @endif
-        };
-    </script>
-
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
         <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"
@@ -114,29 +43,29 @@
     </div>
 
     <!-- Form -->
-    <form id="form" action="{{ route('vouchers.store') }}" method="post"
+    <form id="form" action="{{ route('vouchers.update', ['voucher' => $voucher->id]) }}" method="post"
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
+        @method('PUT')
         <x-form-title-bar title="Generate Voucher" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @if ($voucherType == 'supplier')
                     {{-- supplier --}}
-                    <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
-                        onchange="trackSupplierState()" />
+                    <div class="col-span-full">
+                        <x-input label="Supplier" name="supplier_id" id="supplier_id" disabled value="{{ $voucher->supplier?->supplier_name }}" />
+                    </div>
 
                     {{-- balance --}}
                     <x-input label="Balance" placeholder="Select supplier first" name="balance" id="balance" disabled />
 
                     {{-- date --}}
-                    <x-input label="Date" name="date" id="date" type="date" required disabled
-                        onchange="trackDateState(this)" />
+                    <x-input label="Date" name="date" id="date" type="date" disabled value="{{ ($voucher->date)->format('Y-m-d') }}" />
                 @else
                     <div class="col-span-full">
                         {{-- date --}}
-                        <x-input label="Date" name="date" id="date" type="date" required
-                            onchange="trackDateState(this)" />
+                        <x-input label="Date" name="date" id="date" type="date" disabled value="{{ ($voucher->date)->format('Y-m-d') }}" />
                     </div>
                 @endif
             </div>
@@ -195,6 +124,12 @@
         let paymentListDom = document.getElementById('payment-list');
         const paymentDetailsArrayDom = document.getElementById("payment_details_array");
 
+        let voucher = @json($voucher);
+        console.log(voucher);
+
+        let companyData = @json(app('company'));
+        const previewDom = document.getElementById('preview');
+
         selectedSupplierData = null;
         let totalPayment = 0;
 
@@ -206,26 +141,31 @@
         const today = new Date().toISOString().split('T')[0];
 
         function trackSupplierState() {
-            dateDom.value = '';
             balanceDom.value = '';
             methodSelectDom.value = '';
 
-            paymentDetailsArray = [];
-            renderList();
-
             if (supplierSelectDom.value != '') {
-                selectedSupplier = JSON.parse(supplierSelectDom.parentElement.parentElement.parentElement.querySelector("ul li.selected").dataset.option);
-                dateDom.disabled = false;
+                selectedSupplier = voucher.supplier;
                 methodSelectDom.disabled = false;
-                dateDom.min = selectedSupplier.date.toString().split('T')[0];
-                dateDom.max = today;
                 balanceDom.value = formatNumbersWithDigits(selectedSupplier.balance, 1, 1);
                 selectedSupplierData = selectedSupplier;
             } else {
-                dateDom.disabled = true;
                 methodSelectDom.disabled = true;
             }
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            @if ($voucherType == 'supplier')
+                trackSupplierState();
+            @endif
+            trackDateState(dateDom);
+
+            paymentDetailsArray = voucher.payments;
+            allPayments = voucher.payments;
+            totalPayment = paymentDetailsArray.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+
+            renderList();
+        });
 
         function trackDateState(elem) {
             paymentDetailsArray = [];
@@ -741,6 +681,8 @@
             const inputs = document.querySelectorAll('#modalForm input:not([disabled])');
 
             inputs.forEach(input => {
+                console.log(input);
+
                 const name = input.getAttribute('name');
                 if (name != null) {
                     const value = input.value;
@@ -786,9 +728,9 @@
                 }
                 totalPayment += detail.amount;
                 detail['method'] = selectedMethod;
-                allDetail['method'] = selectedMethod;
+                // allDetail['method'] = selectedMethod;
                 paymentDetailsArray.push(detail);
-                allPayments.push(allDetail);
+                // allPayments.push(allDetail);
                 renderList();
             }
             closeModal('modalForm');
@@ -802,7 +744,7 @@
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[7%]">${index+1}</div>
                             @if ($voucherType == 'self_account')
-                                <div class="w-1/3 capitalize">${paymentDetail.self_account_id_name}</div>
+                                <div class="w-1/3 capitalize">${paymentDetail.self_account_id_name ?? paymentDetail.self_account.account_title}</div>
                             @endif
                             <div class="w-1/5 capitalize">${paymentDetail.method}</div>
                             <div class="w-1/5 capitalize">${paymentDetail.remarks && paymentDetail.remarks.trim() !== '' ? paymentDetail.remarks : '-'}</div>
@@ -832,33 +774,8 @@
             renderList();
         }
 
-        let lastVoucher = @json($last_voucher);
-
-        function generateVoucherNo() {
-            // Split the voucher string into left and right parts
-            let parts = lastVoucher.voucher_no.split('/');
-            let left = parseInt(parts[0], 10);
-            let right = parseInt(parts[1], 10);
-
-            // Increment logic
-            left += 1;
-            if (parseInt(parts[0], 10) === 100) {
-                right += 1;
-                left = 1; // not 01 - we format it later
-            }
-
-            // Format with leading zeros
-            let newLeft = left.toString().padStart(2, '0');   // Always 2 digits
-            let newRight = right.toString().padStart(3, '0'); // Always 3 digits
-
-            // Return formatted voucher number
-            return `${newLeft}/${newRight}`;
-        }
-
-        let companyData = @json(app('company'));
-        const previewDom = document.getElementById('preview');
         function generateVoucherPreview() {
-            let voucherNo = generateVoucherNo();
+            let voucherNo = voucher.voucher_no;
             const dateInpDom = document.getElementById("date");
 
             if (allPayments.length > 0) {
@@ -912,8 +829,9 @@
                                     </div>
                                     <div id="tbody" class="tbody w-full">
                                         ${paymentDetailsArray.map((payment, index) => {
+                                            console.log(payment);
+
                                             let selected = JSON.parse(payment.selected || '{}');
-                                            console.log(selected);
 
                                             const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
                                             return `
@@ -922,10 +840,10 @@
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[11%] capitalize">${payment.method ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/5">${selected?.program?.customer?.customer_name ? selected?.program?.customer?.customer_name : selected.customer?.customer_name ? selected.customer?.customer_name : '-'}</div>
-                                                            <div class="td text-sm font-semibold w-1/4">${(selected?.bank_account?.account_title ?? selected?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank?.short_title ?? selected?.bank?.short_title ?? '-')}</div>
+                                                            <div class="td text-sm font-semibold w-1/5">${payment.program?.customer?.customer_name ? payment.program?.customer?.customer_name : selected.customer?.customer_name ? selected.customer?.customer_name : payment.cheque ? payment.cheque.customer.customer_name : payment.slip ? payment.slip.customer.customer_name : '-'}</div>
+                                                            <div class="td text-sm font-semibold w-1/4">${payment.bank_account ? payment.bank_account.account_title + ' | ' + payment.bank_account.bank.short_title : (selected?.bank_account?.account_title ?? '-') + ' | ' + (selected?.bank_account?.bank.short_title ?? '-')}</div>
                                                             <div class="td text-sm font-semibold w-[14%]">${formatDate(dateInpDom.value, true) ?? '-'}</div>
-                                                            <div class="td text-sm font-semibold w-[14%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? selected?.reff_no ?? '-'}</div>
+                                                            <div class="td text-sm font-semibold w-[14%]">${selected?.cheque_no ?? selected?.slip_no ?? selected?.transaction_id ?? selected?.reff_no ?? payment.cheque_no ?? payment.reff_no ?? payment.transaction_id ?? payment.cheque?.cheque_no ?? payment.slip?.slip_no ?? '-'}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
                                                         </div>
                                                     </div>

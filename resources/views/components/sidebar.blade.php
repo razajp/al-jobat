@@ -19,9 +19,7 @@
             </div>
             <div class="content ml-5">
                 <h2 class="text-lg md:text-xl font-semibold text-[var(--text-color)]">Logout Account</h2>
-                <p class="text-[var(--secondary-text)] mt-1 mb-4 md:mt-2 md:mb-6">Are you sure you want to logout? All
-                    of your data
-                    will be permanently removed. This action cannot be undone.</p>
+                <p class="text-[var(--secondary-text)] mt-1 mb-4 md:mt-2 md:mb-6">Are you sure you want to logout? All of your data will be permanently removed. This action cannot be undone.</p>
             </div>
         </div>
 

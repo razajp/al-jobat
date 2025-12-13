@@ -59,7 +59,7 @@
             {{-- remarks --}}
             <x-input label="Remarks" name="remarks" id="remarks" placeholder="Enter Remarks" />
 
-            <x-input name="program_no" id="program_no" type="hidden" value="{{ $lastProgram->program_no + 1 }}" />
+            {{-- <x-input name="program_no" id="program_no" type="hidden" value="{{ $lastProgram->program_no + 1 }}" /> --}}
 
             <div class="col-span-full">
                 {{-- amount --}}

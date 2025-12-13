@@ -222,9 +222,10 @@
                 x: e.pageX,
                 y: e.pageY,
                 actions: [
-                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'}
+                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'},
+                    {id: 'edit', text: 'Edit Voucher'}
                 ]
-            };
+            }
 
             createContextMenu(contextMenuData);
         }

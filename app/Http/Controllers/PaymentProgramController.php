@@ -71,13 +71,6 @@ class PaymentProgramController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $lastProgram = PaymentProgram::orderBy('id', 'DESC')->first();
-
-        if (!$lastProgram) {
-            $lastProgram = new PaymentProgram();
-            $lastProgram->program_no = '0';
-        }
-
         $customers = Customer::with('city:id,title')
             ->whereHas('user', function ($query) {
                 $query->where('status', 'active');
@@ -99,7 +92,7 @@ class PaymentProgramController extends Controller
 
         Log::info("💡 PaymentProgram create() load time: {$loadTime} seconds");
 
-        return view('payment-programs.create', compact('customers_options', 'lastProgram', 'loadTime'));
+        return view('payment-programs.create', compact('customers_options', 'loadTime'));
     }
 
     /**
@@ -113,7 +106,6 @@ class PaymentProgramController extends Controller
         };
 
         $validator = Validator::make($request->all(), [
-            'program_no'=> 'required|integer',
             'date'=> 'required|date',
             'customer_id'=> 'required|integer|exists:customers,id',
             'category'=> 'required|in:supplier,self_account,customer,waiting',
@@ -149,9 +141,15 @@ class PaymentProgramController extends Controller
                 break;
         }
 
+        $lastProgram = PaymentProgram::orderBy('id', 'DESC')->first();
+        if (!$lastProgram) {
+            $lastProgram = new PaymentProgram();
+            $lastProgram->program_no = '0';
+        }
+
         // Create payment Program with morph relationship
         $program = new PaymentProgram([
-            'program_no' => $data['program_no'],
+            'program_no' => $lastProgram->program_no + 1,
             'date' => $data['date'],
             'customer_id' => $data['customer_id'],
             'category' => $data['category'],

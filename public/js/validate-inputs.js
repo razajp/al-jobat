@@ -1,6 +1,4 @@
 function validateInput(input, listner) {
-    console.log(input);
-
     const rules = (input.dataset.validate || '').split('|');
     let value = input.value;
     const originalValue = value;
@@ -126,7 +124,6 @@ function validateInput(input, listner) {
             errorEl.classList.remove("hidden");
             errorEl.textContent = error;
         }
-        console.log(error);
         return false;
     } else {
         input.classList.remove("border-[var(--border-error)]");
