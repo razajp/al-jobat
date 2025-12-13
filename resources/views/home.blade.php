@@ -23,7 +23,7 @@
     </div>
 
 
-    @if ($notification)
+    @if ($pusherEnabled && $notification)
         <script>
             document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
