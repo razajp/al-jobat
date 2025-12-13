@@ -493,7 +493,7 @@ class Controller extends BaseController
             'voucher_no'    => $voucher->voucher_no,
             'date'          => $voucher->date,
             'amount'        => $voucher->amount,
-            'supplier_name' => $voucher->supplier?->supplier_name ?? 'Al Jobat',
+            'supplier_name' => $voucher->supplier?->supplier_name ?? app('client_company')->name,
             'supplier_id'   => $voucher->supplier_id,
             'payments'      => $payments,
         ];

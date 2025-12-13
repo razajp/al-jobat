@@ -3,7 +3,7 @@
 @endphp
 
 @extends('app')
-@section('title', 'Sales Return | ' . app('company')->name)
+@section('title', 'Sales Return | ' . app('client_company')->name)
 @section('content')
     <div class="mb-5 max-w-3xl mx-auto fade-in">
         <x-search-header heading="Sales Return" link linkText="Show Returns" linkHref="{{ route('sales-returns.index') }}"/>

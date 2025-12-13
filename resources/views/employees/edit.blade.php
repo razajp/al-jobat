@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Edit Employee | ' . app('company')->name)
+@section('title', 'Edit Employee | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->

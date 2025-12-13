@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Utility Bill | ' . app('company')->name)
+@section('title', 'Add Utility Bill | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
     <div class="max-w-3xl mx-auto">

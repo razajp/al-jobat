@@ -1,5 +1,0 @@
-PS E:\Softwares\al-jobat> php artisan schedule:run
->>
-
-  2025-10-06 11:14:36 Running ["artisan" bills:remind] ................................................................................ 1,058ms DONE
-  ⇂ "C:\xampp\php\php.exe" "artisan" bills:remind > "NUL" 2>&1

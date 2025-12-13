@@ -1,6 +1,6 @@
-const CACHE_NAME = 'al-jobat-cache-v1';
+const CACHE_NAME = 'garmentsos-pro-cache-v1';
 const urlsToCache = [
-  '/', 
+  '/',
   '/offline.html',
   '/css/app.css',
   '/js/app.js',

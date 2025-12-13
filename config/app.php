@@ -185,4 +185,6 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    'subscription_mode' => env('SUBSCRIPTION_MODE', 'demo'),
+    'subscription_expire' => env('SUBSCRIPTION_EXPIRE_DATE', null),
 ];

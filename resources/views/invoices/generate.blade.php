@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Invoice | ' . app('company')->name)
+@section('title', 'Generate Invoice | ' . app('client_company')->name)
 @section('content')
 
 @php
@@ -282,7 +282,7 @@
         let discount = 0;
         let isModalOpened = false;
         const lastInvoice = @json($last_Invoice);
-        let companyData = @json(app('company'));
+        let companyData = @json(app('client_company'));
         let allDataArray = [];
     </script>
 
@@ -756,7 +756,7 @@
                             <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                                 <div class="left">
                                     <div class="invoice-logo">
-                                        <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
+                                        <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
                                             class="w-[12rem]" />
                                         <div class='mt-1'>${ companyData.phone_number }</div>
                                     </div>
@@ -1150,7 +1150,7 @@
                             <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                                 <div class="left">
                                     <div class="invoice-logo">
-                                        <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
+                                        <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
                                             class="w-[12rem]" />
                                         <div class='mt-1'>${ companyData.phone_number }</div>
                                     </div>

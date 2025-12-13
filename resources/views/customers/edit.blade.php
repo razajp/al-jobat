@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Edit Customer | ' . app('company')->name)
+@section('title', 'Edit Customer | ' . app('client_company')->name)
 @section('content')
 @php
     $categories_options = [

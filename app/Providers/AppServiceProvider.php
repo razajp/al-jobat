@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,15 +11,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        app()->singleton('company', function () {
+        app()->singleton('client_company', function () {
             return (object) [
-                'name' => 'Al Jobat',
-                'owner_name' => 'Zubair',
-                'logo' => 'company_logo.png',
-                'phone_number' => '021-36907419 | 0321-8692696',
-                'date'  => '12-12-2012',
-                'city' => 'Karachi',
-                'address' => 'Plot DP-19, Sec. 12-C, Ind. Area, North Karachi',
+                'name' => env('COMPANY_NAME'),
+                'owner_name' => env('COMPANY_OWNER'),
+                'logo' => env('COMPANY_LOGO'),
+                'logo_svg' => file_get_contents(public_path(env('COMPANY_LOGO_SVG_PATH'))),
+                'phone_number' => env('COMPANY_PHONE'),
             ];
         });
 

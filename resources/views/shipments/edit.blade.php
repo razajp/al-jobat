@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Shipment | ' . app('company')->name)
+@section('title', 'Generate Shipment | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -418,7 +418,7 @@
             inputShipmentedArticles.value = JSON.stringify(finalArticlesArray);
         }
 
-        let companyData = @json(app('company'));
+        let companyData = @json(app('client_company'));
         let shipmentNo;
         let shipmentDate;
         const previewDom = document.getElementById('preview');
@@ -456,7 +456,7 @@
                         <div id="shipment-banner" class="shipment-banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="shipment-logo">
-                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
                                         class="w-[12rem]" />
                                 </div>
                             </div>

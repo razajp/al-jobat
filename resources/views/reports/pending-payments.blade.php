@@ -1,8 +1,8 @@
 @extends('app')
-@section('title', 'Pending Payments | ' . app('company')->name)
+@section('title', 'Pending Payments | ' . app('client_company')->name)
 @section('content')
 @php
-    $companyData = app('company');
+    $companyData = app('client_company');
 @endphp
     <!-- Main Content -->
     <!-- Progress Bar -->

@@ -1,8 +1,0 @@
-@echo off
-cd "C:\Path\To\Your\Laravel\Project"
-start php artisan serve
-timeout /t 5
-start "" "C:\Path\To\Your\File.txt"
-
-
-C:\Users\<YourUsername>\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\Startup

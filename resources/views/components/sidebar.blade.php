@@ -43,8 +43,8 @@
         class="bg-[var(--secondary-bg-color)] w-full md:w-16 flex justify-between md:flex-col items-center px-5 py-3 md:px-0 md:py-3 h-full md:h-screen transition-all duration-300 ease-in-out fade-in relative z-40">
         <!-- Logo -->
         <a href="/"
-            class="text-[var(--text-color)] p-3 w-10 h-10 flex items-center justify-center group cursor-normal relative">
-            <h1 class="font-bold text-2xl text-[var(--primary-color)] m-0">AJ</h1>
+            class="text-[var(--text-color)] p-3 w-14 h-14 flex items-center justify-center group cursor-normal relative">
+            {!! app('client_company')->logo_svg !!}
         </a>
 
         <!-- Mobile Menu Toggle Button -->

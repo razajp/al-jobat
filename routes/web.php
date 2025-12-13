@@ -48,9 +48,12 @@ use Illuminate\Http\Request;
 */
 
 Route::get('login', [AuthController::class, 'login'])->name('login');
-Route::post('login', [AuthController::class, 'loginPost'])->name('loginPost');
+Route::post('login', [AuthController::class, 'loginPost'])->middleware('subscriptionExpiry')->name('loginPost');
+Route::get('subscription-expired', function () {
+    return view('subscription-expired'); // ya controller agar chahiye
+})->name('subscription-expired');
 
-Route::group(['middleware' => ['auth', 'activeSession']], function () {
+Route::group(['middleware' => ['auth', 'activeSession', 'subscriptionExpiry']], function () {
     Route::get('/backup-db', function () {
         $sourcePath = database_path('database.sqlite');
 

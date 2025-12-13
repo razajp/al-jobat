@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Show Payment Programs | ' . app('company')->name)
+@section('title', 'Show Payment Programs | ' . app('client_company')->name)
 @section('content')
     @php
         $categories_options = [
@@ -410,6 +410,11 @@
                         ${headContent}
                         <style>
                             @media print {
+                                @page {
+                                    size: A4;
+                                    margin: 0.31in, 0.31in, 0.31in, 0.31in;
+                                }
+
                                 /* All text black */
                                 body, body * {
                                     color: #000000 !important;
@@ -534,11 +539,11 @@
             }
 
             if (data.status != 'Paid' && data.status != 'Overpaid') {
-                modalData.bottomActions = [
+                modalData.bottomActions.push(
                     {id: 'add-payment', text: 'Add Payment', onclick: `goToAddPayment(${JSON.stringify(data)})`},
                     {id: 'update-program', text: 'Update Program', onclick: `generateUpdateProgramModal(${JSON.stringify(data)})`},
                     {id: 'mark-paid', text: 'Mark as Paid', onclick: `goToMarkPaid(${JSON.stringify(data)})`},
-                ];
+                );
             }
 
             createModal(modalData);

@@ -623,7 +623,7 @@ function createModal(data, animate = 'animate') {
                         <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
                             <div class="left">
                                 <div class="logo">
-                                    <img src="images/${companyData.logo}" alt="aljobat"
+                                    <img src="images/${companyData.logo}" alt="garmentsos-pro"
                                         class="w-[12rem]" />
                                     ${data.preview.type != 'form' ? (`
                                         <div class='mt-1'>${ companyData.phone_number }</div>

@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Fabric | ' . app('company')->name)
+@section('title', 'Add Fabric | ' . app('client_company')->name)
 @section('content')
 @php
     $colors_options = [

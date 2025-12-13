@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Slip | ' . app('company')->name)
+@section('title', 'Generate Slip | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -128,7 +128,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="text-[10px] text-gray-600 flex justify-between mt-1 leading-none tracking-wide px-2.5 pt-1 border-t border-gray-600"><p>Al-Jobat</p><p>SparkPair</p></div>
+                                <div class="text-[10px] text-gray-600 flex justify-between mt-1 leading-none tracking-wide px-2.5 pt-1 border-t border-gray-600"><p>{{ app('client_company')->name }}</p><p>SparkPair</p></div>
                             </div>
                         `;
 

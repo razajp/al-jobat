@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate DR | ' . app('company')->name)
+@section('title', 'Generate DR | ' . app('client_company')->name)
 @section('content')
     @php
         $method_options = [

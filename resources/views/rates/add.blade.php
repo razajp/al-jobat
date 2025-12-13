@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Rates | ' . app('company')->name)
+@section('title', 'Add Rates | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
 

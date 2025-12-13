@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Add Bilty | ' . app('company')->name)
+@section('title', 'Add Bilty | ' . app('client_company')->name)
 @section('content')
     <!-- Main Content -->
     <!-- Progress Bar -->
@@ -179,7 +179,7 @@
             inputinvoices.value = JSON.stringify(finalInovicesArray);
         }
 
-        let companyData = @json(app('company'));
+        let companyData = @json(app('client_company'));
         const previewDom = document.getElementById('preview');
 
         function generateCargoListPreview() {
@@ -192,7 +192,7 @@
                         <div id="preview-banner" class="preview-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
                             <div class="left">
                                 <div class="company-logo">
-                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="aljobat"
+                                    <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
                                         class="w-[12rem]" />
                                 </div>
                             </div>
