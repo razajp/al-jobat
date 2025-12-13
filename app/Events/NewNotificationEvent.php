@@ -16,6 +16,11 @@ class NewNotificationEvent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new Channel('notifications'); // Note: public channel
+        // Check Pusher flag
+        if (!app('pusher.enabled')) {
+            return []; // Return empty array → event will not broadcast
+        }
+
+        return new Channel('notifications'); // Public channel
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -11,6 +12,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $pusherEnabled = env('PUSHER_ENABLED', false);
+
+        // Blade ke liye share kar do
+        View::share('pusherEnabled', $pusherEnabled);
+
+        // Optional: singleton for app()
+        app()->singleton('pusher.enabled', function () use ($pusherEnabled) {
+            return $pusherEnabled;
+        });
+
         app()->singleton('client_company', function () {
             return (object) [
                 'name' => env('COMPANY_NAME'),

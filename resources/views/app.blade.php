@@ -339,7 +339,9 @@
 
     @vite('resources/css/app.css')
 
-    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    @if($pusherEnabled)
+        <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    @endif
     <script src="https://unpkg.com/alpinejs" defer></script>
     <script>
         if ('serviceWorker' in navigator) {
@@ -652,68 +654,70 @@
         setInterval(updateLastActivity, 60 * 60 * 1000);
     </script>
 
-    <script>
-        var pusher = new Pusher('c99f4e2f9df04cc306f4', {
-            cluster: 'ap2',
-            forceTLS: true
-        });
+    @if($pusherEnabled)
+        <script>
+            var pusher = new Pusher('c99f4e2f9df04cc306f4', {
+                cluster: 'ap2',
+                forceTLS: true
+            });
 
-        var channel = pusher.subscribe('notifications');
+            var channel = pusher.subscribe('notifications');
 
-        // Utility function to create and show notification
-        function showNotification(title = '', message = '') {
-            const notificationBox = document.getElementById("notificationBox");
-            if (!notificationBox) return;
+            // Utility function to create and show notification
+            function showNotification(title = '', message = '') {
+                const notificationBox = document.getElementById("notificationBox");
+                if (!notificationBox) return;
 
-            const wrapper = document.createElement("div");
-            wrapper.innerHTML = `
-                <x-notification
-                    title="${title}"
-                    message="${message}"
-                />
-            `;
-            const notificationElement = wrapper.firstElementChild;
-            notificationBox.prepend(notificationElement);
+                const wrapper = document.createElement("div");
+                wrapper.innerHTML = `
+                    <x-notification
+                        title="${title}"
+                        message="${message}"
+                    />
+                `;
+                const notificationElement = wrapper.firstElementChild;
+                notificationBox.prepend(notificationElement);
 
-            setTimeout(() => hideNotification(notificationElement), 5000);
-        }
+                setTimeout(() => hideNotification(notificationElement), 5000);
+            }
 
-        // Listen to the event
-        channel.bind('App\\Events\\NewNotificationEvent', function (data) {
-            console.log('📢 Notification received:', data);
+            // Listen to the event
+            channel.bind('App\\Events\\NewNotificationEvent', function (data) {
+                console.log('📢 Notification received:', data);
 
-            const dataObject = data.data;
+                const dataObject = data.data;
 
-            @if(!request()->is('login'))
-                if ((dataObject.type === "user_inactivated" || dataObject.type === "password_reset")
-                    && dataObject.id == {{Auth::user()->id}}) {
+                @if(!request()->is('login'))
+                    if ((dataObject.type === "user_inactivated" || dataObject.type === "password_reset")
+                        && dataObject.id == {{Auth::user()->id}}) {
 
-                    // Show notification immediately
-                    showNotification(dataObject.title, dataObject.message);
-
-                    // Logout after 1.5 seconds
-                    setTimeout(() => {
-                        document.getElementById("logoutForm").submit();
-                    }, 5000);
-                }
-            @endif
-
-            @if(request()->is('orders/create'))
-                if (dataObject.title === "New Article Added.") {
-                    const dateInput = document.querySelector("#date");
-
-                    if (dateInput?.value) {
-                        getDataByDate(dateInput);
+                        // Show notification immediately
                         showNotification(dataObject.title, dataObject.message);
-                    }
-                }
-            @endif
-        });
 
-        pusher.connection.bind('connected', function() {
-            console.log('✅ Pusher connected');
-        });
-    </script>
+                        // Logout after 1.5 seconds
+                        setTimeout(() => {
+                            document.getElementById("logoutForm").submit();
+                        }, 5000);
+                    }
+                @endif
+
+                @if(request()->is('orders/create'))
+                    if (dataObject.title === "New Article Added.") {
+                        const dateInput = document.querySelector("#date");
+
+                        if (dateInput?.value) {
+                            getDataByDate(dateInput);
+                            showNotification(dataObject.title, dataObject.message);
+                        }
+                    }
+                @endif
+            });
+
+            pusher.connection.bind('connected', function() {
+                console.log('✅ Pusher connected');
+            });
+        </script>
+    @endif
 </body>
 <script>
     let doHide = false;

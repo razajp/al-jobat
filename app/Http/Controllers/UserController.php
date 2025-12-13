@@ -133,15 +133,17 @@ class UserController extends Controller
                     $userSession->delete();
                 }
 
-                try {
-                    event(new NewNotificationEvent([
-                        'title' => 'Your Account Has Been Deactivated',
-                        'message' => 'Your account is now inactive. Please contact admin for details.',
-                        'id' => $user->id,
-                        'type' => 'user_inactivated' // ✅ easy condition check
-                    ]));
-                } catch (\Exception $e) {
-                    return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+                if (app('pusher.enabled')) {
+                    try {
+                        event(new NewNotificationEvent([
+                            'title' => 'Your Account Has Been Deactivated',
+                            'message' => 'Your account is now inactive. Please contact admin for details.',
+                            'id' => $user->id,
+                            'type' => 'user_inactivated' // ✅ easy condition check
+                        ]));
+                    } catch (\Exception $e) {
+                        return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+                    }
                 }
             } else {
                 return redirect()->back()->with('error', 'Oops! You cannot deactivate yourself.');
@@ -179,15 +181,17 @@ class UserController extends Controller
             $userSession->delete();
         }
 
-        try {
-            event(new NewNotificationEvent([
-                'title' => 'Your Password Has Been Reset',
-                'message' => 'Your password was reset by ' . Auth::user()->name . '. Please use the new password to login.',
-                'id' => $user->id,
-                'type' => 'password_reset' // ✅ easy condition check
-            ]));
-        } catch (\Exception $e) {
-            return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+        if (app('pusher.enabled')) {
+            try {
+                event(new NewNotificationEvent([
+                    'title' => 'Your Password Has Been Reset',
+                    'message' => 'Your password was reset by ' . Auth::user()->name . '. Please use the new password to login.',
+                    'id' => $user->id,
+                    'type' => 'password_reset' // ✅ easy condition check
+                ]));
+            } catch (\Exception $e) {
+                return redirect()->back()->with('warning', "Status updated, but the user can't be logged out.");
+            }
         }
 
         return redirect()->back()->with('success', 'Password reset successfully!');
