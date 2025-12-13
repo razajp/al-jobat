@@ -409,70 +409,55 @@ class VoucherController extends Controller
             return redirect()->back()->withErrors($validator)->with('error', $validator->errors()->first());
         }
 
-        
-
         $requestPayments = json_decode($request->payment_details_array, true);
-        $voucherPayments = $voucher->payments()->get()->keyBy('id');
 
-        DB::transaction(function () use ($voucher, $requestPayments, $voucherPayments) {
-
-            $keepIDs = [];
+        DB::transaction(function () use ($voucher, $requestPayments) {
 
             // -----------------------------
-            // Step 3: Process each request payment
+            // Step 3: Delete all existing payments
+            // -----------------------------
+            $existingPayments = $voucher->payments()->get();
+
+            foreach ($existingPayments as $old) {
+                // Detach or update related CustomerPayment
+                if ($old->method === "Cheque" && $old->cheque_id) {
+                    CustomerPayment::where('id', $old->cheque_id)->update([
+                        'bank_account_id' => null,
+                        'is_return' => false,
+                    ]);
+                }
+
+                if ($old->method === "Slip" && $old->slip_id) {
+                    CustomerPayment::where('id', $old->slip_id)->update([
+                        'bank_account_id' => null,
+                        'is_return' => false,
+                    ]);
+                }
+
+                if ($voucher->supplier_id === null && in_array($old->method, ["Cash", "Adjustment", "Self Cheque", "ATM"]) && !empty($old->self_account_id)) {
+                    CustomerPayment::where([
+                        'date' => $old->date,
+                        'type' => 'self_account_deposit',
+                        'method' => $old->method,
+                        'amount' => $old->amount,
+                        'bank_account_id' => $old->self_account_id,
+                    ])->delete();
+                }
+
+                // For Program method, just detach
+                if ($old->method === "Program") {
+                    $old->update(['voucher_id' => null]);
+                } else {
+                    $old->delete();
+                }
+            }
+
+            // -----------------------------
+            // Step 4: Add new payments
             // -----------------------------
             foreach ($requestPayments as $pd) {
 
-                // -----------------------------
-                // CASE: Existing Payment Update
-                // -----------------------------
-                if (!empty($pd['payment_id']) && isset($voucherPayments[$pd['payment_id']])) {
-
-                    $payment = $voucherPayments[$pd['payment_id']];
-
-                    // Unique validation for cheque_no
-                    Validator::make($pd, [
-                        'cheque_no' => [
-                            'nullable',
-                            Rule::unique('supplier_payments', 'cheque_no')->ignore($payment->id),
-                        ],
-                    ])->validate();
-
-                    $payment->update([
-                        'amount'        => $pd['amount'] ?? $payment->amount,
-                        'method'        => $pd['method'] ?? $payment->method,
-                        'remarks'       => $pd['remarks'] ?? $payment->remarks,
-                        'bank_account_id'=> $pd['bank_account_id'] ?? $payment->bank_account_id,
-                        'cheque_no'     => $pd['cheque_no'] ?? $payment->cheque_no,
-                        'cheque_date'   => $pd['cheque_date'] ?? $payment->cheque_date,
-                        'slip_no'       => $pd['slip_no'] ?? $payment->slip_no,
-                        'reff_no'       => $pd['reff_no'] ?? $payment->reff_no,
-                        'supplier_id'   => $voucher->supplier_id,
-                        'date'          => $voucher->date,
-                        'voucher_id'    => $voucher->id,
-                    ]);
-
-                    // CustomerPayment sync
-                    if ($payment->method === "Cheque" && !empty($pd['cheque_id'])) {
-                        CustomerPayment::where('id', $pd['cheque_id'])->update([
-                            'bank_account_id' => $pd['bank_account_id'] ?? null,
-                            'is_return' => false,
-                        ]);
-                    }
-                    if ($payment->method === "Slip" && !empty($pd['slip_id'])) {
-                        CustomerPayment::where('id', $pd['slip_id'])->update([
-                            'bank_account_id' => $pd['bank_account_id'] ?? null,
-                            'is_return' => false,
-                        ]);
-                    }
-
-                    $keepIDs[] = $payment->id;
-                    continue;
-                }
-
-                // -----------------------------
-                // CASE: New Payment Create
-                // -----------------------------
+                // Validate unique cheque_no
                 Validator::make($pd, [
                     'cheque_no' => ['nullable', Rule::unique('supplier_payments', 'cheque_no')],
                 ])->validate();
@@ -482,7 +467,6 @@ class VoucherController extends Controller
                 $pd['date'] = $voucher->date;
 
                 $newPayment = SupplierPayment::create($pd);
-                $keepIDs[] = $newPayment->id;
 
                 // Self Account logic
                 if (!empty($pd['self_account_id'])) {
@@ -511,50 +495,7 @@ class VoucherController extends Controller
                             'reff_no' => $pd['reff_no'],
                         ]));
                     }
-
-                    // Existing Cheque/Slip update
-                    if ($pd['method'] === "Cheque" && !empty($pd['cheque_id'])) {
-                        CustomerPayment::where('id', $pd['cheque_id'])->update([
-                            'bank_account_id' => $pd['self_account_id'],
-                            'is_return' => false,
-                        ]);
-                    }
-                    if ($pd['method'] === "Slip" && !empty($pd['slip_id'])) {
-                        CustomerPayment::where('id', $pd['slip_id'])->update([
-                            'bank_account_id' => $pd['self_account_id'],
-                            'is_return' => false,
-                        ]);
-                    }
                 }
-            }
-
-            // -----------------------------
-            // Step 4: Delete or detach old payments
-            // -----------------------------
-            foreach ($voucherPayments as $old) {
-                if (in_array($old->id, $keepIDs)) continue;
-
-                // Program method → only detach voucher_id
-                if ($old->method === "Program") {
-                    $old->update(['voucher_id' => null]);
-                    continue;
-                }
-
-                // Delete CustomerPayment for cheque/slip if needed
-                if ($old->method === "Cheque" && $old->cheque_id) {
-                    CustomerPayment::where('id', $old->cheque_id)->update([
-                        'bank_account_id' => null,
-                        'is_return' => true,
-                    ]);
-                }
-                if ($old->method === "Slip" && $old->slip_id) {
-                    CustomerPayment::where('id', $old->slip_id)->update([
-                        'bank_account_id' => null,
-                        'is_return' => true,
-                    ]);
-                }
-
-                $old->delete();
             }
 
         }); // End transaction

@@ -237,7 +237,8 @@
                 id: 'modalForm',
                 preview: {type: 'voucher', data: data.data, document: 'Voucher'},
                 bottomActions: [
-                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'}
+                    {id: 'print', text: 'Print Voucher', onclick: 'printVoucher(this)'},
+                    {id: 'edit', text: 'Edit Voucher'}
                 ],
             }
 
