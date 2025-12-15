@@ -208,7 +208,7 @@ class PaymentProgramController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->withErrors($validator)->with('error', $validator->errors()->first());
         }
 
         $data = $request->all();

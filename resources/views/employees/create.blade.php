@@ -97,8 +97,8 @@
                     name="salary"
                     id="salary"
                     placeholder="Enter salary"
-                    type="number"
-                    dataValidate="required|amount"
+                    type="amount"
+                    dataValidate="amount"
                     disabled
                     capitalized
                 />
@@ -218,6 +218,7 @@
         }
 
         function validateForNextStep() {
+            formatAmountInput(document.querySelector('#salary'));
             return true;
         }
     </script>

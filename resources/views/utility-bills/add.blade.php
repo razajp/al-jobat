@@ -141,7 +141,7 @@
                             response.data.forEach(account => {
                                 ul.innerHTML += `
                                     <li data-for="account" data-value="${account.id}" onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap">
-                                        ${account.account_title}
+                                        ${account.account_title} | ${account.account_no}
                                     </li>
                                 `;
                             })

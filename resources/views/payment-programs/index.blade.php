@@ -372,6 +372,12 @@
             }
 
             createModal(modalData);
+
+            document.getElementById('updateProgramModalForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                formatAmountInput(this.querySelector('#amount'));
+                this.submit();
+            });
         }
 
         function printDetails(elem) {
