@@ -3,12 +3,13 @@
 @section('content')
 @php
     $searchFields = [
-        "Date" => [
-            "id" => "date",
-            "type" => "text",
-            "placeholder" => "Enter date",
+        "Date Range" => [
+            "id" => "date_range_start",
+            "type" => "date",
+            "id2" => "date_range_end",
+            "type2" => "date",
             "oninput" => "runDynamicFilter()",
-            "dataFilterPath" => "details.Date",
+            "dataFilterPath" => "date",
         ],
         "Customer Name" => [
             "type" => "text",
@@ -100,6 +101,13 @@
             "placeholder" => "Enter voucher no.",
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "voucher_no",
+        ],
+        "Amount" => [
+            "type" => "text",
+            "id" => "voucher_no",
+            "placeholder" => "Enter Amount",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "details.Amount",
         ],
     ];
 @endphp
@@ -213,6 +221,7 @@
                 beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || item.cheque?.voucher?.supplier?.supplier_name || item.slip?.voucher?.supplier?.supplier_name ||'-',
                 reff_no: item.cheque_no || item.slip_no || item.transaction_id || item.reff_no || '-',
                 data: item,
+                date: item.slip_date || item.cheque_date || item.date,
                 category: item.customer.category == 'cash' ? 'cash' : 'non-cash',
                 clear_date: item.clear_date ? formatDate(item.clear_date) : (item.method == 'cheque' || item.method == 'slip') ? 'Pending' : '-',
                 cleared_amount: item.clear_amount ? formatNumbersWithDigits(item.clear_amount, 1, 1) : (item.method == 'cheque' || item.method == 'slip') ? '0' : '-',
