@@ -25,139 +25,110 @@ class CustomerPaymentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $payments = CustomerPayment::with(
-            "customer.city",
-            "cheque.cr",
-            "slip.cr",
-            "cheque.voucher.supplier.bankAccounts",
-            "slip.voucher.supplier.bankAccounts",
-            "bankAccount",
-            "paymentClearRecord",
-            "dr"
-        )
-            ->whereNotNull("customer_id")
-            ->whereNot("type", 'DR')
-            ->orderBy("id", "desc")
-            ->get();
+        // Eager load only necessary relations
+        $payments = CustomerPayment::with([
+            'customer.city',
+            'cheque.supplier.bankAccounts',
+            'slip.supplier.bankAccounts',
+            'cheque.cr',
+            'slip.cr',
+            'bankAccount',
+            'paymentClearRecord',
+            'dr'
+        ])
+        ->whereNotNull('customer_id')
+        ->where('type', '!=', 'DR')
+        ->orderByDesc('id')
+        ->get();
 
-        // Issued/Return/Not Issued flag
-        $payments->each(function ($payment) {
-            if ((($payment->cheque()->exists() || $payment->slip()->exists()) ||
-                    (($payment->method == "cheque" || $payment->method == "slip") && $payment->bank_account_id != null)) &&
-                !$payment->is_return
-            ) {
-                $payment->issued = "Issued";
-            } else if ($payment->is_return && $payment->d_r_id === null) {
-                $payment->issued = "Return";
+        // Preload all reference numbers by type to reduce memory
+        $allChequeRefs = CustomerPayment::whereNotNull('cheque_no')->pluck('cheque_no');
+        $allSlipRefs   = CustomerPayment::whereNotNull('slip_no')->pluck('slip_no');
+        $allProgramRefs= CustomerPayment::whereNotNull('transaction_id')->pluck('transaction_id');
+        $allReffRefs   = CustomerPayment::whereNotNull('reff_no')->pluck('reff_no');
+
+        // Preload SupplierPayments for all program payments in batch
+        $programPaymentIds = $payments->filter(fn($p) => $p->method === 'program' && $p->program_id)->pluck('program_id')->unique();
+        $programVouchers = SupplierPayment::with('voucher')
+            ->whereIn('program_id', $programPaymentIds)
+            ->get()
+            ->keyBy(fn($sp) => $sp->program_id . '_' . ($sp->transaction_id ?? 'null') . '_' . ($sp->supplier_id ?? 'null'));
+
+        foreach ($payments as $payment) {
+
+            /* ================= Issued / Return / Not Issued ================= */
+            if ((($payment->cheque || $payment->slip) || in_array($payment->method, ['cheque','slip']) && $payment->bank_account_id) && !$payment->is_return) {
+                $payment->issued = 'Issued';
+            } elseif ($payment->is_return && $payment->d_r_id === null) {
+                $payment->issued = 'Return';
             } else {
-                $payment->issued = "Not Issued";
+                $payment->issued = 'Not Issued';
             }
 
             if ($payment->d_r_id !== null) {
                 $payment->issued = 'DR';
             }
-        });
 
-        foreach ($payments as $payment) {
-            // Load supplier if cheque has supplier_id
-            if ($payment->cheque && $payment->cheque->supplier_id) {
-                $payment->cheque->supplier = Supplier::with("bankAccounts")->find($payment->cheque->supplier_id);
-            }
-
-            // Clear amount logic
-            if ($payment->clear_date !== null && $payment->clear_date !== "Pending") {
+            /* ================= Clear Amount Logic ================= */
+            if ($payment->clear_date && $payment->clear_date !== 'Pending') {
                 $payment->clear_amount = $payment->amount;
             } else {
-                if (!empty($payment->paymentClearRecord)) {
-                    $clearAmount = collect($payment->paymentClearRecord)->sum("amount");
-                    $payment->clear_amount = $clearAmount;
-
-                    if (floatval($clearAmount) >= floatval($payment->amount)) {
-                        $lastPartial = collect($payment->paymentClearRecord)->last();
-                        if (isset($lastPartial["clear_date"])) {
-                            $payment->clear_date = $lastPartial["clear_date"];
-                        }
-                    }
+                $payment->clear_amount = $payment->paymentClearRecord->sum('amount');
+                if ($payment->clear_amount >= $payment->amount) {
+                    $payment->clear_date = $payment->paymentClearRecord->last()?->clear_date;
                 }
             }
 
-            // Clear date pending check
-            if ($payment->clear_date === null) {
-                if ($payment->type == "cheque" || $payment->type == "slip") {
-                    $payment->clear_date = "Pending";
-                }
+            if (!$payment->clear_date && in_array($payment->type, ['cheque','slip'])) {
+                $payment->clear_date = 'Pending';
             }
 
-            // City title formatting
-            if ($payment->customer && $payment->customer->city) {
-                $payment->customer->city->title =
-                    $payment->customer->city->title . " | " . $payment->customer->city->short_title;
+            /* ================= City Title ================= */
+            if ($payment->customer?->city) {
+                $payment->customer->city->title .= ' | ' . $payment->customer->city->short_title;
             }
 
-            // Remarks fallback
-            if ($payment->remarks === null) {
-                $payment->remarks = "No Remarks";
+            /* ================= Remarks Fallback ================= */
+            $payment->remarks ??= 'No Remarks';
+
+            /* ================= Program Voucher ================= */
+            if ($payment->method === 'program' && $payment->program_id) {
+                $key = $payment->program_id . '_' . ($payment->transaction_id ?? 'null') . '_' . ($payment->bankAccount->sub_category_id ?? 'null');
+                $payment->voucher = $programVouchers->get($key)?->voucher;
             }
 
-            // Handle program vouchers
-            if ($payment->method == "program" && $payment->program_id) {
-                $supplierPayment = SupplierPayment::where("program_id", $payment->program_id)
-                    ->where("supplier_id", $payment->bankAccount->sub_category_id ?? null)
-                    ->where("transaction_id", $payment->transaction_id ?? null)
-                    ->with("voucher")
-                    ->first();
+            /* ================= Reference Numbers ================= */
+            $raw = match ($payment->method) {
+                'cheque'  => $payment->cheque_no,
+                'slip'    => $payment->slip_no,
+                'program' => $payment->transaction_id,
+                default   => $payment->reff_no,
+            };
 
-                $payment->voucher = $supplierPayment?->voucher; // assign directly as object (or null)
-            }
-
-            // Base reference number
-            $baseRef = null;
-            if ($payment->method === 'cheque') {
-                $raw = $payment->cheque_no;
-            } elseif ($payment->method === 'slip') {
-                $raw = $payment->slip_no;
-            } elseif ($payment->method === 'program') {
-                $raw = $payment->transaction_id;
-            } else {
-                $raw = $payment->reff_no;
-            }
-
-            // Split by | aur 0 index le lo
-            $baseRef = explode('|', $raw)[0];  // base part
-            $baseRef = trim($baseRef);         // whitespace remove
-
+            $baseRef = trim(explode('|', $raw)[0]);
+            $payment->has_pipe = str_contains($raw, '|');
             $payment->existing_reff_nos = [];
             $payment->max_reff_suffix = 0;
-            $payment->has_pipe = str_contains($raw, '|');
 
             if ($baseRef) {
-                $field = match ($payment->method) {
-                    'cheque'  => 'cheque_no',
-                    'slip'    => 'slip_no',
-                    'program' => 'transaction_id',
-                    default   => 'reff_no',
+                $refs = match ($payment->method) {
+                    'cheque'  => $allChequeRefs,
+                    'slip'    => $allSlipRefs,
+                    'program' => $allProgramRefs,
+                    default   => $allReffRefs,
                 };
 
-                $refs = CustomerPayment::where(function($q) use ($field, $baseRef) {
-                        $q->where($field, $baseRef)
-                        ->orWhere($field, 'like', $baseRef.' |%');
-                    })
-                    ->pluck($field)
-                    ->toArray();
-
+                $refs = $refs->filter(fn($v) => $v && str_starts_with($v, $baseRef))->values()->toArray();
                 $payment->existing_reff_nos = $refs;
 
-                // Max suffix calculate
-                $max = 0;
                 foreach ($refs as $ref) {
                     if (str_contains($ref, '|')) {
-                        [$b, $n] = array_map('trim', explode('|', $ref));
-                        if (trim($b) == explode('|', $baseRef)[0] && is_numeric($n)) {
-                            $max = max($max, (int) $n);
+                        [, $n] = array_map('trim', explode('|',$ref));
+                        if (is_numeric($n)) {
+                            $payment->max_reff_suffix = max($payment->max_reff_suffix, (int)$n);
                         }
                     }
                 }
-                $payment->max_reff_suffix = $max;
             }
         }
 
@@ -166,94 +137,83 @@ class CustomerPaymentController extends Controller
         return view("customer-payments.index", compact("payments", "authLayout"));
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
     public function create(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'admin', 'accountant']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
-
-        $banks_options = [];
-        $banks = Setup::where('type', 'bank_name')->get();
-        foreach ($banks as $bank) {
-            if ($bank) {
-                $banks_options[(int)$bank->id] = [
-                    'text' => $bank->title,
-                    'data_option' => $bank,
-                ];
-            }
         }
 
-        $customers_options = [];
+        // --- Banks options ---
+        $banks_options = Setup::where('type', 'bank_name')->get()->mapWithKeys(function ($bank) {
+            return [(int)$bank->id => [
+                'text' => $bank->title,
+                'data_option' => $bank,
+            ]];
+        })->toArray();
+
         $programId = $request->query('program_id');
 
-        $lastRecord = CustomerPayment::latest('id')->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')->whereNotNull('customer_id')->first();
+        // --- Last record ---
+        $lastRecord = CustomerPayment::latest('id')
+            ->with('customer', 'customer.paymentPrograms.subCategory.bankAccounts.bank')
+            ->whereNotNull('customer_id')
+            ->first();
 
+        // --- If program_id provided, load specific program and customer ---
         if (!empty($programId)) {
-            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')->withPaymentDetails()->where('balance', '>', 0)->find($programId);
+            $program = PaymentProgram::with('customer', 'subCategory.bankAccounts.bank')
+                ->withPaymentDetails()
+                ->where('balance', '>', 0)
+                ->find($programId);
 
             if ($program && $program->customer) {
-                $customers = $program->customer->toArray();
                 $program->customer['payment_programs'] = $program->toArray();
+                $customers_options = [
+                    (int)$program->customer->id => [
+                        'text' => $program->customer->customer_name . ' | ' . $program->customer->city->title,
+                        'data_option' => $program->customer,
+                    ]
+                ];
 
-                $customers_options = [(int)$program->customer->id => [
-                    'text' => $program->customer->customer_name . ' | ' . $program->customer->city->title,
-                    'data_option' => $program->customer,
-                ]];
-
-                return view("customer-payments.create", compact("customers", "customers_options", "banks_options", 'lastRecord'));
+                return view("customer-payments.create", compact("customers_options", "banks_options", 'lastRecord'));
             }
         }
 
+        // --- Load all active customers with necessary relations ---
         $customers = Customer::with([
             'orders',
             'payments',
-            'paymentPrograms' => function ($query) {
-                $query->where('status', 'Unpaid');
-            },
-            'paymentPrograms.subCategory.bankAccounts.bank'
-        ])
-        ->whereHas('user', function ($query) {
-            $query->where('status', 'active');
-        })->select('id', 'customer_name', 'city_id', 'payment_programs', 'date')
+            'paymentPrograms' => fn($q) => $q->where('status', 'Unpaid'),
+            'paymentPrograms.subCategory.bankAccounts.bank',
+            'city'
+        ])->whereHas('user', fn($q) => $q->where('status', 'active'))
+        ->select('id', 'customer_name', 'date', 'city_id')
         ->get();
 
-        foreach ($customers as $customer) {
+        // --- Prepare customers options and calculate totals ---
+        $customers_options = $customers->mapWithKeys(function ($customer) {
+            // Total amounts
+            $customer['totalAmount'] = $customer->orders->sum(fn($order) => $order->netAmount);
+            $customer['totalPayment'] = $customer->payments->sum(fn($payment) => $payment->amount);
+
+            // Fix subCategory for each payment program
             foreach ($customer->paymentPrograms as $program) {
                 $subCategory = $program->subCategory;
-
-                if (isset($subCategory->type)) {
-                    if ($subCategory->type === '"App\Models\BankAccount"') {
-                        $subCategory = $subCategory;
-                    } else {
-                        $subCategory = $subCategory->bankAccounts;
-                    }
-                } else {
-                    $subCategory = null; // Handle the case where subCategory is not set
+                if (isset($subCategory->type) && $subCategory->type !== '"App\Models\BankAccount"') {
+                    $program->subCategory = $subCategory->bankAccounts ?? null;
                 }
             }
-        }
 
-        foreach ($customers as $customer) {
-            foreach ($customer['orders'] as $order) {
-                $customer['totalAmount'] += $order->netAmount;
-            }
-
-            foreach ($customer['payments'] as $payment) {
-                $customer['totalPayment'] += $payment->amount;
-            }
-
-            $customers_options[(int)$customer->id] = [
+            return [(int)$customer->id => [
                 'text' => $customer->customer_name . ' | ' . $customer->city->title,
                 'data_option' => $customer,
-            ];
-        }
+            ]];
+        })->toArray();
 
-        return view("customer-payments.create", compact( "customers_options", 'banks_options', 'lastRecord'));
+        return view("customer-payments.create", compact("customers_options", 'banks_options', 'lastRecord'));
     }
 
     /**

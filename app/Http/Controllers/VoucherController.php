@@ -20,18 +20,37 @@ class VoucherController extends Controller
      */
     public function index(Request $request)
     {
-        if(!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest']))
-        {
+        if (!$this->checkRole(['developer', 'owner', 'manager', 'admin', 'accountant', 'guest'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
+        }
 
-        $vouchers = Voucher::with("supplier", 'payments.cheque.customer', 'payments.slip.customer', 'payments.program.customer', "payments.bankAccount.bank", 'payments.selfAccount.bank')->get();
+        // Eager load all relations needed
+        $vouchers = Voucher::with([
+            'supplier',
+            'payments.cheque.customer',
+            'payments.slip.customer',
+            'payments.program.customer',
+            'payments.bankAccount.bank',
+            'payments.selfAccount.bank'
+        ])
+        ->orderByDesc('id')
+        ->get();
+
+        // Preload supplier balances in batch to reduce queries (optional if calculateBalance is query-heavy)
+        $supplierIds = $vouchers->pluck('supplier.id')->filter()->unique();
+        $supplierBalances = [];
+        foreach ($supplierIds as $id) {
+            $supplierBalances[$id] = Supplier::find($id)->calculateBalance(null, now(), false, false);
+        }
 
         foreach ($vouchers as $voucher) {
-            if (isset($voucher['supplier'])) {
-                $voucher['previous_balance'] = $voucher['supplier']->calculateBalance(null, $voucher->date, false, false);
+            // Calculate previous balance only if supplier exists
+            if ($voucher->supplier) {
+                $voucher->previous_balance = $supplierBalances[$voucher->supplier->id] ?? 0;
             }
-            $voucher['total_payment'] = $voucher['payments']->sum('amount');
+
+            // Sum of all payments
+            $voucher->total_payment = $voucher->payments->sum('amount');
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -46,88 +65,95 @@ class VoucherController extends Controller
     {
         if (!$this->checkRole(['developer', 'owner', 'admin', 'accountant'])) {
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
-        };
-
-        $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
-        $cheques_options = [];
-
-        foreach ($cheques as $cheque) {
-            $cheques_options[(int)$cheque->id] = [
-                'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
-                'data_option' => $cheque->makeHidden('creator'),
-            ];
         }
 
-        $slips = CustomerPayment::whereNotNull('slip_no')->with('customer.city')->whereDoesntHave('slip')->whereNull('bank_account_id')->get();
-        $slips_options = [];
+        // --- Cheques ---
+        $cheques = CustomerPayment::whereNotNull('cheque_no')
+            ->with('customer.city')
+            ->whereDoesntHave('cheque')
+            ->whereNull('bank_account_id')
+            ->get();
 
-        foreach ($slips as $slip) {
-            $slips_options[(int)$slip->id] = [
-                'text' => $slip->slip_no . ' - ' . $slip->amount,
-                'data_option' => $slip->makeHidden('creator'),
+        $cheques_options = $cheques->mapWithKeys(function ($cheque) {
+            return [
+                (int)$cheque->id => [
+                    'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                    'data_option' => $cheque->makeHidden('creator'),
+                ]
             ];
-        }
+        })->toArray();
 
-        $self_accounts = BankAccount::where('category', 'self')->with('bank')->get()->makeHidden('creator');
+        // --- Slips ---
+        $slips = CustomerPayment::whereNotNull('slip_no')
+            ->with('customer.city')
+            ->whereDoesntHave('slip')
+            ->whereNull('bank_account_id')
+            ->get();
 
-        $self_accounts_options = [];
-
-        foreach ($self_accounts as $account) {
-            $self_accounts_options[(int)$account->id] = [
-                'text' => $account->account_title . ' - ' . $account->bank->short_title,
-                'data_option' => $account,
+        $slips_options = $slips->mapWithKeys(function ($slip) {
+            return [
+                (int)$slip->id => [
+                    'text' => $slip->slip_no . ' - ' . $slip->amount,
+                    'data_option' => $slip->makeHidden('creator'),
+                ]
             ];
-        }
+        })->toArray();
 
-        $suppliers_options = [];
+        // --- Self Accounts ---
+        $self_accounts = BankAccount::where('category', 'self')
+            ->with('bank')
+            ->get()
+            ->makeHidden('creator');
 
-        $suppliers = Supplier::with(['user', 'payments' => function ($query) {
-            $query->where('method', 'program')
-                ->whereNull('voucher_id')
-                ->with(['program.customer']); // nested eager load
-        }, 'payments.program.customer', 'payments.bankAccount.bank'])
-        ->whereHas('user', function ($query) {
-            $query->where('status', 'active'); // Supplier's user must be active
-        })
-        ->with('expenses')
-        ->get();
+        $self_accounts_options = $self_accounts->mapWithKeys(function ($account) {
+            return [
+                (int)$account->id => [
+                    'text' => $account->account_title . ' - ' . $account->bank->short_title,
+                    'data_option' => $account,
+                ]
+            ];
+        })->toArray();
 
-        // return $suppliers;
+        // --- Suppliers ---
+        $suppliers = Supplier::with([
+            'user' => fn($q) => $q->where('status', 'active'),
+            'payments' => fn($q) => $q->where('method', 'program')->whereNull('voucher_id')->with('program.customer'),
+            'expenses'
+        ])->get();
 
-        foreach ($suppliers as $supplier) {
+        $suppliers_options = $suppliers->mapWithKeys(function ($supplier) {
             foreach ($supplier->paymentPrograms as $program) {
-                $subCategory = $program->subCategory;
-
-                if (isset($subCategory->type)) {
-                    if ($subCategory->type === '"App\Models\BankAccount"') {
-                        $subCategory = $subCategory;
-                    } else {
-                        $subCategory = $subCategory->bankAccounts;
-                    }
-                } else {
-                    $subCategory = null; // Handle the case where subCategory is not set
-                }
-
                 $program['date'] = date('d-M-Y D', strtotime($program['date']));
+                $subCategory = $program->subCategory;
+                if (isset($subCategory->type) && $subCategory->type !== '"App\Models\BankAccount"') {
+                    $program->subCategory = $subCategory->bankAccounts ?? null;
+                }
             }
-        }
 
-        foreach ($suppliers as $supplier) {
             $supplier['balance'] = $supplier['totalAmount'] - $supplier['totalPayment'];
 
-            $suppliers_options[(int)$supplier->id] = [
-                'text' => $supplier->supplier_name,
-                'data_option' => $supplier,
+            return [
+                (int)$supplier->id => [
+                    'text' => $supplier->supplier_name,
+                    'data_option' => $supplier,
+                ]
             ];
-        }
+        })->toArray();
 
-        $last_voucher = Voucher::orderBy('id', 'desc')->first();
-
+        // --- Last voucher ---
+        $last_voucher = Voucher::orderByDesc('id')->first();
         if (!$last_voucher) {
-            $last_voucher['voucher_no'] = '00/149';
+            $last_voucher = (object)['voucher_no' => '00/149'];
         }
 
-        return view("vouchers.create", compact("suppliers_options", 'cheques_options', 'slips_options', 'self_accounts', 'self_accounts_options', 'last_voucher'));
+        return view("vouchers.create", compact(
+            "suppliers_options",
+            'cheques_options',
+            'slips_options',
+            'self_accounts',
+            'self_accounts_options',
+            'last_voucher'
+        ));
     }
 
     /**
