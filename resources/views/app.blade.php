@@ -1449,7 +1449,7 @@
 
     document.addEventListener("submit", function (e) {
         if (e.target.matches("form")) {   // sirf form ke liye trigger
-            if (e.target.e.target.action.includes("logout")) {
+            if (e.target.action.includes("logout")) {
                 return;
             }
 
