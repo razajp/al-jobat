@@ -1157,7 +1157,7 @@
             });
         }
 
-        const scroller = search_container;
+        const scroller = search_container.parentElement;
         const batchSize = 50;
         let startIndex = 0;
         let isFetching = false;
@@ -1178,6 +1178,7 @@
             const scrollTop = scroller.scrollTop;
             const scrollHeight = scroller.scrollHeight;
             const clientHeight = scroller.clientHeight;
+            // console.log("Scrolling");
 
             if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
                 isFetching = true;
@@ -1200,6 +1201,7 @@
             }
             search_container.innerHTML = "";
             startIndex = 0;
+            console.log("Render First Batch");
             renderNextBatch();
         }
 

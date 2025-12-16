@@ -919,8 +919,6 @@ function returnCardsInModal(data) {
 }
 
 function renderCardsInModal(data) {
-    console.log(data);
-
     document.querySelector(`.${data.id}CardsContainer`).innerHTML = returnCardsInModal(data);
 }
 
