@@ -81,14 +81,15 @@
             {{-- payment showing --}}
             <div id="payment-table" class="w-full text-left text-sm">
                 <div class="flex justify-between items-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4 mb-4">
-                    <div class="w-[7%]">S.No</div>
+                    <div class="w-[5%]">S.No</div>
                     @if ($voucherType == 'self_account')
                         <div class="w-1/3">Account Title</div>
                     @endif
                     <div class="w-1/5">Method</div>
-                    <div class="w-1/5">Remarks</div>
+                    <div class="w-1/3">Customer/Self Acc.</div>
+                    <div class="w-1/5">Reff. No.</div>
                     <div class="w-[15%]">Amount</div>
-                    <div class="w-[10%] text-center">Action</div>
+                    <div class="w-[8%] text-center">Action</div>
                 </div>
                 <div id="payment-list" class="h-[20rem] overflow-y-auto my-scrollbar-2">
                     <div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Payment Added</div>
@@ -313,6 +314,7 @@
                         html: `
                             <x-select label="Cheque" name="cheque_id" id="cheque_id" required :options="$cheques_options" showDefault onchange="trackChequeState(this)" />
                         `,
+                        full: true,
                     },
                     @if($voucherType == 'self_account')
                     {
@@ -346,6 +348,7 @@
                         html: `
                             <x-select label="Slip" name="slip_id" id="slip_id" required :options="$slips_options" showDefault onchange="trackSlipState(this)" />
                         `,
+                        full: true,
                     },
                     @if($voucherType == 'self_account')
                     {
@@ -379,6 +382,7 @@
                         html: `
                             <x-select label="Program" name="program_id" id="program_id" required :options="[]" showDefault />
                         `,
+                        full: true,
                     },
                     {
                         category: 'input',
@@ -542,9 +546,9 @@
                 .map((field, index) => field.type !== 'hidden' ? index : null)
                 .filter(index => index !== null);
 
-                if (visibleIndexes.length > 0) {
-                const lastVisibleIndex = visibleIndexes[visibleIndexes.length - 1];
-                fieldsData[lastVisibleIndex].full = visibleIndexes.length % 2 === 1;
+                if (visibleIndexes.length > 0 && elem.value != 'program' && elem.value != 'cheque' && elem.value != 'slip') {
+                    const lastVisibleIndex = visibleIndexes[visibleIndexes.length - 1];
+                    fieldsData[lastVisibleIndex].full = visibleIndexes.length % 2 === 1;
                 }
 
                 let modalData = {
@@ -585,7 +589,7 @@
 
                     filteredPayments.forEach(payment => {
                         paymentSelectDom.innerHTML += `
-                            <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${payment.amount} | ${payment.program.customer.customer_name}</li>
+                            <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${formatNumbersWithDigits(payment.amount, 1, 1)} | ${payment.program.customer.customer_name} | ${payment.program.customer.city.title} | ${payment.transaction_id} | ${formatDate(payment.date)}</li>
                         `;
                     })
 
@@ -740,6 +744,9 @@
             if (paymentDetailsArray.length > 0) {
                 let clutter = "";
                 paymentDetailsArray.forEach((paymentDetail, index) => {
+                    let selected = paymentDetail.selected ? JSON.parse(paymentDetail.selected) : null;
+                    console.log(paymentDetail);
+
                     clutter += `
                         <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                             <div class="w-[7%]">${index+1}</div>
@@ -747,7 +754,8 @@
                                 <div class="w-1/3 capitalize">${paymentDetail.self_account_id_name ?? paymentDetail.self_account.account_title}</div>
                             @endif
                             <div class="w-1/5 capitalize">${paymentDetail.method}</div>
-                            <div class="w-1/5 capitalize">${paymentDetail.remarks && paymentDetail.remarks.trim() !== '' ? paymentDetail.remarks : '-'}</div>
+                            <div class="w-1/3 capitalize">${selected?.customer ? `${selected?.customer?.customer_name} | ${selected?.customer?.city?.title}` : paymentDetail.bank_account_id_name ?? '-'}</div>
+                            <div class="w-1/5 capitalize">${selected?.slip_no ?? selected?.cheque_no ?? selected?.reff_no ?? selected?.transaction_id ?? paymentDetail.cheque_no ?? paymentDetail.reff_no ?? '-'}</div>
                             <div class="w-[15%]">${formatNumbersWithDigits(paymentDetail.amount, 1, 1)}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisPayment(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">

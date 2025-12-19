@@ -28,8 +28,8 @@ class CustomerPaymentController extends Controller
         // Eager load only necessary relations
         $payments = CustomerPayment::with([
             'customer.city',
-            'cheque.supplier.bankAccounts',
-            'slip.supplier.bankAccounts',
+            'cheque.voucher.supplier.bankAccounts',
+            'slip.voucher.supplier.bankAccounts',
             'cheque.cr',
             'slip.cr',
             'bankAccount',

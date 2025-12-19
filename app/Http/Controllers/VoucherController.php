@@ -77,7 +77,7 @@ class VoucherController extends Controller
         $cheques_options = $cheques->mapWithKeys(function ($cheque) {
             return [
                 (int)$cheque->id => [
-                    'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                    'text' => $cheque->amount . ' | ' . $cheque->customer->customer_name . ' | ' . $cheque->customer->city->title . ' | ' . $cheque->cheque_no . ' | ' . date('d-M-Y D', strtotime($cheque->cheque_date)),
                     'data_option' => $cheque->makeHidden('creator'),
                 ]
             ];
@@ -93,7 +93,7 @@ class VoucherController extends Controller
         $slips_options = $slips->mapWithKeys(function ($slip) {
             return [
                 (int)$slip->id => [
-                    'text' => $slip->slip_no . ' - ' . $slip->amount,
+                    'text' => $slip->amount . ' | ' . $slip->customer->customer_name . ' | ' . $slip->customer->city->title . ' | ' . $slip->slip_no . ' | ' . date('d-M-Y D', strtotime($slip->slip_date)),
                     'data_option' => $slip->makeHidden('creator'),
                 ]
             ];
@@ -117,7 +117,7 @@ class VoucherController extends Controller
         // --- Suppliers ---
         $suppliers = Supplier::with([
             'user' => fn($q) => $q->where('status', 'active'),
-            'payments' => fn($q) => $q->where('method', 'program')->whereNull('voucher_id')->with('program.customer'),
+            'payments' => fn($q) => $q->where('method', 'program')->whereNull('voucher_id')->with('program.customer', 'program.customer.city:id,title'),
             'expenses'
         ])->get();
 
@@ -335,14 +335,27 @@ class VoucherController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $voucher->load('payments.cheque.customer', 'payments.slip.customer', 'payments.program.customer', "payments.bankAccount.bank", 'payments.selfAccount.bank');
+        $voucher->load([
+            'supplier' => fn ($q) => $q->with([
+                'payments' => fn ($q) =>
+                    $q->where('method', 'program')
+                    ->whereNull('voucher_id')
+                    ->with('program.customer.city:id,title'),
+                'expenses',
+            ]),
+            'payments.cheque.customer',
+            'payments.slip.customer',
+            'payments.program.customer',
+            'payments.bankAccount.bank',
+            'payments.selfAccount.bank',
+        ]);
 
         $cheques = CustomerPayment::whereNotNull('cheque_no')->with('customer.city')->whereDoesntHave('cheque')->whereNull('bank_account_id')->get();
         $cheques_options = [];
 
         foreach ($cheques as $cheque) {
             $cheques_options[(int)$cheque->id] = [
-                'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                'text' => $cheque->amount . ' | ' . $cheque->customer->customer_name . ' | ' . $cheque->customer->city->title . ' | ' . $cheque->cheque_no . ' | ' . date('d-M-Y D', strtotime($cheque->cheque_date)),
                 'data_option' => $cheque->makeHidden('creator'),
             ];
         }
@@ -352,7 +365,7 @@ class VoucherController extends Controller
 
         foreach ($slips as $slip) {
             $slips_options[(int)$slip->id] = [
-                'text' => $slip->slip_no . ' - ' . $slip->amount,
+                'text' => $slip->amount . ' | ' . $slip->customer->customer_name . ' | ' . $slip->customer->city->title . ' | ' . $slip->slip_no . ' | ' . date('d-M-Y D', strtotime($slip->slip_date)),
                 'data_option' => $slip->makeHidden('creator'),
             ];
         }
@@ -366,37 +379,6 @@ class VoucherController extends Controller
                 'text' => $account->account_title . ' - ' . $account->bank->short_title,
                 'data_option' => $account,
             ];
-        }
-
-        $suppliers = Supplier::with(['user', 'payments' => function ($query) {
-            $query->where('method', 'program')
-                ->whereNull('voucher_id')
-                ->with(['program.customer']); // nested eager load
-        }, 'payments.program.customer', 'payments.bankAccount.bank'])
-        ->whereHas('user', function ($query) {
-            $query->where('status', 'active'); // Supplier's user must be active
-        })
-        ->with('expenses')
-        ->get();
-
-        // return $suppliers;
-
-        foreach ($suppliers as $supplier) {
-            foreach ($supplier->paymentPrograms as $program) {
-                $subCategory = $program->subCategory;
-
-                if (isset($subCategory->type)) {
-                    if ($subCategory->type === '"App\Models\BankAccount"') {
-                        $subCategory = $subCategory;
-                    } else {
-                        $subCategory = $subCategory->bankAccounts;
-                    }
-                } else {
-                    $subCategory = null; // Handle the case where subCategory is not set
-                }
-
-                $program['date'] = date('d-M-Y D', strtotime($program['date']));
-            }
         }
 
         if ($voucher->supplier_id === null && Auth::user()->voucher_type == 'supplier') {
@@ -526,8 +508,7 @@ class VoucherController extends Controller
 
         }); // End transaction
 
-        return redirect()->route('vouchers.edit', $voucher->id)
-            ->with('success', 'Voucher updated successfully.');
+        return redirect()->route('vouchers.index')->with('success', 'Voucher updated successfully.');
     }
 
     /**

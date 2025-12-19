@@ -135,7 +135,7 @@
                     `;
                 }
 
-                invoiceContainer.prependChild(previewDom);
+                invoiceContainer.prepend(previewDom);
                 addListenerToPrintInvoice()
             });
         })

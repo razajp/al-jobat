@@ -206,6 +206,8 @@
 
         const fetchedData = @json($payments);
         let allDataArray = fetchedData.map(item => {
+            console.log(item);
+
             totalAmount += parseFloat(item.amount);
             totalPayment += parseFloat(item.clear_amount);
             return {
