@@ -115,6 +115,15 @@
 
         let isModalOpened = false;
         let isQuantityModalOpened = false;
+        let cardData = [];
+
+        function basicSearch(searchValue) {
+            let modalData = {
+                id: 'modalForm',
+                cards: {data: cardData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))},
+            }
+            renderCardsInModal(modalData);
+        }
 
         generateShipmentBtn.addEventListener('click', () => {
             generateArticlesModal();
@@ -122,7 +131,6 @@
 
         function generateArticlesModal() {
             let data = articles;
-            let cardData = [];
 
             console.log(data);
             if (data.length > 0) {
@@ -146,6 +154,8 @@
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
                 cards: {name: 'Articles', count: 3, data: cardData},
+                basicSearch: true,
+                onBasicSearch: 'basicSearch(this.value)',
                 flex_col: true,
                 calcBottom: [
                     {label: 'Total Quantity - Pcs', name: 'totalShipmentedQty', value: '0', disabled: true},

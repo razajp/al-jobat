@@ -125,6 +125,15 @@
                 generateOrderBtn.disabled = true;
             }
         }
+        let cardData = [];
+
+        function basicSearch(searchValue) {
+            let modalData = {
+                id: 'modalForm',
+                cards: {data: cardData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))},
+            }
+            renderCardsInModal(modalData);
+        }
 
         generateOrderBtn.addEventListener('click', () => {
             generateArticlesModal();
@@ -132,9 +141,7 @@
 
         function generateArticlesModal() {
             let data = articles;
-            let cardData = [];
 
-            console.log(data);
             if (data.length > 0) {
                 cardData.push(...data.map(item => {
                     return {
@@ -156,6 +163,8 @@
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
                 cards: {name: 'Articles', count: 3, data: cardData},
+                basicSearch: true,
+                onBasicSearch: 'basicSearch(this.value)',
                 flex_col: true,
                 calcBottom: [
                     {label: 'Total Quantity - Pcs', name: 'totalShipmentedQty', value: '0', disabled: true},

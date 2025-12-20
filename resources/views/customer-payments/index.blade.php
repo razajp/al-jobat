@@ -310,7 +310,7 @@
             };
             createModal(modalData);
 
-            let bankAccounts = data.bank_account ? [data.bank_account] : data.cheque?.supplier?.bank_accounts ? data.cheque?.supplier?.bank_accounts : data.slip?.supplier?.bank_accounts ? data.slip?.supplier?.bank_accounts : [];
+            let bankAccounts = data.bank_account ? [data.bank_account] : data.cheque?.voucher?.supplier?.bank_accounts ? data.cheque?.voucher?.supplier?.bank_accounts : data.slip?.voucher?.supplier?.bank_accounts ? data.slip?.voucher?.supplier?.bank_accounts : [];
             let form = document.querySelector('#clearModal');
             let bankAccountInpDom = form.querySelector('input[id="bank_account_id"]');
             let bankAccountDom = form.querySelector('ul[data-for="bank_account_id"]');
@@ -319,6 +319,8 @@
             bankAccountDom.innerHTML = `
                 <li data-for="bank_account_id" data-value=" " onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden"">-- Select bank account --</li>
             `;
+
+            console.log(data);
 
             bankAccounts.forEach(bankAccount => {
 

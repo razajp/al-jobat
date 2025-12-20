@@ -81,10 +81,11 @@
                     <div class="details h-full z-40">
                         <div class="container-parent h-full">
                             <div class="card_container px-3 h-full flex flex-col">
-                                <div id="table-head" class="grid grid-cols-8 bg-[var(--h-bg-color)] rounded-lg text-center font-medium py-2 hidden mt-4 mx-2">
+                                <div id="table-head" class="grid grid-cols-9 bg-[var(--h-bg-color)] rounded-lg text-center font-medium py-2 hidden mt-4 mx-2">
                                     <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
                                     <div class="cursor-pointer col-span-2" onclick="sortByThis(this)">Account Title</div>
                                     <div class="cursor-pointer col-span-2" onclick="sortByThis(this)">Name</div>
+                                    <div class="cursor-pointer" onclick="sortByThis(this)">Bank</div>
                                     <div class="cursor-pointer" onclick="sortByThis(this)">Category</div>
                                     <div class="cursor-pointer" onclick="sortByThis(this)">Balance</div>
                                     <div class="cursor-pointer" onclick="sortByThis(this)">Status</div>
@@ -117,12 +118,13 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid grid-cols-8 border-b border-[var(--h-bg-color)] items-center text-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid grid-cols-9 border-b border-[var(--h-bg-color)] items-center text-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
                 <span>${formatDate(data.date)}</span>
                 <span class="col-span-2">${data.name}</span>
                 <span class="capitalize col-span-2">${data.details["Name"]}</span>
+                <span class="capitalize">${data.bank.split('|')[0]}</span>
                 <span class="capitalize">${data.details["Category"]}</span>
                 <span>${data.details["Balance"]}</span>
                 <span class="capitalize">${data.status}</span>

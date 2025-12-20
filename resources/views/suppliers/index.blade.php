@@ -319,7 +319,7 @@
                 ],
                 fieldsGridCount: '2',
                 bottomActions: [
-                    {id: 'add', text: 'Add', onclick: 'trackAddBtnState(this)'},
+                    {id: 'add', text: 'Update', onclick: 'trackAddBtnState(this)'},
                 ],
             }
 

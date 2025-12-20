@@ -878,7 +878,7 @@
         class: 'h-[80%] w-full',
         cards: {name: 'Menu', count: 3, data: menuData},
         basicSearch: true,
-        onBasicSearch: 'basicSearch(this.value)',
+        onBasicSearch: 'menuBasicSearch(this.value)',
         info: `Enabled: ${menu_shortcuts.length}/${maxShortcutsLimit}`,
         flex_col: true,
     }
@@ -902,7 +902,7 @@
         }
     });
 
-    function basicSearch(searchValue) {
+    function menuBasicSearch(searchValue) {
         modalData.cards.data = menuData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()));
         renderCardsInModal(modalData);
     }
