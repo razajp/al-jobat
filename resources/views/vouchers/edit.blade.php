@@ -1,5 +1,5 @@
 @extends('app')
-@section('title', 'Generate Voucher | ' . $client_company->name)
+@section('title', 'Edit Voucher | ' . $client_company->name)
 @section('content')
 
 @php
@@ -37,7 +37,7 @@
 
     <!-- Progress Bar -->
     <div class="mb-5 max-w-4xl mx-auto">
-        <x-search-header heading="Generate Voucher" link linkText="Show Vouchers"
+        <x-search-header heading="Edit Voucher" link linkText="Show Vouchers"
             linkHref="{{ route('vouchers.index') }}" />
         <x-progress-bar :steps="$steps" :currentStep="1" />
     </div>
@@ -47,7 +47,7 @@
         class="bg-[var(--secondary-bg-color)] text-sm rounded-xl shadow-lg p-8 border border-[var(--glass-border-color)]/20 pt-14 max-w-4xl mx-auto  relative overflow-hidden">
         @csrf
         @method('PUT')
-        <x-form-title-bar title="Generate Voucher" />
+        <x-form-title-bar title="Edit Voucher" />
 
         <div class="step1 space-y-4 ">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">

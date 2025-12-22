@@ -280,7 +280,7 @@
                     {
                         category: 'explicitHtml',
                         html: `
-                            <x-select label="Bank Account" name="bank_account_id" id="bank_account_id" :options="[]" required disabled showDefault />
+                            <x-select label="Bank Account" addBtnLink="/bank-accounts/create" name="bank_account_id" id="bank_account_id" :options="[]" required disabled showDefault />
                         `,
                     },
                     {
