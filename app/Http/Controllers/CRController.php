@@ -135,8 +135,8 @@ class CRController extends Controller
         $data['return_payments'] = json_decode($data['returnPayments'] ?? '[]');
         $data['new_payments'] = json_decode($data['newPayments'] ?? '[]');
 
-        if (!str_starts_with($data['c_r_no'], 'CR')) {
-            $data['c_r_no'] = 'CR' . $data['c_r_no'];
+        if (!str_starts_with($data['c_r_no'], 'CR-')) {
+            $data['c_r_no'] = 'CR-' . $data['c_r_no'];
         }
 
         $returnEmpty = empty($data['return_payments']);
@@ -183,7 +183,7 @@ class CRController extends Controller
                     'date'             => $data['date'],
                     'method'           => $payment->method . ' | CR',
                     'amount'           => $payment->amount,
-                    'bank_account_id'  => $payment->bank_account_id,
+                    // 'bank_account_id'  => $payment->bank_account_id,
                     'voucher_id'       => null,
                     'c_r_id'           => $cr->id, // 👈 ab yahan id set ho jaegi
                     $columnMap[$payment->method] => $payment->data_value,

@@ -108,6 +108,7 @@ class PhysicalQuantityController extends Controller
             // ->whereHas('production.work', function ($q) {
             //     $q->where('title', 'CMT');
             // })
+            ->orderByDesc('id')
             ->get();
 
         foreach ($articles as $article) {

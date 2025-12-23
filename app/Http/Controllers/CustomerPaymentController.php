@@ -32,7 +32,7 @@ class CustomerPaymentController extends Controller
             'slip.voucher.supplier.bankAccounts',
             'cheque.cr',
             'slip.cr',
-            'bankAccount',
+            'bankAccount.subCategory',
             'paymentClearRecord',
             'dr'
         ])
@@ -306,10 +306,11 @@ class CustomerPaymentController extends Controller
                 if ($program['category'] == 'supplier') {
                     $data['supplier_id'] = $program->sub_category_id;
                     SupplierPayment::create($data);
-                } else if ($program['category'] == 'customer') {
-                    $data['customer_id'] = $program->sub_category_id;
-                    CustomerPayment::create($data);
                 }
+                // else if ($program['category'] == 'customer') {
+                //     $data['customer_id'] = $program->sub_category_id;
+                //     CustomerPayment::create($data);
+                // }
             }
         }
 

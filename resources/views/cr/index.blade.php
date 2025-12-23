@@ -54,11 +54,12 @@
                 <div class="details h-full z-40">
                     <div class="container-parent h-full">
                         <div class="card_container px-3 h-full flex flex-col text-center">
-                            <div id="table-head" class="grid grid-cols-4 items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
+                            <div id="table-head" class="grid grid-cols-5 items-center bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Date</div>
-                                <div class="cursor-pointer" onclick="sortByThis(this)">CR No.</div>
-                                <div class="cursor-pointer" onclick="sortByThis(this)">Voucher No.</div>
                                 <div class="cursor-pointer" onclick="sortByThis(this)">Supplier Name</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">CR No.</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Amount</div>
+                                <div class="cursor-pointer" onclick="sortByThis(this)">Voucher No.</div>
                             </div>
                             <p id="noItemsError" style="display: none" class="text-sm text-[var(--border-error)] mt-3">No items found</p>
                             <div class="overflow-y-auto grow my-scrollbar-2">
@@ -85,23 +86,26 @@
         function createRow(data) {
             return `
             <div id="${data.id}" oncontextmenu='${data.oncontextmenu || ""}' onclick='${data.onclick || ""}'
-                class="item row relative group grid grid-cols-4 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
+                class="item row relative group grid grid-cols-5 border-b border-[var(--h-bg-color)] items-center py-2 cursor-pointer hover:bg-[var(--h-secondary-bg-color)] transition-all fade-in ease-in-out"
                 data-json='${JSON.stringify(data)}'>
 
                 <span>${formatDate(data.date)}</span>
-                <span>${data.c_r_no}</span>
-                <span>${data.voucher_no}</span>
                 <span>${data.supplier_name}</span>
+                <span>${data.c_r_no}</span>
+                <span>${data.amount}</span>
+                <span>${data.voucher_no}</span>
             </div>`;
         }
 
 
         const fetchedData = @json($crs);
-        console.log(fetchedData);
+        
         let allDataArray = fetchedData.map(item => {
+            
             return {
                 id: item.id,
                 date: item.date,
+                amount: 'in progress',
                 c_r_no: item.c_r_no,
                 voucher_no: item.voucher?.voucher_no,
                 supplier_name: item.voucher?.supplier?.supplier_name ?? "{{ $client_company->name }}",

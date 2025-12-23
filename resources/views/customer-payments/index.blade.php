@@ -32,6 +32,13 @@
             "oninput" => "runDynamicFilter()",
             "dataFilterPath" => "beneficiary",
         ],
+        "Supplier Name" => [
+            "type" => "text",
+            "id" => "supplier_name",
+            "placeholder" => "Enter supplier name",
+            "oninput" => "runDynamicFilter()",
+            "dataFilterPath" => "supplier_name",
+        ],
         "Method" => [
             "type" => "select",
             "id" => "method",
@@ -133,6 +140,7 @@
                             <div id="table-head" class="flex justify-between bg-[var(--h-bg-color)] rounded-lg font-medium py-2 hidden mt-4 mx-2">
                                 <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Date</div>
                                 <div class="text-center w-1/7 cursor-pointer" onclick="sortByThis(this)">Customer</div>
+                                <div class="text-center w-1/7 cursor-pointer" onclick="sortByThis(this)">Supplier Name</div>
                                 <div class="text-center w-1/7 cursor-pointer" onclick="sortByThis(this)">Beneficiary</div>
                                 <div class="text-center w-1/11 cursor-pointer" onclick="sortByThis(this)">Method</div>
                                 <div class="text-center w-1/10 cursor-pointer" onclick="sortByThis(this)">Amount</div>
@@ -192,6 +200,7 @@
 
                     <span class="text-center w-1/10">${data.details['Date']}</span>
                     <span class="text-center w-1/7">${data.name}</span>
+                    <span class="text-center w-1/7">${data.supplier_name}</span>
                     <span class="text-center w-1/7">${data.beneficiary}</span>
                     <span class="text-center w-1/11 capitalize">${data.details["Method"]}</span>
                     <span class="text-center w-1/10">${data.details['Amount']}</span>
@@ -221,6 +230,7 @@
                 },
                 voucher_no: item.cheque?.voucher?.voucher_no || item.slip?.voucher?.voucher_no || item.voucher?.voucher_no || item.cheque?.cr?.c_r_no || item.slip?.cr?.c_r_no || '-',
                 beneficiary: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.bank_account?.account_title || item.cheque?.voucher?.supplier?.supplier_name || item.slip?.voucher?.supplier?.supplier_name ||'-',
+                supplier_name: item.cheque?.supplier?.supplier_name || item.slip?.supplier?.supplier_name || item.cheque?.voucher?.supplier?.supplier_name || item.slip?.voucher?.supplier?.supplier_name ||item.bank_account?.sub_category?.supplier_name ||'-',
                 reff_no: item.cheque_no || item.slip_no || item.transaction_id || item.reff_no || '-',
                 data: item,
                 date: item.slip_date || item.cheque_date || item.date,
@@ -377,7 +387,7 @@
                 class: 'h-auto',
                 name: data.name,
                 details: {
-                    'Date': data.details['Date'],
+                    'Date': formatDate(data.data.date),
                     'Amount': data.details['Amount'],
                     'Type': data.details['Type'],
                     'Method': data.details['Method'],

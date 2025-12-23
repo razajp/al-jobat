@@ -74,7 +74,7 @@ class SalesReturnController extends Controller
             'amount' => $data['amount'],
         ]);
 
-        return redirect()->route('sales-return.index')->with('success', 'Sales return successfully.');
+        return redirect()->back()->with('success', 'Sales return successfully.');
     }
 
     /**

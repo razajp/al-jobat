@@ -112,6 +112,15 @@
 
         let totalQuantity = 0;
         let totalAmount = 0;
+        let cardData = [];
+
+        function basicSearch(searchValue) {
+            let modalData = {
+                id: 'modalForm',
+                cards: {data: cardData.filter((item) => item.name.toLowerCase().includes(searchValue.toLowerCase()))},
+            }
+            renderCardsInModal(modalData);
+        }
 
         articleSelectInputDOM.addEventListener('click', () => {
             generateArticlesModal();
@@ -119,7 +128,6 @@
 
         function generateArticlesModal() {
             let data = Object.values(@json($articles));
-            let cardData = [];
 
             console.log(data);
             if (data.length > 0) {
@@ -142,6 +150,8 @@
             let modalData = {
                 id: 'modalForm',
                 class: 'h-[80%] w-full',
+                basicSearch: true,
+                onBasicSearch: 'basicSearch(this.value)',
                 cards: {name: 'Articles', count: 3, data: cardData},
             }
 
