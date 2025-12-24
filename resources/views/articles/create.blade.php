@@ -430,7 +430,7 @@
                 articleNoError.textContent = "Article No is already exist.";
                 return false;
             } else {
-                articleNoDom.classList.remove("border-[var(--border-error)]");
+                articleNoDom.classList.remove("border-[var(--border-)]");
                 articleNoError.classList.add("hidden");
                 return true;
             }

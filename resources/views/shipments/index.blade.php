@@ -141,8 +141,7 @@
                                     margin: 0;
                                     padding: 0;
                                     width: 210mm; /* A4 width */
-                                    height: 297mm; /* A4 height */
-
+                                    height: 302.5mm; /* A4 height *
                                 }
 
                                 .preview-container, .preview-container * {
@@ -152,8 +151,8 @@
                         </style>
                     </head>
                     <body>
-                        <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
-                        <div id="preview-container" class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        <div class="preview-container">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                        <div id="preview-container" class="preview-container">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
                     </body>
                 </html>
             `);
@@ -162,6 +161,18 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
+                printDocument
+                    .querySelectorAll('.preview')
+                    .forEach(p => p.classList.remove('py-6'));
+
+                printDocument
+                    .querySelectorAll('#banner')
+                    .forEach(p => p.classList.remove('mt-8'));
+
+                printDocument
+                    .querySelectorAll('.footer')
+                    .forEach(p => p.classList.remove('mb-4'));
+
                 let shipmentCopy = printDocument.querySelector('#preview-container .preview-copy');
                 if (shipmentCopy) {
                     shipmentCopy.textContent = "Shipment Copy: Office";

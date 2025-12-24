@@ -34,28 +34,20 @@ function createModal(data, animate = 'animate') {
                     </button>
                 </div>
 
-                ${data.info ? `<div
-                  class="${data.id}Info absolute z-10 bottom-4 left-4 border border-[var(--glass-border-color)]/10 group bg-[var(--glass-border-color)]/5 backdrop-blur-md rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden h-auto pr-3 transition-all duration-300 ease-in-out shadow-md pointer-events-auto"
-                >
-                  <div
-                    class="flex items-center justify-center bg-[var(--bg-color)] border border-[var(--glass-border-color)]/20 rounded-lg p-2"
-                  >
-                    <div
-                      class="transition-all duration-300 ease-in-out size-2.5 relative"
-                    >
-                      <i
-                        class="fas fa-info text-xs absolute top-1/2 left-1/2 -translate-1/2"
-                      ></i>
-                    </div>
-                  </div>
-                  <span
-                    class="main-text inline-block overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 max-w-[300px] ml-2"
-                  >
-                    ${data.info}
-                  </span>
-                </div>` : ''}
+                ${data.info ?
+                    `<div class="${data.id}Info absolute z-10 ${data.calcBottom?.length > 0 ? 'bottom-14' : 'bottom-4'}  left-4 border border-[var(--glass-border-color)]/10 group bg-[var(--glass-border-color)]/5 backdrop-blur-md rounded-xl cursor-pointer flex items-center justify-end p-1 overflow-hidden h-auto pr-3 transition-all duration-300 ease-in-out shadow-md pointer-events-auto" >
+                        <div class="flex items-center justify-center bg-[var(--bg-color)] border border-[var(--glass-border-color)]/20 rounded-lg p-2" >
+                            <div class="transition-all duration-300 ease-in-out size-2.5 relative" >
+                                <i class="fas fa-info text-xs absolute top-1/2 left-1/2 -translate-1/2" ></i>
+                            </div>
+                        </div>
+                        <span class="main-text inline-block overflow-hidden whitespace-nowrap transition-all duration-300 ease-in-out opacity-100 max-w-[300px] ml-2" >
+                            ${data.info}
+                        </span>
+                    </div>` : ''
+                }
 
-                <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full">
+                <div class="flex ${data.flex_col ? 'flex-col' : ''} w-full ${data.preview ? 'py-10' : ''}">
                     <div class="w-full h-full relative ${!data.table?.scrollable ? 'overflow-y-auto my-scrollbar-2' : ''}">
     `;
 
@@ -617,10 +609,10 @@ function createModal(data, animate = 'animate') {
         }
 
         clutter += `
-            <div id="preview-container" class="${data.preview.size == "A5" ? "w-[148mm] h-[210mm]" : "w-[210mm] h-[297mm]"} mx-auto relative overflow-y-auto my-scrollbar-2">
-                <div id="preview" class="preview flex flex-col h-full py-6">
+            <div id="preview-container" class="${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} mx-auto relative overflow-hidden my-scrollbar-2">
+                <div id="preview" class="preview ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} overflow-hidden flex flex-col h-full">
                     <div class="flex flex-col h-full">
-                        <div id="banner" class="banner w-full flex justify-between items-center mt-8 px-5">
+                        <div id="banner" class="banner w-full flex justify-between items-center px-5">
                             <div class="left">
                                 <div class="logo">
                                     <img src="images/${companyData.logo}" alt="garmentsos-pro"
@@ -647,7 +639,7 @@ function createModal(data, animate = 'animate') {
                             <div id="header" class="header w-full flex justify-between px-5">
                                 <div class="left w-50 space-y-1">
                                     ${data.preview.type == "order" || data.preview.type == "invoice" ? `
-                                        <div class="customer text-lg leading-none capitalize">M/s: ${previewData.customer.customer_name}</div>
+                                        <div class="customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${previewData.customer.customer_name}</div>
                                         <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
                                         <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
                                         <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
@@ -664,7 +656,7 @@ function createModal(data, animate = 'animate') {
                                 <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
                                     ${data.preview.type == "order" || data.preview.type == "invoice" ? `
                                         <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                        <div class="number leading-none capitalize">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                        <div class="number leading-none capitalize font-medium">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
                                     ` : '' }
                                     <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
                                     <div class="copy leading-none">Document: ${data.preview.document}</div>
@@ -712,7 +704,7 @@ function createModal(data, animate = 'animate') {
                             ${invoiceBottom}
                         </div>
                         <hr class="w-full my-3 border-black">
-                        <div class="footer flex w-full text-sm px-5 justify-between mb-4 text-black">
+                        <div class="footer flex w-full text-sm px-5 justify-between text-black">
                             <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                         </div>

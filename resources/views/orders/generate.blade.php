@@ -77,9 +77,9 @@
         </div>
 
         <!-- Step 2: view order -->
-        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md">
-            <div id="preview-container" class="w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
-                <div id="preview" class="preview flex flex-col h-full">
+        <div class="step2 hidden space-y-4 text-black h-[35rem] overflow-y-auto my-scrollbar-2 bg-white rounded-md py-10">
+            <div id="preview-container" class="w-[208mm] h-[300mm] mx-auto overflow-hidden relative ">
+                <div id="preview" class="preview w-[208mm] h-[300mm] overflow-hidden flex flex-col">
                     <h1 class="text-[var(--border-error)] font-medium text-center mt-5">No Preview avalaible.</h1>
                 </div>
             </div>
@@ -87,6 +87,8 @@
     </form>
 
     <script>
+        let maxLimitOfArticles = 18;
+        let limitOfArticles = 18;
         let selectedArticles = [];
         let totalOrderedQuantity = 0;
         let totalOrderAmount = 0;
@@ -106,6 +108,10 @@
 
         let isModalOpened = false;
         let isQuantityModalOpened = false;
+
+        function isArticleAlreadySelected(articleId) {
+            return selectedArticles.some(a => a.id == articleId);
+        }
 
         function trackCustomerState(elem) {
             if (elem.value != "") {
@@ -165,6 +171,7 @@
                 cards: {name: 'Articles', count: 3, data: cardData},
                 basicSearch: true,
                 onBasicSearch: 'basicSearch(this.value)',
+                info: `Selected: ${selectedArticles.length}/${maxLimitOfArticles}`,
                 flex_col: true,
                 calcBottom: [
                     {label: 'Total Quantity - Pcs', name: 'totalShipmentedQty', value: '0', disabled: true},
@@ -210,112 +217,136 @@
 
         function generateQuantityModal(elem) {
             let data = JSON.parse(elem.dataset.json).data;
+            let alreadySelected = isArticleAlreadySelected(data.id);
 
-            let modalData = {
-                id: 'QuantityModalForm',
-                name: 'Enter Quantity',
-                class: 'h-auto',
-                fields: [
-                    {
-                        category: 'input',
-                        value: `${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs.`,
-                        disabled: true,
-                    },
-                    {
-                        category: 'input',
-                        label: 'Available - Pcs.',
-                        value: formatNumbersDigitLess(data.quantity - data.ordered_quantity),
-                        disabled: true,
-                    },
-                    {
-                        category: 'input',
-                        label: 'Current Stock - Pcs.',
-                        value: formatNumbersDigitLess(data.physical_quantity),
-                        disabled: true,
-                    },
-                    {
-                        category: 'input',
-                        name: 'quantity',
-                        id: 'quantity',
-                        type: 'number',
-                        label: 'Quantity - Pcs.',
-                        placeholder: 'Enter quantity in pcs.',
-                        required: true,
-                        oninput: "checkMax(this)",
-                    },
-                ],
-                fieldsGridCount: '1',
-                bottomActions: [
-                    {id: 'setQuantityBtn', text: 'Set Quantity', onclick: `setQuantity(${data.id})`},
-                ],
-            }
+            if (limitOfArticles > 0 || alreadySelected) {
 
-            createModal(modalData);
+                let modalData = {
+                    id: 'QuantityModalForm',
+                    name: 'Enter Quantity',
+                    class: 'h-auto',
+                    fields: [
+                        {
+                            category: 'input',
+                            value: `${data.article_no} | ${data.season} | ${data.size} | ${data.category} | ${data.fabric_type} | ${data.quantity} | ${data.sales_rate} - Rs.`,
+                            disabled: true,
+                        },
+                        {
+                            category: 'input',
+                            label: 'Available - Pcs.',
+                            value: formatNumbersDigitLess(data.quantity - data.ordered_quantity),
+                            disabled: true,
+                        },
+                        {
+                            category: 'input',
+                            label: 'Current Stock - Pcs.',
+                            value: formatNumbersDigitLess(data.physical_quantity),
+                            disabled: true,
+                        },
+                        {
+                            category: 'input',
+                            name: 'quantity',
+                            id: 'quantity',
+                            type: 'number',
+                            label: 'Quantity - Pcs.',
+                            placeholder: 'Enter quantity in pcs.',
+                            required: true,
+                            oninput: "checkMax(this)",
+                        },
+                    ],
+                    fieldsGridCount: '1',
+                    bottomActions: [
+                        { id: 'setQuantityBtn', text: 'Set Quantity', onclick: `setQuantity(${data.id})` },
+                    ],
+                };
 
-            let physicalQuantity = 0;
+                createModal(modalData);
 
-            const physicalQuantityInpDom = document.getElementById('physical_quantity');
-            const dateInpDom = document.getElementById('date');
+                const quantityLabel = document.getElementById(data.id)
+                    ?.querySelector('.quantity-label');
 
-            let quantityLabel = elem.querySelector('.quantity-label');
-
-            if (quantityLabel) {
-                document.getElementById("quantity").value = parseInt(quantityLabel.textContent.replace(/\D/g, ""));
-            }
-
-            document.getElementById("quantity").focus();
-            document.getElementById("quantity").addEventListener('keydown', (e) => {
-                if (e.key == 'Enter') {
-                    document.getElementById("setQuantityBtn-in-modal").click();
+                if (quantityLabel) {
+                    document.getElementById("quantity").value =
+                        parseInt(quantityLabel.textContent.replace(/\D/g, ""));
                 }
-            })
+
+                document.getElementById("quantity").focus();
+                document.getElementById("quantity").addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        document.getElementById("setQuantityBtn-in-modal").click();
+                    }
+                });
+
+            } else {
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                `;
+                messageBoxAnimation();
+            }
         }
 
         function setQuantity(cardId) {
-            closeModal('QuantityModalForm');
             let targetCard = document.getElementById(cardId);
             let cardData = JSON.parse(targetCard.dataset.json).data;
-            let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
-            let quantityInputDOM = document.getElementById("quantity");
+            let alreadySelected = isArticleAlreadySelected(cardData.id);
 
-            let quantity = quantityInputDOM.value;
+            if (limitOfArticles > 0 || alreadySelected) {
 
-            let quantityLabel = targetCard.querySelector('.quantity-label');
+                closeModal('QuantityModalForm');
 
-            if (quantity > 0) {
-                if (quantityLabel) {
-                    quantityLabel.textContent = `${quantity} Pcs`;
+                let alreadySelectedArticle = selectedArticles.filter(c => c.id == cardData.id);
+                let quantityInputDOM = document.getElementById("quantity");
+                let quantity = quantityInputDOM.value;
+                let quantityLabel = targetCard.querySelector('.quantity-label');
+
+                if (quantity > 0) {
+                    if (quantityLabel) {
+                        quantityLabel.textContent = `${quantity} Pcs`;
+                    } else {
+                        targetCard.innerHTML += `
+                            <div class="quantity-label absolute text-xs text-[var(--border-success)] top-1 right-2 h-[1rem]">
+                                ${quantity} Pcs
+                            </div>
+                        `;
+                    }
+
+                    cardData.orderedQuantity = parseInt(quantity);
+
+                    if (alreadySelectedArticle.length > 0) {
+                        alreadySelectedArticle[0].orderedQuantity = parseInt(quantity);
+                    } else {
+                        selectedArticles.push(cardData);
+                    }
+
                 } else {
-                    targetCard.innerHTML += `
-                        <div
-                            class="quantity-label absolute text-xs text-[var(--border-success)] top-1 right-2 h-[1rem]">
-                            ${quantity} Pcs
-                        </div>
-                    `;
+                    if (quantityLabel) {
+                        quantityLabel.remove();
+                        const index = selectedArticles.findIndex(c => c.id === cardData.id);
+                        deselectArticleAtIndex(index);
+                    }
                 }
+
+                generateDescription();
+                calculateTotalOrderedQuantity();
+                calculateTotalOrderAmount();
+                calculateNetAmount();
+                renderTotals();
+                renderList();
+                renderFinals();
+
             } else {
-                if (quantityLabel) {
-                    quantityLabel.remove();
-                    const index = selectedArticles.findIndex(c => c.id === cardData.id);
-                    deselectArticleAtIndex(index);
-                }
+                messageBox.innerHTML = `
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                `;
+                messageBoxAnimation();
             }
+        }
 
-            cardData.orderedQuantity = parseInt(quantity);
+        function updateInfo() {
+            const infoDom = document.querySelector('.modalFormInfo span');
+            if (!infoDom) return;
 
-            if (alreadySelectedArticle.length > 0) {
-                alreadySelectedArticle[0].orderedQuantity = parseInt(quantity);
-            } else {
-                selectedArticles.push(cardData);
-            }
-
-            generateDescription();
-            calculateTotalOrderedQuantity();
-            calculateTotalOrderAmount();
-            calculateNetAmount();
-            renderTotals();
-            renderList();
-            renderFinals();
+            infoDom.textContent = `Selected ${selectedArticles.length}/${maxLimitOfArticles}`;
         }
 
         function deselectArticleAtIndex(index) {
@@ -415,6 +446,8 @@
                     `<div class="text-center bg-[var(--h-bg-color)] rounded-lg py-2 px-4">No Articles Yet</div>`;
             }
             updateInputOrderedArticles();
+            limitOfArticles = maxLimitOfArticles - selectedArticles.length;
+            updateInfo();
         }
         renderList();
 
@@ -479,7 +512,7 @@
             if (selectedArticles.length > 0) {
                 previewDom.innerHTML = `
                     <div id="order" class="order flex flex-col h-full">
-                        <div id="order-banner" class="order-banner w-full flex justify-between items-center mt-8 px-5">
+                        <div id="order-banner" class="order-banner w-full flex justify-between items-center px-5">
                             <div class="left">
                                 <div class="order-logo">
                                     <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
@@ -492,14 +525,14 @@
                         <hr class="w-full my-3 border-gray-600">
                         <div id="order-header" class="order-header w-full flex justify-between px-5">
                             <div class="left w-50 space-y-1">
-                                <div class="order-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                <div class="order-customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${customerData.customer_name}</div>
                                 <div class="order-person text-md text-lg leading-none">${customerData.urdu_title}</div>
                                 <div class="order-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                 <div class="order-phone text-md leading-none">${customerData.phone_number}</div>
                             </div>
                             <div class="right w-50 my-auto text-right text-sm text-gray-600 space-y-1.5">
                                 <div class="order-date leading-none">Date: ${orderDate}</div>
-                                <div class="order-number leading-none">Order No.: ${orderNo}</div>
+                                <div class="order-number leading-none capitalize font-medium">Order No.: ${orderNo}</div>
                                 <input type="hidden" name="order_no" value="${orderNo}" />
                                 <div class="order-copy leading-none">Order Copy: Customer</div>
                                 <div class="order-copy leading-none">Document: Sales Order</div>
@@ -582,7 +615,7 @@
                             </div>
                         </div>
                         <hr class="w-full my-3 border-gray-600">
-                        <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-gray-600">
+                        <div class="tfooter flex w-full text-sm px-4 justify-between text-gray-600">
                             <P class="leading-none">Powered by SparkPair</P>
                             <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                         </div>

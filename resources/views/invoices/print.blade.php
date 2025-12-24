@@ -24,7 +24,7 @@
                         <div class="preview-container w-[210mm] h-[297mm] mx-auto overflow-hidden relative">
                             <div id="preview" class="preview flex flex-col h-full">
                                 <div id="invoice" class="invoice flex flex-col h-full">
-                                    <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center mt-8 pl-5 pr-8">
+                                    <div id="invoice-banner" class="invoice-banner w-full flex justify-between items-center pl-5 pr-8">
                                         <div class="left">
                                             <div class="invoice-logo">
                                                 <img src="{{ asset('images/${companyData.logo}') }}" alt="garmentsos-pro"
@@ -42,14 +42,14 @@
                                     <hr class="w-full my-3 border-black">
                                     <div id="invoice-header" class="invoice-header w-full flex justify-between px-5">
                                         <div class="left w-50 space-y-1">
-                                            <div class="invoice-customer text-lg leading-none">M/s: ${customerData.customer_name}</div>
+                                            <div class="invoice-customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${customerData.customer_name}</div>
                                             <div class="invoice-person text-md text-lg leading-none">${customerData.urdu_title}</div>
                                             <div class="invoice-address text-md leading-none">${customerData.address}, ${customerData.city}</div>
                                             <div class="invoice-phone text-md leading-none">${customerData.phone_number}</div>
                                         </div>
                                         <div class="right my-auto pr-3 text-sm text-black space-y-1.5">
                                             <div class="invoice-date leading-none">Date: ${invoice.date}</div>
-                                            <div class="invoice-number leading-none">Invoice No.: ${invoice.invoice_no}</div>
+                                            <div class="invoice-number leading-none capitalize font-medium">Invoice No.: ${invoice.invoice_no}</div>
                                             <div class="invoice-copy leading-none">Invoice Copy: Customer</div>
                                             <div class="invoice-copy leading-none">Document: Sales Invoice</div>
                                         </div>
@@ -121,7 +121,7 @@
                                         </div>
                                     </div>
                                     <hr class="w-full my-3 border-black">
-                                    <div class="tfooter flex w-full text-sm px-4 justify-between mb-4 text-black">
+                                    <div class="tfooter flex w-full text-sm px-4 justify-between text-black">
                                         <P class="leading-none">Powered by SparkPair</P>
                                         <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                                     </div>
@@ -171,8 +171,8 @@
             let printBody = "";
             previews.forEach((preview)=>{
                 printBody += `
-                    <div class="preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
-                    <div class="forOffice preview-container pt-3">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    <div class="preview-container">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
+                    <div class="forOffice preview-container">${preview.innerHTML}</div> <!-- Add the preview content, only innerHTML -->
                 `;
             });
 
@@ -188,8 +188,7 @@
                                     margin: 0;
                                     padding: 0;
                                     width: 210mm; /* A4 width */
-                                    height: 297mm; /* A4 height */
-
+                                    height: 302.5mm; /* A4 height *
                                 }
 
                                 .preview-container, .preview-container * {
@@ -208,6 +207,18 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
+                printDocument
+                    .querySelectorAll('.preview')
+                    .forEach(p => p.classList.remove('py-6'));
+
+                printDocument
+                    .querySelectorAll('#banner')
+                    .forEach(p => p.classList.remove('mt-8'));
+
+                printDocument
+                    .querySelectorAll('.footer')
+                    .forEach(p => p.classList.remove('mb-4'));
+
                 let forOffices = printDocument.querySelectorAll('.forOffice .invoice-copy');
                 forOffices.forEach((forOffice)=>{
                     if (forOffice) {

@@ -278,6 +278,18 @@
 
             // Wait for iframe to load and print
             printIframe.onload = () => {
+                printDocument
+                    .querySelectorAll('.preview')
+                    .forEach(p => p.classList.remove('py-6'));
+
+                printDocument
+                    .querySelectorAll('#banner')
+                    .forEach(p => p.classList.remove('mt-8'));
+
+                printDocument
+                    .querySelectorAll('.footer')
+                    .forEach(p => p.classList.remove('mb-4'));
+
                 // Listen for after print in the iframe's window
                 printIframe.contentWindow.onafterprint = () => {
                     console.log("Print dialog closed");
