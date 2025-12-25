@@ -230,7 +230,7 @@
                     clutter += `
                         <div class="flex justify-between items-end border-t border-gray-600 py-3 px-4 cursor-pointer" onclick="selectThisPayment(this, ${index})">
                             <div class="w-[8%]">${index+1}</div>
-                            <div class="w-1/6">${formatDate(payment.date)}</div>
+                            <div class="w-1/6">${formatDate(payment.slip_date || payment.cheque_date || paymetn.date)}</div>
                             <div class="w-[10%] capitalize">${payment.method}</div>
                             <div class="w-1/6">${payment.reff_no ?? '-'}</div>
                             <div class="w-1/6">${formatNumbersWithDigits(payment.amount, 1, 1) ?? '-'}</div>
