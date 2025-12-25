@@ -26,7 +26,9 @@ class PaymentProgramController extends Controller
 
         // Fetch and sort orders by date and created_at
         $orders = Order::with(['customer.city', 'paymentPrograms.subCategory'])
-            ->where('category', 'cash')
+            ->whereHas('customer', function ($q) {
+                $q->where('category', '==', 'cash');
+            })
             ->orderBy('date', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
