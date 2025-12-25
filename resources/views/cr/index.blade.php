@@ -92,20 +92,19 @@
                 <span>${formatDate(data.date)}</span>
                 <span>${data.supplier_name}</span>
                 <span>${data.c_r_no}</span>
-                <span>${data.amount}</span>
+                <span>${formatNumbersWithDigits(data.amount, 1, 1)}</span>
                 <span>${data.voucher_no}</span>
             </div>`;
         }
 
 
         const fetchedData = @json($crs);
-        
+
         let allDataArray = fetchedData.map(item => {
-            
             return {
                 id: item.id,
                 date: item.date,
-                amount: 'in progress',
+                amount: item.new_payments.reduce((total, p) => total + parseInt(p.amount), 0),
                 c_r_no: item.c_r_no,
                 voucher_no: item.voucher?.voucher_no,
                 supplier_name: item.voucher?.supplier?.supplier_name ?? "{{ $client_company->name }}",

@@ -474,7 +474,14 @@ class VoucherController extends Controller
                 $pd['voucher_id'] = $voucher->id;
                 $pd['date'] = $voucher->date;
 
-                $newPayment = SupplierPayment::create($pd);
+                if ($pd['method'] == 'program') {
+                    $supplierPayment = SupplierPayment::find($pd['payment_id']);
+                    if ($supplierPayment) {
+                        $supplierPayment->update(['voucher_id' => $pd['voucher_id']]);
+                    }
+                } else {
+                    $newPayment = SupplierPayment::create(attributes: $pd);
+                }
 
                 // Self Account logic
                 if (!empty($pd['self_account_id'])) {

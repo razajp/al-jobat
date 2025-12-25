@@ -589,7 +589,7 @@
 
                     filteredPayments.forEach(payment => {
                         paymentSelectDom.innerHTML += `
-                            <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${formatNumbersWithDigits(payment.amount, 1, 1)} | ${payment.program.customer.customer_name} | ${payment.program.customer.city.title} | ${payment.transaction_id} | ${formatDate(payment.date)}</li>
+                            <li data-for="program_id" data-value="${payment.program_id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${formatNumbersWithDigits(payment.amount, 1, 1)} | ${payment.program.customer.customer_name} | ${payment.program.customer.city.title} | ${payment.transaction_id} | ${formatDate(payment.date)}</li>
                         `;
                     })
 

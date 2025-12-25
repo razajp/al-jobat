@@ -1165,7 +1165,7 @@
         function renderNextBatch() {
             if (startIndex >= allDataArray.length) return;
 
-            const nextChunk = allDataArray.slice(startIndex, startIndex + batchSize);
+            const nextChunk = allDataArray;
             const html = nextChunk
                 .filter(item => item.visible === true)
                 .map(item => authLayout === 'grid' ? createCard(item) : createRow(item))
@@ -1174,22 +1174,22 @@
             startIndex += batchSize;
         }
 
-        scroller?.addEventListener('scroll', () => {
-            const scrollTop = scroller.scrollTop;
-            const scrollHeight = scroller.scrollHeight;
-            const clientHeight = scroller.clientHeight;
-            // console.log("Scrolling");
+        // scroller?.addEventListener('scroll', () => {
+        //     const scrollTop = scroller.scrollTop;
+        //     const scrollHeight = scroller.scrollHeight;
+        //     const clientHeight = scroller.clientHeight;
+        //     // console.log("Scrolling");
 
-            if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
-                isFetching = true;
-                setTimeout(() => {
-                    console.log("Render Next Batch");
+        //     if (scrollTop + clientHeight >= scrollHeight - 100 && !isFetching) {
+        //         isFetching = true;
+        //         setTimeout(() => {
+        //             console.log("Render Next Batch");
 
-                    renderNextBatch();
-                    isFetching = false;
-                }, 100);
-            }
-        });
+        //             renderNextBatch();
+        //             isFetching = false;
+        //         }, 100);
+        //     }
+        // });
 
         function renderData() {
             if (authLayout == "grid") {

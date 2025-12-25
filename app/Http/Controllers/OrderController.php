@@ -167,19 +167,23 @@ class OrderController extends Controller
             }
         }
 
-        $lastProgram = PaymentProgram::orderBy('id','desc')->first();
-        $nextProgramNo = $lastProgram ? $lastProgram->program_no + 1 : 1;
+        $customer = Customer::find($order['customer_id']);
 
-        $program = new PaymentProgram([
-            'program_no' => $nextProgramNo,
-            'date' => $order['date'],
-            'order_no' => $order['order_no'],
-            'customer_id' => $order['customer_id'],
-            'category' => 'waiting',
-            'amount' => $order['netAmount'],
-        ]);
+        if ($customer['category'] == 'cash') {
+            $lastProgram = PaymentProgram::orderBy('id','desc')->first();
+            $nextProgramNo = $lastProgram ? $lastProgram->program_no + 1 : 1;
 
-        $program->save();
+            $program = new PaymentProgram([
+                'program_no' => $nextProgramNo,
+                'date' => $order['date'],
+                'order_no' => $order['order_no'],
+                'customer_id' => $order['customer_id'],
+                'category' => 'waiting',
+                'amount' => $order['netAmount'],
+            ]);
+
+            $program->save();
+        }
 
         if ($request->generateInvoiceAfterSave) {
             return redirect()->route('invoices.create')->with('orderNumber', $order->order_no);

@@ -277,7 +277,7 @@
                     `;
                     allProgramsArray.forEach(program => {
                         programSelectDom.closest(".selectParent").querySelector('ul').innerHTML += `
-                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden capitalize">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)} | ${program.category.replaceAll('_', ' ')} | ${program.sub_category.supplier_name ?? program.sub_category.account_title}</li>
+                            <li data-for="payment_programs" data-value="${program.id}" data-option='${JSON.stringify(program)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg transition hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden capitalize">${program.program_no ?? program.order_no} | ${formatNumbersWithDigits(program.balance, 1, 1)} | ${program.category.replaceAll('_', ' ')} | ${program.sub_category?.supplier_name ?? program.sub_category?.account_title ?? '-'}</li>
                         `;
                     });
                 } else {
