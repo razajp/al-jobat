@@ -462,7 +462,7 @@ class Controller extends BaseController
                 $payments[] = [
                     'id' => $payment->id,
                     'payment_id' => $payment->cheque_id ?? $payment->slip_id,
-                    'date' => $payment->date,
+                    'date' => $payment->slip->slip_date ?? $payment->cheque->cheque_date ?? $payment->date,
                     'method' => $payment->cheque ? 'cheque' : ($payment->slip ? 'slip' : ''),
                     'reff_no' => $payment->cheque->cheque_no ?? $payment->slip->slip_no,
                     'amount' => $payment->cheque->amount ?? $payment->slip->amount,
