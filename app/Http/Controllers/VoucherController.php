@@ -343,9 +343,9 @@ class VoucherController extends Controller
                     ->with('program.customer.city:id,title'),
                 'expenses',
             ]),
-            'payments.cheque.customer',
-            'payments.slip.customer',
-            'payments.program.customer',
+            'payments.cheque.customer.city',
+            'payments.slip.customer.city',
+            'payments.program.customer.city',
             'payments.bankAccount.bank',
             'payments.selfAccount.bank',
         ]);

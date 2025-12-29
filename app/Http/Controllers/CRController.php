@@ -68,7 +68,7 @@ class CRController extends Controller
 
             foreach ($cheques as $cheque) {
                 $payment_options[(int)$cheque->id] = [
-                    'text' => $cheque->cheque_no . ' - ' . $cheque->amount,
+                    'text' => $cheque->amount . ' | ' . $cheque->customer->customer_name . ' | ' . $cheque->customer->city->title . ' | ' . $cheque->cheque_no . ' | ' . date('d-M-Y D', strtotime($cheque->cheque_date)),
                     'data_option' => $cheque,
                 ];
             }
@@ -77,7 +77,7 @@ class CRController extends Controller
 
             foreach ($slips as $slip) {
                 $payment_options[(int)$slip->id] = [
-                    'text' => $slip->slip_no . ' - ' . $slip->amount,
+                    'text' => $slip->amount . ' | ' . $slip->customer->customer_name . ' | ' . $slip->customer->city->title . ' | ' . $slip->slip_no . ' | ' . date('d-M-Y D', strtotime($slip->slip_date)),
                     'data_option' => $slip,
                 ];
             }
@@ -98,7 +98,7 @@ class CRController extends Controller
 
             foreach ($payments as $payment) {
                 $payment_options[(int)$payment->id] = [
-                    'text' => $payment->program->customer->customer_name . ' - Rs. ' . number_format($payment->amount),
+                    'text' => ' | Rs. ' . number_format($payment->amount) . ' | ' . $payment->program->customer->customer_name . ' | ' . $payment->program->customer->city->short_title,
                     'data_option' => $payment,
                 ];
             }

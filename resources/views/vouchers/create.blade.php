@@ -159,6 +159,7 @@
                     <div class="w-1/5">Method</div>
                     <div class="w-1/3">Customer/Self Acc.</div>
                     <div class="w-1/5">Reff. No.</div>
+                    <div class="w-1/6">Remarks</div>
                     <div class="w-[15%]">Amount</div>
                     <div class="w-[8%] text-center">Action</div>
                 </div>
@@ -816,6 +817,7 @@
                             <div class="w-1/5 capitalize">${paymentDetail.method}</div>
                             <div class="w-1/3 capitalize">${selected?.customer ? `${selected?.customer?.customer_name} | ${selected?.customer?.city?.title}` : paymentDetail.bank_account_id_name ?? '-'}</div>
                             <div class="w-1/5 capitalize">${selected?.slip_no ?? selected?.cheque_no ?? selected?.reff_no ?? selected?.transaction_id ?? paymentDetail.cheque_no ?? paymentDetail.reff_no ?? '-'}</div>
+                            <div class="w-1/6 capitalize">${selected?.remarks ?? '-'}</div>
                             <div class="w-[15%]">${formatNumbersWithDigits(paymentDetail.amount, 1, 1)}</div>
                             <div class="w-[10%] text-center">
                                 <button onclick="deselectThisPayment(${index})" type="button" class="text-[var(--danger-color)] text-xs px-2 py-1 rounded-lg hover:text-[var(--h-danger-color)] transition-all duration-300 ease-in-out cursor-pointer">
