@@ -183,7 +183,7 @@ class CRController extends Controller
                     'date'             => $data['date'],
                     'method'           => $payment->method . ' | CR',
                     'amount'           => $payment->amount,
-                    // 'bank_account_id'  => $payment->bank_account_id,
+                    'bank_account_id'  => $payment->bank_account_id || null,
                     'voucher_id'       => null,
                     'c_r_id'           => $cr->id, // 👈 ab yahan id set ho jaegi
                     $columnMap[$payment->method] => $payment->data_value,
