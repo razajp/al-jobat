@@ -121,7 +121,7 @@ class CRController extends Controller
             'date' => 'required|date',
             'voucher_no' => 'required|string',
             'voucher_id' => 'required|integer|exists:vouchers,id',
-            'c_r_no' => 'required|string|unique:c_r_s,c_r_no',
+            'c_r_no' => 'required|string',
             'returnPayments' => 'required|string',
             'newPayments' => 'required|string',
         ]);
