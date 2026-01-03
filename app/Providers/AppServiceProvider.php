@@ -40,6 +40,7 @@ class AppServiceProvider extends ServiceProvider
                     '1_2' => ['text' => '1-2'],
                     'ml' => ['text' => 'ML'],
                     'sml' => ['text' => 'SML'],
+                    'mlxl' => ['text' => 'MLXL'],
                     '18_20_22' => ['text' => '18-20-22'],
                     '18_20_22_24' => ['text' => '18-20-22-24'],
                     '20_22_24' => ['text' => '20-22-24'],
