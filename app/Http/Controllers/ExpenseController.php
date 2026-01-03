@@ -7,6 +7,7 @@ use App\Models\Setup;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 
 class ExpenseController extends Controller
 {
@@ -82,7 +83,21 @@ class ExpenseController extends Controller
             'reff_no' => 'required|integer',
             'amount' => 'required|integer|min:0',
             'lot_no' => 'nullable|integer',
-            'remarks' => 'nullable|string|max:255'
+            'remarks' => 'nullable|string|max:255',
+
+            // composite uniqueness
+            'reff_no' => [
+                'required',
+                'integer',
+                Rule::unique('expenses') // <-- table name
+                    ->where(function ($query) use ($request) {
+                        return $query
+                            ->where('supplier_id', $request->supplier_id)
+                            ->where('date', $request->date)
+                            ->where('amount', $request->amount)
+                            ->where('expense', $request->expense);
+                    }),
+            ],
         ]);
 
         if ($validator->fails()) {

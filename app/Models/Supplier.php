@@ -160,7 +160,7 @@ class Supplier extends Model
         $paymentQuery = $this->payments()
             ->whereBetween('date', [$start, $end])
             ->whereIn('method', [
-                'Cheque', 'Cash', 'Slip', 'ATM', 'Self Cheque', 'Program', 'Adjustment'
+                'Cheque', 'Cash', 'Slip', 'ATM', 'Self Cheque', 'program', 'Adjustment'
             ]);
         $productionQuery = $this->worker
             ? $this->worker->productions()->whereBetween('receive_date', [$start, $end])

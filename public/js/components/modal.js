@@ -444,7 +444,7 @@ function createModal(data, animate = 'animate') {
 
         const articlePages = previewData.articles
         ? chunkArray(previewData.articles, 21)
-        : [[]];
+        : [];
 
         if (data.preview.type == "voucher") {
             invoiceTableHeader = `
@@ -762,10 +762,10 @@ function createModal(data, animate = 'animate') {
                     </div>`
         }
 
-        {!articlePages ? (
+        {articlePages.length == 0 ? (
             clutter += `
-                <div id="preview-container" class="h-auto mx-auto relative overflow-hidden my-scrollbar-2">
-                    <div id="preview" class="preview ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-auto"} overflow-hidden flex flex-col h-full">
+                <div id="preview-container" class="mx-auto ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} relative overflow-hidden my-scrollbar-2">
+                    <div id="preview" class="preview ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} overflow-hidden flex flex-col">
                         <div class="flex flex-col h-full">
                             <div id="banner" class="banner w-full flex justify-between items-center px-5">
                                 <div class="left">
