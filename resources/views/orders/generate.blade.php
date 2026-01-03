@@ -87,8 +87,8 @@
     </form>
 
     <script>
-        let maxLimitOfArticles = 18;
-        let limitOfArticles = 18;
+        let maxLimitOfArticles = 500;
+        let limitOfArticles = 500;
         let selectedArticles = [];
         let totalOrderedQuantity = 0;
         let totalOrderAmount = 0;

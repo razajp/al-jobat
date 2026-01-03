@@ -161,7 +161,6 @@
                                     margin: 0;
                                     padding: 0;
                                     width: 210mm; /* A4 width */
-                                    height: 302.5mm; /* A4 height *
                                 }
 
                                 .preview-container, .preview-container * {
@@ -193,9 +192,11 @@
                     .querySelectorAll('.footer')
                     .forEach(p => p.classList.remove('mb-4'));
 
-                let orderCopy = printDocument.querySelector('#preview-container .preview-copy');
-                if (orderCopy) {
-                    orderCopy.textContent = "Order Copy: Office";
+                let orderCopys = printDocument.querySelectorAll('#preview-container .preview-copy');
+                if (orderCopys) {
+                    orderCopys.forEach(orderCopy => {
+                        orderCopy.textContent = "Order Copy: Office";
+                    })
                 }
 
                 // Listen for after print in the iframe's window

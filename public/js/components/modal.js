@@ -420,6 +420,14 @@ function createModal(data, animate = 'animate') {
         clutter += '</div>';
     }
 
+    function chunkArray(array, size) {
+        const chunks = [];
+        for (let i = 0; i < array.length; i += size) {
+            chunks.push(array.slice(i, i + size));
+        }
+        return chunks;
+    }
+
     if (data.preview) {
         let previewData = data.preview.data;
         let cottonCount = previewData.cotton_count || 0;
@@ -433,6 +441,10 @@ function createModal(data, animate = 'animate') {
         let invoiceTableHeader = "";
         let invoiceTableBody = "";
         let invoiceBottom = "";
+
+        const articlePages = previewData.articles
+        ? chunkArray(previewData.articles, 21)
+        : [[]];
 
         if (data.preview.type == "voucher") {
             invoiceTableHeader = `
@@ -530,188 +542,332 @@ function createModal(data, animate = 'animate') {
         } else if (data.preview.type == "form") {
 
         } else {
-            invoiceTableHeader = `
-                <div class="th text-sm font-medium ">S.No</div>
-                <div class="th text-sm font-medium ">Article</div>
-                <div class="th text-sm font-medium col-span-2">Description</div>
-                <div class="th text-sm font-medium ">Pcs.</div>
-                <div class="th text-sm font-medium ">Packets</div>
-                ${data.preview.type == 'invoice' ? '<div class="th text-sm font-medium ">Unit</div>' : ''}
-                <div class="th text-sm font-medium ">Rate/Pc.</div>
-                <div class="th text-sm font-medium ">Amount</div>
-                ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
-            `;
+            const articlePages = chunkArray(previewData.articles, 21);
 
-            invoiceTableBody = `
-                ${previewData.articles.map((orderedArticle, index) => {
-                    const article = orderedArticle.article;
-                    const salesRate = article.sales_rate;
-                    const orderedQuantity = orderedArticle.ordered_quantity;
-                    const invoiceQuantity = orderedArticle.invoice_quantity;
-                    const shipmentQuantity = orderedArticle.shipment_quantity;
-                    const total = parseInt(salesRate) * (orderedQuantity || invoiceQuantity || shipmentQuantity);
-                    const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+            clutter += `
+                    <div id="preview-container" class="h-auto mx-auto relative flex flex-col">`
+            articlePages.forEach((articlesChunk, pageIndex) => {
 
-                    totalAmount += total;
-                    totalQuantity += orderedQuantity || invoiceQuantity || shipmentQuantity;
+                let totalAmount = 0;
+                let totalQuantity = 0;
 
-                    return `
-                        <div>
-                            <hr class="w-full ${hrClass} border-black">
-                            <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
-                                <div class="td text-sm font-semibold ">${index + 1}.</div>
-                                <div class="td text-sm font-semibold ">${article.article_no}</div>
-                                <div class="td text-sm font-semibold col-span-2 text-nowrap overflow-hidden mr-3">${orderedArticle.description}</div>
-                                <div class="td text-sm font-semibold ">${orderedQuantity || invoiceQuantity || shipmentQuantity}</div>
-                                <div class="td text-sm font-semibold ">${article?.pcs_per_packet ? Math.floor((orderedQuantity || invoiceQuantity || shipmentQuantity) / article.pcs_per_packet) : 0}</div>
-                                ${data.preview.type == 'invoice' ? '<div class="td text-sm font-semibold "> ' + article?.pcs_per_packet + ' </div>' : ''}
-                                <div class="td text-sm font-semibold ">${formatNumbersWithDigits(salesRate, 1, 1)}</div>
-                                <div class="td text-sm font-semibold ">${formatNumbersWithDigits(total, 1, 1)}</div>
-                                ${data.preview.type == 'order' ? '<div class="td text-sm font-semibold "></div>' : ''}
+                invoiceTableHeader = `
+                    <div class="th text-sm font-medium ">S.No</div>
+                    <div class="th text-sm font-medium ">Article</div>
+                    <div class="th text-sm font-medium col-span-2">Description</div>
+                    ${data.preview.type == 'invoice' ? '<div class="th text-sm font-medium ">Unit</div>' : ''}
+                    <div class="th text-sm font-medium ">Packets</div>
+                    <div class="th text-sm font-medium ">Pcs.</div>
+                    <div class="th text-sm font-medium ">Rate/Pc.</div>
+                    <div class="th text-sm font-medium ">Amount</div>
+                    ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
+                `;
+
+                invoiceTableBody = `
+                    ${articlesChunk.map((orderedArticle, index) => {
+
+                        const article = orderedArticle.article;
+                        const salesRate = article.sales_rate;
+                        const qty =
+                            orderedArticle.ordered_quantity ||
+                            orderedArticle.invoice_quantity ||
+                            orderedArticle.shipment_quantity;
+
+                        const total = parseInt(salesRate) * qty;
+                        const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+
+                        totalAmount += total;
+                        totalQuantity += qty;
+
+                        return `
+                            <div>
+                                <hr class="w-full ${hrClass} border-black">
+                                <div class="tr grid grid-cols-${data.preview.type == 'shipment' ? '8' : '9'} justify-between w-full px-4">
+                                    <div class="td text-sm font-semibold ">
+                                        ${pageIndex * 21 + index + 1}.
+                                    </div>
+                                    <div class="td text-sm font-semibold ">
+                                        ${article.article_no}
+                                    </div>
+                                    <div class="td text-sm font-semibold col-span-2 text-nowrap overflow-hidden mr-3">
+                                        ${orderedArticle.description}
+                                    </div>
+                                    ${data.preview.type == 'invoice'
+                                        ? `<div class="td text-sm font-semibold ">
+                                            ${article?.pcs_per_packet}
+                                        </div>`
+                                        : ''}
+                                    <div class="td text-sm font-semibold ">
+                                        ${article?.pcs_per_packet
+                                            ? Math.floor(qty / article.pcs_per_packet)
+                                            : 0}
+                                    </div>
+                                    <div class="td text-sm font-semibold ">
+                                        ${qty}
+                                    </div>
+                                    <div class="td text-sm font-semibold ">
+                                        ${formatNumbersWithDigits(salesRate, 1, 1)}
+                                    </div>
+                                    <div class="td text-sm font-semibold ">
+                                        ${formatNumbersWithDigits(total, 1, 1)}
+                                    </div>
+                                    ${data.preview.type == 'order'
+                                        ? '<div class="td text-sm font-semibold "></div>'
+                                        : ''}
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                `;
+
+                const discountAmount = discount
+                    ? (totalAmount * discount) / 100
+                    : 0;
+
+                // ✅ TOTALS SIRF LAST PREVIEW PAR
+                invoiceBottom = '';
+                if (pageIndex === articlePages.length - 1) {
+                    invoiceBottom = `
+                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                            <div class="text-nowrap">Total Quantity</div>
+                            <div class="w-1/4 text-right grow">
+                                ${formatNumbersDigitLess(totalQuantity)}
+                            </div>
+                        </div>
+                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                            <div class="text-nowrap">Gross Amount</div>
+                            <div class="w-1/4 text-right grow">
+                                ${formatNumbersWithDigits(totalAmount, 1, 1)}
+                            </div>
+                        </div>
+                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                            <div class="text-nowrap">Discount - %${discount}</div>
+                            <div class="w-1/4 text-right grow">${formatNumbersWithDigits(discountAmount, 1, 1)}</div>
+                        </div>
+                        <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
+                            <div class="text-nowrap">Net Amount</div>
+                            <div class="w-1/4 text-right grow">
+                                ${formatNumbersWithDigits(netAmount, 1, 1)}
                             </div>
                         </div>
                     `;
-                }).join('')}
-            `;
+                }
 
-            invoiceBottom = `
-                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                    <div class="text-nowrap">Total Quantity - Pcs</div>
-                    <div class="w-1/4 text-right grow">${formatNumbersDigitLess(totalQuantity)}</div>
-                </div>
-                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                    <div class="text-nowrap">Total Amount</div>
-                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(totalAmount, 1, 1)}</div>
-                </div>
-                <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                    <div class="text-nowrap">Discount - %</div>
-                    <div class="w-1/4 text-right grow">${discount}</div>
-                </div>
-                ${data.preview.type == 'order' ? `
-                    <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                        <div class="text-nowrap">Previous Balance</div>
-                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(previousBalance, 1, 1)}</div>
-                    </div>
-                ` : ''}
-                <div
-                    class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                    <div class="text-nowrap">Net Amount</div>
-                    <div class="w-1/4 text-right grow">${formatNumbersWithDigits(netAmount, 1, 1)}</div>
-                </div>
-                ${data.preview.type == 'order' ? `
-                    <div
-                        class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                        <div class="text-nowrap">Current Balance</div>
-                        <div class="w-1/4 text-right grow">${formatNumbersWithDigits(currentBalance, 1,1)}</div>
-                    </div>
-                ` : ''}
-            `;
-        }
-
-        clutter += `
-            <div id="preview-container" class="${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} mx-auto relative overflow-hidden my-scrollbar-2">
-                <div id="preview" class="preview ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-[300mm]"} overflow-hidden flex flex-col h-full">
-                    <div class="flex flex-col h-full">
-                        <div id="banner" class="banner w-full flex justify-between items-center px-5">
-                            <div class="left">
-                                <div class="logo">
-                                    <img src="images/${companyData.logo}" alt="garmentsos-pro"
-                                        class="w-[12rem]" />
-                                    ${data.preview.type != 'form' ? (`
-                                        <div class='mt-1'>${ companyData.phone_number }</div>
-                                    `) : ''}
+                // 🔥 SAME PREVIEW HTML — DUPLICATED
+                clutter += `
+                    ${pageIndex > 0 ? '<div class="page-break"></div>' : ''}
+                        <div id="preview" class="preview w-[208mm] h-[302mm] overflow-hidden flex flex-col">
+                            <div class="flex flex-col h-full">
+                                <div id="banner" class="banner w-full flex justify-between items-center px-5">
+                                    <div class="left">
+                                        <div class="logo">
+                                            <img src="images/${companyData.logo}" alt="garmentsos-pro"
+                                                class="w-[12rem]" />
+                                            ${data.preview.type != 'form' ? (`
+                                                <div class='mt-1'>${ companyData.phone_number }</div>
+                                            `) : ''}
+                                        </div>
+                                    </div>
+                                    <div class="right">
+                                        <div class="logo text-right">
+                                            <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">${data.preview.document}</h1>
+                                            <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                            ${previewData.shipment_no ? '<div class="mt-1 text-right">Shipment No.: ' + previewData.shipment_no + ' </div>' : ''}
+                                            ${previewData.order_no ? '<div class="mt-1 text-right">Order No.: ' + previewData.order_no + ' </div>' : ''}
+                                            ${data.preview.type == 'form' ? (`
+                                                <div class='mt-1 text-sm'>${ companyData.phone_number }</div>
+                                            `) : ''}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="right">
-                                <div class="logo text-right">
-                                    <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">${data.preview.document}</h1>
-                                    <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
-                                    ${previewData.shipment_no ? '<div class="mt-1 text-right">Shipment No.: ' + previewData.shipment_no + ' </div>' : ''}
-                                    ${previewData.order_no ? '<div class="mt-1 text-right">Order No.: ' + previewData.order_no + ' </div>' : ''}
-                                    ${data.preview.type == 'form' ? (`
-                                        <div class='mt-1 text-sm'>${ companyData.phone_number }</div>
-                                    `) : ''}
+                                <hr class="w-full my-3 border-black">
+                                ${data.preview.type != 'form' ? (`
+                                    <div id="header" class="header w-full flex justify-between px-5">
+                                        <div class="left w-50 space-y-1">
+                                            ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                                <div class="customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${previewData.customer.customer_name}</div>
+                                                <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
+                                                <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
+                                                <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                            ` : `
+                                                <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                                <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
+                                            `}
+                                        </div>
+                                        ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
+                                            <div class="center my-auto ">
+                                                <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
+                                            </div>
+                                        ` : ''}
+                                        <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
+                                            ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                                <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                                <div class="number leading-none capitalize font-medium">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                            ` : '' }
+                                            <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
+                                            <div class="copy leading-none">Document: ${data.preview.document}</div>
+                                        </div>
+                                    </div>
+                                    <hr class="w-full my-3 border-black">
+                                    <div class="body w-full px-5 grow mx-auto">
+                                        <div class="table w-full">
+                                            <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                                <div class="thead w-full">
+                                                    <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                        ${invoiceTableHeader}
+                                                    </div>
+                                                </div>
+                                                <div id="tbody" class="tbody w-full">
+                                                    ${invoiceTableBody}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `) : (`
+                                    <div class="grow flex flex-col px-5">
+                                        <div class="fields grow flex flex-col gap-3 pt-1">
+                                            ${data.preview.data.formFields.map(field =>(`
+                                                <div class="flex gap-3">
+                                                    <label>${field.label} :</label>
+                                                    <div class="grow border-b border-black capitalize ps-1"> ${field.text}</div>
+                                                </div>
+                                            `)).join('')}
+                                        </div>
+                                        <div class="signatureFields flex gap-6 w-full">
+                                            <div class="grow flex gap-3">
+                                                <label>Admin Sig. :</label>
+                                                <div class="grow border-b border-black"></div>
+                                            </div>
+                                            <div class="grow flex gap-3">
+                                                <label>Emp. Sig. :</label>
+                                                <div class="grow border-b border-black"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                `)}
+                                ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
+                                <div class="grid grid-cols-2 gap-2 px-5">
+                                    ${invoiceBottom}
+                                </div>
+                                <hr class="w-full my-3 border-black">
+                                <div class="footer flex w-full text-sm px-5 justify-between text-black">
+                                    <P class="leading-none">Powered by SparkPair</P>
+                                    <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                                 </div>
                             </div>
                         </div>
-                        <hr class="w-full my-3 border-black">
-                        ${data.preview.type != 'form' ? (`
-                            <div id="header" class="header w-full flex justify-between px-5">
-                                <div class="left w-50 space-y-1">
-                                    ${data.preview.type == "order" || data.preview.type == "invoice" ? `
-                                        <div class="customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${previewData.customer.customer_name}</div>
-                                        <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
-                                        <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
-                                        <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
-                                    ` : `
-                                        <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                        <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
-                                    `}
-                                </div>
-                                ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
-                                    <div class="center my-auto ">
-                                        <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
+                `;
+            });
+            clutter += `
+                    </div>`
+        }
+
+        {!articlePages ? (
+            clutter += `
+                <div id="preview-container" class="h-auto mx-auto relative overflow-hidden my-scrollbar-2">
+                    <div id="preview" class="preview ${data.preview.size == "A5" ? "w-[145mm] h-[210mm]" : "w-[208mm] h-auto"} overflow-hidden flex flex-col h-full">
+                        <div class="flex flex-col h-full">
+                            <div id="banner" class="banner w-full flex justify-between items-center px-5">
+                                <div class="left">
+                                    <div class="logo">
+                                        <img src="images/${companyData.logo}" alt="garmentsos-pro"
+                                            class="w-[12rem]" />
+                                        ${data.preview.type != 'form' ? (`
+                                            <div class='mt-1'>${ companyData.phone_number }</div>
+                                        `) : ''}
                                     </div>
-                                ` : ''}
-                                <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
-                                    ${data.preview.type == "order" || data.preview.type == "invoice" ? `
-                                        <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
-                                        <div class="number leading-none capitalize font-medium">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
-                                    ` : '' }
-                                    <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
-                                    <div class="copy leading-none">Document: ${data.preview.document}</div>
+                                </div>
+                                <div class="right">
+                                    <div class="logo text-right">
+                                        <h1 class="text-2xl font-medium text-[var(--h-primary-color)]">${data.preview.document}</h1>
+                                        <div class="mt-1 text-right ${cottonCount == 0 ? 'hidden' : ''}">Cotton: ${cottonCount}</div>
+                                        ${previewData.shipment_no ? '<div class="mt-1 text-right">Shipment No.: ' + previewData.shipment_no + ' </div>' : ''}
+                                        ${previewData.order_no ? '<div class="mt-1 text-right">Order No.: ' + previewData.order_no + ' </div>' : ''}
+                                        ${data.preview.type == 'form' ? (`
+                                            <div class='mt-1 text-sm'>${ companyData.phone_number }</div>
+                                        `) : ''}
+                                    </div>
                                 </div>
                             </div>
                             <hr class="w-full my-3 border-black">
-                            <div class="body w-full px-5 grow mx-auto">
-                                <div class="table w-full">
-                                    <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
-                                        <div class="thead w-full">
-                                            <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
-                                                ${invoiceTableHeader}
+                            ${data.preview.type != 'form' ? (`
+                                <div id="header" class="header w-full flex justify-between px-5">
+                                    <div class="left w-50 space-y-1">
+                                        ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                            <div class="customer text-lg leading-none capitalize font-medium text-nowrap">M/s: ${previewData.customer.customer_name}</div>
+                                            <div class="person text-md text-lg leading-none">${previewData.customer.urdu_title}</div>
+                                            <div class="address text-md leading-none">${previewData.customer.address}, ${previewData.customer.city.title}</div>
+                                            <div class="phone text-md leading-none">${previewData.customer.phone_number}</div>
+                                        ` : `
+                                            <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                            <div class="number leading-none capitalize">${data.preview.type.replace('_', ' ')} No.: ${data.preview.type == 'shipment' ? previewData.shipment_no : data.preview.type == 'voucher' ? previewData.voucher_no : data.preview.type == 'cargo_list' ? previewData.cargo_no : ''}</div>
+                                        `}
+                                    </div>
+                                    ${(data.preview.type == 'voucher' && previewData.supplier) || (data.preview.type && previewData.cargo_name) == 'cargo_list' ? `
+                                        <div class="center my-auto ">
+                                            <div class="supplier-name capitalize font-semibold text-md">Supplier Name: ${previewData.supplier?.supplier_name || previewData.cargo_name}</div>
+                                        </div>
+                                    ` : ''}
+                                    <div class="right w-50 my-auto text-right text-sm text-black space-y-1.5">
+                                        ${data.preview.type == "order" || data.preview.type == "invoice" ? `
+                                            <div class="date leading-none">Date: ${formatDate(previewData.date)}</div>
+                                            <div class="number leading-none capitalize font-medium">${data.preview.type} No.: ${data.preview.type == 'order' ? previewData.order_no : data.preview.type == 'invoice' ? previewData.invoice_no : ''}</div>
+                                        ` : '' }
+                                        <div class="preview-copy leading-none capitalize">${data.preview.type.replace('_', ' ')} Copy: ${data.preview.type == 'shipment' || (data.preview.type == 'voucher' && !previewData.supplier) ? 'Staff' : (data.preview.type == 'voucher' && previewData.supplier) ? 'Supplier' : data.preview.type == 'cargo_list' ? 'Cargo' : 'Customer'}</div>
+                                        <div class="copy leading-none">Document: ${data.preview.document}</div>
+                                    </div>
+                                </div>
+                                <hr class="w-full my-3 border-black">
+                                <div class="body w-full px-5 grow mx-auto">
+                                    <div class="table w-full">
+                                        <div class="table w-full border border-black rounded-lg pb-2.5 overflow-hidden">
+                                            <div class="thead w-full">
+                                                <div class="tr ${data.preview.type == 'voucher' || data.preview.type == 'cargo_list' ? 'flex justify-between' : 'grid'} ${data.preview.type == 'shipment' ? 'grid-cols-8' : 'grid-cols-9'} w-full px-4 py-1.5 bg-[var(--primary-color)] text-white">
+                                                    ${invoiceTableHeader}
+                                                </div>
+                                            </div>
+                                            <div id="tbody" class="tbody w-full">
+                                                ${invoiceTableBody}
                                             </div>
                                         </div>
-                                        <div id="tbody" class="tbody w-full">
-                                            ${invoiceTableBody}
+                                    </div>
+                                </div>
+                            `) : (`
+                                <div class="grow flex flex-col px-5">
+                                    <div class="fields grow flex flex-col gap-3 pt-1">
+                                        ${data.preview.data.formFields.map(field =>(`
+                                            <div class="flex gap-3">
+                                                <label>${field.label} :</label>
+                                                <div class="grow border-b border-black capitalize ps-1"> ${field.text}</div>
+                                            </div>
+                                        `)).join('')}
+                                    </div>
+                                    <div class="signatureFields flex gap-6 w-full">
+                                        <div class="grow flex gap-3">
+                                            <label>Admin Sig. :</label>
+                                            <div class="grow border-b border-black"></div>
+                                        </div>
+                                        <div class="grow flex gap-3">
+                                            <label>Emp. Sig. :</label>
+                                            <div class="grow border-b border-black"></div>
                                         </div>
                                     </div>
                                 </div>
+                            `)}
+                            ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
+                            <div class="grid ${data.preview.type == 'order' || (data.preview.type == 'voucher' && previewData.supplier) ? 'grid-cols-3' : data.preview.type == 'voucher' && !previewData.supplier ? 'flex' : 'grid-cols-2'} gap-2 px-5">
+                                ${invoiceBottom}
                             </div>
-                        `) : (`
-                            <div class="grow flex flex-col px-5">
-                                <div class="fields grow flex flex-col gap-3 pt-1">
-                                    ${data.preview.data.formFields.map(field =>(`
-                                        <div class="flex gap-3">
-                                            <label>${field.label} :</label>
-                                            <div class="grow border-b border-black capitalize ps-1"> ${field.text}</div>
-                                        </div>
-                                    `)).join('')}
-                                </div>
-                                <div class="signatureFields flex gap-6 w-full">
-                                    <div class="grow flex gap-3">
-                                        <label>Admin Sig. :</label>
-                                        <div class="grow border-b border-black"></div>
-                                    </div>
-                                    <div class="grow flex gap-3">
-                                        <label>Emp. Sig. :</label>
-                                        <div class="grow border-b border-black"></div>
-                                    </div>
-                                </div>
+                            <hr class="w-full my-3 border-black">
+                            <div class="footer flex w-full text-sm px-5 justify-between text-black">
+                                <P class="leading-none">Powered by SparkPair</P>
+                                <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                             </div>
-                        `)}
-                        ${invoiceBottom != '' ? `<hr class="w-full my-3 border-black">` : ''}
-                        <div class="grid ${data.preview.type == 'order' || (data.preview.type == 'voucher' && previewData.supplier) ? 'grid-cols-3' : data.preview.type == 'voucher' && !previewData.supplier ? 'flex' : 'grid-cols-2'} gap-2 px-5">
-                            ${invoiceBottom}
-                        </div>
-                        <hr class="w-full my-3 border-black">
-                        <div class="footer flex w-full text-sm px-5 justify-between text-black">
-                            <P class="leading-none">Powered by SparkPair</P>
-                            <p class="leading-none text-sm">&copy; 2025 SparkPair | +92 316 5825495</p>
                         </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `
+        ) : ''}
     }
 
     clutter += `

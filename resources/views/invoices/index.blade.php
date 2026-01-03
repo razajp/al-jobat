@@ -201,9 +201,11 @@
                     .querySelectorAll('.footer')
                     .forEach(p => p.classList.remove('mb-4'));
 
-                let invoiceCopy = printDocument.querySelector('#preview-container .preview-copy');
-                if (invoiceCopy) {
-                    invoiceCopy.textContent = "Invoice Copy: Office";
+                let invoiceCopys = printDocument.querySelectorAll('#preview-container .preview-copy');
+                if (invoiceCopys) {
+                    invoiceCopys.forEach(invoiceCopy => {
+                        invoiceCopy.textContent = "Invoice Copy: Office";
+                    });
                 }
 
                 // Listen for after print in the iframe's window
