@@ -178,12 +178,12 @@
                         <div
                             class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
                             <div>Total - Rs.</div>
-                            <div class="text-right">{{ number_format($article->totalRate, 2) }}</div>
+                            <div class="text-right">{{ num: $article->totalRate }}</div>
                         </div>
                         <div
                             class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">
                             <label for="sales_rate" class="text-nowrap grow">Sales Rate - Rs.</label>
-                            <input type="text" required name="sales_rate" id="sales_rate" value="{{ number_format($article->sales_rate, 2) }}"
+                            <input type="text" required name="sales_rate" id="sales_rate" value="{{ $article->sales_rate }}"
                                 class="text-right bg-transparent outline-none border-none w-[50%]" />
                         </div>
                     </div>

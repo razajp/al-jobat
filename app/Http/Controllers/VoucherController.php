@@ -419,6 +419,8 @@ class VoucherController extends Controller
 
         $requestPayments = json_decode($request->payment_details_array, true);
 
+        // return $requestPayments;
+
         DB::transaction(function () use ($voucher, $requestPayments) {
 
             // -----------------------------
@@ -453,7 +455,7 @@ class VoucherController extends Controller
                 }
 
                 // For Program method, just detach
-                if ($old->method === "Program") {
+                if ($old->method === "program" || $old->method === "Program") {
                     $old->update(['voucher_id' => null]);
                 } else {
                     $old->delete();
@@ -475,7 +477,7 @@ class VoucherController extends Controller
                 $pd['date'] = $voucher->date;
 
                 if ($pd['method'] == 'program') {
-                    $supplierPayment = SupplierPayment::find($pd['payment_id']);
+                    $supplierPayment = SupplierPayment::find($pd['payment_id'] ?? $pd['id']);
                     if ($supplierPayment) {
                         $supplierPayment->update(['voucher_id' => $pd['voucher_id']]);
                     }

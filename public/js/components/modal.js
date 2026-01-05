@@ -544,13 +544,12 @@ function createModal(data, animate = 'animate') {
         } else {
             const articlePages = chunkArray(previewData.articles, 21);
 
+            let totalAmount = 0;
+            let totalQuantity = 0;
+
             clutter += `
                     <div id="preview-container" class="h-auto mx-auto relative flex flex-col">`
             articlePages.forEach((articlesChunk, pageIndex) => {
-
-                let totalAmount = 0;
-                let totalQuantity = 0;
-
                 invoiceTableHeader = `
                     <div class="th text-sm font-medium ">S.No</div>
                     <div class="th text-sm font-medium ">Article</div>

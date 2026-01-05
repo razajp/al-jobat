@@ -33,10 +33,6 @@ class ArticleController extends Controller
                     $articlesArray = json_decode($order->ordered_articles, true);
                 }
             }
-
-            // $article['category'] = ucfirst(str_replace('_', ' ', $article['category']));
-            // $article['season'] = ucfirst(str_replace('_', ' ', $article['season']));
-            // $article['size'] = ucfirst(str_replace('_', '-', $article['size']));
         }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
@@ -176,7 +172,6 @@ class ArticleController extends Controller
 
         $validator = Validator::make($request->all(), [
             'article_no' => 'required|string|unique:articles,article_no,' . $article->id,
-            'date' => 'required|date',
             'category' => 'nullable|string',
             'size' => 'required|string',
             'season' => 'required|string',

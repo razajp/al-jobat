@@ -41,7 +41,7 @@
             @if (count($vouchers) > 0)
                 <div class="absolute bottom-0 right-0 flex items-center justify-between gap-2 w-fll z-50 p-3 w-full pointer-events-none">
                     <x-section-navigation-button direction="right" id="info" icon="fa-info" />
-                    <x-section-navigation-button link="{{ route('vouchers.create') }}" title="Add New Payment" icon="fa-plus" />
+                    <x-section-navigation-button link="{{ route('vouchers.create') }}" title="Add New Voucher" icon="fa-plus" />
                 </div>
 
                 <div class="details h-full z-40">

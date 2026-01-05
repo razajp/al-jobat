@@ -45,7 +45,7 @@
                 </div>
             </div>
 
-            <div class="flex w-full grid grid-cols-1 md:grid-cols-3 gap-3 text-sm mt-5 text-nowrap">
+            <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
                 <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Total Quantity - Pcs</div>
                     <div id="finalOrderedQuantity">0</div>
@@ -59,18 +59,10 @@
                     <input type="text" name="discount" id="discount" value="10" min="0" max="100"
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
                 </div>
-                <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Previous Balance - Rs.</div>
-                    <div id="finalPreviousBalance">0</div>
-                </div>
                 <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                     <div class="grow">Net Amount - Rs.</div>
                     <input type="text" name="netAmount" id="finalNetAmount" value="0.0" readonly
                         class="text-right bg-transparent outline-none w-1/2 border-none" />
-                </div>
-                <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Current Balance - Rs.</div>
-                    <div id="finalCurrentBalance">0.0</div>
                 </div>
             </div>
             <input type="hidden" name="articles" id="articles" value="" />
@@ -372,9 +364,7 @@
         const finalOrderedQuantity = document.getElementById('finalOrderedQuantity');
         const finalOrderAmount = document.getElementById('finalOrderAmount');
         const discountDOM = document.getElementById('discount');
-        const finalPreviousBalance = document.getElementById('finalPreviousBalance');
         const finalNetAmount = document.getElementById('finalNetAmount');
-        const finalCurrentBalance = document.getElementById('finalCurrentBalance');
 
         function calculateTotalOrderedQuantity() {
             totalOrderedQuantity = 0;
@@ -454,9 +444,7 @@
         function renderFinals() {
             finalOrderedQuantity.textContent = formatNumbersWithDigits(totalOrderedQuantity, 1, 1);
             finalOrderAmount.textContent = formatNumbersWithDigits(totalOrderAmount, 1, 1);
-            finalPreviousBalance.textContent = formatNumbersWithDigits(customerData.balance, 1, 1);
             finalNetAmount.value = formatNumbersWithDigits(netAmount, 1, 1);
-            finalCurrentBalance.textContent = formatNumbersWithDigits(customerData.balance + netAmount, 1, 1);
         }
 
         function updateInputOrderedArticles() {
@@ -592,25 +580,16 @@
                                     <div class="text-nowrap">Total Amount</div>
                                     <div class="w-1/4 text-right grow">${totalAmountDOM.value}</div>
                                 </div>
-                                <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Discount - %</div>
-                                    <div class="w-1/4 text-right grow">${discountDOM.value}</div>
-                                </div>
                             </div>
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Previous Balance</div>
-                                    <div class="w-1/4 text-right grow">${finalPreviousBalance.textContent}</div>
+                                    <div class="text-nowrap">Discount - %</div>
+                                    <div class="w-1/4 text-right grow">${discountDOM.value}</div>
                                 </div>
                                 <div
                                     class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
                                     <div class="text-nowrap">Net Amount</div>
                                     <div class="w-1/4 text-right grow">${finalNetAmount.value}</div>
-                                </div>
-                                <div
-                                    class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Current Balance</div>
-                                    <div class="w-1/4 text-right grow">${finalCurrentBalance.textContent}</div>
                                 </div>
                             </div>
                         </div>
