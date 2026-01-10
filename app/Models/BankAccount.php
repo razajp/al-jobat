@@ -101,6 +101,7 @@ class BankAccount extends Model
 
     public function calculateBalance($fromDate = null, $toDate = null, $formatted = false, $includeGivenDate = true)
     {
+        $balance = 0;
         if ($this->category === 'self') {
             // Self category: existing logic
             $customerPayments = CustomerPayment::where('bank_account_id', $this->id);
