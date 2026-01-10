@@ -370,7 +370,7 @@
                 }
             }
 
-            if (data.data.issued !== "Issued" && data.data.method !== "cash") {
+            if (data.data.method !== "cash") {
                 contextMenuData.actions.push(
                     {id: 'split-payment', text: 'Split Payment', onclick: `generateSplitPaymentModal(${JSON.stringify(data.data)})`},
                 );
@@ -423,7 +423,7 @@
                 }
             }
 
-            if (data.data.issued !== "Issued" && data.data.method !== "cash") {
+            if (data.data.method !== "cash") {
                 modalData.bottomActions.push(
                     {id: 'split-payment', text: 'Split Payment', onclick: `generateSplitPaymentModal(${JSON.stringify(data.data)})`},
                 );
