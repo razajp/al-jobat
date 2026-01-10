@@ -41,7 +41,7 @@ class ExpenseController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $lastExpense = Expense::latest()->with('supplier', 'expenseSetups')->first();
+        $lastExpense = Expense::with('supplier', 'expenseSetups')->latest('id')->first();
 
         $suppliers = Supplier::whereHas('user', function ($query) {
             $query->where('status', 'active');
@@ -80,7 +80,6 @@ class ExpenseController extends Controller
             'date' => 'required|date',
             'supplier_id' => 'required|exists:suppliers,id',
             'expense' => 'required|exists:setups,id',
-            'reff_no' => 'required|integer',
             'amount' => 'required|integer|min:0',
             'lot_no' => 'nullable|integer',
             'remarks' => 'nullable|string|max:255',
@@ -89,19 +88,23 @@ class ExpenseController extends Controller
             'reff_no' => [
                 'required',
                 'integer',
-                Rule::unique('expenses') // <-- table name
-                    ->where(function ($query) use ($request) {
-                        return $query
-                            ->where('supplier_id', $request->supplier_id)
-                            ->where('date', $request->date)
-                            ->where('amount', $request->amount)
-                            ->where('expense', $request->expense);
-                    }),
+                function ($attribute, $value, $fail) use ($request) {
+                    $exists = Expense::where('supplier_id', $request->supplier_id)
+                        ->whereDate('date', $request->date)
+                        ->where('amount', $request->amount)
+                        ->where('expense', $request->expense)
+                        ->where('reff_no', $value)
+                        ->exists();
+
+                    if ($exists) {
+                        $fail('This reference number already exists for the same supplier, date, expense and amount.');
+                    }
+                },
             ],
         ]);
 
         if ($validator->fails()) {
-            return redirect()->back()->withErrors($validator)->withInput();
+            return redirect()->back()->with('error', $validator->errors()->first());
         }
 
         $expense = Expense::create($request->all());

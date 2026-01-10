@@ -27,6 +27,16 @@
                 'onchange' => 'runDynamicFilter()',
                 'dataFilterPath' => 'category',
             ],
+            'Type' => [
+                'id' => 'type',
+                'type' => 'select',
+                'options' => [
+                    'order' => ['text' => 'Order'],
+                    'program' => ['text' => 'Program'],
+                ],
+                'onchange' => 'runDynamicFilter()',
+                'dataFilterPath' => 'type',
+            ],
             'Beneficiary' => [
                 'id' => 'beneficiary',
                 'type' => 'text',
@@ -166,6 +176,7 @@
                 payment: item.payment || 0,
                 balance: item.balance || 0,
                 status: item.status || item.payment_programs.status || '-',
+                type: item.order_no ? 'order' : item.program_no ? 'program' : '-',
                 data: item,
                 oncontextmenu: "generateContextMenu(event)",
                 onclick: "generateModal(this)",
