@@ -114,32 +114,6 @@ class VoucherController extends Controller
             ];
         })->toArray();
 
-        // --- Suppliers ---
-        $suppliers = Supplier::with([
-            'user' => fn($q) => $q->where('status', 'active'),
-            'payments' => fn($q) => $q->where('method', 'program')->whereNull('voucher_id')->with('program.customer', 'program.customer.city:id,title'),
-            'expenses'
-        ])->get();
-
-        $suppliers_options = $suppliers->mapWithKeys(function ($supplier) {
-            foreach ($supplier->paymentPrograms as $program) {
-                $program['date'] = date('d-M-Y D', strtotime($program['date']));
-                $subCategory = $program->subCategory;
-                if (isset($subCategory->type) && $subCategory->type !== '"App\Models\BankAccount"') {
-                    $program->subCategory = $subCategory->bankAccounts ?? null;
-                }
-            }
-
-            $supplier['balance'] = $supplier['totalAmount'] - $supplier['totalPayment'];
-
-            return [
-                (int)$supplier->id => [
-                    'text' => $supplier->supplier_name,
-                    'data_option' => $supplier,
-                ]
-            ];
-        })->toArray();
-
         // --- Last voucher ---
         $last_voucher = Voucher::orderByDesc('id')->first();
         if (!$last_voucher) {
@@ -147,7 +121,6 @@ class VoucherController extends Controller
         }
 
         return view("vouchers.create", compact(
-            "suppliers_options",
             'cheques_options',
             'slips_options',
             'self_accounts',

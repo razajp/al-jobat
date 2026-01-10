@@ -22,13 +22,42 @@ class SupplierController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
+        // AJAX request for suppliers options
+        if ($request->ajax()) {
+            $suppliers_options = Supplier::with([
+                'payments' => fn($q) => $q
+                    ->where('method', 'program')
+                    ->whereNull('voucher_id')
+                    ->with([
+                        'program.customer.city'
+                    ]),
+                'expenses:id,supplier_id,amount,date'
+            ])
+            ->whereHas('user', fn($q) => $q->where('status', 'active'))
+            ->select('id', 'supplier_name', 'date')
+            ->get()
+            ->map(function($supplier) {
+                // Convert to plain array to reduce JSON size
+                return [
+                    'id' => $supplier->id,
+                    'text' => $supplier->supplier_name,
+                    'data_option' => [
+                        'id' => $supplier->id,
+                        'supplier_name' => $supplier->supplier_name,
+                        'date' => $supplier->date,
+                        'balance' => $supplier->balance,
+                        'payments' => $supplier->payments,
+                        'expenses' => $supplier->expenses,
+                    ]
+                ];
+            })
+            ->keyBy('id')
+            ->toArray();
 
-        foreach ($suppliers as $supplier) {
-            $supplier['balance'] = 0;
-
-            $supplier['balance'] = number_format($supplier['balance'], 1, '.', ',');
+            return response()->json($suppliers_options);
         }
+
+        $suppliers = Supplier::with('user')->orderBy('id', 'desc')->get();
 
         $supplier_categories = Setup::where('type','supplier_category')->get();
 

@@ -123,7 +123,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 @if ($voucherType == 'supplier')
                     {{-- supplier --}}
-                    <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" :options="$suppliers_options" required showDefault
+                    <x-select class="col-span-2" label="Supplier" name="supplier_id" id="supplier_id" required showDefault
                         onchange="trackSupplierState()" />
 
                     {{-- balance --}}
@@ -206,6 +206,65 @@
         let selectedSupplier;
 
         const today = new Date().toISOString().split('T')[0];
+
+        @if ($voucherType == 'supplier')
+            let suppliersCache = null;
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Suppliers AJAX loading
+                const input = document.querySelector('input[name="supplier_id_name"]');
+                const dropdown = document.querySelector('ul[data-for="supplier_id"]');
+                supplierSelectDom.disabled = false;
+
+                if (input && dropdown) {
+                    input.addEventListener('focus', async function() {
+                        if (suppliersCache) return;
+
+                        dropdown.innerHTML = '<li class="py-2 px-3 text-center">Loading...</li>';
+
+                        try {
+                            const response = await fetch('{{ route("suppliers.index") }}', {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            });
+
+                            suppliersCache = await response.json();
+
+                            // Build options HTML
+                            const optionsHTML = [`
+                                <li data-for="supplier_id" data-value="" onmousedown="selectThisOption(this)"
+                                    class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] selected">
+                                    -- Select Supplier --
+                                </li>
+                            `];
+
+                            Object.entries(suppliersCache).forEach(([supplierId, supplier]) => {
+                                const dataOption = supplier.data_option ? `data-option='${JSON.stringify(supplier.data_option)}'` : '';
+
+                                optionsHTML.push(`
+                                    <li data-for="supplier_id"
+                                        data-value="${supplierId}"
+                                        ${dataOption}
+                                        onmousedown="selectThisOption(this)"
+                                        class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)] text-nowrap overflow-x-auto scrollbar-hidden">
+                                        ${supplier.text}
+                                    </li>
+                                `);
+                            });
+
+                            // Single DOM update
+                            dropdown.innerHTML = optionsHTML.join('');
+                            supplierSelectDom.placeholder = '-- Select Supplier --';
+                        } catch (error) {
+                            dropdown.innerHTML = '<li class="py-2 px-3 text-center text-red-400">Error loading suppliers</li>';
+                            console.error(error);
+                        }
+                    }, { once: true });
+                }
+            });
+        @endif
 
         function trackSupplierState() {
             dateDom.value = '';
@@ -649,8 +708,6 @@
                     `;
 
                     filteredPayments.forEach(payment => {
-                        console.log(payment);
-
                         paymentSelectDom.innerHTML += `
                             <li data-for="program_id" data-value="${payment.id}" data-option='${JSON.stringify(payment)}' onmousedown="selectThisOption(this)" class="py-2 px-3 cursor-pointer rounded-lg hover:bg-[var(--h-bg-color)]">${formatNumbersWithDigits(payment.amount, 1, 1)} | ${payment.program.customer.customer_name} | ${payment.program.customer.city.title} | ${payment.transaction_id} | ${formatDate(payment.date)}</li>
                         `;
