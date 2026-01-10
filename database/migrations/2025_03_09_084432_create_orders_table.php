@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('discount');
             $table->integer('netAmount');
             $table->unsignedBigInteger('customer_id');
-            $table->json('articles');
             $table->string('status')->default('pending');
             $table->timestamps();
 

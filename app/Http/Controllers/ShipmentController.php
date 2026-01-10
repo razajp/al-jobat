@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\PhysicalQuantity;
 use App\Models\Setup;
 use App\Models\Shipment;
+use App\Models\ShipmentArticles;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -24,13 +25,10 @@ class ShipmentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         }
 
-        $shipments = Shipment::all();
+        $shipments = Shipment::with('articles.article')->get();
 
         if ($shipments->isNotEmpty()) {
             foreach ($shipments as $shipment) {
-                // Articles attach kar do
-                $shipment->articles = $shipment->getArticles();
-
                 // Invoice exist check
                 $shipment->isInvoiceHas = Invoice::where('shipment_no', $shipment->shipment_no)->exists();
             }
@@ -123,9 +121,18 @@ class ShipmentController extends Controller
         $data = $request->all();
 
         $data['netAmount'] = str_replace(',', '', $data['netAmount']);
-        $data['articles'] = json_decode($data['articles'], true);
+        $articles = json_decode($data['articles'], true);
 
         $shipment = Shipment::create($data);
+
+        foreach($articles as $article) {
+            ShipmentArticles::create([
+                'shipment_id' => $shipment['id'],
+                'article_id' => $article['id'],
+                'description' => $article['description'],
+                'shipment_pcs' => $article['shipment_quantity'],
+            ]);
+        }
 
         return redirect()->route('shipments.create')->with('success', 'Shipment generated successfully.');
     }
@@ -147,18 +154,20 @@ class ShipmentController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $selectedArticles = [];
+        $shipment->load('articles.article');
 
-        foreach ($shipment->articles as $rawArticle) {
-            $article = Article::find($rawArticle['id']);
+        // $selectedArticles = [];
 
-            $article['description'] = $rawArticle['description'];
-            $article['shipmentQuantity'] = $rawArticle['shipment_quantity'];
+        // foreach ($shipment->articles as $rawArticle) {
+        //     $article = Article::find($rawArticle['id']);
 
-            $selectedArticles[] = $article;
-        }
+        //     $article['description'] = $rawArticle['description'];
+        //     $article['shipmentQuantity'] = $rawArticle['shipment_quantity'];
 
-        $shipment['selectedArticles'] = $selectedArticles;
+        //     $selectedArticles[] = $article;
+        // }
+
+        // $shipment['selectedArticles'] = $selectedArticles;
 
         return view('shipments.edit', compact('shipment'));
     }
@@ -186,10 +195,21 @@ class ShipmentController extends Controller
         $data = $request->all();
 
         $data['netAmount'] = str_replace(',', '', $data['netAmount']);
-        $data['articles'] = json_decode($data['articles'], true);
+        $articles = json_decode($data['articles'], true);
+
+        ShipmentArticles::where('shipment_id', $shipment->id)->delete();
 
         // Update the shipment
         $shipment->update($data);
+
+        foreach($articles as $article) {
+            ShipmentArticles::create([
+                'shipment_id' => $shipment['id'],
+                'article_id' => $article['id'],
+                'description' => $article['description'],
+                'shipment_pcs' => $article['shipment_quantity'],
+            ]);
+        }
 
         return redirect()->route('shipments.index')->with('success', 'Shipment updated successfully.');
     }

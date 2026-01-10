@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OrderArticles;
 use App\Models\PaymentProgram;
 use App\Models\PhysicalQuantity;
 use App\Models\User;
@@ -23,7 +24,7 @@ class OrderController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $orders = Order::with('customer.city')->get();
+        $orders = Order::with('customer.city', 'articles.article')->get();
 
         // Collect all article IDs from ordered articles
         $articleIds = $orders->flatMap(function ($order) {
@@ -44,11 +45,11 @@ class OrderController extends Controller
                     $orderedArticle['article'] = $articles[$orderedArticle['id']];
                 }
 
-                $orderedArticle['ordered_quantity'] = max(0, $orderedArticle['ordered_quantity'] - ($orderedArticle['invoice_quantity'] ?? 0));
+                $orderedArticle['ordered_pcs'] = max(0, $orderedArticle['ordered_pcs'] - ($orderedArticle['invoice_quantity'] ?? 0));
 
                 return $orderedArticle;
             })->filter(function ($orderedArticle) {
-                return $orderedArticle['ordered_quantity'] > 0;
+                return $orderedArticle['ordered_pcs'] > 0;
             })->values(); // 👈 ensures final collection is indexed (not associative)
 
             // Step 3: Put it back into the order
@@ -159,12 +160,19 @@ class OrderController extends Controller
         $order = Order::create($data);
 
         $data['articles'] = json_decode($data['articles'], true);
+
         foreach ($data['articles'] as $articleData) {
-            $article = Article::where('id', $articleData['id'])->first();
-            if ($article) {
-                $article->ordered_quantity += $articleData['ordered_quantity'];
-                $article->save();
-            }
+            // $article = Article::where('id', $articleData['id'])->first();
+            // if ($article) {
+            //     $article->ordered_quantity += $articleData['ordered_quantity'];
+            //     $article->save();
+            // }
+            OrderArticles::create([
+                'order_id' => $order['id'],
+                'article_id' => $articleData['id'],
+                'description' => $articleData['description'],
+                'ordered_pcs' => $articleData['ordered_quantity'],
+            ]);
         }
 
         $customer = Customer::find($order['customer_id']);
@@ -185,11 +193,11 @@ class OrderController extends Controller
             $program->save();
         }
 
-        if ($request->generateInvoiceAfterSave) {
-            return redirect()->route('invoices.create')->with('orderNumber', $order->order_no);
-        } else {
-            return redirect()->route('orders.create')->with('success', 'Order generated successfully.');
-        }
+        // if ($request->generateInvoiceAfterSave) {
+        //     return redirect()->route('invoices.create')->with('orderNumber', $order->order_no);
+        // } else {
+            return redirect()->route('orders.create')->with('success', 'Order generated successfully. Order No. : ' . $order['order_no']);
+        // }
     }
 
     /**

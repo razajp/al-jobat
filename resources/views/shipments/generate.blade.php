@@ -90,8 +90,8 @@
     </form>
 
     <script>
-        let maxLimitOfArticles = 18;
-        let limitOfArticles = 18;
+        let maxLimitOfArticles = 500;
+        let limitOfArticles = 500;
         let selectedArticles = [];
         let totalShipmentQuantity = 0;
         let totalShipmentAmount = 0;
@@ -272,7 +272,7 @@
 
             } else {
                 messageBox.innerHTML = `
-                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 500 articles.'" />
                 `;
                 messageBoxAnimation();
             }
@@ -330,7 +330,7 @@
 
             } else {
                 messageBox.innerHTML = `
-                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 500 articles.'" />
                 `;
                 messageBoxAnimation();
             }

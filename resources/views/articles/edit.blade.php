@@ -178,7 +178,7 @@
                         <div
                             class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full cursor-not-allowed">
                             <div>Total - Rs.</div>
-                            <div class="text-right">{{ num: $article->totalRate }}</div>
+                            <div class="text-right">{{ $article->totalRate }}</div>
                         </div>
                         <div
                             class="final flex justify-between items-center bg-[var(--h-bg-color)] border border-gray-600 rounded-lg py-2 px-4 w-full">

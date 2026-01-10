@@ -147,7 +147,7 @@ class Controller extends BaseController
             return response()->json(["error" => $validator->errors()->first()]);
         }
 
-        $order = Order::with('customer.city')->where("order_no", $request->order_no)->first();
+        $order = Order::with('customer.city', 'articles.article')->where("order_no", $request->order_no)->first();
 
         if (!$order) {
             return response()->json(["error" => "Order not found."]);
@@ -157,26 +157,25 @@ class Controller extends BaseController
             return response()->json(["error" => "This order has already been invoiced."]);
         }
 
-        $order->articles = json_decode($order->articles);
 
         if (!$request->boolean('only_order')) {
             $orderedArticles = $order->articles;
 
-            $articleIds = array_map(fn($oa) => $oa->id, $orderedArticles);
-            $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
+            // $articleIds = array_map(fn($oa) => $oa->id, $orderedArticles);
+            // $articles = Article::whereIn('id', $articleIds)->get()->keyBy('id');
 
             $stockErrors = [];
 
             foreach ($orderedArticles as $orderedArticle) {
 
-                $article = $articles[$orderedArticle->id] ?? null;
+                $article = $orderedArticle->article;
 
                 if (!$article) {
-                    $stockErrors[] = "Article with ID {$orderedArticle->id} not found.";
+                    $stockErrors[] = "Article with ID {$orderedArticle->article_id} not found.";
                     continue;
                 }
 
-                $orderedArticle->article = $article;
+                // $orderedArticle->article = $article;
                 $orderedArticle->total_quantity_in_packets = 0;
 
                 $totalPhysicalStockPackets = PhysicalQuantity::where("article_id", $article->id)->sum('packets');
@@ -186,24 +185,25 @@ class Controller extends BaseController
                         ? $totalPhysicalStockPackets - ($article->sold_quantity / $article->pcs_per_packet)
                         : $totalPhysicalStockPackets;
 
-                    $orderedPackets = $orderedArticle->ordered_quantity / $article->pcs_per_packet;
-                    $invoiceQty = $orderedArticle->invoice_quantity ?? 0;
+                    $orderedPackets = $orderedArticle->ordered_pcs / $article->pcs_per_packet;
+                    $invoiceQty = $orderedArticle->dispatched_pcs ?? 0;
                     $pendingPackets = $orderedPackets - ($invoiceQty / $article->pcs_per_packet);
 
                     $orderedArticle->total_quantity_in_packets = floor(min($pendingPackets, $availablePhysicalQuantity));
                 }
 
                 $actualQuantity = $orderedArticle->total_quantity_in_packets * $article->pcs_per_packet;
+
                 if ($actualQuantity == 0) {
                     $stockErrors[] = 'Stock is less than order quantity for article: ' . $article->article_no;
                 }
             }
 
-            if (!empty($stockErrors)) {
-                return response()->json(['error' => implode("; ", $stockErrors)]);
-            }
+            // if (!empty($stockErrors)) {
+            //     return response()->json(['error' => implode("; ", $stockErrors)]);
+            // }
 
-            $order->articles = array_values($orderedArticles);
+            // $order->articles = array_values($orderedArticles);
         }
 
         if (empty($order->articles)) {
@@ -318,19 +318,16 @@ class Controller extends BaseController
         }
 
         // Get shipment by number
-        $shipment = Shipment::where('shipment_no', $request->shipment_no)->first();
+        $shipment = Shipment::where('shipment_no', $request->shipment_no)->with('articles.article')->first();
 
         if (!$shipment) {
             return response()->json(['error' => 'Shipment not found']);
         }
 
-        // Get articles associated with shipment
-        $shipment->articles = $shipment->getArticles();
-
         // Only continue if not filtering by only_order
         $validArticles = [];
 
-        foreach ($shipment->articles as $articleData) {
+        foreach ($shipment->Articles as $articleData) {
             $article = $articleData['article'];
 
             if (!$article) continue;
@@ -348,7 +345,7 @@ class Controller extends BaseController
             $articleData['available_stock'] = $availableStock;
 
             // Required shipment quantity (in pcs)
-            $requiredShipmentQty = $articleData['shipment_quantity'];
+            $requiredShipmentQty = $articleData['shipment_pcs'];
 
             // Check if available stock is enough
             if ($availableStock < $requiredShipmentQty) {
@@ -359,9 +356,9 @@ class Controller extends BaseController
         }
 
         // Replace articles with valid filtered ones
-        $shipment->articles = $validArticles;
+        $shipment->Articles = $validArticles;
 
-        if (count($shipment->articles) === 0) {
+        if (count($shipment->Articles) === 0) {
             return response()->json(['error' => 'No articles found for this shipment']);
         }
 

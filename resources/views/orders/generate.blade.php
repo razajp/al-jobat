@@ -47,7 +47,7 @@
 
             <div class="flex w-full grid grid-cols-1 md:grid-cols-2 gap-3 text-sm mt-5 text-nowrap">
                 <div class="total-qty flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                    <div class="grow">Total Quantity - Pcs</div>
+                    <div class="grow">Total Quantity</div>
                     <div id="finalOrderedQuantity">0</div>
                 </div>
                 <div class="final flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
@@ -271,7 +271,7 @@
 
             } else {
                 messageBox.innerHTML = `
-                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 500 articles.'" />
                 `;
                 messageBoxAnimation();
             }
@@ -328,7 +328,7 @@
 
             } else {
                 messageBox.innerHTML = `
-                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 18 articles.'" />
+                    <x-alert type="error" :messages="'You have reached the maximum allowed number of 500 articles.'" />
                 `;
                 messageBoxAnimation();
             }
@@ -404,7 +404,7 @@
         });
 
         function renderTotals() {
-            totalQuantityDOM.value = formatNumbersWithDigits(totalOrderedQuantity, 1, 1);
+            totalQuantityDOM.value = totalOrderedQuantity;
             totalAmountDOM.value = formatNumbersWithDigits(totalOrderAmount, 1, 1);
         }
 
@@ -539,7 +539,7 @@
                                             <div class="th text-sm font-medium w-[10%]">Packets</div>
                                             <div class="th text-sm font-medium w-[10%]">Rate</div>
                                             <div class="th text-sm font-medium w-[10%]">Amount</div>
-                                            <div class="th text-sm font-medium w-[8%]">Dispatch</div>
+                                            <div class="th text-sm font-medium text-center w-[8%]">Dispatch</div>
                                         </div>
                                     </div>
                                     <div id="tbody" class="tbody w-full">
@@ -560,7 +560,7 @@
                                                             <div class="td text-sm font-semibold w-[10%]">
                                                                 ${new Intl.NumberFormat('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(parseInt(article.sales_rate) * article.orderedQuantity)}
                                                             </div>
-                                                            <div class="td text-sm font-semibold w-[8%]"></div>
+                                                            <div class="td text-sm font-semibold text-center w-[8%]"></div>
                                                         </div>
                                                     </div>
                                                     `;
@@ -573,7 +573,7 @@
                         <div class="flex flex-col space-y-2">
                             <div id="order-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
-                                    <div class="text-nowrap">Total Quantity - Pcs</div>
+                                    <div class="text-nowrap">Total Quantity</div>
                                     <div class="w-1/4 text-right grow">${totalQuantityDOM.value}</div>
                                 </div>
                                 <div class="total flex justify-between items-center border border-gray-600 rounded-lg py-2 px-4 w-full">
@@ -676,16 +676,15 @@
             renderTotals();
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            function addListenerToQuickInvoiceBtn() {
-                const quickInvoiceBtn = document.getElementById('quickInvoiceBtn');
-                quickInvoiceBtn.addEventListener('click', function () {
-                    document.getElementById('generateInvoiceAfterSave').value = 1;
-                    document.getElementById('form').submit();
-                });
-            }
-            addListenerToQuickInvoiceBtn();
-        });
-
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     function addListenerToQuickInvoiceBtn() {
+        //         const quickInvoiceBtn = document.getElementById('quickInvoiceBtn');
+        //         quickInvoiceBtn.addEventListener('click', function () {
+        //             document.getElementById('generateInvoiceAfterSave').value = 1;
+        //             document.getElementById('form').submit();
+        //         });
+        //     }
+        //     addListenerToQuickInvoiceBtn();
+        // });
     </script>
 @endsection

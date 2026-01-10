@@ -17,10 +17,9 @@ return new class extends Migration
             $table->string('shipment_no')->unique();
             $table->integer('discount');
             $table->integer('netAmount');
-            $table->json('articles');
             $table->string('city');
             $table->timestamps();
-            
+
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
         });

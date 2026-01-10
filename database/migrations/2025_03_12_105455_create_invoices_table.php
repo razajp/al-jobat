@@ -21,12 +21,11 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->integer('cotton_count')->nullable();
             $table->string('cargo_name')->nullable();
-            $table->json('articles_in_invoice');
             $table->timestamps();
 
             $table->foreign('order_no')->references('order_no')->on('orders')->onDelete('set null');
             $table->foreign('shipment_no')->references('shipment_no')->on('shipments')->onDelete('set null');
-            
+
             $table->unsignedBigInteger('creator_id');
             $table->foreign('creator_id')->references('id')->on('users')->onDelete('cascade');
 

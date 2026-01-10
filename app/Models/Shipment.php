@@ -15,12 +15,11 @@ class Shipment extends Model
         'created_at',
         'updated_at',
     ];
-    
+
     protected $fillable = [
         'date',
         'discount',
         'netAmount',
-        'articles',
         'city',
         'shipment_no',
     ];
@@ -50,21 +49,26 @@ class Shipment extends Model
         return $this->belongsTo(User::class, 'creator_id', 'id');
     }
 
+    public function articles()
+    {
+        return $this->hasMany(ShipmentArticles::class, 'shipment_id');
+    }
+
     public function invoices()
     {
         return $this->hasMany(Invoice::class, 'shipment_no', 'shipment_no');
     }
-    
+
     public function getArticles()
     {
         $rawArticles = $this->articles; // decode the JSON field
         if (!is_array($rawArticles)) return [];
-    
+
         $articles = [];
-    
+
         foreach ($rawArticles as $rawArticle) {
             $article = Article::where('id', $rawArticle['id'])->first();
-    
+
             if ($article) {
                 $articles[] = [
                     'shipment_quantity' => $rawArticle['shipment_quantity'],
@@ -73,7 +77,7 @@ class Shipment extends Model
                 ];
             }
         }
-    
+
         return $articles;
     }
 }

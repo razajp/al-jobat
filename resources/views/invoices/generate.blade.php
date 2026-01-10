@@ -169,7 +169,7 @@
                     <input type="hidden" name="date" value='{{ now()->toDateString() }}'>
                     {{-- order_no --}}
                     <div class="grow">
-                        <x-input label="Order Number" name="order_no" id="order_no" autocomplete="off" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="25-"/>
+                        <x-input label="Order Number" name="order_no" id="order_no" autocomplete="off" placeholder="Enter order number" required withButton btnId="generateInvoiceBtn" btnText="Generate Invoice" value="{{ date('y') }}-"/>
                     </div>
                 </div>
                 {{-- rate showing --}}
@@ -372,7 +372,7 @@
                 let countOfCottonsOfArticles = [];
 
                 articlesArray.forEach((article) => {
-                    countOfCottonsOfArticles.push(Math.floor(article.available_stock / article.shipment_quantity));
+                    countOfCottonsOfArticles.push(Math.floor(article.available_stock / article.shipment_pcs));
                 });
 
                 maxCottonCount = Math.min(...countOfCottonsOfArticles);
@@ -497,17 +497,17 @@
 
                     let clutter = "";
                     shipmentArticles.forEach((selectedArticle, index) => {
-                        if (selectedArticle.available_stock > selectedArticle.shipment_quantity) {
-                            totalQuantityPcs += selectedArticle.shipment_quantity;
+                        if (selectedArticle.available_stock > selectedArticle.shipment_pcs) {
+                            totalQuantityPcs += selectedArticle.shipment_pcs;
 
-                            let articleAmount = selectedArticle.article.sales_rate * selectedArticle.shipment_quantity;
+                            let articleAmount = selectedArticle.article.sales_rate * selectedArticle.shipment_pcs;
 
                             clutter += `
                                 <div class="flex justify-between items-center border-t border-gray-600 py-3 px-4">
                                     <div class="w-[5%]">${index + 1}.</div>
                                     <div class="w-[11%]">${selectedArticle.article.article_no}</div>
-                                    <div class="w-[11%] pr-3">${Math.floor(formatNumbersDigitLess(selectedArticle.shipment_quantity / selectedArticle.article.pcs_per_packet))}</div>
-                                    <div class="w-[10%]">${formatNumbersDigitLess(selectedArticle.shipment_quantity)}</div>
+                                    <div class="w-[11%] pr-3">${Math.floor(formatNumbersDigitLess(selectedArticle.shipment_pcs / selectedArticle.article.pcs_per_packet))}</div>
+                                    <div class="w-[10%]">${formatNumbersDigitLess(selectedArticle.shipment_pcs)}</div>
                                     <div class="grow">${selectedArticle.description}</div>
                                     <div class="w-[8%]">${selectedArticle.article.pcs_per_packet}</div>
                                     <div class="w-[12%] text-right">${formatNumbersWithDigits(selectedArticle.article.sales_rate, 1, 1)}</div>
@@ -744,6 +744,8 @@
             }
 
             function generateInvoice() {
+                let totalPcs = 0;
+                let totalPackets = 0;
                 customerData = selectedCustomersArray[0];
                 invoiceNo = generateInvoiceNo();
                 invoiceDate = getInvoiceDate();
@@ -806,19 +808,21 @@
                                         <div id="tbody" class="tbody w-full">
                                             ${shipmentArticles.map((articles, index) => {
                                                 const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
-                                                totalAmountOfThisInvoice += parseInt(articles.article.sales_rate) * (articles.shipment_quantity * cottonCount)
+                                                totalAmountOfThisInvoice += parseInt(articles.article.sales_rate) * (articles.shipment_pcs * cottonCount)
+                                                totalPcs += articles.shipment_pcs * cottonCount;
+                                                totalPackets += (articles.shipment_pcs / articles.article.pcs_per_packet) * cottonCount;
                                                 return `
                                                     <div>
                                                         <hr class="w-full ${hrClass} border-black">
                                                         <div class="tr flex justify-between w-full px-4">
                                                             <div class="td text-sm font-semibold w-[7%]">${index + 1}.</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${articles.article.article_no}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${(articles.shipment_quantity / articles.article.pcs_per_packet) * cottonCount}</div>
-                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_quantity * cottonCount}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${(articles.shipment_pcs / articles.article.pcs_per_packet) * cottonCount}</div>
+                                                            <div class="td text-sm font-semibold w-[10%]">${articles.shipment_pcs * cottonCount}</div>
                                                             <div class="td text-sm font-semibold grow">${articles.description}</div>
                                                             <div class="td text-sm font-semibold w-[10%]">${formatNumbersDigitLess(articles.article.pcs_per_packet)}</div>
                                                             <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(articles.article.sales_rate, 2, 2)}</div>
-                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * (articles.shipment_quantity * cottonCount), 1, 1)}</div>
+                                                            <div class="td text-sm font-semibold w-[11%]">${formatNumbersWithDigits(parseInt(articles.article.sales_rate) * (articles.shipment_pcs * cottonCount), 1, 1)}</div>
                                                         </div>
                                                     </div>
                                                 `;
@@ -831,8 +835,8 @@
                             <div class="flex flex-col space-y-2">
                                 <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                     <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
-                                        <div class="text-nowrap">Total Quantity - Pcs</div>
-                                        <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantityPcs)}</div>
+                                        <div class="text-nowrap">Total Quantity</div>
+                                        <div class="w-1/2 text-right grow">${totalPcs} | ${totalPackets}</div>
                                     </div>
                                     <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                         <div class="text-nowrap">Gross Amount</div>
@@ -948,7 +952,6 @@
 
                         if (!response.error) {
                             orderedArticles = response.articles;
-                            console.log(orderedArticles);
                             discount = response.discount ?? 0;
                             customerData = response.customer;
                         } else {
@@ -1041,10 +1044,9 @@
             function updateInputArticlesInInvoice() {
                 const articlesInInvoiceInpDom = document.getElementById("articles_in_invoice");
                 let finalArticlesArray = orderedArticles.map(article => {
-                    console.log(article);
-
                     return {
-                        id: article.article.id,
+                        id: article.article_id,
+                        order_article_id: article.id,
                         description: article.description,
                         invoice_quantity: article.ordered_quantity,
                     }
@@ -1141,6 +1143,8 @@
             }
 
             function generateInvoice() {
+                let totalPcs = 0;
+                let totalPackets = 0;
                 invoiceNo = generateInvoiceNo();
                 invoiceDate = getInvoiceDate();
 
@@ -1199,6 +1203,8 @@
                                         <div id="tbody" class="tbody w-full">
                                             ${orderedArticles.map((articles, index) => {
                                                 const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
+                                                totalPcs += articles.ordered_quantity;
+                                                totalPackets += articles.ordered_quantity / articles.article.pcs_per_packet;
 
                                                 return `
                                                     <div>
@@ -1225,7 +1231,7 @@
                                 <div id="invoice-total" class="tr flex justify-between w-full px-2 gap-2 text-sm">
                                     <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                         <div class="text-nowrap">Total Quantity - Pcs</div>
-                                        <div class="w-1/2 text-right grow">${formatNumbersDigitLess(totalQuantityPcs)}</div>
+                                        <div class="w-1/2 text-right grow">${totalPcs} | ${totalPackets}</div>
                                     </div>
                                     <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                                         <div class="text-nowrap">Gross Amount</div>

@@ -442,9 +442,10 @@ function createModal(data, animate = 'animate') {
         let invoiceTableBody = "";
         let invoiceBottom = "";
 
-        const articlePages = previewData.articles
-        ? chunkArray(previewData.articles, 21)
+        const articlePages = (previewData.articles || previewData.order?.articles || previewData.shipment.articles)
+        ? chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment.articles), 21)
         : [];
+
 
         if (data.preview.type == "voucher") {
             invoiceTableHeader = `
@@ -542,13 +543,15 @@ function createModal(data, animate = 'animate') {
         } else if (data.preview.type == "form") {
 
         } else {
-            const articlePages = chunkArray(previewData.articles, 21);
+            const articlePages = chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment.articles), 21);
 
             let totalAmount = 0;
-            let totalQuantity = 0;
+            let totalPcs = 0;
+            let totalPackets = 0;
 
             clutter += `
                     <div id="preview-container" class="h-auto mx-auto relative flex flex-col">`
+                    
             articlePages.forEach((articlesChunk, pageIndex) => {
                 invoiceTableHeader = `
                     <div class="th text-sm font-medium ">S.No</div>
@@ -559,24 +562,24 @@ function createModal(data, animate = 'animate') {
                     <div class="th text-sm font-medium ">Pcs.</div>
                     <div class="th text-sm font-medium ">Rate/Pc.</div>
                     <div class="th text-sm font-medium ">Amount</div>
-                    ${data.preview.type == 'order' ? '<div class="th text-sm font-medium ">Dispatch</div>' : ''}
+                    ${data.preview.type == 'order' ? '<div class="th text-sm font-medium text-center ">Dispatch</div>' : ''}
                 `;
 
                 invoiceTableBody = `
                     ${articlesChunk.map((orderedArticle, index) => {
-
                         const article = orderedArticle.article;
                         const salesRate = article.sales_rate;
                         const qty =
-                            orderedArticle.ordered_quantity ||
-                            orderedArticle.invoice_quantity ||
-                            orderedArticle.shipment_quantity;
+                            orderedArticle.ordered_pcs ||
+                            orderedArticle.invoice_pcs ||
+                            orderedArticle.shipment_pcs;
 
                         const total = parseInt(salesRate) * qty;
                         const hrClass = index === 0 ? "mb-2.5" : "my-2.5";
 
                         totalAmount += total;
-                        totalQuantity += qty;
+                        totalPcs += qty;
+                        totalPackets += article?.pcs_per_packet ? Math.floor(qty / article.pcs_per_packet) : 0;
 
                         return `
                             <div>
@@ -611,7 +614,7 @@ function createModal(data, animate = 'animate') {
                                         ${formatNumbersWithDigits(total, 1, 1)}
                                     </div>
                                     ${data.preview.type == 'order'
-                                        ? '<div class="td text-sm font-semibold "></div>'
+                                        ? `<div class="td text-sm text-center font-semibold"> ${orderedArticle.dispatched_pcs > 0 ? orderedArticle.dispatched_pcs : ''}</div>`
                                         : ''}
                                 </div>
                             </div>
@@ -630,7 +633,7 @@ function createModal(data, animate = 'animate') {
                         <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">
                             <div class="text-nowrap">Total Quantity</div>
                             <div class="w-1/4 text-right grow">
-                                ${formatNumbersDigitLess(totalQuantity)}
+                                ${formatNumbersDigitLess(totalPcs)} | ${formatNumbersDigitLess(totalPackets)}
                             </div>
                         </div>
                         <div class="total flex justify-between items-center border border-black rounded-lg py-1.5 px-4 w-full">

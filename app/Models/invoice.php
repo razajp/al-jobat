@@ -25,11 +25,9 @@ class Invoice extends Model
         "netAmount",
         "cotton_count",
         "cargo_name",
-        "articles_in_invoice",
     ];
 
     protected $casts = [
-        'articles_in_invoice' => 'array',
         'date' => 'datetime',
     ];
 

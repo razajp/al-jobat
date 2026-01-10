@@ -92,7 +92,11 @@
         let maxLimitOfArticles = 18;
         let limitOfArticles = 18;
         let shipment = @json($shipment);
-        let selectedArticles = shipment.selectedArticles ?? [];
+        let selectedArticles = (shipment?.articles ?? []).map(a => ({
+            ...a.article,
+            shipmentQuantity: a.shipment_pcs,
+            description: a.description,
+        }));
         let totalShipmentQuantity = 0;
         let totalShipmentAmount = 0;
         let netAmount = 0;

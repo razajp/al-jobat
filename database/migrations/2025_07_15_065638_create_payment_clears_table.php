@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('method');
             $table->foreignId('bank_account_id')->nullable()->constrained('bank_accounts')->onDelete('cascade');
             $table->integer('amount');
-            $table->string('reff_no')->unique();
+            $table->string('reff_no');
             $table->string('remarks')->nullable();
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();

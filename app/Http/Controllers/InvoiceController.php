@@ -6,6 +6,7 @@ use App\Models\Article;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\Order;
+use App\Models\OrderArticles;
 use App\Models\Shipment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,22 +26,22 @@ class InvoiceController extends Controller
             return redirect(route('home'))->with('error', 'You do not have permission to access this page.');
         };
 
-        $invoices = Invoice::with(['order', 'shipment', 'customer.city'])->orderBy('id', 'desc')->get();
+        $invoices = Invoice::with(['order.articles.article', 'shipment.articles.article', 'customer.city'])->orderBy('id', 'desc')->get();
 
-        foreach ($invoices as $invoice) {
-            $articles = [];
+        // foreach ($invoices as $invoice) {
+        //     $articles = [];
 
-            foreach ($invoice->articles_in_invoice as $article_in_invoice) {
-                $article = Article::find($article_in_invoice['id']);
+        //     foreach ($invoice->articles_in_invoice as $article_in_invoice) {
+        //         $article = Article::find($article_in_invoice['id']);
 
-                $articles[] = [
-                    'article' => $article,
-                    'description' => $article_in_invoice['description'],
-                    'invoice_quantity' => $article_in_invoice['invoice_quantity'],
-                ];
-            }
-            $invoice['articles'] = $articles;
-        }
+        //         $articles[] = [
+        //             'article' => $article,
+        //             'description' => $article_in_invoice['description'],
+        //             'invoice_quantity' => $article_in_invoice['invoice_quantity'],
+        //         ];
+        //     }
+        //     $invoice['articles'] = $articles;
+        // }
 
         $authLayout = $this->getAuthLayout($request->route()->getName());
 
@@ -106,7 +107,7 @@ class InvoiceController extends Controller
             $customers_array = json_decode($request->customers_array, true);
 
             $shipment = Shipment::where("shipment_no", $request->shipment_no)->first();
-            $articlesInShipment = $shipment->getArticles();
+            // $articlesInShipment = $shipment->getArticles();
 
             $last_Invoice = Invoice::orderBy('id', 'desc')->first();
 
@@ -123,20 +124,20 @@ class InvoiceController extends Controller
 
             $invoiceNumbers = [];
             foreach ($customers_array as $customer) {
-                $article_in_invoice = [];
-                foreach ($articlesInShipment as $article) {
-                    $article_in_invoice[] = [
-                        "id" => $article['article']["id"],
-                        "description" => $article["description"],
-                        "invoice_quantity" => $article["shipment_quantity"] * $customer['cotton_count'],
-                    ];
-                    $articleModel = Article::where("id", $article['article']["id"])->first();
+                // $article_in_invoice = [];
+                // foreach ($articlesInShipment as $article) {
+                //     $article_in_invoice[] = [
+                //         "id" => $article['article']["id"],
+                //         "description" => $article["description"],
+                //         "invoice_quantity" => $article["shipment_quantity"] * $customer['cotton_count'],
+                //     ];
+                //     $articleModel = Article::where("id", $article['article']["id"])->first();
 
-                    if ($articleModel) {
-                        $articleModel->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
-                        $articleModel->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
-                    }
-                }
+                //     if ($articleModel) {
+                //         $articleModel->increment('sold_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                //         $articleModel->increment('ordered_quantity', $article["shipment_quantity"] * $customer['cotton_count']);
+                //     }
+                // }
 
                 $invoice = new Invoice();
                 $invoice->customer_id = $customer["id"];
@@ -144,7 +145,7 @@ class InvoiceController extends Controller
                 $invoice->shipment_no = $request->shipment_no;
                 $invoice->netAmount = $shipment->netAmount * $customer['cotton_count'];
                 $invoice->cotton_count = $customer['cotton_count'];
-                $invoice->articles_in_invoice = $article_in_invoice;
+                // $invoice->articles_in_invoice = $article_in_invoice;
                 $invoice->date = date("Y-m-d");
 
                 $nextNumber = str_pad((int)$nextNumber + 1, 4, '0', STR_PAD_LEFT);
@@ -177,33 +178,34 @@ class InvoiceController extends Controller
 
             $data['articles_in_invoice'] = json_decode($data['articles_in_invoice'], true);
 
-            $articles = $data['articles_in_invoice'];
+            // return $data;
 
-            foreach ($articles as $article) {
-                $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
-            }
+            // foreach ($data['articles_in_invoice'] as $article) {
+            //     $articleDb = Article::where("id", $article["id"])->increment('sold_quantity', $article["invoice_quantity"]);
+            // }
 
             $orderDb = Order::where("order_no", $data["order_no"])->first();
-            foreach ($articles as $article) {
-                $orderedArticleDb = json_decode($orderDb["articles"], true);
+            foreach ($data['articles_in_invoice'] as $article) {
+                // $orderedArticleDb = json_decode($orderDb["articles"], true);
 
                 // Update all matching articles
-                foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference!
-                    if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
-                        $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
-                    }
-                }
-                unset($orderedArticle); // Important: break reference after loop
+                // foreach ($orderedArticleDb as &$orderedArticle) { // Pass by reference!
+                //     if (isset($orderedArticle["id"]) && $orderedArticle["id"] == $article["id"]) {
+                //         $orderedArticle["invoice_quantity"] = ($orderedArticle["invoice_quantity"] ?? 0) + $article["invoice_quantity"];
+                //     }
+                // }
+                // unset($orderedArticle); // Important: break reference after loop
 
                 // Save updated articles back to the database
-                $orderDb->articles = json_encode($orderedArticleDb);
+                // $orderDb->articles = json_encode($orderedArticleDb);
 
-                $totalQty = array_sum(array_column($orderedArticleDb, 'ordered_quantity'));
-                $invoicedQty = array_sum(array_column($orderedArticleDb, 'invoice_quantity'));
+                $orderArticleDb = OrderArticles::find($article['order_article_id']);
+                $orderArticleDb->dispatched_pcs = $article['invoice_quantity'];
+                $orderArticleDb->save();
 
-                if ($invoicedQty == 0) {
+                if ($orderArticleDb->dispatched_pcs == 0) {
                     $orderDb->status = 'pending';
-                } elseif ($invoicedQty < $totalQty) {
+                } elseif ($orderArticleDb->dispatched_pcs < $orderArticleDb->ordered_pcs) {
                     $orderDb->status = 'partially_invoiced';
                 } else {
                     $orderDb->status = 'invoiced';
@@ -261,13 +263,7 @@ class InvoiceController extends Controller
             return redirect()->route('invoices.create')->with('error', 'No invoices to print.');
         }
 
-        $invoices = Invoice::with(["customer", 'shipment'])->whereIn('invoice_no', $invoiceNumbers)->get();
-
-        foreach ($invoices as $invoice) {
-            if ($invoice->shipment) {
-                $invoice->shipment->fetchedArticles = $invoice->shipment->getArticles();
-            }
-        }
+        $invoices = Invoice::with(["customer.city", 'shipment.articles.article'])->whereIn('invoice_no', $invoiceNumbers)->get();
 
         return view("invoices.print", compact("invoices"));
     }

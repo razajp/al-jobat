@@ -21,7 +21,6 @@ class Order extends Model
         'date',
         'discount',
         'netAmount',
-        'articles',
         'order_no',
         'status',
     ];
@@ -44,6 +43,11 @@ class Order extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'creator_id', 'id');
+    }
+
+    public function articles()
+    {
+        return $this->hasMany(OrderArticles::class, 'order_id');
     }
 
     public function invoices()
