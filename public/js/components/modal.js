@@ -442,8 +442,8 @@ function createModal(data, animate = 'animate') {
         let invoiceTableBody = "";
         let invoiceBottom = "";
 
-        const articlePages = (previewData.articles || previewData.order?.articles || previewData.shipment.articles)
-        ? chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment.articles), 21)
+        const articlePages = (previewData.articles || previewData.order?.articles || previewData.shipment?.articles)
+        ? chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment?.articles), 21)
         : [];
 
 
@@ -543,7 +543,7 @@ function createModal(data, animate = 'animate') {
         } else if (data.preview.type == "form") {
 
         } else {
-            const articlePages = chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment.articles), 21);
+            const articlePages = chunkArray((previewData.articles || previewData.order?.articles || previewData.shipment?.articles), 21);
 
             let totalAmount = 0;
             let totalPcs = 0;
